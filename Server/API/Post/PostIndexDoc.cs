@@ -24,7 +24,7 @@ namespace KomodoServer
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc no 'type' value found in querystring");
                 resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
-                    new ErrorResponse(400, "Supply 'type' [json/xml/html/sql] in querystring.", null).ToJson(true), true);
+                    new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true), true);
                 return resp;
             }
 

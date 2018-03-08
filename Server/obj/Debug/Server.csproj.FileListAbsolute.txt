@@ -62,3 +62,5 @@ D:\code\Komodo\Core\Server\bin\Debug\AWSSDK.pdb
 D:\code\Komodo\Core\Server\bin\Debug\Microsoft.WindowsAzure.Storage.pdb
 D:\code\Komodo\Core\Server\bin\Debug\Microsoft.WindowsAzure.Storage.xml
 D:\code\Komodo\Core\Server\bin\Debug\Microsoft.Azure.KeyVault.Core.xml
+D:\code\Komodo\Core\Server\bin\Debug\SampleFiles\index_preview.bat
+D:\code\Komodo\Core\Server\bin\Debug\SampleFiles\parse_preview.bat

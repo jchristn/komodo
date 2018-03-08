@@ -17,7 +17,7 @@ namespace KomodoServer
             #region Get-Values-from-Querystring
 
             bool pretty = Common.IsTrue(md.CurrRequest.RetrieveHeaderValue("pretty"));
-            string docType = md.CurrRequest.RetrieveHeaderValue("doctype");
+            string docType = md.CurrRequest.RetrieveHeaderValue("type");
             string url = md.CurrRequest.RetrieveHeaderValue("url");
             string filename = md.CurrRequest.RetrieveHeaderValue("filename");
             string dbtype = md.CurrRequest.RetrieveHeaderValue("dbtype");
@@ -32,7 +32,7 @@ namespace KomodoServer
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostParsePreview no document type supplied");
                 return new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
-                    new ErrorResponse(400, "No document type supplied.", null).ToJson(true), true);
+                    new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true), true);
             }
 
             #endregion

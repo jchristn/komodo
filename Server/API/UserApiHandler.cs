@@ -37,14 +37,14 @@ namespace KomodoServer
                 case "post":
                     #region post
 
-                    if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/_parse_preview", false))
+                    if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/_parse", false))
                     {
                         return PostParsePreview(md);
                     }
 
-                    if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/_docidx_preview", false))
+                    if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/_index", false))
                     {
-                        return PostDocIndexPreview(md);
+                        return PostIndexPreview(md);
                     }
 
                     if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/indices", false))

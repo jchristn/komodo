@@ -113,7 +113,7 @@
     <Compile Include="API\Post\PostIndexDoc.cs" />
     <Compile Include="API\Post\PostIndices.cs" />
     <Compile Include="API\Post\PostParsePreview.cs" />
-    <Compile Include="API\Post\PostDocIndexPreview.cs" />
+    <Compile Include="API\Post\PostIndexPreview.cs" />
     <Compile Include="API\Put\PutSearchIndex.cs" />
     <Compile Include="Classes\RequestMetadata.cs" />
     <Compile Include="Classes\ApiKey.cs" />
@@ -140,6 +140,9 @@
     <None Include="SampleFiles\index.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SampleFiles\index_preview.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="SampleFiles\order1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -147,6 +150,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SampleFiles\order3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SampleFiles\parse_preview.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SampleFiles\prepare.bat">
