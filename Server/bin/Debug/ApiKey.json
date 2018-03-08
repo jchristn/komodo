@@ -1,0 +1,12 @@
+[
+  {
+    "ApiKeyId": 1,
+    "UserMasterId": 1,
+    "Guid": "default",
+    "Notes": "Created by setup script",
+    "Active": 1,
+    "Created": "2018-02-17T19:51:38.6235188Z",
+    "LastUpdate": "2018-02-17T19:51:38.6235188Z",
+    "Expiration": "2118-02-17T19:51:38.6235188Z"
+  }
+]

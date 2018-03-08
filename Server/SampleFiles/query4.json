@@ -1,0 +1,40 @@
+{
+	MaxResults: 5,
+	StartIndex: null,
+	Required: {
+		Terms: [ "Paper" ],
+		Filter: [ 
+			{
+				"Field": "lineitems.lineitemid",
+				"Condition": "GreaterThan",
+				"Value": "3"
+			}
+		]
+	},
+	Optional: {
+		Terms: [ "Christner" ],
+		Filter: [ 
+			{
+				"Field": "lineitems.unitprice",
+				"Condition": "GreaterThan",
+				"Value": "10"
+			},
+			{
+				"Field": "lineitems.unitprice",
+				"Condition": "LessThan",
+				"Value": "10"
+			},
+			{
+				"Field": "foo",
+				"Condition": "Equals",
+				"Value": "bar"
+			}			
+		]
+	},
+	Exclude: {
+		Terms: [ ],
+		Filter: [ ]
+	},
+	IncludeContent: true,
+	IncludeParsedDoc: false
+}

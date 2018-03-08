@@ -1,0 +1,383 @@
+{
+  "MasterDocId": "2f0e6309-6e01-4c83-88d4-6521b7d24240",
+  "NodeDocIds": {
+    "ordernumber": "2f0e6309-6e01-4c83-88d4-6521b7d24240.6b71314d-fa3b-407d-ad1e-e64d4b76a2b5",
+    "amount": "2f0e6309-6e01-4c83-88d4-6521b7d24240.c6607d23-baf1-470d-a3a4-8c4cf3260f12",
+    "customer": "2f0e6309-6e01-4c83-88d4-6521b7d24240.9dbd1649-acb4-41d6-b132-abfcc684150f",
+    "customer.firstname": "2f0e6309-6e01-4c83-88d4-6521b7d24240.0beecb9c-b609-4d2b-b09e-0c87cae70e08",
+    "customer.lastname": "2f0e6309-6e01-4c83-88d4-6521b7d24240.2398af16-5d7f-4cc2-991a-9c606c573cb8",
+    "customer.address": "2f0e6309-6e01-4c83-88d4-6521b7d24240.088ed8dc-6462-4af5-a53b-e19f744fbef8",
+    "customer.city": "2f0e6309-6e01-4c83-88d4-6521b7d24240.2ee6a68f-6b01-4542-bdaf-5257aaf2866b",
+    "customer.state": "2f0e6309-6e01-4c83-88d4-6521b7d24240.c195f98e-fff1-41a3-b576-467c395b0a3e",
+    "customer.postal": "2f0e6309-6e01-4c83-88d4-6521b7d24240.89d04326-61ac-442e-b3ea-d87dc3110c8f",
+    "lineitems": "2f0e6309-6e01-4c83-88d4-6521b7d24240.096eac65-fb10-42c6-8dc8-501e9a3f6b3e",
+    "lineitems.lineitemid": "2f0e6309-6e01-4c83-88d4-6521b7d24240.fe19e224-2635-40ec-9c5b-6043eb68bfd7",
+    "lineitems.itemid": "2f0e6309-6e01-4c83-88d4-6521b7d24240.8f0b9cc5-b341-4ac8-8cda-32cf54146715",
+    "lineitems.name": "2f0e6309-6e01-4c83-88d4-6521b7d24240.6a86bf09-92c2-4e2f-91ee-e0ee00b4830d",
+    "lineitems.quantity": "2f0e6309-6e01-4c83-88d4-6521b7d24240.bc9cf3a8-9106-4a2e-bc2b-8e1210c9aaef",
+    "lineitems.unitprice": "2f0e6309-6e01-4c83-88d4-6521b7d24240.a7ad7138-a47e-41fe-b834-88611809d7d4",
+    "lineitems.subtotal": "2f0e6309-6e01-4c83-88d4-6521b7d24240.cff7339b-cee4-48ac-aa68-171622bff019"
+  },
+  "Schema": {
+    "ordernumber": "Integer",
+    "amount": "Integer",
+    "customer": "Object",
+    "customer.firstname": "String",
+    "customer.lastname": "String",
+    "customer.address": "String",
+    "customer.city": "String",
+    "customer.state": "String",
+    "customer.postal": "Integer",
+    "lineitems": "Array",
+    "lineitems.lineitemid": "Integer",
+    "lineitems.itemid": "Integer",
+    "lineitems.name": "String",
+    "lineitems.quantity": "Integer",
+    "lineitems.unitprice": "Integer",
+    "lineitems.subtotal": "Integer"
+  },
+  "Postings": [
+    {
+      "Term": "200",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.c6607d23-baf1-470d-a3a4-8c4cf3260f12",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "watson",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.0beecb9c-b609-4d2b-b09e-0c87cae70e08",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "christner",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.2398af16-5d7f-4cc2-991a-9c606c573cb8",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "123",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.088ed8dc-6462-4af5-a53b-e19f744fbef8",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "main",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.088ed8dc-6462-4af5-a53b-e19f744fbef8",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "san",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.2ee6a68f-6b01-4542-bdaf-5257aaf2866b",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "jose",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.2ee6a68f-6b01-4542-bdaf-5257aaf2866b",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "95128",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.89d04326-61ac-442e-b3ea-d87dc3110c8f",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "paper",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.6a86bf09-92c2-4e2f-91ee-e0ee00b4830d",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "100",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.cff7339b-cee4-48ac-aa68-171622bff019",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "stapler",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.6a86bf09-92c2-4e2f-91ee-e0ee00b4830d",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "binder",
+      "DocumentId": "2f0e6309-6e01-4c83-88d4-6521b7d24240.6a86bf09-92c2-4e2f-91ee-e0ee00b4830d",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    }
+  ],
+  "Terms": [
+    "200",
+    "watson",
+    "christner",
+    "123",
+    "main",
+    "san",
+    "jose",
+    "95128",
+    "paper",
+    "100",
+    "stapler",
+    "binder"
+  ],
+  "Options": {
+    "SplitCharacters": [
+      "]",
+      "[",
+      ",",
+      ".",
+      " ",
+      "'",
+      "\"",
+      ";",
+      "<",
+      ">",
+      ".",
+      "/",
+      "\\",
+      "|",
+      "{",
+      "}",
+      "(",
+      ")"
+    ],
+    "NormalizeCase": true,
+    "RemovePunctuation": true,
+    "RemoveStopWords": true,
+    "PerformStemming": true,
+    "MinTokenLength": 3,
+    "MaxTokenLength": 32,
+    "StopWords": []
+  },
+  "Json": {
+    "Schema": {
+      "ordernumber": "Integer",
+      "amount": "Integer",
+      "customer": "Object",
+      "customer.firstname": "String",
+      "customer.lastname": "String",
+      "customer.address": "String",
+      "customer.city": "String",
+      "customer.state": "String",
+      "customer.postal": "Integer",
+      "lineitems": "Array",
+      "lineitems.lineitemid": "Integer",
+      "lineitems.itemid": "Integer",
+      "lineitems.name": "String",
+      "lineitems.quantity": "Integer",
+      "lineitems.unitprice": "Integer",
+      "lineitems.subtotal": "Integer"
+    },
+    "MaxDepth": 2,
+    "ArrayCount": 1,
+    "NodeCount": 31,
+    "Flattened": [
+      {
+        "Key": "ordernumber",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "amount",
+        "Data": "200",
+        "Type": "Integer"
+      },
+      {
+        "Key": "customer",
+        "Type": "Object"
+      },
+      {
+        "Key": "customer.firstname",
+        "Data": "watson",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.lastname",
+        "Data": "christner",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.address",
+        "Data": "123 main st",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.city",
+        "Data": "san jose",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.state",
+        "Data": "ca",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.postal",
+        "Data": "95128",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Array"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "4",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "4",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "paper",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "10",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "10",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "100",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "5",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "stapler",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "1",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "50",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "50",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "6",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "5",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "binder",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "25",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "50",
+        "Type": "Integer"
+      }
+    ],
+    "Tokens": [
+      "2",
+      "200",
+      "watson",
+      "christner",
+      "123 main st",
+      "san jose",
+      "ca",
+      "95128",
+      "4",
+      "4",
+      "paper",
+      "10",
+      "10",
+      "100",
+      "5",
+      "2",
+      "stapler",
+      "1",
+      "50",
+      "50",
+      "6",
+      "5",
+      "binder",
+      "2",
+      "25",
+      "50"
+    ]
+  }
+}

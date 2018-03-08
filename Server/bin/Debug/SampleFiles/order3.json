@@ -1,0 +1,38 @@
+{
+	OrderNumber: 3,
+	Amount: 300,
+	Customer: {
+		FirstName: "Watson",
+		LastName: "TheDog",
+		Address: "123 Main St",
+		City: "San Jose",
+		State: "CA",
+		Postal: "95128"
+	},
+	LineItems:[
+		{
+			LineItemId: 7,
+			ItemId: 4,
+			Name: "Paper",
+			Quantity: 10,
+			UnitPrice: 10,
+			Subtotal: 100
+		},
+		{
+			LineItemId: 8,
+			ItemId: 6,
+			Name: "Rawhide Dog Bone",
+			Quantity: 6,
+			UnitPrice: 25,
+			Subtotal: 150
+		},
+		{
+			LineItemId: 9,
+			ItemId: 5,
+			Name: "Binder",
+			Quantity: 2,
+			UnitPrice: 25,
+			Subtotal: 50
+		}
+	]
+}

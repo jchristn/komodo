@@ -1,0 +1,9 @@
+D:\code\komodo\Core\Cli\bin\Debug\sqlite3.dll
+D:\code\komodo\Core\Cli\bin\Debug\KomodoCli.exe.config
+D:\code\komodo\Core\Cli\bin\Debug\KomodoCli.exe
+D:\code\komodo\Core\Cli\bin\Debug\KomodoCli.pdb
+D:\code\komodo\Core\Cli\bin\Debug\RestWrapper.dll
+D:\code\komodo\Core\Cli\bin\Debug\RestWrapper.pdb
+D:\code\komodo\Core\Cli\obj\Debug\KomodoCli.exe
+D:\code\komodo\Core\Cli\obj\Debug\KomodoCli.pdb
+D:\code\komodo\Core\Cli\obj\Debug\Cli.csprojResolveAssemblyReference.cache

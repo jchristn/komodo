@@ -1,0 +1,24 @@
+{
+	MaxResults: 5,
+	StartIndex: null,
+	Required: {
+		Terms: [ "Paper" ],
+		Filter: [ 
+			{
+				"Field": "lineitems.lineitemid",
+				"Condition": "GreaterThan",
+				"Value": "0"
+			}
+		]
+	},
+	Optional: {
+		Terms: [ ],
+		Filter: [ ]
+	},
+	Exclude: {
+		Terms: [ ],
+		Filter: [ ]
+	},
+	IncludeContent: true,
+	IncludeParsedDoc: false
+}

@@ -1,0 +1,410 @@
+{
+  "MasterDocId": "417f6a5f-1b69-4159-8a15-586103090226",
+  "NodeDocIds": {
+    "ordernumber": "417f6a5f-1b69-4159-8a15-586103090226.b951a2a8-94f9-4c15-b00a-fb9de2648b83",
+    "amount": "417f6a5f-1b69-4159-8a15-586103090226.b6dce949-683e-4e90-a8b4-acaeaed0cff4",
+    "customer": "417f6a5f-1b69-4159-8a15-586103090226.85952b31-a519-4cba-bfbb-2194047b48ef",
+    "customer.firstname": "417f6a5f-1b69-4159-8a15-586103090226.2d0dba4f-e9ef-473b-ab4c-0d95750f7ea3",
+    "customer.lastname": "417f6a5f-1b69-4159-8a15-586103090226.68a4daee-c421-4762-851c-dad8318d2c54",
+    "customer.address": "417f6a5f-1b69-4159-8a15-586103090226.92ed5ca0-55f7-43c3-b4f9-38a11ba7a83c",
+    "customer.city": "417f6a5f-1b69-4159-8a15-586103090226.29a056d9-16d3-4400-963e-53a38e5d2f70",
+    "customer.state": "417f6a5f-1b69-4159-8a15-586103090226.b2128171-73ee-4391-820d-65f08794b3e1",
+    "customer.postal": "417f6a5f-1b69-4159-8a15-586103090226.5adacc13-1eab-452c-91ff-321e12f57971",
+    "lineitems": "417f6a5f-1b69-4159-8a15-586103090226.affd3046-a201-48da-a756-b876174eabb7",
+    "lineitems.lineitemid": "417f6a5f-1b69-4159-8a15-586103090226.235a6798-f26a-4ee0-88d9-dee1ef09a3b5",
+    "lineitems.itemid": "417f6a5f-1b69-4159-8a15-586103090226.a006da51-8963-4529-96d9-861d251ed7d3",
+    "lineitems.name": "417f6a5f-1b69-4159-8a15-586103090226.398c0c56-b8c9-46ab-a77b-08ebd6c3b4bd",
+    "lineitems.quantity": "417f6a5f-1b69-4159-8a15-586103090226.b0465c0c-59ba-4280-93de-8c93849be6aa",
+    "lineitems.unitprice": "417f6a5f-1b69-4159-8a15-586103090226.f28ed788-1723-4eeb-aa46-fdc60177ef2f",
+    "lineitems.subtotal": "417f6a5f-1b69-4159-8a15-586103090226.c1c3fb6c-89e0-49f0-8a91-9717eba57466"
+  },
+  "Schema": {
+    "ordernumber": "Integer",
+    "amount": "Integer",
+    "customer": "Object",
+    "customer.firstname": "String",
+    "customer.lastname": "String",
+    "customer.address": "String",
+    "customer.city": "String",
+    "customer.state": "String",
+    "customer.postal": "Integer",
+    "lineitems": "Array",
+    "lineitems.lineitemid": "Integer",
+    "lineitems.itemid": "Integer",
+    "lineitems.name": "String",
+    "lineitems.quantity": "Integer",
+    "lineitems.unitprice": "Integer",
+    "lineitems.subtotal": "Integer"
+  },
+  "Postings": [
+    {
+      "Term": "300",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.b6dce949-683e-4e90-a8b4-acaeaed0cff4",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "watson",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.2d0dba4f-e9ef-473b-ab4c-0d95750f7ea3",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "thedog",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.68a4daee-c421-4762-851c-dad8318d2c54",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "123",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.92ed5ca0-55f7-43c3-b4f9-38a11ba7a83c",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "main",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.92ed5ca0-55f7-43c3-b4f9-38a11ba7a83c",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "san",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.29a056d9-16d3-4400-963e-53a38e5d2f70",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "jose",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.29a056d9-16d3-4400-963e-53a38e5d2f70",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "95128",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.5adacc13-1eab-452c-91ff-321e12f57971",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "paper",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.398c0c56-b8c9-46ab-a77b-08ebd6c3b4bd",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "100",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.c1c3fb6c-89e0-49f0-8a91-9717eba57466",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "rawhide",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.398c0c56-b8c9-46ab-a77b-08ebd6c3b4bd",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "dog",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.398c0c56-b8c9-46ab-a77b-08ebd6c3b4bd",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "bone",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.398c0c56-b8c9-46ab-a77b-08ebd6c3b4bd",
+      "Frequency": 1,
+      "Positions": [
+        2
+      ]
+    },
+    {
+      "Term": "150",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.c1c3fb6c-89e0-49f0-8a91-9717eba57466",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "binder",
+      "DocumentId": "417f6a5f-1b69-4159-8a15-586103090226.398c0c56-b8c9-46ab-a77b-08ebd6c3b4bd",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    }
+  ],
+  "Terms": [
+    "300",
+    "watson",
+    "thedog",
+    "123",
+    "main",
+    "san",
+    "jose",
+    "95128",
+    "paper",
+    "100",
+    "rawhide",
+    "dog",
+    "bone",
+    "150",
+    "binder"
+  ],
+  "Options": {
+    "SplitCharacters": [
+      "]",
+      "[",
+      ",",
+      ".",
+      " ",
+      "'",
+      "\"",
+      ";",
+      "<",
+      ">",
+      ".",
+      "/",
+      "\\",
+      "|",
+      "{",
+      "}",
+      "(",
+      ")"
+    ],
+    "NormalizeCase": true,
+    "RemovePunctuation": true,
+    "RemoveStopWords": true,
+    "PerformStemming": true,
+    "MinTokenLength": 3,
+    "MaxTokenLength": 32,
+    "StopWords": []
+  },
+  "Json": {
+    "Schema": {
+      "ordernumber": "Integer",
+      "amount": "Integer",
+      "customer": "Object",
+      "customer.firstname": "String",
+      "customer.lastname": "String",
+      "customer.address": "String",
+      "customer.city": "String",
+      "customer.state": "String",
+      "customer.postal": "Integer",
+      "lineitems": "Array",
+      "lineitems.lineitemid": "Integer",
+      "lineitems.itemid": "Integer",
+      "lineitems.name": "String",
+      "lineitems.quantity": "Integer",
+      "lineitems.unitprice": "Integer",
+      "lineitems.subtotal": "Integer"
+    },
+    "MaxDepth": 2,
+    "ArrayCount": 1,
+    "NodeCount": 31,
+    "Flattened": [
+      {
+        "Key": "ordernumber",
+        "Data": "3",
+        "Type": "Integer"
+      },
+      {
+        "Key": "amount",
+        "Data": "300",
+        "Type": "Integer"
+      },
+      {
+        "Key": "customer",
+        "Type": "Object"
+      },
+      {
+        "Key": "customer.firstname",
+        "Data": "watson",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.lastname",
+        "Data": "thedog",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.address",
+        "Data": "123 main st",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.city",
+        "Data": "san jose",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.state",
+        "Data": "ca",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.postal",
+        "Data": "95128",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Array"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "7",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "4",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "paper",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "10",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "10",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "100",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "8",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "6",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "rawhide dog bone",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "6",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "25",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "150",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "9",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "5",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "binder",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "25",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "50",
+        "Type": "Integer"
+      }
+    ],
+    "Tokens": [
+      "3",
+      "300",
+      "watson",
+      "thedog",
+      "123 main st",
+      "san jose",
+      "ca",
+      "95128",
+      "7",
+      "4",
+      "paper",
+      "10",
+      "10",
+      "100",
+      "8",
+      "6",
+      "rawhide dog bone",
+      "6",
+      "25",
+      "150",
+      "9",
+      "5",
+      "binder",
+      "2",
+      "25",
+      "50"
+    ]
+  }
+}

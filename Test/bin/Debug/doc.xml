@@ -1,0 +1,16 @@
+<note>
+  <to>You</to>
+  <from>Me</from>
+  <subject>Hello!</subject>
+  <body>Check out this cool data!</body>
+  <data>
+    <name>Something cool</name>
+    <location>Mars</location>
+    <distance>54 million kilometers</distance>
+    <children>
+      <foo>bar</foo>
+      <bar>baz</bar>
+      <baz>foo</baz>
+    </children>
+  </data>
+</note>

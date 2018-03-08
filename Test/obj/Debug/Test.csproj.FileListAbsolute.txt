@@ -1,0 +1,17 @@
+D:\code\komodo\Core\Test\bin\Debug\sample.txt
+D:\code\komodo\Core\Test\bin\Debug\sample.xml
+D:\code\komodo\Core\Test\bin\Debug\sqlite3.dll
+D:\code\komodo\Core\Test\bin\Debug\sample.json
+D:\code\komodo\Core\Test\bin\Debug\KomodoTest.exe.config
+D:\code\komodo\Core\Test\bin\Debug\KomodoTest.exe
+D:\code\komodo\Core\Test\bin\Debug\KomodoTest.pdb
+D:\code\komodo\Core\Test\bin\Debug\DatabaseWrapper.dll
+D:\code\komodo\Core\Test\bin\Debug\EntityFramework.dll
+D:\code\komodo\Core\Test\bin\Debug\EntityFramework.SqlServer.dll
+D:\code\komodo\Core\Test\bin\Debug\MySql.Data.dll
+D:\code\komodo\Core\Test\bin\Debug\DatabaseWrapper.pdb
+D:\code\komodo\Core\Test\bin\Debug\EntityFramework.xml
+D:\code\komodo\Core\Test\bin\Debug\EntityFramework.SqlServer.xml
+D:\code\komodo\Core\Test\obj\Debug\KomodoTest.exe
+D:\code\komodo\Core\Test\obj\Debug\KomodoTest.pdb
+D:\code\komodo\Core\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache

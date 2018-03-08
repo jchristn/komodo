@@ -1,0 +1,38 @@
+{
+	OrderNumber: 2,
+	Amount: 200,
+	Customer: {
+		FirstName: "Watson",
+		LastName: "Christner",
+		Address: "123 Main St",
+		City: "San Jose",
+		State: "CA",
+		Postal: "95128"
+	},
+	LineItems:[
+		{
+			LineItemId: 4,
+			ItemId: 4,
+			Name: "Paper",
+			Quantity: 10,
+			UnitPrice: 10,
+			Subtotal: 100
+		},
+		{
+			LineItemId: 5,
+			ItemId: 2,
+			Name: "Stapler",
+			Quantity: 1,
+			UnitPrice: 50,
+			Subtotal: 50
+		},
+		{
+			LineItemId: 6,
+			ItemId: 5,
+			Name: "Binder",
+			Quantity: 2,
+			UnitPrice: 25,
+			Subtotal: 50
+		}
+	]
+}

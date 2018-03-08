@@ -1,0 +1,383 @@
+{
+  "MasterDocId": "1c296fbd-149b-4c04-8588-e93d26ec420a",
+  "NodeDocIds": {
+    "ordernumber": "1c296fbd-149b-4c04-8588-e93d26ec420a.7a4c4e2f-3e93-489f-bd92-0cd0da267cb7",
+    "amount": "1c296fbd-149b-4c04-8588-e93d26ec420a.c335a3d8-c352-46a0-ae4d-038a1eecd6bb",
+    "customer": "1c296fbd-149b-4c04-8588-e93d26ec420a.0a9d89b7-5c95-4cf8-a591-e8b7c0ab5cc3",
+    "customer.firstname": "1c296fbd-149b-4c04-8588-e93d26ec420a.3b820e74-eab1-4b5c-ab8d-988b5f318788",
+    "customer.lastname": "1c296fbd-149b-4c04-8588-e93d26ec420a.e0dd9520-40f9-4009-9dc6-dc6c7714d821",
+    "customer.address": "1c296fbd-149b-4c04-8588-e93d26ec420a.c7ce8b00-8c36-425b-ba08-cc9c6dac1aa3",
+    "customer.city": "1c296fbd-149b-4c04-8588-e93d26ec420a.7ac4d65a-0446-4ea2-b566-e48ecf85c104",
+    "customer.state": "1c296fbd-149b-4c04-8588-e93d26ec420a.e4c4ef9e-9208-4e6d-b990-00648209b1ee",
+    "customer.postal": "1c296fbd-149b-4c04-8588-e93d26ec420a.616ca890-0471-4bc8-8d42-fbf26a442dec",
+    "lineitems": "1c296fbd-149b-4c04-8588-e93d26ec420a.c1a50652-c76c-4739-8258-5a92b8a51f0d",
+    "lineitems.lineitemid": "1c296fbd-149b-4c04-8588-e93d26ec420a.e935d40e-0cac-40f9-89ac-51762f874b0a",
+    "lineitems.itemid": "1c296fbd-149b-4c04-8588-e93d26ec420a.03cd6917-b696-490c-bf17-9e425ad397bd",
+    "lineitems.name": "1c296fbd-149b-4c04-8588-e93d26ec420a.90f1f499-7c11-411a-b398-50207b51b0af",
+    "lineitems.quantity": "1c296fbd-149b-4c04-8588-e93d26ec420a.f9568beb-961b-4fdf-a62d-d6b50249e9fa",
+    "lineitems.unitprice": "1c296fbd-149b-4c04-8588-e93d26ec420a.0d3fd229-7d15-44c3-a3a4-fa6082c96a5e",
+    "lineitems.subtotal": "1c296fbd-149b-4c04-8588-e93d26ec420a.961f3386-2e98-4573-98c8-9c608c0b77d0"
+  },
+  "Schema": {
+    "ordernumber": "Integer",
+    "amount": "Integer",
+    "customer": "Object",
+    "customer.firstname": "String",
+    "customer.lastname": "String",
+    "customer.address": "String",
+    "customer.city": "String",
+    "customer.state": "String",
+    "customer.postal": "Integer",
+    "lineitems": "Array",
+    "lineitems.lineitemid": "Integer",
+    "lineitems.itemid": "Integer",
+    "lineitems.name": "String",
+    "lineitems.quantity": "Integer",
+    "lineitems.unitprice": "Integer",
+    "lineitems.subtotal": "Integer"
+  },
+  "Postings": [
+    {
+      "Term": "100",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.c335a3d8-c352-46a0-ae4d-038a1eecd6bb",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "joel",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.3b820e74-eab1-4b5c-ab8d-988b5f318788",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "christner",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.e0dd9520-40f9-4009-9dc6-dc6c7714d821",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "123",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.c7ce8b00-8c36-425b-ba08-cc9c6dac1aa3",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "main",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.c7ce8b00-8c36-425b-ba08-cc9c6dac1aa3",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "san",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.7ac4d65a-0446-4ea2-b566-e48ecf85c104",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "jose",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.7ac4d65a-0446-4ea2-b566-e48ecf85c104",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "95128",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.616ca890-0471-4bc8-8d42-fbf26a442dec",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "paper",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.90f1f499-7c11-411a-b398-50207b51b0af",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "clips",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.90f1f499-7c11-411a-b398-50207b51b0af",
+      "Frequency": 1,
+      "Positions": [
+        1
+      ]
+    },
+    {
+      "Term": "stapler",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.90f1f499-7c11-411a-b398-50207b51b0af",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    },
+    {
+      "Term": "scissors",
+      "DocumentId": "1c296fbd-149b-4c04-8588-e93d26ec420a.90f1f499-7c11-411a-b398-50207b51b0af",
+      "Frequency": 1,
+      "Positions": [
+        0
+      ]
+    }
+  ],
+  "Terms": [
+    "100",
+    "joel",
+    "christner",
+    "123",
+    "main",
+    "san",
+    "jose",
+    "95128",
+    "paper",
+    "clips",
+    "stapler",
+    "scissors"
+  ],
+  "Options": {
+    "SplitCharacters": [
+      "]",
+      "[",
+      ",",
+      ".",
+      " ",
+      "'",
+      "\"",
+      ";",
+      "<",
+      ">",
+      ".",
+      "/",
+      "\\",
+      "|",
+      "{",
+      "}",
+      "(",
+      ")"
+    ],
+    "NormalizeCase": true,
+    "RemovePunctuation": true,
+    "RemoveStopWords": true,
+    "PerformStemming": true,
+    "MinTokenLength": 3,
+    "MaxTokenLength": 32,
+    "StopWords": []
+  },
+  "Json": {
+    "Schema": {
+      "ordernumber": "Integer",
+      "amount": "Integer",
+      "customer": "Object",
+      "customer.firstname": "String",
+      "customer.lastname": "String",
+      "customer.address": "String",
+      "customer.city": "String",
+      "customer.state": "String",
+      "customer.postal": "Integer",
+      "lineitems": "Array",
+      "lineitems.lineitemid": "Integer",
+      "lineitems.itemid": "Integer",
+      "lineitems.name": "String",
+      "lineitems.quantity": "Integer",
+      "lineitems.unitprice": "Integer",
+      "lineitems.subtotal": "Integer"
+    },
+    "MaxDepth": 2,
+    "ArrayCount": 1,
+    "NodeCount": 31,
+    "Flattened": [
+      {
+        "Key": "ordernumber",
+        "Data": "1",
+        "Type": "Integer"
+      },
+      {
+        "Key": "amount",
+        "Data": "100",
+        "Type": "Integer"
+      },
+      {
+        "Key": "customer",
+        "Type": "Object"
+      },
+      {
+        "Key": "customer.firstname",
+        "Data": "joel",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.lastname",
+        "Data": "christner",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.address",
+        "Data": "123 main st",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.city",
+        "Data": "san jose",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.state",
+        "Data": "ca",
+        "Type": "String"
+      },
+      {
+        "Key": "customer.postal",
+        "Data": "95128",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Array"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "1",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "1",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "paper clips",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "5",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "5",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "25",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "stapler",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "1",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "50",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "50",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems",
+        "Type": "Object"
+      },
+      {
+        "Key": "lineitems.lineitemid",
+        "Data": "3",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.itemid",
+        "Data": "3",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.name",
+        "Data": "scissors",
+        "Type": "String"
+      },
+      {
+        "Key": "lineitems.quantity",
+        "Data": "2",
+        "Type": "Integer"
+      },
+      {
+        "Key": "lineitems.unitprice",
+        "Data": "12.5",
+        "Type": "Decimal"
+      },
+      {
+        "Key": "lineitems.subtotal",
+        "Data": "25",
+        "Type": "Integer"
+      }
+    ],
+    "Tokens": [
+      "1",
+      "100",
+      "joel",
+      "christner",
+      "123 main st",
+      "san jose",
+      "ca",
+      "95128",
+      "1",
+      "1",
+      "paper clips",
+      "5",
+      "5",
+      "25",
+      "2",
+      "2",
+      "stapler",
+      "1",
+      "50",
+      "50",
+      "3",
+      "3",
+      "scissors",
+      "2",
+      "12 5",
+      "25"
+    ]
+  }
+}
