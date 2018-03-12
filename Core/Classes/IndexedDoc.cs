@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace KomodoCore
 {
     /// <summary>
-    /// A parsed document.
+    /// A document that has been parsed and prepared for inclusion in the index.
     /// </summary>
     public class IndexedDoc
     {
@@ -17,6 +17,11 @@ namespace KomodoCore
         /// The document ID.
         /// </summary>
         public string MasterDocId { get; set; }
+
+        /// <summary>
+        /// The document type.
+        /// </summary>
+        public DocType DocumentType { get; set; }
 
         /// <summary>
         /// Document IDs for nodes.
@@ -107,6 +112,7 @@ namespace KomodoCore
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentType = DocType.Html;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Html = html;
             ret.Options = options;
@@ -129,6 +135,7 @@ namespace KomodoCore
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentType = DocType.Json;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Json = json;
             ret.Options = options;
@@ -151,6 +158,7 @@ namespace KomodoCore
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentType = DocType.Sql;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Sql = sql;
             ret.Options = options;
@@ -173,6 +181,7 @@ namespace KomodoCore
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentType = DocType.Xml;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Xml = xml;
             ret.Options = options;
@@ -195,6 +204,7 @@ namespace KomodoCore
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentType = DocType.Text;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Text = text;
             ret.Options = options;

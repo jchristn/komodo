@@ -166,6 +166,7 @@ namespace KomodoCore
                 sourceDocVals.Add("MasterDocId", doc.MasterDocId);
                 sourceDocVals.Add("SourceUrl", sourceUrl);
                 sourceDocVals.Add("ContentLength", sourceData.Length);
+                sourceDocVals.Add("DocType", docType.ToString());
                 sourceDocVals.Add("Created", ts);
                 _Database.Insert("SourceDocuments", sourceDocVals);
 
@@ -384,6 +385,7 @@ namespace KomodoCore
                 "  MasterDocId       VARCHAR(128), " +
                 "  SourceUrl         VARCHAR(256), " +
                 "  ContentLength     INTEGER, " +
+                "  DocType           VARCHAR(32), " +
                 "  Created           VARCHAR(32), " +
                 "  Indexed           VARCHAR(32) " +
                 ")";
@@ -397,7 +399,8 @@ namespace KomodoCore
                 "CREATE TABLE IF NOT EXISTS ParsedDocuments " +
                 "(" +
                 "  Id                INTEGER PRIMARY KEY, " +
-                "  MasterDocId       VARCHAR(128), " + 
+                "  MasterDocId       VARCHAR(128), " +
+                "  DocType           VARCHAR(32), " +
                 "  Created           VARCHAR(32), " +
                 "  Indexed           VARCHAR(32) " +
                 ")";
