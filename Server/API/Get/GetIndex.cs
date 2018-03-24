@@ -28,7 +28,6 @@ namespace KomodoServer
             #region Get-Values
 
             bool pretty = Common.IsTrue(md.CurrRequest.RetrieveHeaderValue("pretty"));
-
             string indexName = md.CurrRequest.RawUrlEntries[0];
             Index ret = _Index.GetIndexByName(indexName);
             

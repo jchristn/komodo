@@ -68,6 +68,8 @@ namespace KomodoServer
                 _Index = new IndexManager(_Config.Files.IndicesDatabase, Common.IsTrue(_Config.Debug.Database), _Logging);
 
                 _Server = new Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived, true);
+                _Server.AddContentRoute("/SearchApp/", true);
+                _Server.AddContentRoute("/Assets/", true);
 
                 #endregion
                  

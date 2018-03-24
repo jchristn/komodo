@@ -28,18 +28,18 @@ namespace KomodoCore
         #region Private-Members
 
         private bool _Disposed = false;
+        private bool _Destroying = false;
 
         private LoggingModule _Logging;
 
-        private string _RootDirectory;
-        private string _SourceDocumentsDirectory;
-        private string _ParsedDocumentsDirectory;
-        private string _TermsDirectory;
+        private string _RootDirectory; 
 
         private string _DbFilename;
         private bool _DbDebug;
         private IndexOptions _IndexOptions;
         private DatabaseClient _Database;
+        private BlobManager _BlobSource;
+        private BlobManager _BlobParsed;
 
         private readonly object _DbLock;
 
@@ -73,10 +73,7 @@ namespace KomodoCore
             Name = name;
 
             _Logging = logging;
-            _RootDirectory = rootDirectory;
-            _SourceDocumentsDirectory = rootDirectory + "/SourceDocuments";
-            _ParsedDocumentsDirectory = rootDirectory + "/ParsedDocuments";
-            _TermsDirectory = rootDirectory + "/Terms";
+            _RootDirectory = rootDirectory; 
 
             _DbFilename = _RootDirectory + "/" + Name + ".db";
             _DbDebug = dbDebug;
@@ -86,6 +83,8 @@ namespace KomodoCore
             CreateDirectories();
 
             _Database = new DatabaseClient(_DbFilename, _DbDebug);
+            _BlobSource = new BlobManager(_IndexOptions.StorageSource, _Logging);
+            _BlobParsed = new BlobManager(_IndexOptions.StorageParsed, _Logging);
 
             CreateSourceDocsTable();
             CreatedParsedDocsTable();
@@ -107,23 +106,70 @@ namespace KomodoCore
         }
 
         /// <summary>
+        /// Delete all data associated with the index.
+        /// </summary>
+        public void Destroy()
+        {
+            _Destroying = true;
+
+            #region Source-Documents
+
+            Expression e = new Expression("Id", Operators.GreaterThan, 0);
+            DataTable sourceResult = _Database.Select("SourceDocuments", null, null, null, e, null);
+            if (sourceResult != null && sourceResult.Rows.Count > 0)
+            {
+                foreach (DataRow currRow in sourceResult.Rows)
+                {
+                    string masterDocId = currRow["MasterDocId"].ToString();
+                    DeleteSourceDocument(masterDocId);
+                }
+            }
+
+            #endregion
+
+            #region Parsed-Documents
+
+            DataTable parsedResult = _Database.Select("ParsedDocuments", null, null, null, e, null);
+            if (parsedResult != null && parsedResult.Rows.Count > 0)
+            {
+                foreach (DataRow currRow in parsedResult.Rows)
+                {
+                    string masterDocId = currRow["MasterDocId"].ToString();
+                    DeleteParsedDocument(masterDocId);
+                }
+            }
+
+            #endregion
+        }
+
+        /// <summary>
         /// Add a document to the index.
         /// </summary>
         /// <param name="docType">The type of document.</param>
         /// <param name="sourceData">The source data from the document.</param>
         /// <param name="sourceUrl">The URL from which the content should be retrieved.</param>
         /// <param name="error">Error code associated with the operation.</param>
+        /// <param name="masterDocId">Document ID of the added document.</param>
         /// <returns>True if successful.</returns>
-        public bool AddDocument(DocType docType, byte[] sourceData, string sourceUrl, out ErrorCode error)
+        public bool AddDocument(DocType docType, byte[] sourceData, string sourceUrl, out ErrorCode error, out string masterDocId)
         {
             error = null;
+            masterDocId = null;
             bool cleanupRequired = false;
             IndexedDoc doc = null;
 
             try
             {
+                if (_Destroying)
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument index is being destroyed");
+                    error = new ErrorCode("DESTROY_IN_PROGRESS");
+                    return false;
+                }
+
                 if ((sourceData == null || sourceData.Length < 1) && String.IsNullOrEmpty(sourceUrl))
                 {
+                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument source URL not supplied");
                     error = new ErrorCode("MISSING_PARAM", "SourceUrl");
                     return false;
                 }
@@ -155,6 +201,8 @@ namespace KomodoCore
                     error = new ErrorCode("PARSE_ERROR", sourceUrl);
                     return false;
                 }
+
+                masterDocId = doc.MasterDocId;
 
                 #endregion
 
@@ -230,8 +278,17 @@ namespace KomodoCore
         public bool DocumentExists(string masterDocId, out ErrorCode error)
         {
             error = null;
+
+            if (_Destroying)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DocumentExists index is being destroyed");
+                error = new ErrorCode("DESTROY_IN_PROGRESS");
+                return false;
+            }
+
             if (String.IsNullOrEmpty(masterDocId))
             {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DocumentExists document ID not supplied");
                 error = new ErrorCode("MISSING_PARAM", "MasterDocId");
                 return false; 
             }
@@ -252,8 +309,17 @@ namespace KomodoCore
         public bool DeleteDocument(string masterDocId, out ErrorCode error)
         {
             error = null;
+
+            if (_Destroying)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DeleteDocument index is being destroyed");
+                error = new ErrorCode("DESTROY_IN_PROGRESS");
+                return false;
+            }
+
             if (String.IsNullOrEmpty(masterDocId))
             {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DeleteDocument document ID not supplied");
                 error = new ErrorCode("MISSING_PARAM", "MasterDocId");
                 return false;
             }
@@ -276,7 +342,31 @@ namespace KomodoCore
             _Logging.Log(LoggingModule.Severity.Info, "Index " + Name + " DeleteDocument successfully deleted doc ID " + masterDocId);
             return true;
         }
-          
+
+        /// <summary>
+        /// Retrieve a source document by ID from storage.
+        /// </summary>
+        /// <param name="masterDocId">The ID of the document.</param>
+        /// <param name="sourceData">The source data from the document.</param>
+        /// <returns>True if successful.</returns>
+        public bool GetSourceDocument(string masterDocId, out byte[] sourceData)
+        {
+            sourceData = null;
+            return ReadSourceDocument(masterDocId, out sourceData);
+        }
+
+        /// <summary>
+        /// Retrieve a parsed document by ID from storage.
+        /// </summary>
+        /// <param name="masterDocId">The ID of the document.</param>
+        /// <param name="doc">The parsed document.</param>
+        /// <returns>True if successful.</returns>
+        public bool GetParsedDocument(string masterDocId, out IndexedDoc doc)
+        {
+            doc = null;
+            return ReadParsedDocument(masterDocId, out doc);
+        }
+
         /// <summary>
         /// Search the index.
         /// </summary>
@@ -292,20 +382,30 @@ namespace KomodoCore
 
             #region Check-for-Null-Values
 
+            if (_Destroying)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search index is being destroyed");
+                error = new ErrorCode("DESTROY_IN_PROGRESS");
+                return false;
+            }
+
             if (query == null)
             {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search query not supplied");
                 error = new ErrorCode("MISSING_PARAM", "Query");
                 return false;
             }
 
             if (query.Required == null)
             {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search required filter not supplied");
                 error = new ErrorCode("MISSING_PARAM", "Required Filter");
                 return false;
             }
 
             if (query.Required.Terms == null || query.Required.Terms.Count < 1)
             {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search required terms not supplied");
                 error = new ErrorCode("MISSING_PARAM", "Required Terms");
                 return false;
             }
@@ -337,7 +437,7 @@ namespace KomodoCore
         #endregion
 
         #region Private-Methods
-         
+
         protected virtual void Dispose(bool disposing)
         {
             if (_Disposed)
@@ -360,19 +460,22 @@ namespace KomodoCore
                 if (!Common.CreateDirectory(_RootDirectory)) throw new IOException("Unable to create index directory.");
             }
 
-            if (!Directory.Exists(_SourceDocumentsDirectory))
+            if (_IndexOptions.StorageSource.Disk != null)
             {
-                if (!Common.CreateDirectory(_SourceDocumentsDirectory)) throw new IOException("Unable to create source documents directory.");
+                if (!Directory.Exists(_IndexOptions.StorageParsed.Disk.Directory))
+                {
+                    if (!Common.CreateDirectory(_IndexOptions.StorageParsed.Disk.Directory))
+                        throw new IOException("Unable to create source documents directory.");
+                }
             }
 
-            if (!Directory.Exists(_ParsedDocumentsDirectory))
+            if (_IndexOptions.StorageParsed.Disk != null)
             {
-                if (!Common.CreateDirectory(_ParsedDocumentsDirectory)) throw new IOException("Unable to create parsed documents directory.");
-            }
-
-            if (!Directory.Exists(_TermsDirectory))
-            {
-                if (!Common.CreateDirectory(_TermsDirectory)) throw new IOException("Unable to create terms directory.");
+                if (!Directory.Exists(_IndexOptions.StorageParsed.Disk.Directory))
+                {
+                    if (!Common.CreateDirectory(_IndexOptions.StorageParsed.Disk.Directory))
+                        throw new IOException("Unable to create parsed documents directory.");
+                }
             }
         }
 
@@ -461,56 +564,53 @@ namespace KomodoCore
 
             return doc;
         }
-
+         
         private bool WriteSourceDocument(byte[] data, IndexedDoc doc)
         {
-            return Common.WriteFile(_SourceDocumentsDirectory + "/" + doc.MasterDocId, data);
+            string filename = doc.MasterDocId + ".source";
+            return _BlobSource.Write(filename, false, data);
         }
 
         private bool DeleteSourceDocument(string masterDocId)
         {
-            return Common.DeleteFile(_SourceDocumentsDirectory + "/" + masterDocId);
+            string filename = masterDocId + ".source";
+            return _BlobSource.Delete(filename);
         }
 
         private bool ReadSourceDocument(string masterDocId, out byte[] data)
         {
-            data = null;
-
-            if (!Common.FileExists(_SourceDocumentsDirectory + "/" + masterDocId))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " ReadSourceDocument " + masterDocId + " does not exist");
-                return false;
-            }
-
-            data = Common.ReadBinaryFile(_SourceDocumentsDirectory + "/" + masterDocId);
-            return true;
+            string filename = masterDocId + ".source";
+            return _BlobSource.Get(filename, out data);
         }
 
         private bool WriteParsedDocument(IndexedDoc doc)
         {
-            return Common.WriteFile(_ParsedDocumentsDirectory + "/" + doc.MasterDocId, Encoding.UTF8.GetBytes(Common.SerializeJson(doc, true)));
+            string filename = doc.MasterDocId + ".parsed.json";
+            return _BlobParsed.Write(filename, false, Encoding.UTF8.GetBytes(Common.SerializeJson(doc, true)));
         }
         
         private bool DeleteParsedDocument(string masterDocId)
         {
-            return Common.DeleteFile(_ParsedDocumentsDirectory + "/" + masterDocId);
+            string filename = masterDocId + ".parsed.json";
+            return _BlobParsed.Delete(filename);
         }
 
         private bool ReadParsedDocument(string masterDocId, out IndexedDoc doc)
         {
+            byte[] data;
             doc = null;
-
-            if (!Common.FileExists(_ParsedDocumentsDirectory + "/" + masterDocId))
+            string filename = masterDocId + ".parsed.json";
+            if (!_BlobParsed.Get(filename, out data))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " ReadParsedDocument " + masterDocId + " does not exist");
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " ReadParsedDocument " + filename + " does not exist");
                 return false;
             }
-
-            byte[] data = Common.ReadBinaryFile(_ParsedDocumentsDirectory + "/" + masterDocId);
-
+            
             try
             {
                 doc = Common.DeserializeJson<IndexedDoc>(data);
+                doc.Options.StorageParsed = null;
+                doc.Options.StorageSource = null;
                 return true;
             }
             catch (Exception e)
@@ -1054,17 +1154,28 @@ namespace KomodoCore
 
                         if (query.IncludeParsedDoc)
                         {
-                            data = Common.ReadBinaryFile(_ParsedDocumentsDirectory + "/" + currDocId);
-                            if (data != null && data.Length > 0)
+                            IndexedDoc currIndexedDoc;
+                            if (!ReadParsedDocument(currDocId, out currIndexedDoc))
                             {
-                                currDoc.Parsed = Common.DeserializeJson<dynamic>(data);
+                                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve parsed doc");
+                                currDoc.Errors.Add("Unable to retrieve parsed document");
                             }
+                            else
+                            {
+                                currIndexedDoc.Options.StorageParsed = null;
+                                currIndexedDoc.Options.StorageSource = null;
+                                currDoc.Parsed = currIndexedDoc;
+                            } 
                         }
 
                         if (query.IncludeContent)
                         {
-                            data = Common.ReadBinaryFile(_SourceDocumentsDirectory + "/" + currDocId);
-                            if (data != null && data.Length > 0)
+                            if (!ReadSourceDocument(currDocId, out data))
+                            {
+                                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve source doc");
+                                currDoc.Errors.Add("Unable to retrieve source document");
+                            }
+                            else
                             {
                                 currDoc.Data = Encoding.UTF8.GetString(data);
                             }

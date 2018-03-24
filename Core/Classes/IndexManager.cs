@@ -177,6 +177,12 @@ namespace KomodoCore
             lock (_IndexClientLock)
             {
                 IndexClient currIndexClient = _IndexClients.Where(x => x.Name.Equals(indexName)).FirstOrDefault();
+
+                if (cleanup)
+                {
+                    currIndexClient.Destroy();
+                }
+
                 if (currIndexClient != null && currIndexClient != default(IndexClient))
                 {
                     currIndexClient.Dispose();

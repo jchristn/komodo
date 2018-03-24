@@ -27,7 +27,7 @@ namespace KomodoCore
 
         #region Private-Members
 
-        private IndexOptions _Options;
+        private IndexOptions.StorageSettings _Settings;
         private LoggingModule _Logging;
         private string _StorageType;
 
@@ -51,13 +51,12 @@ namespace KomodoCore
         /// </summary>
         /// <param name="options">IndexOptions containing storage configuration.</param>
         /// <param name="logging">LoggingModule.</param>
-        public BlobManager(IndexOptions options, LoggingModule logging)
+        public BlobManager(IndexOptions.StorageSettings settings, LoggingModule logging)
         {
-            if (options == null) throw new ArgumentNullException(nameof(options));
-            if (options.Storage == null) throw new ArgumentException("Storage not configured in index options");
+            if (settings == null) throw new ArgumentNullException(nameof(settings)); 
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
-            _Options = options;
+            _Settings = settings;
             _Logging = logging;
 
             InitializeClients();
@@ -223,24 +222,24 @@ namespace KomodoCore
 
         private void InitializeClients()
         {
-            if (_Options.Storage.Disk != null)
+            if (_Settings.Disk != null)
             {
                 _StorageType = "disk";
                 // do nothing
             }
-            else if (_Options.Storage.Azure != null)
+            else if (_Settings.Azure != null)
             {
                 _StorageType = "azure";
-                _AzureCredentials = new StorageCredentials(_Options.Storage.Azure.AccountName, _Options.Storage.Azure.AccessKey);
+                _AzureCredentials = new StorageCredentials(_Settings.Azure.AccountName, _Settings.Azure.AccessKey);
                 _AzureAccount = new CloudStorageAccount(_AzureCredentials, true);
-                _AzureBlobClient = new CloudBlobClient(new Uri(_Options.Storage.Azure.Endpoint), _AzureCredentials);
-                _AzureContainer = _AzureBlobClient.GetContainerReference(_Options.Storage.Azure.Container);
+                _AzureBlobClient = new CloudBlobClient(new Uri(_Settings.Azure.Endpoint), _AzureCredentials);
+                _AzureContainer = _AzureBlobClient.GetContainerReference(_Settings.Azure.Container);
             }
-            else if (_Options.Storage.Aws != null)
+            else if (_Settings.Aws != null)
             {
                 _StorageType = "aws";
 
-                switch (_Options.Storage.Aws.Region)
+                switch (_Settings.Aws.Region)
                 {
                     case "uswest1":
                         _S3Region = Amazon.RegionEndpoint.USWest1;
@@ -255,13 +254,13 @@ namespace KomodoCore
                         throw new ArgumentException("S3 region must be one of uswest1 uswest2 useast1");
                 }
 
-                _S3Credentials = new Amazon.Runtime.BasicAWSCredentials(_Options.Storage.Aws.AccessKey, _Options.Storage.Aws.SecretKey);
+                _S3Credentials = new Amazon.Runtime.BasicAWSCredentials(_Settings.Aws.AccessKey, _Settings.Aws.SecretKey);
                 _S3Client = new AmazonS3Client(_S3Credentials, _S3Region);
             }
-            else if (_Options.Storage.Kvpbase != null)
+            else if (_Settings.Kvpbase != null)
             {
                 _StorageType = "kvpbase";
-                _Kvpbase = new Client(_Options.Storage.Kvpbase.UserGuid, _Options.Storage.Kvpbase.ApiKey, _Options.Storage.Kvpbase.Endpoint); 
+                _Kvpbase = new Client(_Settings.Kvpbase.UserGuid, _Settings.Kvpbase.ApiKey, _Settings.Kvpbase.Endpoint); 
             }
             else
             {
@@ -367,7 +366,7 @@ namespace KomodoCore
 
         private string DiskGenerateUrl(string id)
         {
-            return _Options.Storage.Disk.Directory + "/" + id;
+            return _Settings.Disk.Directory + "/" + id;
         }
 
         #endregion
@@ -387,9 +386,9 @@ namespace KomodoCore
                 #region Process
 
                 IAmazonS3 client;
-                Amazon.Runtime.BasicAWSCredentials cred = new Amazon.Runtime.BasicAWSCredentials(_Options.Storage.Aws.AccessKey, _Options.Storage.Aws.SecretKey);
+                Amazon.Runtime.BasicAWSCredentials cred = new Amazon.Runtime.BasicAWSCredentials(_Settings.Aws.AccessKey, _Settings.Aws.SecretKey);
                 Amazon.RegionEndpoint s3Region;
-                switch (_Options.Storage.Aws.Region)
+                switch (_Settings.Aws.Region)
                 {
                     case "uswest1":
                         s3Region = Amazon.RegionEndpoint.USWest1;
@@ -408,7 +407,7 @@ namespace KomodoCore
                 {
                     DeleteObjectRequest request = new DeleteObjectRequest
                     {
-                        BucketName = _Options.Storage.Aws.Bucket,
+                        BucketName = _Settings.Aws.Bucket,
                         Key = id
                     };
 
@@ -442,9 +441,9 @@ namespace KomodoCore
                 #region Process
 
                 IAmazonS3 client;
-                Amazon.Runtime.BasicAWSCredentials cred = new Amazon.Runtime.BasicAWSCredentials(_Options.Storage.Aws.AccessKey, _Options.Storage.Aws.SecretKey);
+                Amazon.Runtime.BasicAWSCredentials cred = new Amazon.Runtime.BasicAWSCredentials(_Settings.Aws.AccessKey, _Settings.Aws.SecretKey);
                 Amazon.RegionEndpoint s3Region;
-                switch (_Options.Storage.Aws.Region)
+                switch (_Settings.Aws.Region)
                 {
                     case "uswest1":
                         s3Region = Amazon.RegionEndpoint.USWest1;
@@ -463,7 +462,7 @@ namespace KomodoCore
                 {
                     GetObjectRequest request = new GetObjectRequest
                     {
-                        BucketName = _Options.Storage.Aws.Bucket,
+                        BucketName = _Settings.Aws.Bucket,
                         Key = id
                     };
 
@@ -505,9 +504,9 @@ namespace KomodoCore
                 #region Process
 
                 IAmazonS3 client;
-                Amazon.Runtime.BasicAWSCredentials cred = new Amazon.Runtime.BasicAWSCredentials(_Options.Storage.Aws.AccessKey, _Options.Storage.Aws.SecretKey);
+                Amazon.Runtime.BasicAWSCredentials cred = new Amazon.Runtime.BasicAWSCredentials(_Settings.Aws.AccessKey, _Settings.Aws.SecretKey);
                 Amazon.RegionEndpoint s3Region;
-                switch (_Options.Storage.Aws.Region)
+                switch (_Settings.Aws.Region)
                 {
                     case "uswest1":
                         s3Region = Amazon.RegionEndpoint.USWest1;
@@ -527,7 +526,7 @@ namespace KomodoCore
                     Stream s = new MemoryStream(data);
                     PutObjectRequest request = new PutObjectRequest
                     {
-                        BucketName = _Options.Storage.Aws.Bucket,
+                        BucketName = _Settings.Aws.Bucket,
                         Key = id,
                         InputStream = s,
                         ContentType = "application/octet-stream"
@@ -557,7 +556,7 @@ namespace KomodoCore
         private string S3GenerateUrl(string id)
         {
             GetPreSignedUrlRequest request = new GetPreSignedUrlRequest();
-            request.BucketName = _Options.Storage.Aws.Bucket;
+            request.BucketName = _Settings.Aws.Bucket;
             request.Key = id;
             request.Protocol = Protocol.HTTPS;
             return _S3Client.GetPreSignedURL(request);
@@ -628,9 +627,9 @@ namespace KomodoCore
         private string AzureGenerateUrl(string id)
         {
             return "https://" +
-                _Options.Storage.Azure.AccountName +
+                _Settings.Azure.AccountName +
                 ".blob.core.windows.net/" +
-                _Options.Storage.Azure.Container +
+                _Settings.Azure.Container +
                 "/" +
                 id;
         }

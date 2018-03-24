@@ -23,6 +23,11 @@ namespace KomodoServer
                         return GetIndices(md);
                     }
 
+                    if (md.CurrRequest.RawUrlEntries.Count == 2)
+                    {
+                        return GetIndexDocument(md);
+                    }
+
                     return GetIndex(md);
                    
                 #endregion

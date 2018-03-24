@@ -11,3 +11,7 @@ curl -H "x-api-key: default" -d "@order3.json" -X POST "http://localhost:9090/Fi
 
 REM submit query 1
 curl -H "x-api-key: default" -d "@query1.json" -X PUT "http://localhost:9090/First"
+
+REM retrieve source documents (modify with the appropriate document ID)
+curl -H "x-api-key: default" "http://localhost:9090/First/7b61305d-cb30-469a-87f8-83dea2724f73"
+curl -H "x-api-key: default" "http://localhost:9090/First/7b61305d-cb30-469a-87f8-83dea2724f73?parsed=true&pretty=true"

@@ -55,9 +55,14 @@ namespace KomodoCore
         public string[] SplitCharacters = new string[] { "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" };
 
         /// <summary>
-        /// Storage settings for the index.
+        /// Storage settings for the index source documents.
         /// </summary>
-        public StorageSettings Storage { get; set; }
+        public StorageSettings StorageSource { get; set; }
+
+        /// <summary>
+        /// Storage settings for the index parsed documents.
+        /// </summary>
+        public StorageSettings StorageParsed { get; set; }
 
         #endregion
 
@@ -195,13 +200,27 @@ namespace KomodoCore
             public KvpbaseSettings Kvpbase { get; set; }
 
             /// <summary>
-            /// Retrieve default storage settings.
+            /// Retrieve default storage settings for source documents.
             /// </summary>
             /// <returns>StorageSettings.</returns>
-            public static StorageSettings Default()
+            public static StorageSettings DefaultSource()
             {
                 StorageSettings ret = new StorageSettings();
-                ret.Disk = DiskSettings.Default();
+                ret.Disk = DiskSettings.DefaultSource();
+                ret.Azure = null;
+                ret.Aws = null;
+                ret.Kvpbase = null;
+                return ret;
+            }
+
+            /// <summary>
+            /// Retrieve default storage settings for parsed documents.
+            /// </summary>
+            /// <returns>StorageSettings.</returns>
+            public static StorageSettings DefaultParsed()
+            {
+                StorageSettings ret = new StorageSettings();
+                ret.Disk = DiskSettings.DefaultParsed();
                 ret.Azure = null;
                 ret.Aws = null;
                 ret.Kvpbase = null;
@@ -219,17 +238,31 @@ namespace KomodoCore
                 public string Directory { get; set; }
 
                 /// <summary>
-                /// Retrieve default settings.
+                /// Retrieve default settings for source documents.
                 /// </summary>
                 /// <returns>DiskSettings.</returns>
-                public static DiskSettings Default()
+                public static DiskSettings DefaultSource()
                 {
                     DiskSettings ret = new DiskSettings();
                     ret.Directory = "SourceDocuments";
                     return ret;
                 }
+
+                /// <summary>
+                /// Retrieve default settings for parsed documents.
+                /// </summary>
+                /// <returns>DiskSettings.</returns>
+                public static DiskSettings DefaultParsed()
+                {
+                    DiskSettings ret = new DiskSettings();
+                    ret.Directory = "ParsedDocuments";
+                    return ret;
+                }
             }
 
+            /// <summary>
+            /// Settings when using Microsoft Azure BLOB Storage for storage.
+            /// </summary>
             public class AzureSettings
             {
                 /// <summary>

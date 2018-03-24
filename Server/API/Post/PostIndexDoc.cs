@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -76,6 +77,13 @@ namespace KomodoServer
 
             #endregion
 
+            #region Set-Stopwatch
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            #endregion
+
             #region Retrieve-Index
 
             string indexName = md.CurrRequest.RawUrlEntries[0];
@@ -100,7 +108,8 @@ namespace KomodoServer
             }
 
             ErrorCode error = null;
-            if (!currClient.AddDocument(currDocType, md.CurrRequest.Data, sourceUrl, out error))
+            string masterDocId = null;
+            if (!currClient.AddDocument(currDocType, md.CurrRequest.Data, sourceUrl, out error, out masterDocId))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to retrieve client for index " + indexName);
                 return new HttpResponse(md.CurrRequest, false, 500, null, "application/json",
@@ -110,8 +119,13 @@ namespace KomodoServer
             #endregion
 
             #region Respond
-             
-            resp = new HttpResponse(md.CurrRequest, true, 200, null, "application/json", null, true);
+
+            sw.Stop();
+
+            Dictionary<string, object> ret = new Dictionary<string, object>();
+            ret.Add("DocumentId", masterDocId);
+            ret.Add("AddTimeMs", sw.ElapsedMilliseconds);
+            resp = new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
             return resp;
 
             #endregion

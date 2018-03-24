@@ -11,19 +11,25 @@
     StopWords: [ ],
     SplitCharacters: [ "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" ],
     StorageSource: {
-      Disk: {
-        Directory: "SourceDocuments"
+      Azure: {
+        AccountName: "",
+        AccessKey: "",
+        Endpoint: "",
+        Container: ""
       },
-      Azure: null,
       Aws: null,
+      Disk: null,
       Kvpbase: null
     },
     StorageParsed: {
-      Disk: {
-        Directory: "ParsedDocuments"
+      Azure: {
+        AccountName: "",
+        AccessKey: "",
+        Endpoint: "",
+        Container: ""
       },
-      Azure: null,
       Aws: null,
+      Disk: null,
       Kvpbase: null
     }
   }

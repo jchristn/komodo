@@ -176,6 +176,11 @@ namespace KomodoCore
             public object Data { get; set; }
 
             /// <summary>
+            /// Error description strings, if any.
+            /// </summary>
+            public List<string> Errors { get; set; }
+
+            /// <summary>
             /// The parsed document, if requested in the search query.
             /// </summary>
             public object Parsed { get; set; }
@@ -188,6 +193,7 @@ namespace KomodoCore
                 MasterDocId = null;
                 Score = 0m;
                 Data = null;
+                Errors = new List<string>();
                 Parsed = null;
             }
         }
