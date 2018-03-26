@@ -147,6 +147,9 @@
     <None Include="SampleFiles\index_preview.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SampleFiles\index_preview.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="SampleFiles\order1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -159,7 +162,13 @@
     <None Include="SampleFiles\parse_preview.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SampleFiles\parse_preview.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="SampleFiles\prepare.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SampleFiles\prepare.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SampleFiles\query1.json">
