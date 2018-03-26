@@ -25,6 +25,17 @@ The following projects are included:
 ## Important
 The current release of the Core library relies upon ```sqlite3.dll``` and stores both source and parsed documents on the local filesystem.  External storage for source documents is planned along with support for other database platforms.
 
+## Compiling on Linux/Mac
+In the ```Core``` project, remove the ```Mono.Posix``` NuGet package and add the ```Mono.Posix-4.5``` NuGet package.  Compile using Visual Studio for Mac.
+
+## Starting the Server
+On Windows, compile and run ```KomodoServer.exe``` in ```bin\debug``` or ```bin\release```.  
+On Linux or Mac, compile and run the Mono Ahead-of-Time compiler before running the binary using ```mono```.
+```
+sudo mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server KomodoServer.exe
+sudo mono --server KomodoServer.exe
+```
+
 ## Project Roadmap
 The following items are on the horizon for this project.  No timeline has been established, and no commitment is being made to implementing these items:
 - Testing support for AWS S3 and Kvpbase
