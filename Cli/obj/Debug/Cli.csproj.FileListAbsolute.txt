@@ -6,4 +6,3 @@ D:\Code\Komodo\Core\Cli\bin\Debug\RestWrapper.dll
 D:\Code\Komodo\Core\Cli\bin\Debug\RestWrapper.pdb
 D:\Code\Komodo\Core\Cli\obj\Debug\KomodoCli.exe
 D:\Code\Komodo\Core\Cli\obj\Debug\KomodoCli.pdb
-D:\Code\Komodo\Core\Cli\obj\Debug\Cli.csprojResolveAssemblyReference.cache

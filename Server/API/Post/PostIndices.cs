@@ -33,7 +33,14 @@ namespace KomodoServer
                 return resp;
             }
 
-            _Index.AddIndex(req.IndexName, req.RootDirectory, req.Options);
+            string error;
+            if (!_Index.AddIndex(req.IndexName, req.RootDirectory, req.Options, out error))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "PostIndices unable to add index: " + error);
+                resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                    new ErrorResponse(400, "Unable to create index.", error).ToJson(true), true);
+            }
+
             _Logging.Log(LoggingModule.Severity.Debug, "PostIndices created index " + req.IndexName);
             resp = new HttpResponse(md.CurrRequest, true, 201, null, "application/json", null, true);
             return resp;

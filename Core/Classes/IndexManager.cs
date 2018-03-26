@@ -129,17 +129,35 @@ namespace KomodoCore
         /// <param name="indexName">The name of the index.</param>
         /// <param name="rootDirectory">The root directory for the index.</param>
         /// <param name="options">The options for the index.</param>
-        public void AddIndex(string indexName, string rootDirectory, IndexOptions options)
+        /// <param name="error">Human-readable error string.</param>
+        /// <returns>True if successful.</returns>
+        public bool AddIndex(string indexName, string rootDirectory, IndexOptions options, out string error)
         {
-            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
-            if (String.IsNullOrEmpty(rootDirectory)) throw new ArgumentNullException(nameof(rootDirectory));
-            if (options == null) throw new ArgumentNullException(nameof(options));
+            error = null;
+
+            if (String.IsNullOrEmpty(indexName))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index name cannot be null");
+                return false;
+            }
+
+            if (String.IsNullOrEmpty(rootDirectory))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex root directory cannot be null");
+                return false;
+            }
+
+            if (options == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex options cannot be null");
+                return false;
+            }
 
             Index currIndex = GetIndexByName(indexName);
             if (currIndex != null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + indexName + " already exists, reusing");
-                return;
+                return true;
             }
 
             AddIndexToDatabase(indexName, rootDirectory, options);
@@ -152,6 +170,7 @@ namespace KomodoCore
             }
 
             _Logging.Log(LoggingModule.Severity.Info, "IndexManager AddIndex index " + indexName + " added");
+            return true;
         }
 
         /// <summary>

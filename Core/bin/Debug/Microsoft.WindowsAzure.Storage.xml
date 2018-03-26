@@ -4151,6 +4151,13 @@
             <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.#ctor(System.Uri,Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> class using an absolute URI to the blob.
@@ -4159,6 +4166,14 @@
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> class using an absolute URI to the blob.
@@ -4166,6 +4181,15 @@
             <param name="blobAbsoluteUri">A <see cref="P:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.StorageUri"/> containing the absolute URI to the blob at both the primary and secondary locations.</param>
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
+            <returns>A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> object.</returns>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="P:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.StorageUri"/> containing the absolute URI to the blob at both the primary and secondary locations.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
             <returns>A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlob"/> object.</returns>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlob.#ctor(System.String,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer)">
@@ -8293,6 +8317,13 @@
             <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob.#ctor(System.Uri,Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob"/> class using an absolute URI to the blob.
@@ -8301,6 +8332,14 @@
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob"/> class using an absolute URI to the blob.
@@ -8308,6 +8347,14 @@
             <param name="blobAbsoluteUri">A <see cref="T:Microsoft.WindowsAzure.Storage.StorageUri"/> containing the absolute URI to the blob at both the primary and secondary locations.</param>
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:Microsoft.WindowsAzure.Storage.StorageUri"/> containing the absolute URI to the blob at both the primary and secondary locations.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudAppendBlob.#ctor(System.String,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer)">
             <summary>
@@ -9334,7 +9381,7 @@
             <param name="accessCondition">An <see cref="T:Microsoft.WindowsAzure.Storage.AccessCondition"/> object that represents the condition that must be met in order for the request to proceed. If <c>null</c>, no condition is used.</param>
             <param name="options">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions"/> object that specifies additional options for the request. If <c>null</c>, default options are applied to the request.</param>
             <param name="operationContext">An <see cref="T:Microsoft.WindowsAzure.Storage.OperationContext"/> object that represents the context for the current operation.</param>
-            <returns><c>true</c> if the container did not already exist and was created; otherwise <c>false</c>.</returns>
+            <returns><c>true</c> if the container existed and was deleted successfully; otherwise <c>false</c>.</returns>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer.BeginDeleteIfExists(System.AsyncCallback,System.Object)">
             <summary>
@@ -12451,6 +12498,13 @@
             <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob.#ctor(System.Uri,Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob"/> class using an absolute URI to the blob.
@@ -12459,6 +12513,14 @@
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:System.Uri"/> specifying the absolute URI to the blob.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob"/> class using an absolute URI to the blob.
@@ -12466,6 +12528,14 @@
             <param name="blobAbsoluteUri">A <see cref="T:Microsoft.WindowsAzure.Storage.StorageUri"/> containing the absolute URI to the blob at both the primary and secondary locations.</param>
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">A <see cref="T:Microsoft.WindowsAzure.Storage.StorageUri"/> containing the absolute URI to the blob at both the primary and secondary locations.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob.#ctor(System.String,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer)">
             <summary>
@@ -14457,6 +14527,13 @@
             <param name="blobAbsoluteUri">The absolute URI to the blob.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob.#ctor(System.Uri,Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">The absolute URI to the blob.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob"/> class using an absolute URI to the blob.
@@ -14465,6 +14542,14 @@
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
         </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob.#ctor(System.Uri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">The absolute URI to the blob.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Auth.StorageCredentials)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob"/> class using an absolute URI to the blob.
@@ -14472,6 +14557,14 @@
             <param name="blobAbsoluteUri">The absolute URI to the blob. The service assumes this is the URI for the blob in the primary location.</param>
             <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
             <param name="credentials">A <see cref="T:Microsoft.WindowsAzure.Storage.Auth.StorageCredentials"/> object.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob.#ctor(Microsoft.WindowsAzure.Storage.StorageUri,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob"/> class using an absolute URI to the blob.
+            </summary>
+            <param name="blobAbsoluteUri">The absolute URI to the blob. The service assumes this is the URI for the blob in the primary location.</param>
+            <param name="snapshotTime">A <see cref="T:System.DateTimeOffset"/> specifying the snapshot timestamp, if the blob is a snapshot.</param>
+            <param name="client">A <see cref="T:Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient"/> object.</param>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.CloudPageBlob.#ctor(System.String,System.Nullable{System.DateTimeOffset},Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer)">
             <summary>
@@ -15862,7 +15955,7 @@
             <summary>
             Opens a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <param name="accessCondition">An <see cref="T:Microsoft.WindowsAzure.Storage.AccessCondition"/> object that represents the access conditions for the file. If <c>null</c>, no condition is used.</param>
             <param name="options">A <see cref="T:Microsoft.WindowsAzure.Storage.File.FileRequestOptions"/> object that specifies additional options for the request.</param>
             <param name="operationContext">An <see cref="T:Microsoft.WindowsAzure.Storage.OperationContext"/> object that represents the context for the current operation.</param>
@@ -15872,7 +15965,7 @@
             <summary>
             Begins an asynchronous operation to open a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <param name="callback">The callback delegate that will receive notification when the asynchronous operation completes.</param>
             <param name="state">A user-defined object that will be passed to the callback delegate.</param>
             <returns>An <see cref="T:Microsoft.WindowsAzure.Storage.ICancellableAsyncResult"/> that references the asynchronous operation.</returns>
@@ -15881,7 +15974,7 @@
             <summary>
             Begins an asynchronous operation to open a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <param name="accessCondition">An <see cref="T:Microsoft.WindowsAzure.Storage.AccessCondition"/> object that represents the access conditions for the file. If <c>null</c>, no condition is used.</param>
             <param name="options">A <see cref="T:Microsoft.WindowsAzure.Storage.File.FileRequestOptions"/> object that specifies additional options for the request.</param>
             <param name="operationContext">An <see cref="T:Microsoft.WindowsAzure.Storage.OperationContext"/> object that represents the context for the current operation.</param>
@@ -15900,14 +15993,14 @@
             <summary>
             Returns a task that performs an asynchronous operation to open a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> object that represents the current operation.</returns>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.File.CloudFile.OpenWriteAsync(System.Nullable{System.Int64},System.Threading.CancellationToken)">
             <summary>
             Returns a task that performs an asynchronous operation to open a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/> to observe while waiting for a task to complete.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> object that represents the current operation.</returns>
         </member>
@@ -15915,7 +16008,7 @@
             <summary>
             Returns a task that performs an asynchronous operation to open a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <param name="accessCondition">An <see cref="T:Microsoft.WindowsAzure.Storage.AccessCondition"/> object that represents the access conditions for the file. If <c>null</c>, no condition is used.</param>
             <param name="options">A <see cref="T:Microsoft.WindowsAzure.Storage.File.FileRequestOptions"/> object that specifies additional options for the request.</param>
             <param name="operationContext">An <see cref="T:Microsoft.WindowsAzure.Storage.OperationContext"/> object that represents the context for the current operation.</param>
@@ -15925,7 +16018,7 @@
             <summary>
             Returns a task that performs an asynchronous operation to open a stream for writing to the file. If the file already exists, then existing data in the file may be overwritten.
             </summary>
-            <param name="size">The size of the file, in bytes. If <c>null</c>, the file must already exist.</param>
+            <param name="size">The size of the file to create, in bytes, or null.  If null, the file must already exist.  If not null, a new file of the given size will be created.  If size is not null but the file already exists on the service, the already-existing file will be deleted.</param>
             <param name="accessCondition">An <see cref="T:Microsoft.WindowsAzure.Storage.AccessCondition"/> object that represents the access conditions for the file. If <c>null</c>, no condition is used.</param>
             <param name="options">A <see cref="T:Microsoft.WindowsAzure.Storage.File.FileRequestOptions"/> object that specifies additional options for the request.</param>
             <param name="operationContext">An <see cref="T:Microsoft.WindowsAzure.Storage.OperationContext"/> object that represents the context for the current operation.</param>
@@ -27823,14 +27916,15 @@
             This class provides asynchronous semaphore functionality (based on Stephen Toub's blog).
             </summary>
         </member>
-        <member name="M:Microsoft.WindowsAzure.Storage.Core.Util.AsyncStreamCopier`1.#ctor(System.IO.Stream,System.IO.Stream,Microsoft.WindowsAzure.Storage.Core.Executor.ExecutionState{`0},System.Int32,System.Boolean,Microsoft.WindowsAzure.Storage.Core.Util.StreamDescriptor)">
+        <member name="M:Microsoft.WindowsAzure.Storage.Core.Util.AsyncStreamCopier`1.#ctor(System.IO.Stream,System.IO.Stream,Microsoft.WindowsAzure.Storage.Core.Executor.ExecutionState{`0},Microsoft.WindowsAzure.Storage.IBufferManager,System.Nullable{System.Int32},System.Boolean,Microsoft.WindowsAzure.Storage.Core.Util.StreamDescriptor)">
             <summary>
             Creates and initializes a new asynchronous copy operation.
             </summary>
             <param name="src">The source stream.</param>
             <param name="dest">The destination stream.</param>
             <param name="state">An ExecutionState used to coordinate copy operation.</param>
-            <param name="buffSize">Size of read and write buffers used to move data.</param>
+            <param name="bufferManager">IBufferManager instance to use.  May be null.</param>
+            <param name="buffSize">Size of read and write buffers used to move data.  Overrides the default buffer size of bufferManager.</param>
             <param name="calculateMd5">Boolean value indicating whether the MD-5 should be calculated.</param>
             <param name="streamCopyState">An object that represents the state for the current operation.</param>
         </member>
@@ -31610,13 +31704,14 @@
             <param name="result">An object that represents the result of a physical request.</param>
             <returns></returns>
         </member>
-        <member name="M:Microsoft.WindowsAzure.Storage.Core.Util.StreamExtensions.WriteToAsync``1(System.IO.Stream,System.IO.Stream,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Boolean,Microsoft.WindowsAzure.Storage.Core.Executor.ExecutionState{``0},Microsoft.WindowsAzure.Storage.Core.Util.StreamDescriptor,System.Action{Microsoft.WindowsAzure.Storage.Core.Executor.ExecutionState{``0}})">
+        <member name="M:Microsoft.WindowsAzure.Storage.Core.Util.StreamExtensions.WriteToAsync``1(System.IO.Stream,System.IO.Stream,Microsoft.WindowsAzure.Storage.IBufferManager,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Boolean,Microsoft.WindowsAzure.Storage.Core.Executor.ExecutionState{``0},Microsoft.WindowsAzure.Storage.Core.Util.StreamDescriptor,System.Action{Microsoft.WindowsAzure.Storage.Core.Executor.ExecutionState{``0}})">
             <summary>
             Asynchronously reads the entire content of the stream and writes it to the given output stream.
             </summary>
             <typeparam name="T">The result type of the ExecutionState</typeparam>
             <param name="stream">The origin stream.</param>
             <param name="toStream">The destination stream.</param>
+            <param name="bufferManager">IBufferManager instance to use.</param>
             <param name="copyLength">Number of bytes to copy from source stream to destination stream. Cannot be passed with a value for maxLength.</param>
             <param name="maxLength">Maximum length of the source stream. Cannot be passed with a value for copyLength.</param>
             <param name="calculateMd5">Bool value indicating whether the Md5 should be calculated.</param>

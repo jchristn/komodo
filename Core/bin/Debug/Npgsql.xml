@@ -5037,7 +5037,7 @@
         </member>
         <member name="M:Npgsql.Schema.DbColumnSchemaGenerator.GenerateOldColumnsQuery(System.String)">
             <summary>
-            Stripped-down version of <see cref="M:Npgsql.Schema.DbColumnSchemaGenerator.GenerateColumnsQuery(System.String)"/>, mainly to support Amazon Redshift.
+            Stripped-down version of <see cref="M:Npgsql.Schema.DbColumnSchemaGenerator.GenerateColumnsQuery(System.Version,System.String)"/>, mainly to support Amazon Redshift.
             </summary>
         </member>
         <member name="M:Npgsql.Schema.DbColumnSchemaGenerator.ColumnPostConfig(Npgsql.Schema.NpgsqlDbColumn,System.Int32)">
@@ -5621,6 +5621,11 @@
             http://www.postgresql.org/docs/current/static/datatype-net-types.html
             </remarks>
         </member>
+        <member name="T:Npgsql.TypeHandlers.NetworkHandlers.Macaddr8Handler">
+            <remarks>
+            http://www.postgresql.org/docs/current/static/datatype-net-types.html
+            </remarks>
+        </member>
         <member name="T:Npgsql.TypeHandlers.NetworkHandlers.MacaddrHandler">
             <remarks>
             http://www.postgresql.org/docs/current/static/datatype-net-types.html
@@ -6118,6 +6123,12 @@
         <member name="F:NpgsqlTypes.NpgsqlDbType.MacAddr">
             <summary>
             Corresponds to the PostgreSQL "macaddr" type, a field storing a 6-byte physical address.
+            </summary>
+            <remarks>See http://www.postgresql.org/docs/current/static/datatype-net-types.html</remarks>
+        </member>
+        <member name="F:NpgsqlTypes.NpgsqlDbType.MacAddr8">
+            <summary>
+            Corresponds to the PostgreSQL "macaddr8" type, a field storing a 6-byte or 8-byte physical address.
             </summary>
             <remarks>See http://www.postgresql.org/docs/current/static/datatype-net-types.html</remarks>
         </member>

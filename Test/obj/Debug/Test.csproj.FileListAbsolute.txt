@@ -9,9 +9,13 @@ D:\Code\Komodo\Core\Test\bin\Debug\DatabaseWrapper.dll
 D:\Code\Komodo\Core\Test\bin\Debug\EntityFramework.dll
 D:\Code\Komodo\Core\Test\bin\Debug\EntityFramework.SqlServer.dll
 D:\Code\Komodo\Core\Test\bin\Debug\MySql.Data.dll
+D:\Code\Komodo\Core\Test\bin\Debug\Npgsql.dll
+D:\Code\Komodo\Core\Test\bin\Debug\System.Threading.Tasks.Extensions.dll
 D:\Code\Komodo\Core\Test\bin\Debug\DatabaseWrapper.pdb
 D:\Code\Komodo\Core\Test\bin\Debug\EntityFramework.xml
 D:\Code\Komodo\Core\Test\bin\Debug\EntityFramework.SqlServer.xml
+D:\Code\Komodo\Core\Test\bin\Debug\MySql.Data.xml
+D:\Code\Komodo\Core\Test\bin\Debug\Npgsql.xml
+D:\Code\Komodo\Core\Test\bin\Debug\System.Threading.Tasks.Extensions.xml
 D:\Code\Komodo\Core\Test\obj\Debug\KomodoTest.exe
 D:\Code\Komodo\Core\Test\obj\Debug\KomodoTest.pdb
-D:\Code\Komodo\Core\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache

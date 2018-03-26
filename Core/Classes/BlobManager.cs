@@ -529,9 +529,9 @@ namespace KomodoCore
                         BucketName = _Settings.Aws.Bucket,
                         Key = id,
                         InputStream = s,
-                        ContentType = "application/octet-stream"
-                    };
-
+                        ContentType = "application/octet-stream", 
+                    }; 
+                   
                     PutObjectResponse response = client.PutObject(request);
                     int statusCode = (int)response.HttpStatusCode;
 
@@ -559,6 +559,7 @@ namespace KomodoCore
             request.BucketName = _Settings.Aws.Bucket;
             request.Key = id;
             request.Protocol = Protocol.HTTPS;
+            request.Expires = DateTime.Now.AddYears(100);
             return _S3Client.GetPreSignedURL(request);
         }
 
