@@ -111,9 +111,9 @@ namespace KomodoServer
             string masterDocId = null;
             if (!currClient.AddDocument(currDocType, md.CurrRequest.Data, sourceUrl, out error, out masterDocId))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to retrieve client for index " + indexName);
+                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to add document to index " + indexName);
                 return new HttpResponse(md.CurrRequest, false, 500, null, "application/json",
-                    new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", error).ToJson(true), true);
+                    new ErrorResponse(500, "Unable to add document to index '" + indexName + "'.", error).ToJson(true), true);
             }
 
             #endregion
