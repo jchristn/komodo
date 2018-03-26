@@ -462,9 +462,9 @@ namespace KomodoCore
 
             if (_IndexOptions.StorageSource.Disk != null)
             {
-                if (!Directory.Exists(_IndexOptions.StorageParsed.Disk.Directory))
+                if (!Directory.Exists(_IndexOptions.StorageSource.Disk.Directory))
                 {
-                    if (!Common.CreateDirectory(_IndexOptions.StorageParsed.Disk.Directory))
+                    if (!Common.CreateDirectory(_IndexOptions.StorageSource.Disk.Directory))
                         throw new IOException("Unable to create source documents directory.");
                 }
             }
