@@ -11,14 +11,14 @@ namespace KomodoCli
 {
     class KomodoCli
     {
-        static string ContentType = null;
-        static string InFile = null;
-        static string OutFile = null;
+        static string _ContentType = null;
+        static string _InFile = null;
+        static string _OutFile = null;
 
-        static string InContent = null;
-        static string OutContent = null;
+        static string _InContent = null;
+        static string _OutContent = null;
 
-        static Crawler Crawler = null;
+        static Crawler _Crawler = null;
 
         static void Main(string[] args)
         {
@@ -30,17 +30,17 @@ namespace KomodoCli
                 {
                     if (currArg.StartsWith("-type="))
                     {
-                        ContentType = currArg.Substring(6);
+                        _ContentType = currArg.Substring(6);
                     }
                     
                     if (currArg.StartsWith("-infile="))
                     {
-                        InFile = currArg.Substring(8);
+                        _InFile = currArg.Substring(8);
                     }
 
                     if (currArg.StartsWith("-outfile="))
                     {
-                        OutFile = currArg.Substring(9);
+                        _OutFile = currArg.Substring(9);
                     }
                 }
             }
@@ -54,24 +54,24 @@ namespace KomodoCli
 
             #region Validate-Arguments
 
-            if (String.IsNullOrEmpty(InFile))
+            if (String.IsNullOrEmpty(_InFile))
             {
                 Console.WriteLine("Either the input URL or input file must be specified.");
                 Usage();
                 return;
             }
             
-            if (String.IsNullOrEmpty(ContentType))
+            if (String.IsNullOrEmpty(_ContentType))
             {
                 Console.WriteLine("Content type must be specified.");
                 Usage();
                 return;
             }
 
-            if (!ContentType.Equals("json")
-                && !ContentType.Equals("html")
-                && !ContentType.Equals("xml")
-                && !ContentType.Equals("text"))
+            if (!_ContentType.Equals("json")
+                && !_ContentType.Equals("html")
+                && !_ContentType.Equals("xml")
+                && !_ContentType.Equals("text"))
             {
                 Console.WriteLine("Invalid content type.");
                 Usage();
@@ -82,9 +82,9 @@ namespace KomodoCli
 
             #region Load-Content
             
-            Crawler = new Crawler(InFile, ContentType);
-            InContent = Crawler.RetrieveString();
-            if (String.IsNullOrEmpty(InContent))
+            _Crawler = new Crawler(_InFile, _ContentType);
+            _InContent = Encoding.UTF8.GetString(_Crawler.RetrieveBytes());
+            if (String.IsNullOrEmpty(_InContent))
             {
                 Console.WriteLine("No data retrieved.");
                 return;
@@ -94,30 +94,30 @@ namespace KomodoCli
 
             #region Parse-Content
 
-            switch (ContentType)
+            switch (_ContentType)
             {
                 case "html":
                     ParsedHtml html = new ParsedHtml();
-                    html.LoadString(InContent, InFile);
-                    OutContent = Common.SerializeJson(html, true);
+                    html.LoadString(_InContent, _InFile);
+                    _OutContent = Common.SerializeJson(html, true);
                     break;
 
                 case "json":
                     ParsedJson json = new ParsedJson();
-                    json.LoadString(InContent, InFile);
-                    OutContent = Common.SerializeJson(json, true);
+                    json.LoadString(_InContent, _InFile);
+                    _OutContent = Common.SerializeJson(json, true);
                     break;
 
                 case "xml":
                     ParsedXml xml = new ParsedXml();
-                    xml.LoadString(InContent, InFile);
-                    OutContent = Common.SerializeJson(xml, true);
+                    xml.LoadString(_InContent, _InFile);
+                    _OutContent = Common.SerializeJson(xml, true);
                     break;
 
                 case "text":
                     ParsedText text = new ParsedText();
-                    text.LoadString(InContent, InFile);
-                    OutContent = Common.SerializeJson(text, true);
+                    text.LoadString(_InContent, _InFile);
+                    _OutContent = Common.SerializeJson(text, true);
                     break;
 
                 default:
@@ -130,13 +130,13 @@ namespace KomodoCli
 
             #region Write-Output
 
-            if (String.IsNullOrEmpty(OutContent))
+            if (String.IsNullOrEmpty(_OutContent))
             {
                 Console.WriteLine("No content returned from parsing.");
                 return;
             }
 
-            File.WriteAllBytes(OutFile, Encoding.UTF8.GetBytes(OutContent));
+            File.WriteAllBytes(_OutFile, Encoding.UTF8.GetBytes(_OutContent));
             Console.WriteLine("Success.");
             return;
 

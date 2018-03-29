@@ -38,6 +38,12 @@ namespace KomodoServer
                     new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
             }
 
+            if (ret.Options != null)
+            {
+                ret.Options.StorageParsed = null;
+                ret.Options.StorageSource = null;
+            }
+
             return new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(ret, pretty), true);
             
             #endregion

@@ -143,6 +143,7 @@
     <Compile Include="Classes\MimeTypes.cs" />
     <Compile Include="Classes\Posting.cs" />
     <Compile Include="Classes\ClassTemplate.cs" />
+    <Compile Include="IndexResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

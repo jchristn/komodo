@@ -22,20 +22,20 @@ namespace KomodoServer
                     {
                         return GetIndices(md);
                     }
+                    
+                    if (md.CurrRequest.RawUrlEntries.Count == 1) return GetIndex(md);
+                    if (md.CurrRequest.RawUrlEntries.Count == 2) return GetIndexDocument(md);
 
-                    if (md.CurrRequest.RawUrlEntries.Count == 2)
-                    {
-                        return GetIndexDocument(md);
-                    }
+                    break;
 
-                    return GetIndex(md);
-                   
                 #endregion
 
                 case "put":
                     #region put
 
-                    return PutSearchIndex(md);
+                    if (md.CurrRequest.RawUrlEntries.Count == 1) return PutSearchIndex(md);
+
+                    break;
 
                 #endregion
 
@@ -57,15 +57,20 @@ namespace KomodoServer
                         return PostIndices(md);
                     }
 
-                    return PostIndexDoc(md); 
+                    if (md.CurrRequest.RawUrlEntries.Count == 1) return PostIndexDoc(md);
+
+                    break;
 
                 #endregion
 
                 case "delete":
                     #region delete
 
-                    return DeleteIndex(md);
-                     
+                    if (md.CurrRequest.RawUrlEntries.Count == 1) return DeleteIndex(md);
+                    if (md.CurrRequest.RawUrlEntries.Count == 2) return DeleteIndexDoc(md);
+
+                    break;
+
                     #endregion
 
                 case "head":

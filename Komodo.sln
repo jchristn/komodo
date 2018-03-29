@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cli", "Cli\Cli.csproj", "{4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{73D4F81B-2BD1-4A98-8C87-852491E2FA11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestParser", "TestParser\TestParser.csproj", "{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sdk", "Sdk\Sdk.csproj", "{32A9776D-A671-4FA5-999E-9AD14FC6403F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

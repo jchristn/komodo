@@ -122,9 +122,7 @@ namespace KomodoServer
 
             sw.Stop();
 
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("DocumentId", masterDocId);
-            ret.Add("AddTimeMs", sw.ElapsedMilliseconds);
+            IndexResponse ret = new IndexResponse(masterDocId, sw.ElapsedMilliseconds);
             resp = new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
             return resp;
 
