@@ -1,0 +1,30 @@
+{
+  IndexName: "Second",
+  RootDirectory: "Second",
+  Options: {
+    NormalizeCase: true,
+    RemovePunctuation: true,
+    RemoveStopWords: true,
+    PerformStemming: true,
+    MinTokenLength: 3,
+    MaxTokenLength: 32,
+    StopWords: [ ],
+    SplitCharacters: [ "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" ],
+    StorageSource: {
+      Disk: {
+        Directory: "SourceDocuments"
+      },
+      Azure: null,
+      Aws: null,
+      Kvpbase: null
+    },
+    StorageParsed: {
+      Disk: {
+        Directory: "ParsedDocuments"
+      },
+      Azure: null,
+      Aws: null,
+      Kvpbase: null
+    }
+  }
+}

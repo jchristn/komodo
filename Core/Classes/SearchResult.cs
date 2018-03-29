@@ -67,7 +67,7 @@ namespace KomodoCore
         /// </summary>
         public SearchResult()
         {
-            throw new NotImplementedException();
+            
         }
 
         /// <summary>

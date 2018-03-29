@@ -5,13 +5,15 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{35DE5468-73F7-4F8E-AFB9-C9B4F717AAD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cli", "Cli\Cli.csproj", "{4C274A87-16C7-48B1-A1EE-004EF1D79DCF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserCli", "ParserCli\ParserCli.csproj", "{4C274A87-16C7-48B1-A1EE-004EF1D79DCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{73D4F81B-2BD1-4A98-8C87-852491E2FA11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestParser", "TestParser\TestParser.csproj", "{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sdk", "Sdk\Sdk.csproj", "{32A9776D-A671-4FA5-999E-9AD14FC6403F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSdk", "TestSdk\TestSdk.csproj", "{F70EB0F7-CEA7-4716-91D7-66F9187B7517}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32A9776D-A671-4FA5-999E-9AD14FC6403F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F70EB0F7-CEA7-4716-91D7-66F9187B7517}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F70EB0F7-CEA7-4716-91D7-66F9187B7517}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F70EB0F7-CEA7-4716-91D7-66F9187B7517}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F70EB0F7-CEA7-4716-91D7-66F9187B7517}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

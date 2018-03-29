@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KomodoSdk")]
-[assembly: AssemblyDescription("C# SDK for Komodo")]
+[assembly: AssemblyTitle("SDK Test Application for Komodo")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Joel Christner")]
-[assembly: AssemblyProduct("KomodoSdk")]
+[assembly: AssemblyProduct("TestSdk")]
 [assembly: AssemblyCopyright("(c)2018 Joel Christner")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("32a9776d-a671-4fa5-999e-9ad14fc6403f")]
+[assembly: Guid("f70eb0f7-cea7-4716-91d7-66f9187b7517")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -164,10 +164,10 @@ namespace KomodoCli
         {
             // Console.WriteLine("34567890123456789012345678901234567890123456789012345678901234567890123456789");
             Console.WriteLine("");
-            Console.WriteLine("KomodoCli - crawl and retrieve, then flatten and parse");
+            Console.WriteLine("ParserCli - crawl and retrieve, then flatten and parse");
             Console.WriteLine("");
             Console.WriteLine("Usage:");
-            Console.WriteLine("  C:\\> KomodoCli [arguments]");
+            Console.WriteLine("  C:\\> ParserCli [arguments]");
             Console.WriteLine("");
             Console.WriteLine("Where [arguments] includes:");
             Console.WriteLine("  -type=[type]     Specify the incoming data type");

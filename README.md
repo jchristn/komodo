@@ -4,8 +4,9 @@ Document parsing libraries and search API server in C#.
 ## Help, Feedback, Contribute
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.0.0.2
+## New in v1.0.0.3
 The following capabilities and fixes were introduced in this commit:
+- C# SDK and SDK test application
 
 ## Enclosed Projects
 Please refer to the ```README.md``` file in each project for its version history and quickstart.
@@ -13,11 +14,12 @@ The following projects are included:
 
 | Project       | Description                                               |
 |:------------- |:--------------------------------------------------------- |
-| Cli           | Command line interface to use parsers                     |
+| ParserCli     | Command line interface to use parsers                     |
 | Core          | Core library incl parsing and index management            |
 | Server        | RESTful API server                                        |
 | TestParser    | Console application to exercise parsers                   |
-| Sdk           | Class library to add to consume Komodo API server         |
+| Sdk           | Class library to add to consume API server                |
+| TestSdk       | Console application using the Sdk to consume API server   |
 
 ## Important
 The current release of the Core library relies upon ```sqlite3.dll``` and stores both source and parsed documents on the local filesystem.  External storage for source documents is planned along with support for other database platforms.
