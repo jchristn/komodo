@@ -216,9 +216,6 @@
     <Content Include="docs\MySqlParameter.xml" />
     <Content Include="docs\MySqlParameterCollection.xml" />
     <Content Include="docs\MySqlTransaction.xml" />
-    <Content Include="SearchApp\app.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="SearchApp\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

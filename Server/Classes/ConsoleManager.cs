@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SyslogLogging;
 using RestWrapper;
+using KomodoCore;
 
 namespace KomodoServer
 {
@@ -16,9 +17,10 @@ namespace KomodoServer
 
         #region Private-Members
 
-        private bool Enabled { get; set; }
-        private Config Config { get; set; }
-        private Func<bool> ExitApplicationDelegate;
+        private bool _Enabled;
+        private Config _Config;
+        private IndexManager _Indices;
+        private Func<bool> _ExitDelegate;
 
         #endregion
 
@@ -26,13 +28,16 @@ namespace KomodoServer
 
         public ConsoleManager(
             Config config,
+            IndexManager indices,
             Func<bool> exitApplication)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
+            if (indices == null) throw new ArgumentNullException(nameof(indices));
 
-            Enabled = true;
-            Config = config;
-            ExitApplicationDelegate = exitApplication;
+            _Enabled = true;
+            _Config = config;
+            _Indices = indices;
+            _ExitDelegate = exitApplication;
 
             Task.Run(() => ConsoleWorker());
         }
@@ -43,7 +48,7 @@ namespace KomodoServer
 
         public void Stop()
         {
-            Enabled = false;
+            _Enabled = false;
             return;
         }
 
@@ -54,7 +59,7 @@ namespace KomodoServer
         private void ConsoleWorker()
         {
             string userInput = "";
-            while (Enabled)
+            while (_Enabled)
             {
                 Console.Write("Command (? for help) > ");
                 userInput = Console.ReadLine();
@@ -74,10 +79,14 @@ namespace KomodoServer
 
                     case "q":
                     case "quit":
-                        Enabled = false;
-                        ExitApplicationDelegate();
+                        _Enabled = false;
+                        _ExitDelegate();
                         break;
-                        
+
+                    case "list":
+                        ListIndices();
+                        break;
+
                     default:
                         Console.WriteLine("Unknown command.  '?' for help.");
                         break;
@@ -91,10 +100,28 @@ namespace KomodoServer
             Console.WriteLine("  ?                         help / this menu");
             Console.WriteLine("  cls / c                   clear the console");
             Console.WriteLine("  quit / q                  exit the application");
+            Console.WriteLine("  list                      list indices");
             Console.WriteLine("");
             return;
         }
         
+        private void ListIndices()
+        {
+            List<Index> indices = _Indices.GetIndices();
+            if (indices != null && indices.Count > 0)
+            {
+                Console.WriteLine("Indices: " + indices.Count);
+                foreach (Index currIndex in indices)
+                {
+                    Console.WriteLine("  " + currIndex.IndexName + " [" + currIndex.RootDirectory + "]");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No indices");
+            }
+        }
+
         #endregion
 
         #region Public-Static-Methods

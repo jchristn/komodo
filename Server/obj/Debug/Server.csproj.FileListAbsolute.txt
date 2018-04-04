@@ -3,7 +3,6 @@ D:\Code\Komodo\Core\Server\bin\Debug\sqlite3.dll
 D:\Code\Komodo\Core\Server\bin\Debug\Assets\ascii-logo-trans.png
 D:\Code\Komodo\Core\Server\bin\Debug\Assets\ascii-logo.png
 D:\Code\Komodo\Core\Server\bin\Debug\Assets\favicon.ico
-D:\Code\Komodo\Core\Server\bin\Debug\SearchApp\app.js
 D:\Code\Komodo\Core\Server\bin\Debug\SearchApp\index.html
 D:\Code\Komodo\Core\Server\bin\Debug\SampleFiles\index-aws.json
 D:\Code\Komodo\Core\Server\bin\Debug\SampleFiles\index-azure.json

@@ -30,13 +30,12 @@ namespace KomodoCore
         private bool _Disposed = false;
         private bool _Destroying = false;
 
+        private Index _Index;
         private LoggingModule _Logging;
 
         private string _RootDirectory; 
 
-        private string _DbFilename;
-        private bool _DbDebug;
-        private IndexOptions _IndexOptions;
+        private string _DbFilename;  
         private DatabaseClient _Database;
         private BlobManager _BlobSource;
         private BlobManager _BlobParsed;
@@ -63,28 +62,27 @@ namespace KomodoCore
         /// <param name="dbDebug">Enable or disable database debugging.</param>
         /// <param name="indexOptions">Options for the index.</param>
         /// <param name="logging">Logging module.</param>
-        public IndexClient(string name, string rootDirectory, bool dbDebug, IndexOptions indexOptions, LoggingModule logging)
+        public IndexClient(Index index, LoggingModule logging)
         {
-            if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-            if (String.IsNullOrEmpty(rootDirectory)) throw new ArgumentNullException(nameof(rootDirectory));
-            if (indexOptions == null) throw new ArgumentNullException(nameof(indexOptions));
+            if (index == null) throw new ArgumentNullException(nameof(index));
+            if (String.IsNullOrEmpty(index.RootDirectory)) throw new ArgumentException("Index does not contain a root directory.");
+            if (String.IsNullOrEmpty(index.IndexName)) throw new ArgumentException("Index does not contain a name."); 
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
-            Name = name;
+            _Index = index;
+            Name = index.IndexName;
 
             _Logging = logging;
-            _RootDirectory = rootDirectory; 
+            _RootDirectory = index.RootDirectory; 
 
-            _DbFilename = _RootDirectory + "/" + Name + ".db";
-            _DbDebug = dbDebug;
-            _IndexOptions = indexOptions;
+            _DbFilename = _RootDirectory + "/" + Name + ".db";  
             _DbLock = new object();
 
             CreateDirectories();
 
-            _Database = new DatabaseClient(_DbFilename, _DbDebug);
-            _BlobSource = new BlobManager(_IndexOptions.StorageSource, _Logging);
-            _BlobParsed = new BlobManager(_IndexOptions.StorageParsed, _Logging);
+            _Database = new DatabaseClient(_DbFilename, _Index.DatabaseDebug);
+            _BlobSource = new BlobManager(_Index.Options.StorageSource, _Logging);
+            _BlobParsed = new BlobManager(_Index.Options.StorageParsed, _Logging);
 
             CreateSourceDocsTable();
             CreatedParsedDocsTable();
@@ -460,20 +458,20 @@ namespace KomodoCore
                 if (!Common.CreateDirectory(_RootDirectory)) throw new IOException("Unable to create index directory.");
             }
 
-            if (_IndexOptions.StorageSource.Disk != null)
+            if (_Index.Options.StorageSource.Disk != null)
             {
-                if (!Directory.Exists(_IndexOptions.StorageSource.Disk.Directory))
+                if (!Directory.Exists(_Index.Options.StorageSource.Disk.Directory))
                 {
-                    if (!Common.CreateDirectory(_IndexOptions.StorageSource.Disk.Directory))
+                    if (!Common.CreateDirectory(_Index.Options.StorageSource.Disk.Directory))
                         throw new IOException("Unable to create source documents directory.");
                 }
             }
 
-            if (_IndexOptions.StorageParsed.Disk != null)
+            if (_Index.Options.StorageParsed.Disk != null)
             {
-                if (!Directory.Exists(_IndexOptions.StorageParsed.Disk.Directory))
+                if (!Directory.Exists(_Index.Options.StorageParsed.Disk.Directory))
                 {
-                    if (!Common.CreateDirectory(_IndexOptions.StorageParsed.Disk.Directory))
+                    if (!Common.CreateDirectory(_Index.Options.StorageParsed.Disk.Directory))
                         throw new IOException("Unable to create parsed documents directory.");
                 }
             }
@@ -541,22 +539,22 @@ namespace KomodoCore
                 case DocType.Html:
                     ParsedHtml html = new ParsedHtml();
                     html.LoadBytes(sourceData, sourceUrl);
-                    doc = IndexedDoc.FromHtml(html, _IndexOptions);
+                    doc = IndexedDoc.FromHtml(html, _Index.Options);
                     break;
                 case DocType.Json:
                     ParsedJson json = new ParsedJson();
                     json.LoadBytes(sourceData, sourceUrl);
-                    doc = IndexedDoc.FromJson(json, _IndexOptions);
+                    doc = IndexedDoc.FromJson(json, _Index.Options);
                     break;
                 case DocType.Text:
                     ParsedText text = new ParsedText();
                     text.LoadBytes(sourceData, sourceUrl);
-                    doc = IndexedDoc.FromText(text, _IndexOptions);
+                    doc = IndexedDoc.FromText(text, _Index.Options);
                     break;
                 case DocType.Xml:
                     ParsedXml xml = new ParsedXml();
                     xml.LoadBytes(sourceData, sourceUrl);
-                    doc = IndexedDoc.FromXml(xml, _IndexOptions);
+                    doc = IndexedDoc.FromXml(xml, _Index.Options);
                     break;
                 default:
                     throw new ArgumentException("Unknown DocType");
@@ -642,7 +640,7 @@ namespace KomodoCore
             foreach (string currTerm in query.Required.Terms)
             {
                 string sanitizedTerm = String.Copy(currTerm);
-                if (_IndexOptions.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
+                if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
                 sanitizedTerm = Sanitize(sanitizedTerm);
 
                 if (requiredAdded > 0) dbQuery += ",";
@@ -670,7 +668,7 @@ namespace KomodoCore
                 foreach (string currTerm in query.Optional.Terms)
                 {
                     string sanitizedTerm = String.Copy(currTerm);
-                    if (_IndexOptions.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
+                    if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
                     sanitizedTerm = Sanitize(sanitizedTerm);
 
                     if (optionalAdded > 0) dbQuery += ",";
@@ -699,7 +697,7 @@ namespace KomodoCore
                 foreach (string currTerm in query.Exclude.Terms)
                 {
                     string sanitizedTerm = String.Copy(currTerm);
-                    if (_IndexOptions.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
+                    if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
                     sanitizedTerm = Sanitize(sanitizedTerm);
 
                     if (requiredAdded > 0) dbQuery += ",";

@@ -80,7 +80,7 @@ namespace KomodoServer
             currConfig.Files.ApiKey = workingDir + "ApiKey.json";
             currConfig.Files.ApiKeyPermission = workingDir + "ApiKeyPermission.json";
             currConfig.Files.UserMaster = workingDir + "UserMaster.json";
-            currConfig.Files.IndicesDatabase = workingDir + "Indices.db";
+            currConfig.Files.Indices = workingDir + "Indices.json";
 
             #endregion
 

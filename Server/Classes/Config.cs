@@ -70,7 +70,7 @@ namespace KomodoServer
             public string UserMaster { get; set; }
             public string ApiKey { get; set; }
             public string ApiKeyPermission { get; set; }
-            public string IndicesDatabase { get; set; }
+            public string Indices { get; set; }
         }
          
         public class LoggingSettings

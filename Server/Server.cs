@@ -65,7 +65,7 @@ namespace KomodoServer
                 _Conn = new ConnectionManager();
                 _User = new UserManager(_Logging, UserMaster.FromFile(_Config.Files.UserMaster));
                 _ApiKey = new ApiKeyManager(_Logging, ApiKey.FromFile(_Config.Files.ApiKey), ApiKeyPermission.FromFile(_Config.Files.ApiKeyPermission));
-                _Index = new IndexManager(_Config.Files.IndicesDatabase, Common.IsTrue(_Config.Debug.Database), _Logging);
+                _Index = new IndexManager(_Config.Files.Indices, _Logging);
 
                 _Server = new Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived, true);
                 _Server.AddContentRoute("/SearchApp/", true);
@@ -77,7 +77,7 @@ namespace KomodoServer
 
                 if (Common.IsTrue(_Config.EnableConsole))
                 {
-                    _Console = new ConsoleManager(_Config, ExitApplication);
+                    _Console = new ConsoleManager(_Config, _Index, ExitApplication);
                 }
 
                 #endregion

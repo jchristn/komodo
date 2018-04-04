@@ -30,6 +30,11 @@ namespace KomodoCore
         /// </summary>
         public IndexOptions Options { get; set; }
 
+        /// <summary>
+        /// Enable or disable database debugging.
+        /// </summary>
+        public bool DatabaseDebug { get; set; }
+
         #endregion
 
         #region Private-Members
@@ -72,6 +77,7 @@ namespace KomodoCore
             ret.IndexName = row["Name"].ToString();
             ret.RootDirectory = row["Directory"].ToString();
             ret.Options = Common.DeserializeJson<IndexOptions>(row["Options"].ToString());
+            ret.DatabaseDebug = false;
             return ret;
         }
 

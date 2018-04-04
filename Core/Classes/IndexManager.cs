@@ -22,14 +22,14 @@ namespace KomodoCore
         #region Private-Members
 
         private LoggingModule _Logging;
+         
+        private string _IndicesFilename;
 
-        private bool _DbDebug;
-        private string _DbFilename;
-        private DatabaseClient _SqlIndices;
-
-        private readonly object _IndexClientLock;
+        private List<Index> _Indices;
         private List<IndexClient> _IndexClients;
-
+        private readonly object _IndicesLock;
+        private readonly object _IndexClientLock;
+        
         #endregion
 
         #region Constructors-and-Factories
@@ -45,24 +45,23 @@ namespace KomodoCore
         /// <summary>
         /// Instantiates the IndexManager.
         /// </summary>
-        /// <param name="dbFilename">The file containing the indices database.</param>
-        /// <param name="dbDebug">Enable or disable database debugging.</param>
+        /// <param name="indicesFilename">The file containing the list of indices.</param> 
         /// <param name="logging">Logging module.</param>
-        public IndexManager(string dbFilename, bool dbDebug, LoggingModule logging)
+        public IndexManager(string indicesFilename, LoggingModule logging)
         {
-            if (String.IsNullOrEmpty(dbFilename)) throw new ArgumentNullException(nameof(dbFilename));
+            if (String.IsNullOrEmpty(indicesFilename)) throw new ArgumentNullException(nameof(indicesFilename));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
             _Logging = logging;
-            _DbFilename = dbFilename;
-            _DbDebug = dbDebug;
+            _IndicesFilename = indicesFilename;
 
-            _SqlIndices = new DatabaseClient(_DbFilename, _DbDebug);
-            CreateIndicesTable();
-
+            _Indices = new List<Index>();
             _IndexClients = new List<IndexClient>();
-            _IndexClientLock = new object();
-            _IndexClientLock = new List<IndexClient>();
+
+            _IndicesLock = new object();
+            _IndexClientLock = new object(); 
+
+            LoadIndicesFile();
             InitializeIndexClients();
 
             _Logging.Log(LoggingModule.Severity.Info, "IndexManager started");
@@ -78,15 +77,11 @@ namespace KomodoCore
         /// <returns>List of Index objects.</returns>
         public List<Index> GetIndices()
         {
-            List<Index> ret = new List<Index>();
-            DataTable result = _SqlIndices.Select("Indices", null, null, null, null, null);
-
-            if (result != null && result.Rows.Count > 0)
+            lock (_IndicesLock)
             {
-                ret = Index.ListFromDataTable(result);
+                List<Index> ret = new List<Index>(_Indices);
+                return ret;
             }
-
-            return ret;
         }
 
         /// <summary>
@@ -98,15 +93,16 @@ namespace KomodoCore
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
-            Expression e = new Expression("Name", Operators.Equals, indexName);
-            DataTable result = _SqlIndices.Select("Indices", null, 1, null, e, null);
-            if (result != null && result.Rows.Count > 0)
+            lock (_IndicesLock)
             {
-                return Index.FromDataTable(result);
-            }
+                foreach (Index currIndex in _Indices)
+                {
+                    if (currIndex.IndexName.Equals(indexName)) return currIndex;
+                }
 
-            _Logging.Log(LoggingModule.Severity.Warn, "IndexManager GetIndexByName index " + indexName + " does not exist");
-            return null;
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager GetIndexByName index " + indexName + " does not exist");
+                return null;
+            }
         }
 
         /// <summary>
@@ -117,10 +113,17 @@ namespace KomodoCore
         public bool IndexExists(string indexName)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
-            Expression e = new Expression("Name", Operators.Equals, indexName);
-            DataTable result = _SqlIndices.Select("Indices", null, null, null, e, null);
-            if (result != null && result.Rows.Count > 0) return true;
-            else return false;
+
+            lock (_IndicesLock)
+            {
+                foreach (Index currIndex in _Indices)
+                {
+                    if (currIndex.IndexName.Equals(indexName)) return true;
+                }
+
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager IndexExists index " + indexName + " does not exist");
+                return false;
+            }
         }
 
         /// <summary>
@@ -160,9 +163,24 @@ namespace KomodoCore
                 return true;
             }
 
-            AddIndexToDatabase(indexName, rootDirectory, options);
+            currIndex = new Index();
+            currIndex.IndexName = indexName;
+            currIndex.RootDirectory = rootDirectory;
+            currIndex.Options = options;
 
-            IndexClient idxClient = new IndexClient(indexName, rootDirectory, _DbDebug, options, _Logging);
+            lock (_IndicesLock)
+            {
+                _Indices.Add(currIndex);
+                if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(_Indices, true))))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex unable to write new index to " + _IndicesFilename);
+                    return false;
+                }
+            }
+
+            LoadIndicesFile();
+
+            IndexClient idxClient = new IndexClient(currIndex, _Logging);
 
             lock (_IndexClientLock)
             {
@@ -190,8 +208,24 @@ namespace KomodoCore
                 _Logging.Log(LoggingModule.Severity.Warn, "IndexManager RemoveIndex index " + indexName + " does not exist");
                 return;
             }
-             
-            RemoveIndexFromDatabase(indexName);
+
+            lock (_IndicesLock)
+            {
+                List<Index> updated = new List<Index>();
+
+                foreach (Index tempIndex in _Indices)
+                {
+                    if (!tempIndex.IndexName.Equals(indexName)) updated.Add(currIndex);
+                }
+
+                if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(updated, true))))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager RemoveIndex unable to remove index " + indexName + " from " + _IndicesFilename);
+                    return;
+                }
+            }
+
+            LoadIndicesFile();
 
             lock (_IndexClientLock)
             {
@@ -243,61 +277,40 @@ namespace KomodoCore
           
         #region Private-Index-Methods
 
-        private void InitializeIndexClients()
+        private void LoadIndicesFile()
         {
-            string query = "SELECT * FROM Indices";
-            DataTable result = _SqlIndices.Query(query);
-            if (result != null && result.Rows.Count > 0)
-            { 
-                foreach (DataRow currRow in result.Rows)
+            lock (_IndicesLock)
+            {
+                if (!Common.FileExists(_IndicesFilename))
                 {
-                    lock (_IndexClientLock)
-                    { 
-                        IndexClient currClient = new IndexClient(
-                            currRow["Name"].ToString(), 
-                            currRow["Directory"].ToString(), 
-                            _DbDebug,
-                            Common.DeserializeJson<IndexOptions>(currRow["Options"].ToString()),
-                            _Logging);
-
-                        _IndexClients.Add(currClient);
+                    if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(new List<object>(), true))))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "IndexManager unable to write new file " + _IndicesFilename + ", exiting");
+                        Common.ExitApplication("IndexManager", "Unable to write indices file " + _IndicesFilename, -1);
+                        return;
                     }
                 }
+
+                _Indices = Common.DeserializeJson<List<Index>>(Common.ReadBinaryFile(_IndicesFilename));
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexManager intialized with " + _Indices.Count + " indices");
             }
         }
 
-        private void CreateIndicesTable()
+        private void InitializeIndexClients()
         {
-            string indicesTableQuery =
-                "CREATE TABLE IF NOT EXISTS Indices " +
-                "(" +
-                "  Id                INTEGER PRIMARY KEY, " +
-                "  Name              VARCHAR(128), " +
-                "  Directory         VARCHAR(256), " +
-                "  Options           TEXT " +
-                ")";
-
-            _SqlIndices.Query(indicesTableQuery);
+            lock (_IndicesLock)
+            {
+                lock (_IndexClientLock)
+                {
+                    foreach (Index currIndex in _Indices)
+                    {
+                        IndexClient currClient = new IndexClient(currIndex, _Logging);
+                        _IndexClients.Add(currClient);
+                    }
+                }
+            } 
         }
-
-        private void AddIndexToDatabase(string indexName, string rootDirectory, IndexOptions options)
-        {
-            Dictionary<string, object> insertDict = new Dictionary<string, object>();
-            insertDict.Add("Name", indexName);
-            insertDict.Add("Directory", rootDirectory);
-            insertDict.Add("Options", Common.SerializeJson(options, false));
-
-            _SqlIndices.Insert("Indices", insertDict);
-            return;
-        }
-
-        private void RemoveIndexFromDatabase(string indexName)
-        {
-            Expression e = new Expression("Name", Operators.Equals, indexName);
-            _SqlIndices.Delete("Indices", e);
-            return;
-        }
-
+           
         #endregion
     }
 }

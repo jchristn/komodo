@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="komodo">
 	<head>
-		<title>Komodo Search : Set API Key</title>
+		<title>Komodo Search : Set Index</title>
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" /> 
 		<link rel="stylesheet" type="text/css" href="center.css" /> 
 		<link rel="shortcut icon" type="image/png" href="../Assets/favicon.ico"/>
@@ -13,22 +13,25 @@
 	</head>
 	<body> 
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-		<script type="text/javascript" src="./index.bundle.js"></script>
+		<script type="text/javascript" src="./setIndex.bundle.js"></script>
 		<div id="outerDiv" class="outer" ng-controller="searchController">
 			<div id="main" class="container" style="width: 480px">
-				<form id="setApiKeyForm" class="form-horizontal" ng-submit="setApiKey()">
-					<img src="../Assets/ascii-logo-trans.png" style="width:240px"/>
-					<br />
-					<h3>Komodo Search</h3>
-					<p>Please enter your API key.</p>
-					<input type="text" class="form-control" id="apiKey">
-	  			<button 
-			  		type="submit" 
-			  		form="setApiKeyForm" 
-			  		class="btn btn-default">
-		  			Set API Key
-	  			</button>
-				</form>
+				<img src="../Assets/ascii-logo-trans.png" style="width:240px"/>
+				<br />
+				<h3>Komodo Search</h3>
+				<p>Please select an index.</p>
+				<select ng-model='indices' ng-options='index for index in indices'></select> 
+				<!--
+				<select ng-model="indices">
+					<option ng-repeat="index in indices" value="{{index}}">{{index}}</option>
+				</select>
+					-->
+	  		<button 
+		  		type="submit" 
+		  		ng-click="setIndex()"
+		  		class="btn btn-default">
+		  		Set Index
+	  		</button>
 			</div> 
 		</div>
 	</body>
