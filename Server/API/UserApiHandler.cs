@@ -24,7 +24,13 @@ namespace KomodoServer
                     }
                     
                     if (md.CurrRequest.RawUrlEntries.Count == 1) return GetIndex(md);
-                    if (md.CurrRequest.RawUrlEntries.Count == 2) return GetIndexDocument(md);
+
+                    if (md.CurrRequest.RawUrlEntries.Count == 2)
+                    {
+                        if (md.CurrRequest.RawUrlEntries[1].ToLower().Equals("stats")) return GetIndexStats(md);
+
+                        return GetIndexDocument(md);
+                    }
 
                     break;
 

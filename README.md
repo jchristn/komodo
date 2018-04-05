@@ -4,9 +4,12 @@ Document parsing libraries and search API server in C#.
 ## Help, Feedback, Contribute
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.0.0.4
+## New in v1.0.0.5
 The following capabilities and fixes were introduced in this commit:
-- Remove Sqlite for index management (still exists for terms, planned for removal)
+- Index names are now case insensitive
+- Fix to sample scripts 
+- Index stats API
+- Fix score calculation from optional filter match
 
 ## Enclosed Projects
 Please refer to the ```README.md``` file in each project for its version history and quickstart.
@@ -46,3 +49,4 @@ v1.0.x
 - Index deletion will now delete source/parsed files if requested
 - API to read source and parsed documents by ID
 - C# SDK and SDK test application
+- Remove Sqlite for index management (still exists for terms, planned for removal)

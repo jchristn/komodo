@@ -92,6 +92,7 @@ namespace KomodoCore
         public Index GetIndexByName(string indexName)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            indexName = indexName.ToLower();
 
             lock (_IndicesLock)
             {
@@ -113,6 +114,7 @@ namespace KomodoCore
         public bool IndexExists(string indexName)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            indexName = indexName.ToLower();
 
             lock (_IndicesLock)
             {
@@ -156,6 +158,7 @@ namespace KomodoCore
                 return false;
             }
 
+            indexName = indexName.ToLower();
             Index currIndex = GetIndexByName(indexName);
             if (currIndex != null)
             {
@@ -199,6 +202,7 @@ namespace KomodoCore
         public void RemoveIndex(string indexName, bool cleanup)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            indexName = indexName.ToLower();
 
             _Logging.Log(LoggingModule.Severity.Info, "IndexManager RemoveIndex removing index " + indexName);
 
@@ -263,6 +267,7 @@ namespace KomodoCore
         public IndexClient GetIndexClient(string indexName)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            indexName = indexName.ToLower();
             if (!IndexExists(indexName)) return null;
 
             lock (_IndexClientLock)
@@ -273,8 +278,29 @@ namespace KomodoCore
             }
         }
 
+        /// <summary>
+        /// Retrieve statistics for the specified index.
+        /// </summary>
+        /// <param name="indexName">The name of the index.</param>
+        /// <returns>Index statistics.</returns>
+        public IndexStats GetIndexStats(string indexName)
+        { 
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            indexName = indexName.ToLower();
+
+            IndexClient currClient = GetIndexClient(indexName);
+            if (currClient == null || currClient == default(IndexClient))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager GetIndexStats index " + indexName + " does not exist");
+                return null;
+            }
+
+            IndexStats stats = currClient.GetIndexStats();
+            return stats;
+        }
+
         #endregion
-          
+
         #region Private-Index-Methods
 
         private void LoadIndicesFile()

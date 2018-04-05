@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="Classes\BlobManager.cs" />
     <Compile Include="Classes\ErrorCode.cs" />
+    <Compile Include="Classes\IndexStats.cs" />
     <Compile Include="Classes\SearchResult.cs" />
     <Compile Include="Classes\SearchQuery.cs" />
     <Compile Include="Classes\Crawler.cs" />

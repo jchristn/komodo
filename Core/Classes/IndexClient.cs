@@ -33,9 +33,9 @@ namespace KomodoCore
         private Index _Index;
         private LoggingModule _Logging;
 
-        private string _RootDirectory; 
+        private string _RootDirectory;
 
-        private string _DbFilename;  
+        private string _DbFilename;
         private DatabaseClient _Database;
         private BlobManager _BlobSource;
         private BlobManager _BlobParsed;
@@ -66,16 +66,16 @@ namespace KomodoCore
         {
             if (index == null) throw new ArgumentNullException(nameof(index));
             if (String.IsNullOrEmpty(index.RootDirectory)) throw new ArgumentException("Index does not contain a root directory.");
-            if (String.IsNullOrEmpty(index.IndexName)) throw new ArgumentException("Index does not contain a name."); 
+            if (String.IsNullOrEmpty(index.IndexName)) throw new ArgumentException("Index does not contain a name.");
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
             _Index = index;
             Name = index.IndexName;
 
             _Logging = logging;
-            _RootDirectory = index.RootDirectory; 
+            _RootDirectory = index.RootDirectory;
 
-            _DbFilename = _RootDirectory + "/" + Name + ".db";  
+            _DbFilename = _RootDirectory + "/" + Name + ".db";
             _DbLock = new object();
 
             CreateDirectories();
@@ -171,7 +171,7 @@ namespace KomodoCore
                     error = new ErrorCode("MISSING_PARAM", "SourceUrl");
                     return false;
                 }
-                
+
                 #region Retrieve
 
                 if (!String.IsNullOrEmpty(sourceUrl))
@@ -185,7 +185,7 @@ namespace KomodoCore
                         return false;
                     }
                     sourceData = new byte[data.Length];
-                    Buffer.BlockCopy(data, 0, sourceData, 0, data.Length); 
+                    Buffer.BlockCopy(data, 0, sourceData, 0, data.Length);
                 }
 
                 #endregion
@@ -208,6 +208,7 @@ namespace KomodoCore
 
                 string ts = _Database.Timestamp(DateTime.Now.ToUniversalTime());
 
+                // Source documents table
                 Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
                 sourceDocVals.Add("MasterDocId", doc.MasterDocId);
                 sourceDocVals.Add("SourceUrl", sourceUrl);
@@ -216,9 +217,14 @@ namespace KomodoCore
                 sourceDocVals.Add("Created", ts);
                 _Database.Insert("SourceDocuments", sourceDocVals);
 
-                sourceDocVals.Remove("SourceUrl");
-                sourceDocVals.Remove("ContentLength");
-                _Database.Insert("ParsedDocuments", sourceDocVals);
+                // Parsed documents table
+                Dictionary<string, object> parsedDocVals = new Dictionary<string, object>();
+                parsedDocVals.Add("MasterDocId", doc.MasterDocId);
+                parsedDocVals.Add("DocType", docType.ToString());
+                parsedDocVals.Add("SourceContentLength", sourceData.Length);
+                parsedDocVals.Add("ContentLength", Common.SerializeJson(doc, true).Length);
+                parsedDocVals.Add("Created", ts);
+                _Database.Insert("ParsedDocuments", parsedDocVals);
 
                 if (doc.Terms != null && doc.Terms.Count > 0)
                 {
@@ -246,7 +252,7 @@ namespace KomodoCore
                 }
 
                 #endregion
-                 
+
                 return true;
             }
             finally
@@ -288,7 +294,7 @@ namespace KomodoCore
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DocumentExists document ID not supplied");
                 error = new ErrorCode("MISSING_PARAM", "MasterDocId");
-                return false; 
+                return false;
             }
 
             Expression e = new Expression("MasterDocId", Operators.Equals, masterDocId);
@@ -297,7 +303,7 @@ namespace KomodoCore
             if (result != null && result.Rows.Count > 0) return true;
             return false;
         }
-         
+
         /// <summary>
         /// Delete a document from the index.
         /// </summary>
@@ -432,6 +438,69 @@ namespace KomodoCore
             #endregion
         }
 
+        /// <summary>
+        /// Retrieve statistics for the index.
+        /// </summary>
+        /// <returns>Index statistics.</returns>
+        public IndexStats GetIndexStats()
+        {
+            IndexStats stats = new IndexStats();
+            stats.SourceDocuments = new IndexStats.SourceDocumentStats();
+            stats.SourceDocuments.Count = 0;
+            stats.SourceDocuments.SizeBytes = 0;
+
+            stats.ParsedDocuments = new IndexStats.ParsedDocumentStats();
+            stats.ParsedDocuments.Count = 0;
+            stats.ParsedDocuments.SizeBytesParsed = 0;
+            stats.ParsedDocuments.SizeBytesSource = 0;
+
+            stats.IndexName = _Index.IndexName;
+
+            #region Source-Docs-Stats
+
+            string sourceDocsQuery =
+                "SELECT " +
+                "  COUNT(*) AS NumDocs, " +
+                "  SUM(ContentLength) AS SizeBytes " +
+                "FROM SourceDocuments";
+
+            DataTable sourceDocsResult = _Database.Query(sourceDocsQuery);
+            if (sourceDocsResult != null && sourceDocsResult.Rows.Count > 0)
+            {
+                foreach (DataRow currRow in sourceDocsResult.Rows)
+                {
+                    stats.SourceDocuments.Count = Convert.ToInt64(currRow["NumDocs"]);
+                    stats.SourceDocuments.SizeBytes = Convert.ToInt64(currRow["SizeBytes"]);
+                }
+            }
+
+            #endregion
+
+            #region Parsed-Docs-Stats
+
+            string parsedDocsQuery = 
+                "SELECT " +
+                "  COUNT(*) AS NumDocs, " +
+                "  SUM(SourceContentLength) AS SizeBytesSource, " +
+                "  SUM(ContentLength) AS SizeBytesParsed " +
+                "FROM ParsedDocuments";
+
+            DataTable parsedDocsResult = _Database.Query(parsedDocsQuery); 
+            if (parsedDocsResult != null && parsedDocsResult.Rows.Count > 0)
+            {
+                foreach (DataRow currRow in parsedDocsResult.Rows)
+                {
+                    stats.ParsedDocuments.Count = Convert.ToInt64(currRow["NumDocs"]);
+                    stats.ParsedDocuments.SizeBytesSource = Convert.ToInt64(currRow["SizeBytesSource"]);
+                    stats.ParsedDocuments.SizeBytesParsed = Convert.ToInt64(currRow["SizeBytesParsed"]);
+                }
+            }
+
+            #endregion
+
+            return stats;
+        }
+
         #endregion
 
         #region Private-Methods
@@ -499,11 +568,13 @@ namespace KomodoCore
             string query =
                 "CREATE TABLE IF NOT EXISTS ParsedDocuments " +
                 "(" +
-                "  Id                INTEGER PRIMARY KEY, " +
-                "  MasterDocId       VARCHAR(128), " +
-                "  DocType           VARCHAR(32), " +
-                "  Created           VARCHAR(32), " +
-                "  Indexed           VARCHAR(32) " +
+                "  Id                   INTEGER PRIMARY KEY, " +
+                "  MasterDocId          VARCHAR(128), " +
+                "  DocType              VARCHAR(32), " +
+                "  SourceContentLength  INTEGER, " +
+                "  ContentLength        INTEGER, " +
+                "  Created              VARCHAR(32), " +
+                "  Indexed              VARCHAR(32) " +
                 ")";
 
             _Database.Query(query);
@@ -838,7 +909,7 @@ namespace KomodoCore
 
         private bool OptionalFiltersMatch(IndexedDoc doc, SearchQuery query, out decimal score)
         {
-            score = 0m;
+            score = 1m;
             if (query.Optional == null || query.Optional.Filter == null || query.Optional.Filter.Count < 1)
             {
                 _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " OptionalFiltersMatch no optional filters found");
@@ -886,7 +957,7 @@ namespace KomodoCore
             }
 
             _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " OptionalFiltersMatch document ID " + doc.MasterDocId + " [" + filterCount + " filters, " + matchCount + " matches: " + score + " score]");
-            score = (decimal)matchCount / filterCount;
+            if (matchCount > 0 && filterCount > 0) score = (decimal)matchCount / filterCount;
             return true;
         }
 

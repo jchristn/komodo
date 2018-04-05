@@ -107,6 +107,7 @@
   <ItemGroup>
     <Compile Include="API\Delete\DeleteIndexDoc.cs" />
     <Compile Include="API\Delete\DeleteIndex.cs" />
+    <Compile Include="API\Get\GetIndexStats.cs" />
     <Compile Include="API\Get\GetIndexDocument.cs" />
     <Compile Include="API\Get\GetIndices.cs" />
     <Compile Include="API\Get\GetIndex.cs" />
