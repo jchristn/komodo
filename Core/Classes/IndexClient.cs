@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using SqliteWrapper;
 using SyslogLogging;
 using RestWrapper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KomodoCore
 {
@@ -819,52 +821,41 @@ namespace KomodoCore
             #endregion
         }
 
-        private bool DocMatchesFilters(string masterDocId, SearchQuery query, out decimal score)
+        private bool DocMatchesFilters(IndexedDoc doc, SearchQuery query, out decimal score)
         {
             score = 1m;
-
-            #region Read-Parsed-Object
-
-            IndexedDoc doc = null;
-            if (!ReadParsedDocument(masterDocId, out doc))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " DocMatchesFilters unable to read parsed document ID " + masterDocId);
-                return false;
-            }
-
-            #endregion
-
+            
             #region Process
              
             if (!RequiredFiltersMatch(doc, query))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + masterDocId + " does not match required filters");
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " does not match required filters");
                 return false;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + masterDocId + " matches required filters");
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches required filters");
             }
              
             if (!OptionalFiltersMatch(doc, query, out score))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + masterDocId + " does not match optional filters");
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " does not match optional filters");
                 return false;
             }
             else
             {
                 score = Convert.ToDecimal(score.ToString("N4"));
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + masterDocId + " matches optional filters [score " + score + "]");
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches optional filters [score " + score + "]");
             }
 
             if (!ExcludeFiltersMatch(doc, query))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + masterDocId + " one or more exclude filters matched");
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " one or more exclude filters matched");
                 return false;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + masterDocId + " matches exclude filters");
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches exclude filters");
             }
 
             return true;
@@ -1188,19 +1179,31 @@ namespace KomodoCore
                 List<string> filteredDocIds = new List<string>();
                 Dictionary<string, decimal> scores = new Dictionary<string, decimal>();
 
-                foreach (string currDocId in docIds)
-                {
-                    decimal score = 1m;
-                    if (!DocMatchesFilters(currDocId, query, out score))
+                if ((query.Required.Filter != null && query.Required.Filter.Count > 0)
+                    || (query.Optional.Filter != null && query.Optional.Filter.Count > 0)
+                    || (query.Exclude.Filter != null && query.Exclude.Filter.Count > 0))
+                { 
+                    foreach (string currDocId in docIds)
                     {
-                        _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal document ID " + currDocId + " does not match filters");
-                        continue;
-                    }
-                    else
-                    {
-                        scores.Add(currDocId, score);
-                        filteredDocIds.Add(currDocId);
-                    }
+                        IndexedDoc currParsedDoc = null;
+                        if (!ReadParsedDocument(currDocId, out currParsedDoc))
+                        {
+                            _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " SearchInternal unable to read parsed document ID " + currDocId);
+                            continue;
+                        }
+
+                        decimal score = 1m;
+                        if (!DocMatchesFilters(currParsedDoc, query, out score))
+                        {
+                            _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal document ID " + currDocId + " does not match filters");
+                            continue;
+                        }
+                        else
+                        {
+                            scores.Add(currDocId, score);
+                            filteredDocIds.Add(currDocId);
+                        }
+                    } 
                 }
 
                 #endregion
@@ -1217,33 +1220,44 @@ namespace KomodoCore
                         currDoc.MasterDocId = currDocId;
                         currDoc.Score = Convert.ToDecimal(scores[currDocId].ToString("N4"));
 
-                        byte[] data = null;
+                        byte[] data = null; 
+                        IndexedDoc currIndexedDoc = null;
 
-                        if (query.IncludeParsedDoc)
-                        {
-                            IndexedDoc currIndexedDoc;
+                        if (query.IncludeParsedDoc || query.IncludeContent)
+                        { 
                             if (!ReadParsedDocument(currDocId, out currIndexedDoc))
                             {
                                 _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve parsed doc");
                                 currDoc.Errors.Add("Unable to retrieve parsed document");
                             }
-                            else
-                            { 
-                                currDoc.Parsed = currIndexedDoc;
-                            } 
-                        }
 
-                        if (query.IncludeContent)
-                        {
-                            if (!ReadSourceDocument(currDocId, out data))
+                            currDoc.DocumentType = currIndexedDoc.DocumentType;
+
+                            if (query.IncludeParsedDoc)
                             {
-                                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve source doc");
-                                currDoc.Errors.Add("Unable to retrieve source document");
+                                currDoc.Parsed = currIndexedDoc;
                             }
-                            else
+
+                            if (query.IncludeContent)
                             {
-                                currDoc.Data = Encoding.UTF8.GetString(data);
-                            }
+                                if (!ReadSourceDocument(currDocId, out data))
+                                {
+                                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve source doc");
+                                    currDoc.Errors.Add("Unable to retrieve source document");
+                                }
+                                else
+                                {
+                                    if (currIndexedDoc != null && currIndexedDoc.DocumentType == DocType.Json)
+                                    {
+                                        JToken jsonData = JToken.Parse(Encoding.UTF8.GetString(data));
+                                        currDoc.Data = jsonData;
+                                    }
+                                    else
+                                    {
+                                        currDoc.Data = Encoding.UTF8.GetString(data);
+                                    }
+                                }
+                            } 
                         }
 
                         _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal appended doc ID " + currDocId + " to result");
@@ -1264,6 +1278,27 @@ namespace KomodoCore
                 result.MarkEnded();
                 _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal finished (" + result.TotalTimeMs + "ms)");
             }
+        }
+
+        private DocType DocTypeFromString(string val)
+        {
+            if (String.IsNullOrEmpty(val)) throw new ArgumentNullException(nameof(val));
+
+            switch (val.ToLower())
+            {
+                case "html":
+                    return DocType.Html;
+                case "json":
+                    return DocType.Json;
+                case "xml":
+                    return DocType.Xml;
+                case "text":
+                    return DocType.Text;
+                case "sql":
+                    return DocType.Sql;
+                default:
+                    return DocType.Unknown;
+            } 
         }
 
         #endregion

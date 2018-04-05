@@ -25,6 +25,8 @@ namespace KomodoCore
         [EnumMember(Value = "Xml")]
         Xml,
         [EnumMember(Value = "Text")]
-        Text
+        Text,
+        [EnumMember(Value = "Unknown")]
+        Unknown
     }
 }

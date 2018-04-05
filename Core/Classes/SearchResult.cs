@@ -166,19 +166,24 @@ namespace KomodoCore
             public string MasterDocId { get; set; }
 
             /// <summary>
+            /// The type of document.
+            /// </summary>
+            public DocType DocumentType { get; set; }
+
+            /// <summary>
             /// The score of the document, between 0 and 1.  Only relevant when optional filters are supplied in the search.
             /// </summary>
             public decimal Score { get; set; }
 
             /// <summary>
-            /// The document's data, if requested in the search query.
-            /// </summary>
-            public object Data { get; set; }
-
-            /// <summary>
             /// Error description strings, if any.
             /// </summary>
             public List<string> Errors { get; set; }
+
+            /// <summary>
+            /// The document's data, if requested in the search query.
+            /// </summary>
+            public object Data { get; set; }
 
             /// <summary>
             /// The parsed document, if requested in the search query.
@@ -191,9 +196,10 @@ namespace KomodoCore
             public Document()
             {
                 MasterDocId = null;
+                DocumentType = DocType.Unknown;
                 Score = 0m;
-                Data = null;
                 Errors = new List<string>();
+                Data = null;
                 Parsed = null;
             }
         }
