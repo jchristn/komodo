@@ -1,6 +1,23 @@
 {
   IndexName: "First",
   RootDirectory: "First",
+  DatabaseDebug: false,
+  StorageSource: {
+    Disk: {
+      Directory: "SourceDocuments"
+    },
+    Azure: null,
+    Aws: null,
+    Kvpbase: null
+  },
+  StorageParsed: {
+    Disk: {
+      Directory: "ParsedDocuments"
+    },
+    Azure: null,
+    Aws: null,
+    Kvpbase: null
+  },  
   Options: {
     NormalizeCase: true,
     RemovePunctuation: true,
@@ -9,22 +26,6 @@
     MinTokenLength: 3,
     MaxTokenLength: 32,
     StopWords: [ ],
-    SplitCharacters: [ "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" ],
-    StorageSource: {
-      Disk: {
-        Directory: "SourceDocuments"
-      },
-      Azure: null,
-      Aws: null,
-      Kvpbase: null
-    },
-    StorageParsed: {
-      Disk: {
-        Directory: "ParsedDocuments"
-      },
-      Azure: null,
-      Aws: null,
-      Kvpbase: null
-    }
+    SplitCharacters: [ "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" ]
   }
 }

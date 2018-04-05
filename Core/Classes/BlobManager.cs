@@ -27,7 +27,7 @@ namespace KomodoCore
 
         #region Private-Members
 
-        private IndexOptions.StorageSettings _Settings;
+        private Index.StorageSettings _Settings;
         private LoggingModule _Logging;
         private string _StorageType;
 
@@ -51,7 +51,7 @@ namespace KomodoCore
         /// </summary>
         /// <param name="options">IndexOptions containing storage configuration.</param>
         /// <param name="logging">LoggingModule.</param>
-        public BlobManager(IndexOptions.StorageSettings settings, LoggingModule logging)
+        public BlobManager(Index.StorageSettings settings, LoggingModule logging)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings)); 
             if (logging == null) throw new ArgumentNullException(nameof(logging));

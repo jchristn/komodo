@@ -1,6 +1,29 @@
 {
   IndexName: "First",
   RootDirectory: "First",
+  DatabaseDebug: false,
+  StorageSource: {
+    Azure: null,
+    Aws: null,
+    Disk: null,
+    Kvpbase: {
+      Endpoint: "",
+      UserGuid: "",
+      Container: "",
+      ApiKey: ""
+    }
+  },
+  StorageParsed: {
+    Azure: null,
+    Aws: null,
+    Disk: null,
+    Kvpbase: {
+      Endpoint: "",
+      UserGuid: "",
+      Container: "",
+      ApiKey: ""
+    }
+  },
   Options: {
     NormalizeCase: true,
     RemovePunctuation: true,
@@ -9,28 +32,6 @@
     MinTokenLength: 3,
     MaxTokenLength: 32,
     StopWords: [ ],
-    SplitCharacters: [ "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" ],
-    StorageSource: {
-      Azure: null,
-      Aws: null,
-      Disk: null,
-      Kvpbase: {
-        Endpoint: "",
-        UserGuid: "",
-        Container: "",
-        ApiKey: ""
-      }
-    },
-    StorageParsed: {
-      Azure: null,
-      Aws: null,
-      Disk: null,
-      Kvpbase: {
-        Endpoint: "",
-        UserGuid: "",
-        Container: "",
-        ApiKey: ""
-      }
-    }
+    SplitCharacters: [ "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" ]
   }
 }

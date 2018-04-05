@@ -81,8 +81,8 @@ namespace KomodoCore
             CreateDirectories();
 
             _Database = new DatabaseClient(_DbFilename, _Index.DatabaseDebug);
-            _BlobSource = new BlobManager(_Index.Options.StorageSource, _Logging);
-            _BlobParsed = new BlobManager(_Index.Options.StorageParsed, _Logging);
+            _BlobSource = new BlobManager(_Index.StorageSource, _Logging);
+            _BlobParsed = new BlobManager(_Index.StorageParsed, _Logging);
 
             CreateSourceDocsTable();
             CreatedParsedDocsTable();
@@ -527,20 +527,20 @@ namespace KomodoCore
                 if (!Common.CreateDirectory(_RootDirectory)) throw new IOException("Unable to create index directory.");
             }
 
-            if (_Index.Options.StorageSource.Disk != null)
+            if (_Index.StorageSource.Disk != null)
             {
-                if (!Directory.Exists(_Index.Options.StorageSource.Disk.Directory))
+                if (!Directory.Exists(_Index.StorageSource.Disk.Directory))
                 {
-                    if (!Common.CreateDirectory(_Index.Options.StorageSource.Disk.Directory))
+                    if (!Common.CreateDirectory(_Index.StorageSource.Disk.Directory))
                         throw new IOException("Unable to create source documents directory.");
                 }
             }
 
-            if (_Index.Options.StorageParsed.Disk != null)
+            if (_Index.StorageParsed.Disk != null)
             {
-                if (!Directory.Exists(_Index.Options.StorageParsed.Disk.Directory))
+                if (!Directory.Exists(_Index.StorageParsed.Disk.Directory))
                 {
-                    if (!Common.CreateDirectory(_Index.Options.StorageParsed.Disk.Directory))
+                    if (!Common.CreateDirectory(_Index.StorageParsed.Disk.Directory))
                         throw new IOException("Unable to create parsed documents directory.");
                 }
             }
@@ -677,9 +677,7 @@ namespace KomodoCore
             
             try
             {
-                doc = Common.DeserializeJson<IndexedDoc>(data);
-                doc.Options.StorageParsed = null;
-                doc.Options.StorageSource = null;
+                doc = Common.DeserializeJson<IndexedDoc>(data); 
                 return true;
             }
             catch (Exception e)
@@ -1230,9 +1228,7 @@ namespace KomodoCore
                                 currDoc.Errors.Add("Unable to retrieve parsed document");
                             }
                             else
-                            {
-                                currIndexedDoc.Options.StorageParsed = null;
-                                currIndexedDoc.Options.StorageSource = null;
+                            { 
                                 currDoc.Parsed = currIndexedDoc;
                             } 
                         }

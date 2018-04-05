@@ -34,7 +34,7 @@ namespace KomodoServer
             }
 
             string error;
-            if (!_Index.AddIndex(req.IndexName, req.RootDirectory, req.Options, out error))
+            if (!_Index.AddIndex(req, out error))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndices unable to add index: " + error);
                 resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",

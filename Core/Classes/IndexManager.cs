@@ -131,49 +131,30 @@ namespace KomodoCore
         /// <summary>
         /// Add a new index.
         /// </summary>
-        /// <param name="indexName">The name of the index.</param>
-        /// <param name="rootDirectory">The root directory for the index.</param>
-        /// <param name="options">The options for the index.</param>
+        /// <param name="index">The index.</param>
         /// <param name="error">Human-readable error string.</param>
         /// <returns>True if successful.</returns>
-        public bool AddIndex(string indexName, string rootDirectory, IndexOptions options, out string error)
+        public bool AddIndex(Index index, out string error)
         {
             error = null;
 
-            if (String.IsNullOrEmpty(indexName))
+            if (index == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index name cannot be null");
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index cannot be null");
                 return false;
             }
 
-            if (String.IsNullOrEmpty(rootDirectory))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex root directory cannot be null");
-                return false;
-            }
-
-            if (options == null)
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex options cannot be null");
-                return false;
-            }
-
-            indexName = indexName.ToLower();
-            Index currIndex = GetIndexByName(indexName);
+            index.IndexName = index.IndexName.ToLower();
+            Index currIndex = GetIndexByName(index.IndexName);
             if (currIndex != null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + indexName + " already exists, reusing");
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + index.IndexName + " already exists, reusing");
                 return true;
             }
-
-            currIndex = new Index();
-            currIndex.IndexName = indexName;
-            currIndex.RootDirectory = rootDirectory;
-            currIndex.Options = options;
-
+             
             lock (_IndicesLock)
             {
-                _Indices.Add(currIndex);
+                _Indices.Add(index);
                 if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(_Indices, true))))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex unable to write new index to " + _IndicesFilename);
@@ -183,14 +164,14 @@ namespace KomodoCore
 
             LoadIndicesFile();
 
-            IndexClient idxClient = new IndexClient(currIndex, _Logging);
+            IndexClient idxClient = new IndexClient(index, _Logging);
 
             lock (_IndexClientLock)
             {
                 _IndexClients.Add(idxClient);
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexManager AddIndex index " + indexName + " added");
+            _Logging.Log(LoggingModule.Severity.Info, "IndexManager AddIndex index " + index.IndexName + " added");
             return true;
         }
 
