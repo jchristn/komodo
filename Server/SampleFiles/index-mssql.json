@@ -2,38 +2,32 @@
   IndexName: "First",
   RootDirectory: "First", 
   StorageSource: {
-    Azure: {
-      AccountName: "",
-      AccessKey: "",
-      Endpoint: "",
-      Container: ""
+    Disk: {
+      Directory: "SourceDocuments"
     },
+    Azure: null,
     Aws: null,
-    Disk: null,
     Kvpbase: null
   },
   StorageParsed: {
-    Azure: {
-      AccountName: "",
-      AccessKey: "",
-      Endpoint: "",
-      Container: ""
+    Disk: {
+      Directory: "ParsedDocuments"
     },
+    Azure: null,
     Aws: null,
-    Disk: null,
     Kvpbase: null
-  },
-  Database: {
-    Type: "Sqlite",
-    Filename: "First/First.db",
-    Hostname: null,
-    Port: 0,
-    DatabaseName: null,
-    InstanceName: null,
-    Username: null,
-    Password: null,
-    Debug: true
   },  
+  Database: {
+    Type: "Mssql",
+    Filename: null,
+    Hostname: "localhost",
+    Port: 1433,
+    DatabaseName: "First",
+    InstanceName: "SQLEXPRESS",
+    Username: "root",
+    Password: "password",
+    Debug: true
+  },
   Options: {
     NormalizeCase: true,
     RemovePunctuation: true,

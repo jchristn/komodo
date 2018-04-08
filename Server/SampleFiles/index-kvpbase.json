@@ -1,7 +1,6 @@
 {
   IndexName: "First",
-  RootDirectory: "First",
-  DatabaseDebug: false,
+  RootDirectory: "First", 
   StorageSource: {
     Azure: null,
     Aws: null,
@@ -24,6 +23,17 @@
       ApiKey: ""
     }
   },
+  Database: {
+    Type: "Sqlite",
+    Filename: "First/First.db",
+    Hostname: null,
+    Port: 0,
+    DatabaseName: null,
+    InstanceName: null,
+    Username: null,
+    Password: null,
+    Debug: true
+  },  
   Options: {
     NormalizeCase: true,
     RemovePunctuation: true,

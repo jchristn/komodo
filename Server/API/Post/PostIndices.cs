@@ -32,13 +32,12 @@ namespace KomodoServer
                     new ErrorResponse(400, "Index already exists.", null).ToJson(true), true);
                 return resp;
             }
-
-            string error;
-            if (!_Index.AddIndex(req, out error))
+            
+            if (!_Index.AddIndex(req))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndices unable to add index: " + error);
+                _Logging.Log(LoggingModule.Severity.Warn, "PostIndices unable to add index");
                 resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
-                    new ErrorResponse(400, "Unable to create index.", error).ToJson(true), true);
+                    new ErrorResponse(400, "Unable to create index.", null).ToJson(true), true);
             }
 
             _Logging.Log(LoggingModule.Severity.Debug, "PostIndices created index " + req.IndexName);

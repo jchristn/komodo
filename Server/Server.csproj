@@ -149,6 +149,9 @@
     <None Include="SampleFiles\index-kvpbase.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SampleFiles\index-mssql.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="SampleFiles\index.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

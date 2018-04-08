@@ -4,9 +4,11 @@ Document parsing libraries and search API server in C#.
 ## Help, Feedback, Contribute
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.0.0.7
+## New in v1.0.0.8
 The following capabilities and fixes were introduced in this commit:
-- Fixed how JSON documents appear in search results (attached now as objects instead of as strings)
+- Support for Sqlite, Microsoft SQL Server (and Azure) for index metadata database
+- Index destroy now removes table rows and files
+- Multiple bugfixes
 
 ## Enclosed Projects
 Please refer to the ```README.md``` file in each project for its version history and quickstart.
@@ -52,3 +54,4 @@ v1.0.x
 - Index stats API
 - Fix score calculation from optional filter match
 - Moved storage configuration to Index object, updated scripts
+- Fixed how JSON documents appear in search results (attached now as objects instead of as strings)

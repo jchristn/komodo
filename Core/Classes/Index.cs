@@ -29,11 +29,11 @@ namespace KomodoCore
         /// Index options for the index.
         /// </summary>
         public IndexOptions Options { get; set; }
-
+         
         /// <summary>
-        /// Enable or disable database debugging.
+        /// Database settings for the index.
         /// </summary>
-        public bool DatabaseDebug { get; set; }
+        public DatabaseSettings Database { get; set; }
 
         /// <summary>
         /// Storage settings for the index source documents.
@@ -74,55 +74,7 @@ namespace KomodoCore
             Index ret = Common.DeserializeJson<Index>(contents);
             return ret;
         }
-
-        /// <summary>
-        /// Instantiate the Index.
-        /// </summary>
-        /// <param name="row">The DataRow from which the index should be instantiated.</param>
-        /// <returns>Index.</returns>
-        public static Index FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-            Index ret = new Index();
-            ret.IndexName = row["Name"].ToString();
-            ret.RootDirectory = row["Directory"].ToString();
-            ret.Options = Common.DeserializeJson<IndexOptions>(row["Options"].ToString());
-            ret.DatabaseDebug = false;
-            return ret;
-        }
-
-        /// <summary>
-        /// Instantiate the Index.
-        /// </summary>
-        /// <param name="table">The DataTable from which the index should be instantiated.</param>
-        /// <returns>Index.</returns>
-        public static Index FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-            if (table.Rows.Count != 1) throw new ArgumentException("Table has more than one row");
-            foreach (DataRow row in table.Rows)
-            {
-                return Index.FromDataRow(row);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Instantiate a list of Index objects.
-        /// </summary>
-        /// <param name="table">Te DataTable from which the list should be instantiated.</param>
-        /// <returns>List of Index.</returns>
-        public static List<Index> ListFromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-            List<Index> ret = new List<Index>();
-            foreach (DataRow row in table.Rows)
-            {
-                ret.Add(Index.FromDataRow(row));
-            }
-            return ret;
-        }
-
+         
         #endregion
 
         #region Public-Methods
@@ -134,6 +86,70 @@ namespace KomodoCore
         #endregion
 
         #region Public-Subordinate-Classes
+
+        /// <summary>
+        /// Database settings for the index.  Do not use the same database across multiple indices!
+        /// </summary>
+        public class DatabaseSettings
+        {
+            /// <summary>
+            /// The type of database.
+            /// </summary>
+            public DatabaseType Type { get; set; }
+
+            /// <summary>
+            /// Specify the filename when using the Sqlite database type.
+            /// </summary>
+            public string Filename { get; set; }
+
+            /// <summary>
+            /// Specify the hostname of the database server.
+            /// </summary>
+            public string Hostname { get; set; }
+
+            /// <summary>
+            /// Specify the port number for the database.
+            /// </summary>
+            public int Port { get; set; }
+
+            /// <summary>
+            /// Specify the name of the database.
+            /// </summary>
+            public string DatabaseName { get; set; }
+
+            /// <summary>
+            /// For Mssql SQL Express, specify the instance name.
+            /// </summary>
+            public string InstanceName { get; set; }
+
+            /// <summary>
+            /// The username to use when accessing the database.
+            /// </summary>
+            public string Username { get; set; }
+
+            /// <summary>
+            /// The password to use when accessing the database.
+            /// </summary>
+            public string Password { get; set; }
+
+            /// <summary>
+            /// Enable or disable query logging.
+            /// </summary>
+            public bool Debug { get; set; }
+             
+            /// <summary>
+            /// Retrieve default database settings.
+            /// </summary>
+            /// <returns>DatabaseSettings.</returns>
+            public static DatabaseSettings Default(string indexName, string rootDirectory)
+            {
+                DatabaseSettings ret = new DatabaseSettings();
+                ret.Type = DatabaseType.Sqlite;
+                ret.Filename = rootDirectory + "/" + indexName + ".db";
+                ret.Debug = false;
+                return ret;
+            }
+        }
 
         /// <summary>
         /// Storage settings for the index.

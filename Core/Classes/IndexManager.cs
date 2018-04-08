@@ -134,45 +134,54 @@ namespace KomodoCore
         /// <param name="index">The index.</param>
         /// <param name="error">Human-readable error string.</param>
         /// <returns>True if successful.</returns>
-        public bool AddIndex(Index index, out string error)
-        {
-            error = null;
-
-            if (index == null)
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index cannot be null");
-                return false;
-            }
-
-            index.IndexName = index.IndexName.ToLower();
-            Index currIndex = GetIndexByName(index.IndexName);
-            if (currIndex != null)
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + index.IndexName + " already exists, reusing");
-                return true;
-            }
-             
-            lock (_IndicesLock)
-            {
-                _Indices.Add(index);
-                if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(_Indices, true))))
+        public bool AddIndex(Index index)
+        { 
+            try
+            { 
+                if (index == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex unable to write new index to " + _IndicesFilename);
+                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index cannot be null");
                     return false;
                 }
+
+                index.IndexName = index.IndexName.ToLower();
+                Index currIndex = GetIndexByName(index.IndexName);
+                if (currIndex != null)
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + index.IndexName + " already exists, reusing");
+                    return true;
+                }
+
+                lock (_IndicesLock)
+                {
+                    _Indices.Add(index);
+                    if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(_Indices, true))))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex unable to write new index to " + _IndicesFilename);
+                        return false;
+                    }
+                }
+
+                LoadIndicesFile();
+
+                IndexClient idxClient = new IndexClient(index, _Logging);
+
+                lock (_IndexClientLock)
+                {
+                    _IndexClients.Add(idxClient);
+                }
+
+                _Logging.Log(LoggingModule.Severity.Info, "IndexManager AddIndex index " + index.IndexName + " added");
+                return true;
             }
-
-            LoadIndicesFile();
-
-            IndexClient idxClient = new IndexClient(index, _Logging);
-
-            lock (_IndexClientLock)
+            catch (Exception e)
             {
-                _IndexClients.Add(idxClient);
-            }
+                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + index.IndexName + " failed due to exception, cleaning up");
+                _Logging.LogException("IndexManager", "AddIndex", e);
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexManager AddIndex index " + index.IndexName + " added");
-            return true;
+                RemoveIndex(index.IndexName, true);
+                return false;
+            }
         }
 
         /// <summary>

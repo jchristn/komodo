@@ -73,3 +73,4 @@ D:\Code\Komodo\Core\Server\bin\Debug\XmlToPox.pdb
 D:\Code\Komodo\Core\Server\obj\Debug\Server.csprojResolveAssemblyReference.cache
 D:\Code\Komodo\Core\Server\obj\Debug\KomodoServer.exe
 D:\Code\Komodo\Core\Server\obj\Debug\KomodoServer.pdb
+D:\Code\Komodo\Core\Server\bin\Debug\SampleFiles\index-mssql.json

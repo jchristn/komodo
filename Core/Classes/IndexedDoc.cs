@@ -44,11 +44,6 @@ namespace KomodoCore
         public List<string> Terms { get; set; }
 
         /// <summary>
-        /// The options for the associated index.
-        /// </summary>
-        public IndexOptions Options { get; set; }
-
-        /// <summary>
         /// For HTML documents, the parsed HTML.
         /// </summary>
         public ParsedHtml Html { get; set; }
@@ -76,7 +71,9 @@ namespace KomodoCore
         #endregion
 
         #region Private-Members
-        
+         
+        private IndexOptions _Options { get; set; }
+
         #endregion
 
         #region Constructors-and-Factories
@@ -115,7 +112,7 @@ namespace KomodoCore
             ret.DocumentType = DocType.Html;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Html = html;
-            ret.Options = options;
+            ret._Options = options;
             ret.Postings = new List<Posting>();
             ret.Terms = new List<string>();
             ret.ProcessHtml();
@@ -138,7 +135,7 @@ namespace KomodoCore
             ret.DocumentType = DocType.Json;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Json = json;
-            ret.Options = options;
+            ret._Options = options;
             ret.Postings = new List<Posting>();
             ret.Terms = new List<string>();
             ret.ProcessJson();
@@ -161,7 +158,7 @@ namespace KomodoCore
             ret.DocumentType = DocType.Sql;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Sql = sql;
-            ret.Options = options;
+            ret._Options = options;
             ret.Postings = new List<Posting>();
             ret.Terms = new List<string>();
             ret.ProcessSql();
@@ -184,7 +181,7 @@ namespace KomodoCore
             ret.DocumentType = DocType.Xml;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Xml = xml;
-            ret.Options = options;
+            ret._Options = options;
             ret.Postings = new List<Posting>();
             ret.Terms = new List<string>();
             ret.ProcessXml();
@@ -207,7 +204,7 @@ namespace KomodoCore
             ret.DocumentType = DocType.Text;
             ret.NodeDocIds = new Dictionary<string, string>();
             ret.Text = text;
-            ret.Options = options;
+            ret._Options = options;
             ret.Postings = new List<Posting>();
             ret.Terms = new List<string>();
             ret.ProcessText();
@@ -259,7 +256,7 @@ namespace KomodoCore
                 ret += Environment.NewLine;
             }
 
-            ret += Options.ToString();
+            ret += _Options.ToString();
 
             /*
             if (InnerHtml != null) ret += "Inner HTML:" + Environment.NewLine + InnerHtml.ToString() + Environment.NewLine;
@@ -279,7 +276,7 @@ namespace KomodoCore
 
         private void ProcessHtml()
         {
-            Html = Normalizer.NormalizeHtml(Options, Html);
+            Html = Normalizer.NormalizeHtml(_Options, Html);
             GenerateHtmlNodeDocumentIds();
             GenerateHtmlPostingsAndTokens();
             Schema = Html.Schema;
@@ -288,7 +285,7 @@ namespace KomodoCore
 
         private void ProcessJson()
         {
-            Json = Normalizer.NormalizeJson(Options, Json);
+            Json = Normalizer.NormalizeJson(_Options, Json);
             GenerateJsonNodeDocumentIds();
             GenerateJsonPostingsAndTokens();
             Schema = Json.Schema;
@@ -297,7 +294,7 @@ namespace KomodoCore
 
         private void ProcessSql()
         {
-            Sql = Normalizer.NormalizeSql(Options, Sql);
+            Sql = Normalizer.NormalizeSql(_Options, Sql);
             GenerateSqlNodeDocumentIds();
             GenerateSqlPostingsAndTokens();
             Schema = Sql.Schema;
@@ -306,7 +303,7 @@ namespace KomodoCore
 
         private void ProcessXml()
         {
-            Xml = Normalizer.NormalizeXml(Options, Xml);
+            Xml = Normalizer.NormalizeXml(_Options, Xml);
             GenerateXmlNodeDocumentIds();
             GenerateXmlPostingsAndTokens();
             Schema = Xml.Schema;
@@ -315,7 +312,7 @@ namespace KomodoCore
 
         private void ProcessText()
         {
-            Text = Normalizer.NormalizeText(Options, Text);
+            Text = Normalizer.NormalizeText(_Options, Text);
             GenerateTextNodeDocumentIds();
             GenerateTextPostingsAndTokens();
             Schema = null;
@@ -426,8 +423,8 @@ namespace KomodoCore
 
                 if (!String.IsNullOrEmpty(Html.PageTitle))
                 {
-                    List<string> terms = Html.PageTitle.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = Html.PageTitle.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -435,7 +432,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
                         
                         Terms.Add(currTerm);
 
@@ -472,8 +469,8 @@ namespace KomodoCore
 
                 if (!String.IsNullOrEmpty(Html.MetaDescription))
                 {
-                    List<string> terms = Html.MetaDescription.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = Html.MetaDescription.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -481,7 +478,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -518,8 +515,8 @@ namespace KomodoCore
 
                 if (!String.IsNullOrEmpty(Html.MetaDescriptionOpengraph))
                 {
-                    List<string> terms = Html.MetaDescriptionOpengraph.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = Html.MetaDescriptionOpengraph.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -527,7 +524,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -564,8 +561,8 @@ namespace KomodoCore
 
                 if (!String.IsNullOrEmpty(Html.MetaKeywords))
                 {
-                    List<string> terms = Html.MetaKeywords.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = Html.MetaKeywords.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -573,7 +570,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -612,8 +609,8 @@ namespace KomodoCore
                 {
                     foreach (string curr in Html.MetaVideoTagsOpengraph)
                     {
-                        List<string> terms = curr.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                        if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                        List<string> terms = curr.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                        if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                         int termCount = 0;
                         foreach (string tempTerm in terms)
@@ -621,7 +618,7 @@ namespace KomodoCore
                             if (String.IsNullOrEmpty(tempTerm)) continue;
 
                             string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                            if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                             Terms.Add(currTerm);
 
@@ -665,7 +662,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -708,7 +705,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -745,8 +742,8 @@ namespace KomodoCore
 
                 if (!String.IsNullOrEmpty(Html.Head))
                 {
-                    List<string> terms = Html.Head.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = Html.Head.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -754,7 +751,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -791,8 +788,8 @@ namespace KomodoCore
 
                 if (!String.IsNullOrEmpty(Html.Body))
                 {
-                    List<string> terms = Html.Body.Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = Html.Body.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -800,7 +797,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -850,8 +847,8 @@ namespace KomodoCore
                     if (String.IsNullOrEmpty(documentId)) continue;
                     if (curr.Data == null) continue;
                          
-                    List<string> terms = curr.Data.ToString().Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -859,7 +856,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -907,8 +904,8 @@ namespace KomodoCore
                     if (String.IsNullOrEmpty(documentId)) continue;
                     if (curr.Data == null) continue;
 
-                    List<string> terms = curr.Data.ToString().Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -916,7 +913,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -964,8 +961,8 @@ namespace KomodoCore
                     if (String.IsNullOrEmpty(documentId)) continue;
                     if (curr.Data == null) continue;
 
-                    List<string> terms = curr.Data.ToString().Split(Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -973,7 +970,7 @@ namespace KomodoCore
                         if (String.IsNullOrEmpty(tempTerm)) continue;
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                        if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
 
@@ -1021,7 +1018,7 @@ namespace KomodoCore
                     if (String.IsNullOrEmpty(curr)) continue;
 
                     string currTerm = curr.Trim().Trim(Environment.NewLine.ToCharArray());
-                    if (currTerm.Length < Options.MinTokenLength || currTerm.Length > Options.MaxTokenLength) continue;
+                    if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                     Terms.Add(currTerm);
 
