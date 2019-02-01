@@ -44,3 +44,5 @@ D:\Code\Komodo\Core\Core\bin\Debug\XmlToPox.pdb
 D:\Code\Komodo\Core\Core\obj\Debug\KomodoCore.dll
 D:\Code\Komodo\Core\Core\obj\Debug\KomodoCore.pdb
 D:\Code\Komodo\Core\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+D:\code\komodo\Core\Core\obj\Debug\Core.csproj.CoreCompileInputs.cache
+D:\code\komodo\Core\Core\obj\Debug\Core.csproj.CopyComplete
