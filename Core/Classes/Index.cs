@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BlobHelper;
 
 namespace KomodoCore
 {
@@ -157,9 +158,14 @@ namespace KomodoCore
         public class StorageSettings
         {
             /// <summary>
-            /// Disk storage settings.
+            /// The type of external storage.
             /// </summary>
-            public DiskSettings Disk { get; set; }
+            public StorageType Type { get; set; }
+
+            /// <summary>
+            /// AWS S3 storage settings.
+            /// </summary>
+            public AwsSettings AwsS3 { get; set; }
 
             /// <summary>
             /// Microsoft Azure storage settings.
@@ -167,15 +173,15 @@ namespace KomodoCore
             public AzureSettings Azure { get; set; }
 
             /// <summary>
-            /// AWS S3 storage settings.
+            /// Disk storage settings.
             /// </summary>
-            public AwsSettings Aws { get; set; }
+            public DiskSettings Disk { get; set; }
 
             /// <summary>
             /// Kvpbase storage settings.
             /// </summary>
             public KvpbaseSettings Kvpbase { get; set; }
-
+              
             /// <summary>
             /// Retrieve default storage settings for source documents.
             /// </summary>
@@ -183,9 +189,10 @@ namespace KomodoCore
             public static StorageSettings DefaultSource()
             {
                 StorageSettings ret = new StorageSettings();
-                ret.Disk = DiskSettings.DefaultSource();
+                ret.Type = StorageType.Disk;
+                ret.Disk = new DiskSettings("SourceDocuments");
                 ret.Azure = null;
-                ret.Aws = null;
+                ret.AwsS3 = null;
                 ret.Kvpbase = null;
                 return ret;
             }
@@ -197,165 +204,13 @@ namespace KomodoCore
             public static StorageSettings DefaultParsed()
             {
                 StorageSettings ret = new StorageSettings();
-                ret.Disk = DiskSettings.DefaultParsed();
+                ret.Type = StorageType.Disk;
+                ret.Disk = new DiskSettings("ParsedDocuments");
                 ret.Azure = null;
-                ret.Aws = null;
+                ret.AwsS3 = null;
                 ret.Kvpbase = null;
                 return ret;
-            }
-
-            /// <summary>
-            /// Settings when using local filesystem for storage.
-            /// </summary>
-            public class DiskSettings
-            {
-                /// <summary>
-                /// The filesystem directory to use.
-                /// </summary>
-                public string Directory { get; set; }
-
-                /// <summary>
-                /// Retrieve default settings for source documents.
-                /// </summary>
-                /// <returns>DiskSettings.</returns>
-                public static DiskSettings DefaultSource()
-                {
-                    DiskSettings ret = new DiskSettings();
-                    ret.Directory = "SourceDocuments";
-                    return ret;
-                }
-
-                /// <summary>
-                /// Retrieve default settings for parsed documents.
-                /// </summary>
-                /// <returns>DiskSettings.</returns>
-                public static DiskSettings DefaultParsed()
-                {
-                    DiskSettings ret = new DiskSettings();
-                    ret.Directory = "ParsedDocuments";
-                    return ret;
-                }
-            }
-
-            /// <summary>
-            /// Settings when using Microsoft Azure BLOB Storage for storage.
-            /// </summary>
-            public class AzureSettings
-            {
-                /// <summary>
-                /// Microsoft Azure BLOB storage account name.
-                /// </summary>
-                public string AccountName { get; set; }
-
-                /// <summary>
-                /// Microsoft Azure BLOB storage access key.
-                /// </summary>
-                public string AccessKey { get; set; }
-
-                /// <summary>
-                /// Microsoft Azure BLOB storage endpoint.
-                /// </summary>
-                public string Endpoint { get; set; }
-
-                /// <summary>
-                /// Microsoft Azure BLOB storage container.
-                /// </summary>
-                public string Container { get; set; }
-
-                /// <summary>
-                /// Retrieve default settings.
-                /// </summary>
-                /// <returns>AzureSettings.</returns>
-                public static AzureSettings Default()
-                {
-                    AzureSettings ret = new AzureSettings();
-                    ret.AccountName = "";
-                    ret.AccessKey = "";
-                    ret.Endpoint = "";
-                    ret.Container = "";
-                    return ret;
-                }
-            }
-
-            /// <summary>
-            /// Settings when using AWS S3 for storage.
-            /// </summary>
-            public class AwsSettings
-            {
-                /// <summary>
-                /// AWS S3 access key.
-                /// </summary>
-                public string AccessKey { get; set; }
-
-                /// <summary>
-                /// AWS S3 secret key.
-                /// </summary>
-                public string SecretKey { get; set; }
-
-                /// <summary>
-                /// AWS S3 region.
-                /// </summary>
-                public string Region { get; set; }
-
-                /// <summary>
-                /// AWS S3 bucket.
-                /// </summary>
-                public string Bucket { get; set; }
-
-                /// <summary>
-                /// Retrieve default configuration.
-                /// </summary>
-                /// <returns>AwsSettings.</returns>
-                public static AwsSettings Default()
-                {
-                    AwsSettings ret = new AwsSettings();
-                    ret.AccessKey = "";
-                    ret.SecretKey = "";
-                    ret.Region = "";
-                    ret.Bucket = "";
-                    return ret;
-                }
-            }
-
-            /// <summary>
-            /// Settings when using kvpbase for storage.
-            /// </summary>
-            public class KvpbaseSettings
-            {
-                /// <summary>
-                /// Kvpbase endpoint URL.
-                /// </summary>
-                public string Endpoint { get; set; }
-
-                /// <summary>
-                /// Kvpbase user GUID.
-                /// </summary>
-                public string UserGuid { get; set; }
-
-                /// <summary>
-                /// Kvpbase container.
-                /// </summary>
-                public string Container { get; set; }
-
-                /// <summary>
-                /// Kvpbase API key.
-                /// </summary>
-                public string ApiKey { get; set; }
-
-                /// <summary>
-                /// Retrieve default settings.
-                /// </summary>
-                /// <returns></returns>
-                public static KvpbaseSettings Default()
-                {
-                    KvpbaseSettings ret = new KvpbaseSettings();
-                    ret.Endpoint = "http://localhost:8080/";
-                    ret.UserGuid = "default";
-                    ret.Container = "Blobs";
-                    ret.ApiKey = "default";
-                    return ret;
-                }
-            }
+            } 
         }
          
         #endregion

@@ -13,11 +13,9 @@ namespace KomodoServer
         {
             #region Process
 
-            switch (md.CurrRequest.Method.ToLower())
+            switch (md.CurrRequest.Method)
             {
-                case "get":
-                    #region get
-
+                case HttpMethod.GET: 
                     if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/indices", false))
                     {
                         return GetIndices(md);
@@ -30,24 +28,14 @@ namespace KomodoServer
                         if (md.CurrRequest.RawUrlEntries[1].ToLower().Equals("stats")) return GetIndexStats(md);
 
                         return GetIndexDocument(md);
-                    }
+                    } 
+                    break; 
 
-                    break;
-
-                #endregion
-
-                case "put":
-                    #region put
-
+                case HttpMethod.PUT:
                     if (md.CurrRequest.RawUrlEntries.Count == 1) return PutSearchIndex(md);
-
                     break;
 
-                #endregion
-
-                case "post":
-                    #region post
-
+                case HttpMethod.POST:
                     if (WatsonCommon.UrlEqual(md.CurrRequest.RawUrlWithoutQuery, "/_parse", false))
                     {
                         return PostParsePreview(md);
@@ -64,36 +52,21 @@ namespace KomodoServer
                     }
 
                     if (md.CurrRequest.RawUrlEntries.Count == 1) return PostIndexDoc(md);
-
                     break;
 
-                #endregion
-
-                case "delete":
-                    #region delete
+                case HttpMethod.DELETE: 
 
                     if (md.CurrRequest.RawUrlEntries.Count == 1) return DeleteIndex(md);
-                    if (md.CurrRequest.RawUrlEntries.Count == 2) return DeleteIndexDoc(md);
+                    if (md.CurrRequest.RawUrlEntries.Count == 2) return DeleteIndexDoc(md); 
+                    break; 
 
-                    break;
+                case HttpMethod.HEAD: 
+                    break; 
 
-                    #endregion
-
-                case "head":
-                    #region head
-                    
-                    break;
-
-                #endregion
-
-                default:
-                    #region default
-
+                default: 
                     _Logging.Log(LoggingModule.Severity.Warn, "UserApiHandler unknown HTTP method '" + md.CurrRequest.Method + "'");
                     return new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Unsupported method.", null).ToJson(true), true);
-
-                    #endregion
+                        new ErrorResponse(400, "Unsupported method.", null).ToJson(true), true); 
             }
 
             #endregion

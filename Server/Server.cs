@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,21 +17,29 @@ namespace KomodoServer
 {
     public partial class KomodoServer
     {
-        public static Config _Config { get; set; }
-        public static LoggingModule _Logging { get; set; }
-        public static ConnectionManager _Conn { get; set; }
-        public static UserManager _User { get; set; }
-        public static ApiKeyManager _ApiKey { get; set; } 
-        public static IndexManager _Index { get; set; }
-        public static ConsoleManager _Console { get; set; }
-        public static Server _Server { get; set; }
+        public static string _Version;
+
+        public static Config _Config;
+        public static LoggingModule _Logging;
+        public static ConnectionManager _Conn;
+        public static UserManager _User;
+        public static ApiKeyManager _ApiKey;
+        public static IndexManager _Index;
+        public static ConsoleManager _Console;
+        public static Server _Server;
 
         public static void Main(string[] args)
         {
             try
             {
+                #region Welcome
+
+                _Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
                 Console.WriteLine(Welcome());
-                
+
+                #endregion
+
                 #region Initial-Setup
 
                 bool initialSetup = false;
@@ -161,7 +171,7 @@ namespace KomodoServer
 
                 #region Options-Handler
 
-                if (req.Method.ToLower().Trim().Contains("option"))
+                if (req.Method == HttpMethod.OPTIONS)
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived " + Thread.CurrentThread.ManagedThreadId + ": OPTIONS request received");
                     resp = OptionsHandler(req);
@@ -207,35 +217,22 @@ namespace KomodoServer
 
                 #region Unauthenticated-API
 
-                switch (req.Method.ToLower())
+                switch (req.Method)
                 {
-                    case "get":
-                        #region get
-
-                        #region loopback
-
+                    case HttpMethod.GET: 
                         if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/loopback", false))
                         {
                             resp = new HttpResponse(req, true, 200, null, "text/plain", "Hello from Komodo!", true);
                             return resp;
-                        }
-
-                        #endregion
-                        
-                        #region version
+                        } 
 
                         if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/version", false))
                         {
-                            resp = new HttpResponse(req, true, 200, null, "text/plain", _Config.ProductVersion, true);
+                            resp = new HttpResponse(req, true, 200, null, "text/plain", _Version, true);
                             return resp;
-                        }
+                        } 
+                        break; 
 
-                        #endregion
-
-                        break;
-
-                    #endregion
-                         
                     default:
                         break;
                 }
@@ -426,7 +423,7 @@ namespace KomodoServer
                 "    <pre>";
 
             ret += Welcome();
-            ret += "Komodo Server version " + _Config.ProductVersion + Environment.NewLine;
+            ret += "Komodo Server version " + _Version + Environment.NewLine;
 
             ret +=
                 "    </pre>" +

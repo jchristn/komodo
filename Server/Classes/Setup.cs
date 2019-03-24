@@ -19,8 +19,6 @@ namespace KomodoServer
 
             DateTime timestamp = DateTime.Now;
             Config currConfig = new Config();
-            string separator = "";
-            string workingDir = "";
             
             ApiKey currApiKey = new ApiKey();
             List<ApiKey> apiKeys = new List<ApiKey>();
@@ -48,28 +46,10 @@ namespace KomodoServer
             #endregion
 
             #region Initial-Settings
-
-            currConfig.ProductVersion = "1.0.0";
-            currConfig.DocumentationUrl = "http://www.komodosearch.com/docs/";
-
-            int platform = (int)Environment.OSVersion.Platform;
-            if ((platform == 4) || (platform == 6) || (platform == 128))
-            {
-                currConfig.Environment = "linux";
-                currConfig.EnvironmentSeparator = "/";
-                separator = "/";
-            }
-            else
-            {
-                currConfig.Environment = "windows";
-                currConfig.EnvironmentSeparator = "\\";
-                separator = "\\";
-            }
-
-            currConfig.EnableConsole = 1;
-
-            workingDir = Environment.CurrentDirectory + separator;
-
+             
+            currConfig.DocumentationUrl = "https://github.com/jchristn/komodo"; 
+            currConfig.EnableConsole = true;
+            
             #endregion
 
             #region Set-Defaults-for-Config-Sections
@@ -77,17 +57,17 @@ namespace KomodoServer
             #region Files
 
             currConfig.Files = new Config.FilesSettings();
-            currConfig.Files.ApiKey = workingDir + "ApiKey.json";
-            currConfig.Files.ApiKeyPermission = workingDir + "ApiKeyPermission.json";
-            currConfig.Files.UserMaster = workingDir + "UserMaster.json";
-            currConfig.Files.Indices = workingDir + "Indices.json";
+            currConfig.Files.ApiKey = "./ApiKey.json";
+            currConfig.Files.ApiKeyPermission = "./ApiKeyPermission.json";
+            currConfig.Files.UserMaster = "./UserMaster.json";
+            currConfig.Files.Indices = "./Indices.json";
 
             #endregion
 
             #region Debug
 
             currConfig.Debug = new Config.DebugSettings();
-            currConfig.Debug.Database = 0;
+            currConfig.Debug.Database = false;
 
             #endregion
 
@@ -100,40 +80,19 @@ namespace KomodoServer
             currConfig.Server.HeaderVersion = "x-version";
             currConfig.Server.AdminApiKey = "komodoadmin";
             currConfig.Server.ListenerPort = 9090;
-
-            switch (currConfig.Environment)
-            {
-                case "linux":
-                    Console.WriteLine("");
-                    //          1         2         3         4         5         6         7
-                    // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                    Console.WriteLine("IMPORTANT: for Linux and Mac environments, Komodo can only receive requests on");
-                    Console.WriteLine("one hostname.  The hostname you set here must either be the hostname in the URL");
-                    Console.WriteLine("used by the requestor, or, set in the HOST header of each request.");
-                    Console.WriteLine("");
-                    Console.WriteLine("If you set the hostname to 'localhost', this node will ONLY receive and handle");
-                    Console.WriteLine("requests destined to 'localhost', i.e. it will only handle local requests.");
-                    Console.WriteLine("");
-
-                    currConfig.Server.ListenerHostname = Common.InputString("On which hostname shall this node listen?", "localhost", false);
-                    break;
-
-                case "windows":
-                    currConfig.Server.ListenerHostname = "+";
-                    break;
-            }
+            currConfig.Server.ListenerHostname = "127.0.0.1";
 
             #endregion
              
             #region Logging
 
             currConfig.Logging = new Config.LoggingSettings();
-            currConfig.Logging.ConsoleLogging = 1;
+            currConfig.Logging.ConsoleLogging = true;
             currConfig.Logging.Header = "komodo";
             currConfig.Logging.SyslogServerIp = "127.0.0.1";
             currConfig.Logging.SyslogServerPort = 514;
-            currConfig.Logging.LogHttpRequests = 0;
-            currConfig.Logging.LogHttpResponses = 0;
+            currConfig.Logging.LogHttpRequests = false;
+            currConfig.Logging.LogHttpResponses = false;
             currConfig.Logging.MinimumLevel = 1;
 
             #endregion
@@ -141,8 +100,8 @@ namespace KomodoServer
             #region REST
 
             currConfig.Rest = new Config.RestSettings();
-            currConfig.Rest.AcceptInvalidCerts = 1;
-            currConfig.Rest.UseWebProxy = 0;
+            currConfig.Rest.AcceptInvalidCerts = true;
+            currConfig.Rest.UseWebProxy = false;
 
             #endregion
 
@@ -158,14 +117,14 @@ namespace KomodoServer
             #region System-Config
 
             if (
-                Common.FileExists(workingDir + "System.json")
+                Common.FileExists("./System.json")
                 )
             {
                 Console.WriteLine("System configuration file already exists.");
                 if (Common.InputBoolean("Do you wish to overwrite this file", true))
                 {
-                    Common.DeleteFile(workingDir + "System.json");
-                    if (!Common.WriteFile(workingDir + "System.json", Common.SerializeJson(currConfig, true), false))
+                    Common.DeleteFile("./System.json");
+                    if (!Common.WriteFile("./System.json", Common.SerializeJson(currConfig, true), false))
                     {
                         Common.ExitApplication("Setup", "Unable to write System.json", -1);
                         return;
@@ -174,7 +133,7 @@ namespace KomodoServer
             }
             else
             {
-                if (!Common.WriteFile(workingDir + "System.json", Common.SerializeJson(currConfig, true), false))
+                if (!Common.WriteFile("./System.json", Common.SerializeJson(currConfig, true), false))
                 {
                     Common.ExitApplication("Setup", "Unable to write System.json", -1);
                     return;
@@ -384,17 +343,7 @@ namespace KomodoServer
             Console.WriteLine("");
             Console.WriteLine("Verify Komodo is running in your browser:");
             Console.WriteLine("");
-
-            switch (currConfig.Environment)
-            {
-                case "linux":
-                    Console.WriteLine("http://" + currConfig.Server.ListenerHostname + ":" + currConfig.Server.ListenerPort + "/loopback");
-                    break;
-
-                case "windows":
-                    Console.WriteLine("http://localhost:" + currConfig.Server.ListenerPort + "/loopback");
-                    break;
-            }
+            Console.WriteLine("http://localhost:" + currConfig.Server.ListenerPort + "/loopback");
             Console.WriteLine("");
             Console.WriteLine("Press ENTER to start.");
             Console.WriteLine("");

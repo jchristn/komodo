@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -245,7 +246,7 @@ namespace KomodoCore
             string docTypeStr = DocTypeString(docType);
 
             string url = indexName + "?type=" + docTypeStr;
-            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + HttpUtility.UrlEncode(Encoding.UTF8.GetBytes(sourceUrl));
+            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
 
             RestResponse resp = RestRequest.SendRequestSafe(
                 _Endpoint + url,

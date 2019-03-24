@@ -22,11 +22,9 @@ namespace KomodoServer
             
             #region Process-Request
 
-            switch (req.Method.ToLower())
+            switch (req.Method)
             {
-                case "get":
-                    #region get
-                    
+                case HttpMethod.GET: 
                     if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/admin/connections", false))
                     {
                         return new HttpResponse(req, true, 200, null, "application/json", Common.SerializeJson(_Conn.GetActiveConnections(), true), true);
@@ -37,37 +35,19 @@ namespace KomodoServer
                         return new HttpResponse(req, true, 200, null, "application/json", Common.SerializeJson(DiskInfo.GetAllDisks(), true), true);
                     }
                     
-                    break;
+                    break; 
 
-                #endregion
+                case HttpMethod.PUT: 
+                    break; 
 
-                case "put":
-                    #region put
+                case HttpMethod.POST: 
+                    break; 
 
-                    break;
+                case HttpMethod.DELETE: 
+                    break; 
 
-                #endregion
-
-                case "post":
-                    #region post
-                    
-                    break;
-
-                #endregion
-
-                case "delete":
-                    #region delete
-                    
-                    break;
-
-                #endregion
-
-                case "head":
-                    #region head
-
-                    break;
-
-                #endregion
+                case HttpMethod.HEAD: 
+                    break; 
 
                 default:
                     _Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown http method: " + req.Method);

@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>KomodoTestSdk</RootNamespace>
     <AssemblyName>TestSdk</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -62,11 +63,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{35de5468-73f7-4f8e-afb9-c9b4f717aad2}</Project>
+      <Project>{bacf9733-fb1a-424c-bb3e-d83ecfe36bac}</Project>
       <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sdk\Sdk.csproj">
-      <Project>{32a9776d-a671-4fa5-999e-9ad14fc6403f}</Project>
+      <Project>{4eb7aa11-f62b-45a1-9321-804373d5b65e}</Project>
       <Name>Sdk</Name>
     </ProjectReference>
   </ItemGroup>

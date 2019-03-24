@@ -11,12 +11,9 @@ namespace KomodoServer
     public class Config
     {
         #region Public-Members
-
-        public string ProductVersion { get; set; }
-        public string Environment { get; set; }
-        public string EnvironmentSeparator { get; set; }
+         
         public string DocumentationUrl { get; set; }
-        public int EnableConsole { get; set; }
+        public bool EnableConsole { get; set; }
 
         public ServerSettings Server { get; set; }
         public FilesSettings Files { get; set; } 
@@ -55,7 +52,7 @@ namespace KomodoServer
         {
             public string ListenerHostname { get; set; }
             public int ListenerPort { get; set; }
-            public int Ssl { get; set; }
+            public bool Ssl { get; set; }
 
             public string HeaderApiKey { get; set; }
             public string HeaderEmail { get; set; }
@@ -79,21 +76,21 @@ namespace KomodoServer
             public int SyslogServerPort;
             public string Header;
             public int MinimumLevel;
-            public int LogHttpRequests;
-            public int LogHttpResponses;
-            public int ConsoleLogging;
+            public bool LogHttpRequests;
+            public bool LogHttpResponses;
+            public bool ConsoleLogging;
         }
 
         public class DebugSettings
         {
-            public int Database { get; set; }
+            public bool Database { get; set; }
         }
 
         public class RestSettings
         {
-            public int UseWebProxy;
+            public bool UseWebProxy;
             public string WebProxyUrl;
-            public int AcceptInvalidCerts;
+            public bool AcceptInvalidCerts;
         }
 
         public class IndexerSettings

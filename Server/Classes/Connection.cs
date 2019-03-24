@@ -1,5 +1,6 @@
 ﻿using System;
 using SyslogLogging;
+using WatsonWebserver;
 
 namespace KomodoServer
 {
@@ -10,7 +11,7 @@ namespace KomodoServer
         public int ThreadId { get; set; }
         public string SourceIp { get; set; }
         public int SourcePort { get; set; }
-        public string Method { get; set; }
+        public HttpMethod Method { get; set; }
         public string RawUrl { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BlobHelper;
 using DatabaseWrapper;
 using SqliteWrapper;
 using SyslogLogging;
@@ -42,8 +43,8 @@ namespace KomodoCore
         private SqliteWrapper.DatabaseClient _SqliteDatabase = null;
         private IndexQueries _IndexQueries = null;
 
-        private BlobManager _BlobSource;
-        private BlobManager _BlobParsed;
+        private Blobs _BlobSource;
+        private Blobs _BlobParsed;
 
         private readonly object _DbLock;
 
@@ -91,10 +92,8 @@ namespace KomodoCore
 
             _IndexQueries = new IndexQueries(_Index, _SqlDatabase, _SqliteDatabase);
             InitializeDatabaseTables();
+            InitializeBlobManager();
 
-            _BlobSource = new BlobManager(_Index.StorageSource, _Logging);
-            _BlobParsed = new BlobManager(_Index.StorageParsed, _Logging);
-            
             _Logging.Log(LoggingModule.Severity.Info, "IndexClient started for index " + Name);
         }
 
@@ -722,6 +721,45 @@ namespace KomodoCore
             throw new ArgumentException("Unknown database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
         }
          
+        private void InitializeBlobManager()
+        { 
+            switch (_Index.StorageSource.Type)
+            {
+                case StorageType.AwsS3:
+                    _BlobSource = new Blobs(_Index.StorageSource.AwsS3);
+                    break;
+                case StorageType.Azure:
+                    _BlobSource = new Blobs(_Index.StorageSource.Azure);
+                    break;
+                case StorageType.Disk:
+                    _BlobSource = new Blobs(_Index.StorageSource.Disk);
+                    break;
+                case StorageType.Kvpbase:
+                    _BlobSource = new Blobs(_Index.StorageSource.Kvpbase);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown storage type in index " + _Index.IndexName);
+            }
+
+            switch (_Index.StorageParsed.Type)
+            {
+                case StorageType.AwsS3:
+                    _BlobParsed = new Blobs(_Index.StorageParsed.AwsS3);
+                    break;
+                case StorageType.Azure:
+                    _BlobParsed = new Blobs(_Index.StorageParsed.Azure);
+                    break;
+                case StorageType.Disk:
+                    _BlobParsed = new Blobs(_Index.StorageParsed.Disk);
+                    break;
+                case StorageType.Kvpbase:
+                    _BlobParsed = new Blobs(_Index.StorageParsed.Kvpbase);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown storage type in index " + _Index.IndexName);
+            } 
+        }
+
         private string Sanitize(string str)
         {
             if (String.IsNullOrEmpty(str)) throw new ArgumentNullException(nameof(str));
@@ -765,31 +803,41 @@ namespace KomodoCore
         private bool WriteSourceDocument(byte[] data, IndexedDoc doc)
         {
             string filename = doc.MasterDocId + ".source";
-            return _BlobSource.Write(filename, false, data);
+            return _BlobSource.Write(filename, false, data).Result;
         }
 
         private bool DeleteSourceDocument(string masterDocId)
         {
             string filename = masterDocId + ".source";
-            return _BlobSource.Delete(filename);
+            return _BlobSource.Delete(filename).Result;
         }
 
         private bool ReadSourceDocument(string masterDocId, out byte[] data)
         {
             string filename = masterDocId + ".source";
-            return _BlobSource.Get(filename, out data);
+            data = null;
+
+            try
+            {
+                data = _BlobSource.Get(filename).Result;
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private bool WriteParsedDocument(IndexedDoc doc)
         {
             string filename = doc.MasterDocId + ".parsed.json";
-            return _BlobParsed.Write(filename, false, Encoding.UTF8.GetBytes(Common.SerializeJson(doc, false)));
+            return _BlobParsed.Write(filename, false, Encoding.UTF8.GetBytes(Common.SerializeJson(doc, false))).Result;
         }
         
         private bool DeleteParsedDocument(string masterDocId)
         {
             string filename = masterDocId + ".parsed.json";
-            return _BlobParsed.Delete(filename);
+            return _BlobParsed.Delete(filename).Result;
         }
 
         private bool ReadParsedDocument(string masterDocId, out IndexedDoc doc)
@@ -797,20 +845,15 @@ namespace KomodoCore
             byte[] data;
             doc = null;
             string filename = masterDocId + ".parsed.json";
-            if (!_BlobParsed.Get(filename, out data))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " ReadParsedDocument " + filename + " does not exist");
-                return false;
-            }
-            
+
             try
             {
-                doc = Common.DeserializeJson<IndexedDoc>(data); 
+                data = _BlobParsed.Get(filename).Result;
+                doc = Common.DeserializeJson<IndexedDoc>(data);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " ReadParsedDocument exception while deserializing: " + e.Message);
                 return false;
             }
         }

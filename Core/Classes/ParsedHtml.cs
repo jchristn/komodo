@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web;
+using System.Threading.Tasks; 
 using HtmlAgilityPack;
 using NUglify;
 using RestWrapper;
@@ -275,7 +275,8 @@ namespace KomodoCore
         private string GetPageTitle()
         {
             Match m = Regex.Match(SourceContent, @"<title>\s*(.+?)\s*</title>");
-            if (m.Success) return HttpUtility.UrlDecode(m.Groups[1].Value);
+            if (m.Success)
+                return WebUtility.UrlDecode(m.Groups[1].Value);
             else return "";
         }
 
@@ -285,7 +286,7 @@ namespace KomodoCore
             if (mdnode != null)
             {
                 HtmlAttribute desc = mdnode.Attributes["content"];
-                return HttpUtility.UrlDecode(desc.Value);
+                return WebUtility.UrlDecode(desc.Value);
             }
 
             return null;
@@ -295,7 +296,7 @@ namespace KomodoCore
         {
             try
             {
-                return HttpUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@name='keywords']").Attributes["content"].Value);
+                return WebUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@name='keywords']").Attributes["content"].Value);
             }
             catch (Exception)
             {
@@ -307,7 +308,7 @@ namespace KomodoCore
         {
             try
             {
-                return HttpUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:image']").Attributes["content"].Value);
+                return WebUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:image']").Attributes["content"].Value);
             }
             catch (Exception)
             {
@@ -319,7 +320,7 @@ namespace KomodoCore
         {
             try
             {
-                return HttpUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:description']").Attributes["content"].Value);
+                return WebUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:description']").Attributes["content"].Value);
             }
             catch (Exception)
             {
@@ -336,7 +337,7 @@ namespace KomodoCore
                 var metas = HtmlDoc.DocumentNode.SelectNodes("//meta[@property='og:video:tag']");
                 foreach (HtmlNode curr in metas)
                 {
-                    ret.Add(HttpUtility.UrlDecode(curr.Attributes["content"].Value));
+                    ret.Add(WebUtility.UrlDecode(curr.Attributes["content"].Value));
                 }
 
                 return ret;
@@ -361,7 +362,7 @@ namespace KomodoCore
                 string href = m.Groups[1].Value;
                 href = FormatUrl(href.Trim());
                 
-                string formatted = FormatUrl(HttpUtility.UrlDecode(href));
+                string formatted = FormatUrl(WebUtility.UrlDecode(href));
                 if (!String.IsNullOrEmpty(formatted)) links.Add(formatted);
             }
 

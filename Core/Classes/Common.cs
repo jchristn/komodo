@@ -12,14 +12,10 @@ using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Newtonsoft.Json;
-using Mono.Posix;
-using Mono.Unix;
-using Mono.Unix.Native;
 
 namespace KomodoCore
 {
@@ -806,34 +802,7 @@ namespace KomodoCore
         #endregion
 
         #region Environment
-
-        public static bool IsAdmin()
-        {
-            int platform = (int)Environment.OSVersion.Platform;
-            if ((platform == 4) || (platform == 6) || (platform == 128))
-            {
-                #region Linux
-
-                // see http://stackoverflow.com/questions/2615997/winforms-console-application-on-mono-how-to-know-it-runs-as-root
-                if (Mono.Unix.Native.Syscall.getuid() == 0) return true;
-
-                #endregion
-            }
-            else
-            {
-                #region Windows
-
-                // see http://stackoverflow.com/questions/11660184/c-sharp-check-if-run-as-administrator
-                var identity = WindowsIdentity.GetCurrent();
-                var principal = new WindowsPrincipal(identity);
-                if (principal.IsInRole(WindowsBuiltInRole.Administrator)) return true;
-
-                #endregion
-            }
-
-            return false;
-        }
-
+         
         public static void ExitApplication(string method, string text, int returnCode)
         {
             Console.WriteLine("---");
@@ -927,31 +896,7 @@ namespace KomodoCore
         #endregion
 
         #region Directory
-
-        public static bool VerifyDirectoryAccess(string environment, string directory)
-        {
-            if (String.IsNullOrEmpty(directory)) return false;
-
-            switch (environment)
-            {
-                case "linux":
-                    var ufi = new UnixFileInfo(directory);
-                    if (!ufi.CanAccess(AccessModes.F_OK)) return false;
-                    if (!ufi.CanAccess(AccessModes.R_OK)) return false;
-                    if (!ufi.CanAccess(AccessModes.W_OK)) return false;
-                    if (!ufi.CanAccess(AccessModes.X_OK)) return false;
-                    return true;
-
-                case "windows":
-                    DirectorySecurity ds = Directory.GetAccessControl(directory);
-                    return true;
-
-                default:
-                    ExitApplication("Common", "Unknown environment: " + environment, -1);
-                    return false;
-            }
-        }
-
+        
         public static bool CreateDirectory(string dir)
         {
             Directory.CreateDirectory(dir);
