@@ -19,6 +19,7 @@ namespace KomodoTestSdk
                 #region Initialize
 
                 Welcome();
+
                 _Sdk = new KomodoSdk(
                     Common.InputString("Endpoint:", "http://localhost:9090/", false),
                     Common.InputString("API Key:", "default", false));

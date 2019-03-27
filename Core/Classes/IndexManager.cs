@@ -225,7 +225,7 @@ namespace KomodoCore
             {
                 IndexClient currIndexClient = _IndexClients.Where(x => x.Name.Equals(indexName)).FirstOrDefault();
 
-                if (cleanup)
+                if (cleanup && currIndexClient != null)
                 {
                     currIndexClient.Destroy();
                 }

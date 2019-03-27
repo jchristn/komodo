@@ -3,9 +3,11 @@
 Information storage, search, and retrieval libraries and server in C#.  
 
 ## Help, Feedback, Contribute
+
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
 ## New in v1.1.0
+
 The following capabilities and fixes were introduced in this commit:
 - Minor refactor
 - Retarget to .NET Core and .NET Framework
@@ -13,6 +15,7 @@ The following capabilities and fixes were introduced in this commit:
 - MIT license
 
 ## Enclosed Projects
+
 Please refer to the ```README.md``` file in each project for its version history and quickstart.
 The following projects are included:
 
@@ -25,9 +28,6 @@ The following projects are included:
 | Sdk           | Class library to add to consume API server                |
 | TestSdk       | Console application using the Sdk to consume API server   |
 
-## Important
-The current release of the Core library relies upon ```sqlite3.dll``` and stores both source and parsed documents on the local filesystem.  External storage for source documents is planned along with support for other database platforms.
-
 ## Starting the Server
 
 ### Using .NET Core
@@ -37,6 +37,7 @@ dotnet KomodoServer.dll
 ```
 
 ### Using .NET Framework
+
 Windows
 ```
 cd bin\debug
@@ -49,10 +50,12 @@ sudo mono --server KomodoServer.exe
 ```
 
 ## Project Roadmap
+
 The following items are on the horizon for this project.  No timeline has been established, and no commitment is being made to implementing these items:
 - Implement support for MySQL, and PostgreSQL as an alternative to Sqlite or MSSQL for index metadata
 
 ## Version History
+
 v1.0.x
 - Initial release with disk support
 - Tested support for Microsoft Azure BLOB storage, Kvpbase, and AWS S3 for source documents and parsed documents

@@ -25,6 +25,17 @@
       Azure: null,
       Aws: null,
       Kvpbase: null
+    },
+    "Database": {
+      Type: "Sqlite",
+      Filename: "First.db",
+      Hostname: "localhost",
+      Port: 8100,
+      DatabaseName: "firstidx",
+      InstanceName: "firstidx",
+      Username: "joel",
+      Password: "joel",
+      Debug: false
     }
   }
 }

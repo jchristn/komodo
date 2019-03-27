@@ -283,7 +283,7 @@ namespace KomodoServer
 
             #region Check-for-Null-Values
 
-            if (String.IsNullOrEmpty(data))
+            if (String.IsNullOrEmpty(data)) 
             {
                 errors.Add("No data supplied.");
                 return false;

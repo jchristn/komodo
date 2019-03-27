@@ -273,16 +273,8 @@ namespace KomodoServer
             errors = new List<string>();
             parsed = null;
 
-            #region Check-for-Null-Values
-
-            if (String.IsNullOrEmpty(xml))
-            {
-                errors.Add("No XML provided");
-                return false;
-            }
-
-            #endregion
-
+            if (String.IsNullOrEmpty(xml)) return false;
+            
             #region Process
 
             parsed = new ParsedXml();
