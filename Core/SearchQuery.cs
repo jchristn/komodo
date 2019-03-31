@@ -87,10 +87,6 @@ namespace Komodo.Core
 
         #region Private-Methods
 
-        #endregion
-
-        #region Subordinate-Classes
-         
-        #endregion
+        #endregion 
     }
 }

@@ -16,14 +16,18 @@ namespace Komodo.Core
     {
         #region Public-Members
         
+        /// <summary>
+        /// Accept or decline server certificates that cannot be verified or are invalid.
+        /// </summary>
+        public bool AcceptInvalidCertificates { get; set; }
+
         #endregion
 
         #region Private-Members
 
         private string _Endpoint;
         private string _ApiKey;
-        private Dictionary<string, string> _AuthHeaders;
-        private bool _IgnoreCertErrors = false;
+        private Dictionary<string, string> _AuthHeaders; 
 
         #endregion
 
@@ -46,20 +50,14 @@ namespace Komodo.Core
 
             _AuthHeaders = new Dictionary<string, string>();
             _AuthHeaders.Add("x-api-key", _ApiKey);
+
+            AcceptInvalidCertificates = true;
         }
 
         #endregion
 
         #region Public-Methods
-
-        /// <summary>
-        /// Ignore SSL certificate errors and warnings.
-        /// </summary>
-        public void IgnoreCertErrors()
-        {
-            _IgnoreCertErrors = true;
-        }
-
+         
         /// <summary>
         /// Test authenticated connectivity to Komodo.
         /// </summary>
@@ -70,7 +68,7 @@ namespace Komodo.Core
                 _Endpoint + "loopback",
                 "application/json",
                 "GET",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 null);
 
             if (resp != null && resp.StatusCode == 200)
@@ -106,7 +104,7 @@ namespace Komodo.Core
                 _Endpoint + "indices",
                 "application/json",
                 "GET",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 null);
 
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
@@ -118,6 +116,90 @@ namespace Komodo.Core
             else
             {
                 Debug.WriteLine("KomodoSdk GetIndices failed");
+                if (resp != null)
+                {
+                    Debug.WriteLine("Response:");
+                    Debug.WriteLine(resp.ToString());
+                }
+                else
+                {
+                    Debug.WriteLine("Response is null");
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Retrieve index details.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="index">Index details.</param>
+        /// <returns>True if successful.</returns>
+        public bool GetIndex(string indexName, out Index index)
+        {
+            index = null;
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+
+            string url = indexName;
+
+            RestResponse resp = RestRequest.SendRequestSafe(
+                _Endpoint + url,
+                "application/json",
+                "GET",
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
+                null);
+
+            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
+            { 
+                index = Common.DeserializeJson<Index>(resp.Data);
+                Debug.WriteLine("KomodoSdk GetIndex returning success");
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("KomodoSdk GetIndex failed");
+                if (resp != null)
+                {
+                    Debug.WriteLine("Response:");
+                    Debug.WriteLine(resp.ToString());
+                }
+                else
+                {
+                    Debug.WriteLine("Response is null");
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Retrieve statistics related to an index.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="stats">Index statistics.</param>
+        /// <returns>True if successful.</returns>
+        public bool GetIndexStats(string indexName, out IndexStats stats)
+        {
+            stats = null;
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+
+            string url = indexName + "/stats";
+
+            RestResponse resp = RestRequest.SendRequestSafe(
+                _Endpoint + url,
+                "application/json",
+                "GET",
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
+                null);
+
+            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
+            { 
+                stats = Common.DeserializeJson<IndexStats>(resp.Data);
+                Debug.WriteLine("KomodoSdk GetIndexStats returning success");
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("KomodoSdk GetIndexStats failed");
                 if (resp != null)
                 {
                     Debug.WriteLine("Response:");
@@ -148,7 +230,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "POST",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 Encoding.UTF8.GetBytes(Common.SerializeJson(index, true)));
 
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
@@ -189,7 +271,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "DELETE",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 null);
 
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
@@ -252,7 +334,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "POST",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 data);
 
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
@@ -296,7 +378,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "GET",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 null);
 
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
@@ -341,7 +423,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "GET",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 null);
 
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
@@ -383,7 +465,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "DELETE",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 null);
 
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
@@ -426,7 +508,7 @@ namespace Komodo.Core
                 _Endpoint + url,
                 "application/json",
                 "PUT",
-                null, null, false, _IgnoreCertErrors, _AuthHeaders,
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
                 Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
 
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299 && resp.Data != null && resp.Data.Length > 0)
@@ -438,6 +520,50 @@ namespace Komodo.Core
             else
             {
                 Debug.WriteLine("KomodoSdk Search failed");
+                if (resp != null)
+                {
+                    Debug.WriteLine("Response:");
+                    Debug.WriteLine(resp.ToString());
+                }
+                else
+                {
+                    Debug.WriteLine("Response is null");
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Enumerate source documents in the specified index.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="query">Enumeration query.</param>
+        /// <param name="result">Enumeration result.</param>
+        /// <returns>True if successful.</returns>
+        public bool Enumerate(string indexName, EnumerationQuery query, out EnumerationResult result)
+        {
+            result = null;
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            if (query == null) throw new ArgumentNullException(nameof(query));
+
+            string url = indexName + "/enumerate";
+
+            RestResponse resp = RestRequest.SendRequestSafe(
+                _Endpoint + url,
+                "application/json",
+                "PUT",
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
+                Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
+
+            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299 && resp.Data != null && resp.Data.Length > 0)
+            {
+                result = Common.DeserializeJson<EnumerationResult>(resp.Data);
+                Debug.WriteLine("KomodoSdk Search returning success");
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("KomodoSdk Enumerate failed");
                 if (resp != null)
                 {
                     Debug.WriteLine("Response:");

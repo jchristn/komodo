@@ -88,9 +88,9 @@ namespace Komodo.Core
 
         #region Private-Members
 
-        private string SourceUrl { get; set; }
-        private string SourceContent { get; set; }
-        private HtmlDocument HtmlDoc { get; set; }
+        private string _SourceUrl { get; set; }
+        private string _SourceContent { get; set; }
+        private HtmlDocument _HtmlDoc { get; set; }
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace Komodo.Core
         /// </summary>
         public ParsedHtml()
         {
-            HtmlDoc = new HtmlDocument();
+            _HtmlDoc = new HtmlDocument();
         }
 
         #endregion
@@ -117,8 +117,8 @@ namespace Komodo.Core
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!File.Exists(filename)) throw new FileNotFoundException(nameof(filename));
-            SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
-            HtmlDoc.LoadHtml(SourceContent);
+            _SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
+            _HtmlDoc.LoadHtml(_SourceContent);
             return ProcessSourceContent();
         }
 
@@ -134,9 +134,9 @@ namespace Komodo.Core
             if (resp == null) return false;
             if (resp.StatusCode != 200) return false;
             if (resp.Data == null || resp.Data.Length < 1) return false;
-            SourceContent = Encoding.UTF8.GetString(resp.Data);
-            SourceUrl = url;
-            HtmlDoc.LoadHtml(SourceContent);
+            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            _SourceUrl = url;
+            _HtmlDoc.LoadHtml(_SourceContent);
             return ProcessSourceContent();
         }
 
@@ -149,9 +149,9 @@ namespace Komodo.Core
         public bool LoadBytes(byte[] data, string sourceUrl)
         {
             if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data)); 
-            SourceUrl = sourceUrl;
-            SourceContent = Encoding.UTF8.GetString(data);
-            HtmlDoc.LoadHtml(SourceContent);
+            _SourceUrl = sourceUrl;
+            _SourceContent = Encoding.UTF8.GetString(data);
+            _HtmlDoc.LoadHtml(_SourceContent);
             return ProcessSourceContent();
         }
 
@@ -164,9 +164,9 @@ namespace Komodo.Core
         public bool LoadString(string data, string sourceUrl)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data)); 
-            SourceUrl = sourceUrl;
-            SourceContent = data;
-            HtmlDoc.LoadHtml(SourceContent);
+            _SourceUrl = sourceUrl;
+            _SourceContent = data;
+            _HtmlDoc.LoadHtml(_SourceContent);
             return ProcessSourceContent();
         }
 
@@ -225,8 +225,8 @@ namespace Komodo.Core
             // 
             // Load HTML Document
             //
-            HtmlDoc = new HtmlDocument();
-            HtmlDoc.LoadHtml(SourceContent);
+            _HtmlDoc = new HtmlDocument();
+            _HtmlDoc.LoadHtml(_SourceContent);
 
             //
             // Metadata
@@ -274,7 +274,7 @@ namespace Komodo.Core
 
         private string GetPageTitle()
         {
-            Match m = Regex.Match(SourceContent, @"<title>\s*(.+?)\s*</title>");
+            Match m = Regex.Match(_SourceContent, @"<title>\s*(.+?)\s*</title>");
             if (m.Success)
                 return WebUtility.UrlDecode(m.Groups[1].Value);
             else return "";
@@ -282,7 +282,7 @@ namespace Komodo.Core
 
         private string GetMetaDescription()
         {
-            HtmlNode mdnode = HtmlDoc.DocumentNode.SelectSingleNode("//meta[@name='description']");
+            HtmlNode mdnode = _HtmlDoc.DocumentNode.SelectSingleNode("//meta[@name='description']");
             if (mdnode != null)
             {
                 HtmlAttribute desc = mdnode.Attributes["content"];
@@ -296,7 +296,7 @@ namespace Komodo.Core
         {
             try
             {
-                return WebUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@name='keywords']").Attributes["content"].Value);
+                return WebUtility.UrlDecode(_HtmlDoc.DocumentNode.SelectSingleNode("//meta[@name='keywords']").Attributes["content"].Value);
             }
             catch (Exception)
             {
@@ -308,7 +308,7 @@ namespace Komodo.Core
         {
             try
             {
-                return WebUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:image']").Attributes["content"].Value);
+                return WebUtility.UrlDecode(_HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:image']").Attributes["content"].Value);
             }
             catch (Exception)
             {
@@ -320,7 +320,7 @@ namespace Komodo.Core
         {
             try
             {
-                return WebUtility.UrlDecode(HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:description']").Attributes["content"].Value);
+                return WebUtility.UrlDecode(_HtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:description']").Attributes["content"].Value);
             }
             catch (Exception)
             {
@@ -334,7 +334,7 @@ namespace Komodo.Core
 
             try
             {
-                var metas = HtmlDoc.DocumentNode.SelectNodes("//meta[@property='og:video:tag']");
+                var metas = _HtmlDoc.DocumentNode.SelectNodes("//meta[@property='og:video:tag']");
                 foreach (HtmlNode curr in metas)
                 {
                     ret.Add(WebUtility.UrlDecode(curr.Attributes["content"].Value));
@@ -356,7 +356,7 @@ namespace Komodo.Core
             // using regex
             //
             string regexImgSrc = @"<img[^>]*?src\s*=\s*[""']?([^'"" >]+?)[ '""][^>]*?>";
-            MatchCollection matchesImgSrc = Regex.Matches(SourceContent, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            MatchCollection matchesImgSrc = Regex.Matches(_SourceContent, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
             foreach (Match m in matchesImgSrc)
             {
                 string href = m.Groups[1].Value;
@@ -390,7 +390,7 @@ namespace Komodo.Core
             //
             // using HtmlAgilityPack
             //
-            foreach (HtmlNode link in HtmlDoc.DocumentNode.SelectNodes("//a[@href]"))
+            foreach (HtmlNode link in _HtmlDoc.DocumentNode.SelectNodes("//a[@href]"))
             {
                 string formatted = FormatUrl(link.GetAttributeValue("href", ""));
                 if (!String.IsNullOrEmpty(formatted)) links.Add(formatted);
@@ -405,18 +405,18 @@ namespace Komodo.Core
 
         private string GetHtmlHead()
         {
-            return HtmlDoc.DocumentNode.SelectSingleNode("//head").InnerText;
+            return _HtmlDoc.DocumentNode.SelectSingleNode("//head").InnerText;
         }
 
         private string GetHtmlBody()
         {
-            return HtmlDoc.DocumentNode.SelectSingleNode("//body").InnerText;
+            return _HtmlDoc.DocumentNode.SelectSingleNode("//body").InnerText;
         }
 
         private string GetHtmlBodyStripped()
         {
             HtmlDocument removed = new HtmlDocument();
-            removed.LoadHtml(SourceContent);
+            removed.LoadHtml(_SourceContent);
 
             var nodes = removed.DocumentNode.SelectNodes("//script|//style");
 
@@ -429,7 +429,7 @@ namespace Komodo.Core
         private List<string> GetTokens()
         {
             List<string> ret = new List<string>();
-            var result = Uglify.HtmlToText(SourceContent);
+            var result = Uglify.HtmlToText(_SourceContent);
             List<string> unfiltered = result.Code.Split(' ').ToList();
 
             if (unfiltered != null && unfiltered.Count > 0)
@@ -469,35 +469,35 @@ namespace Komodo.Core
             }
             else if (url.StartsWith("//"))
             {
-                if (SourceUrl.EndsWith("/"))
+                if (_SourceUrl.EndsWith("/"))
                 {
-                    formatted = SourceUrl + url.Substring(2);
+                    formatted = _SourceUrl + url.Substring(2);
                 }
                 else
                 {
-                    formatted = SourceUrl + url.Substring(1);
+                    formatted = _SourceUrl + url.Substring(1);
                 }
             }
             else if (url.StartsWith("/"))
             {
-                if (SourceUrl.EndsWith("/"))
+                if (_SourceUrl.EndsWith("/"))
                 {
-                    formatted = SourceUrl + url.Substring(1);
+                    formatted = _SourceUrl + url.Substring(1);
                 }
                 else
                 {
-                    formatted = SourceUrl + url;
+                    formatted = _SourceUrl + url;
                 }
             }
             else if (url.StartsWith("./"))
             {
-                if (SourceUrl.EndsWith("/"))
+                if (_SourceUrl.EndsWith("/"))
                 {
-                    formatted = SourceUrl + url.Substring(2);
+                    formatted = _SourceUrl + url.Substring(2);
                 }
                 else
                 {
-                    formatted = SourceUrl + "/" + url.Substring(2);
+                    formatted = _SourceUrl + "/" + url.Substring(2);
                 }
             }
             else

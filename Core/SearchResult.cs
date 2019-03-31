@@ -57,7 +57,7 @@ namespace Komodo.Core
         /// <summary>
         /// Documents that matched the query.
         /// </summary>
-        public List<Document> Matches { get; private set; } 
+        public List<Document> Documents { get; private set; } 
 
         #endregion
 
@@ -79,7 +79,7 @@ namespace Komodo.Core
             EndTimeUtc = null;
             TotalTimeMs = null;
             MatchCount = null;
-            Matches = new List<Document>(); 
+            Documents = new List<Document>(); 
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Komodo.Core
             EndTimeUtc = DateTime.Now.ToUniversalTime();
             TotalTimeMs = 0m;
             MatchCount = new MatchCounts();
-            Matches = new List<Document>(); 
+            Documents = new List<Document>(); 
         }
 
         #endregion
@@ -143,7 +143,7 @@ namespace Komodo.Core
             {
                 foreach (Document curr in documents)
                 {
-                    Matches.Add(curr);
+                    Documents.Add(curr);
                 }
 
                 MatchCount.FilterMatch = documents.Count;
@@ -155,92 +155,14 @@ namespace Komodo.Core
         /// </summary>
         public void SortMatchesByScore()
         {
-            if (Matches == null || Matches.Count < 1) return;
-            Matches = Matches.OrderByDescending(d => d.Score).ToList();
+            if (Documents == null || Documents.Count < 1) return;
+            Documents = Documents.OrderByDescending(d => d.Score).ToList();
         }
 
         #endregion
 
         #region Private-Methods
 
-        #endregion
-
-        #region Subordinate-Classes
-         
-        /// <summary>
-        /// A document matching the search query.
-        /// </summary>
-        public class Document
-        {
-            /// <summary>
-            /// Master document ID.
-            /// </summary>
-            public string MasterDocId { get; set; }
-
-            /// <summary>
-            /// The type of document.
-            /// </summary>
-            public DocType DocumentType { get; set; }
-
-            /// <summary>
-            /// The score of the document, between 0 and 1.  Only relevant when optional filters are supplied in the search.
-            /// </summary>
-            public decimal Score { get; set; }
-
-            /// <summary>
-            /// Error description strings, if any.
-            /// </summary>
-            public List<string> Errors { get; set; }
-
-            /// <summary>
-            /// The document's data, if requested in the search query.
-            /// </summary>
-            public object Data { get; set; }
-
-            /// <summary>
-            /// The parsed document, if requested in the search query.
-            /// </summary>
-            public object Parsed { get; set; }
-
-            /// <summary>
-            /// Instantiates the object.
-            /// </summary>
-            public Document()
-            {
-                MasterDocId = null;
-                DocumentType = DocType.Unknown;
-                Score = 0m;
-                Errors = new List<string>();
-                Data = null;
-                Parsed = null;
-            }
-        }
-
-        /// <summary>
-        /// Provides details about how many documents matched the supplied search.
-        /// </summary>
-        public class MatchCounts
-        {
-            /// <summary>
-            /// The number of documents that matched the specified terms.
-            /// </summary>
-            public int TermsMatch { get; set; }
-
-            /// <summary>
-            /// The number of documents that matchd the specified terms and the specified filters.
-            /// </summary>
-            public int FilterMatch { get; set; }
-
-            /// <summary>
-            /// Instantiates the object.
-            /// </summary>
-            public MatchCounts()
-            {
-                TermsMatch = 0;
-                FilterMatch = 0;
-            }
-        }
-
-        #endregion
+        #endregion 
     }
 }

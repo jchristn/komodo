@@ -71,16 +71,7 @@ namespace Komodo.Core
         #endregion
 
         #region Public-Methods
-
-        /// <summary>
-        /// Create a JSON from the error.
-        /// </summary>
-        /// <returns>JSON string.</returns>
-        public string ToJson()
-        {
-            return Common.SerializeJson(this, true);
-        }
-
+        
         #endregion
 
         #region Private-Methods

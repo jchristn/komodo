@@ -6,7 +6,7 @@
     <AssemblyName>Komodo.Server</AssemblyName>
     <RootNamespace>Komodo.Server</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>RESTful API server for Komodo Search</Description>

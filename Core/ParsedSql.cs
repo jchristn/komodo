@@ -49,16 +49,16 @@ namespace Komodo.Core
 
         #region Private-Members
         
-        private DatabaseClient Db { get; set; }
-        private string DbType { get; set; }
-        private string ServerHostname { get; set; }
-        private int ServerPort { get; set; }
-        private string User { get; set; }
-        private string Password { get; set; }
-        private string Instance { get; set; }
-        private string Database { get; set; }
-        private string Query { get; set; }
-        private DataTable SourceContent { get; set; }
+        private DatabaseClient _Database { get; set; }
+        private string _DbType { get; set; }
+        private string _DbHostname { get; set; }
+        private int _DbPort { get; set; }
+        private string _DbUser { get; set; }
+        private string _DbPass { get; set; }
+        private string _DbInstance { get; set; }
+        private string _DbName { get; set; }
+        private string _Query { get; set; }
+        private DataTable _SourceContent { get; set; }
 
         #endregion
 
@@ -96,23 +96,23 @@ namespace Komodo.Core
             if (String.IsNullOrEmpty(databaseName)) throw new ArgumentNullException(nameof(databaseName));
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
 
-            DbType = dbType;
-            ServerHostname = serverHostname;
-            ServerPort = serverPort;
-            User = user;
-            Password = pass;
-            Instance = instance;
-            Database = databaseName;
-            Query = query;
+            _DbType = dbType;
+            _DbHostname = serverHostname;
+            _DbPort = serverPort;
+            _DbUser = user;
+            _DbPass = pass;
+            _DbInstance = instance;
+            _DbName = databaseName;
+            _Query = query;
 
             switch (dbType)
             {
                 case "mssql":
-                    Db = new DatabaseClient(DbTypes.MsSql, serverHostname, serverPort, user, pass, instance, databaseName);
+                    _Database = new DatabaseClient(DbTypes.MsSql, serverHostname, serverPort, user, pass, instance, databaseName);
                     break;
 
                 case "mysql":
-                    Db = new DatabaseClient(DbTypes.MySql, serverHostname, serverPort, user, pass, instance, databaseName);
+                    _Database = new DatabaseClient(DbTypes.MySql, serverHostname, serverPort, user, pass, instance, databaseName);
                     break;
 
                 default:
@@ -130,8 +130,8 @@ namespace Komodo.Core
         {
             string ret = "";
             ret += "---" + Environment.NewLine;
-            ret += "  Database    : " + ServerHostname + ":" + ServerPort + " db " + Database + (String.IsNullOrEmpty(Instance) ? "" : " instance " + Instance) + Environment.NewLine;
-            ret += "  Query       : " + Query + Environment.NewLine;
+            ret += "  Database    : " + _DbHostname + ":" + _DbPort + " db " + _DbName + (String.IsNullOrEmpty(_DbInstance) ? "" : " instance " + _DbInstance) + Environment.NewLine;
+            ret += "  Query       : " + _Query + Environment.NewLine;
             ret += "  Rows        : " + Rows + Environment.NewLine;
             ret += "  Columns     : " + Columns + Environment.NewLine;
             ret += "  Nodes       : " + (Rows * Columns) + Environment.NewLine;
@@ -173,8 +173,8 @@ namespace Komodo.Core
 
         private bool ProcessSourceContent()
         {
-            SourceContent = Db.RawQuery(Query);
-            if (SourceContent == null || SourceContent.Rows.Count < 1)
+            _SourceContent = _Database.RawQuery(_Query);
+            if (_SourceContent == null || _SourceContent.Rows.Count < 1)
             {
                 Rows = 0;
                 Columns = 0;
@@ -183,7 +183,7 @@ namespace Komodo.Core
             }
 
             Flattened = new List<DataNode>();
-            List<Dictionary<string, object>> dicts = Common.DataTableToListDictionary(SourceContent);
+            List<Dictionary<string, object>> dicts = Common.DataTableToListDictionary(_SourceContent);
             foreach (Dictionary<string, object> dict in dicts)
             {
                 foreach (KeyValuePair<string, object> kvp in dict)
@@ -194,8 +194,8 @@ namespace Komodo.Core
 
             Schema = BuildSchema();
             Tokens = GetTokens();
-            Rows = SourceContent.Rows.Count;
-            Columns = SourceContent.Columns.Count;
+            Rows = _SourceContent.Rows.Count;
+            Columns = _SourceContent.Columns.Count;
 
             return true;
         }
@@ -250,14 +250,6 @@ namespace Komodo.Core
 
             return ret;
         }
-
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
 
         #endregion
     }

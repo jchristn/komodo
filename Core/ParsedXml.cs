@@ -56,10 +56,10 @@ namespace Komodo.Core
 
         #region Private-Members
         
-        private string SourceContent { get; set; }
-        private string SourceContentPlain { get; set; }
-        private string SourceUrl { get; set; }
-        private XElement CurrentXElement{ get; set; }
+        private string _SourceContent { get; set; }
+        private string _SourceContentPox { get; set; }
+        private string _SourceUrl { get; set; }
+        private XElement _XElement { get; set; }
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace Komodo.Core
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!File.Exists(filename)) throw new FileNotFoundException(nameof(filename));
-            SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
+            _SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
             return ProcessSourceContent();
         }
 
@@ -101,8 +101,8 @@ namespace Komodo.Core
             if (resp == null) return false;
             if (resp.StatusCode != 200) return false;
             if (resp.Data == null || resp.Data.Length < 1) return false;
-            SourceContent = Encoding.UTF8.GetString(resp.Data);
-            SourceUrl = url;
+            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            _SourceUrl = url;
             return ProcessSourceContent();
         }
 
@@ -116,8 +116,8 @@ namespace Komodo.Core
         {
             if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
             if (String.IsNullOrEmpty(sourceUrl)) throw new ArgumentNullException(nameof(sourceUrl));
-            SourceUrl = sourceUrl;
-            SourceContent = Encoding.UTF8.GetString(data);
+            _SourceUrl = sourceUrl;
+            _SourceContent = Encoding.UTF8.GetString(data);
             return ProcessSourceContent();
         }
 
@@ -131,8 +131,8 @@ namespace Komodo.Core
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data));
             if (String.IsNullOrEmpty(sourceUrl)) throw new ArgumentNullException(nameof(sourceUrl));
-            SourceUrl = sourceUrl;
-            SourceContent = data;
+            _SourceUrl = sourceUrl;
+            _SourceContent = data;
             return ProcessSourceContent();
         }
 
@@ -188,8 +188,8 @@ namespace Komodo.Core
             int nodeCount;
             int containerCount;
 
-            SourceContentPlain = XmlTools.Convert(SourceContent);
-            CurrentXElement = XElement.Parse(SourceContentPlain);
+            _SourceContentPox = XmlTools.Convert(_SourceContent);
+            _XElement = XElement.Parse(_SourceContentPox);
             
             Flattened = Flatten(out maxDepth, out nodeCount, out containerCount);
             MaxDepth = maxDepth;
@@ -210,7 +210,7 @@ namespace Komodo.Core
             containerCount = 0;
 
             List<DataNode> nodes = new List<DataNode>();
-            ExtractTokensAndValues(CurrentXElement, "", 0, out nodes, out maxDepth, out nodeCount, out containerCount);
+            ExtractTokensAndValues(_XElement, "", 0, out nodes, out maxDepth, out nodeCount, out containerCount);
             return nodes;
         }
 
@@ -344,14 +344,6 @@ namespace Komodo.Core
             return ret;
         }
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
+        #endregion 
     }
 }

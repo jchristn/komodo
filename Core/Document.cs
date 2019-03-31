@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using DatabaseWrapper;
 
 namespace Komodo.Core
-{ 
+{
     /// <summary>
-    /// A document matching a search query or enumeration.
+    /// A document matching a search query.
     /// </summary>
     public class Document
     {
+        #region Public-Members
+
         /// <summary>
         /// Master document ID.
         /// </summary>
@@ -42,6 +44,14 @@ namespace Komodo.Core
         /// </summary>
         public object Parsed { get; set; }
 
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
         /// <summary>
         /// Instantiates the object.
         /// </summary>
@@ -53,6 +63,16 @@ namespace Komodo.Core
             Errors = new List<string>();
             Data = null;
             Parsed = null;
-        } 
+        }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
+
+        #endregion
     }
 }

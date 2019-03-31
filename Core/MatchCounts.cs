@@ -1,25 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using DatabaseWrapper;
 
 namespace Komodo.Core
-{
+{ 
     /// <summary>
-    /// A filter for the query.
+    /// Provides details about how many documents matched the supplied search.
     /// </summary>
-    public class QueryFilter
+    public class MatchCounts
     {
         #region Public-Members
 
         /// <summary>
-        /// List of terms upon which to match.
+        /// The number of documents that matched the specified terms.
         /// </summary>
-        public List<string> Terms { get; set; }
+        public int TermsMatch { get; set; }
 
         /// <summary>
-        /// List of filters upon which to match.
+        /// The number of documents that matchd the specified terms and the specified filters.
         /// </summary>
-        public List<SearchFilter> Filter { get; set; }
+        public int FilterMatch { get; set; }
 
         #endregion
 
@@ -28,14 +31,14 @@ namespace Komodo.Core
         #endregion
 
         #region Constructors-and-Factories
-
+        
         /// <summary>
-        /// Instantiate the object.
+        /// Instantiates the object.
         /// </summary>
-        public QueryFilter()
+        public MatchCounts()
         {
-            Terms = new List<string>();
-            Filter = new List<SearchFilter>();
+            TermsMatch = 0;
+            FilterMatch = 0;
         }
 
         #endregion

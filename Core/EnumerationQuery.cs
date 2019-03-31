@@ -41,6 +41,9 @@ namespace Komodo.Core
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
         public EnumerationQuery()
         {
 

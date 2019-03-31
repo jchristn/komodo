@@ -9,9 +9,9 @@ If you have any issues or feedback, please file an issue here in Github.  We'd l
 ## New in v1.1.x
 
 The following capabilities and fixes were introduced in this commit:
-- Minor refactor of server and core classes including namespace/organization changes
-- Collapsed retrieval of querystring items into request parameters
-- Error ID is now an enum
+
+- Refactor of server and core classes 
+- Collapsed retrieval of querystring items into request parameters 
 - Enumeration of indexed documents
 - Retarget to .NET Core and .NET Framework
 - Eliminate standalone sqlite DLLs
@@ -20,6 +20,7 @@ The following capabilities and fixes were introduced in this commit:
 ## Enclosed Projects
 
 Please refer to the ```README.md``` file in each project for its version history and quickstart.
+
 The following projects are included:
 
 | Project       | Description                                               |
@@ -55,6 +56,7 @@ sudo mono --server KomodoServer.exe
 ## Project Roadmap
 
 The following items are on the horizon for this project.  No timeline has been established, and no commitment is being made to implementing these items:
+
 - Implement support for MySQL, and PostgreSQL as an alternative to Sqlite or MSSQL for index metadata
 
 ## Version History

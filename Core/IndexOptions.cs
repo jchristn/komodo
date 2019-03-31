@@ -152,18 +152,6 @@ namespace Komodo.Core
             return new List<string>();
         }
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
-
-        #region Public-Subordinate-Classes
-         
-        #endregion
+        #endregion 
     }
 }

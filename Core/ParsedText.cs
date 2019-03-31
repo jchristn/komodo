@@ -28,8 +28,8 @@ namespace Komodo.Core
 
         #region Private-Members
         
-        private string SourceContent { get; set; }
-        private string SourceUrl { get; set; }
+        private string _SourceContent { get; set; }
+        private string _SourceUrl { get; set; }
 
         private char[] SplitChars = new char[] { ' ', ',', '.', '#', ':', ';', '\'', '\"', '-', '_' };
 
@@ -58,7 +58,7 @@ namespace Komodo.Core
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!File.Exists(filename)) throw new FileNotFoundException(nameof(filename));
-            SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
+            _SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
             return ProcessSourceContent();
         }
 
@@ -74,8 +74,8 @@ namespace Komodo.Core
             if (resp == null) return false;
             if (resp.StatusCode != 200) return false;
             if (resp.Data == null || resp.Data.Length < 1) return false;
-            SourceContent = Encoding.UTF8.GetString(resp.Data);
-            SourceUrl = url;
+            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            _SourceUrl = url;
             return ProcessSourceContent();
         }
 
@@ -88,8 +88,8 @@ namespace Komodo.Core
         public bool LoadBytes(byte[] data, string sourceUrl)
         {
             if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data)); 
-            SourceUrl = sourceUrl;
-            SourceContent = Encoding.UTF8.GetString(data);
+            _SourceUrl = sourceUrl;
+            _SourceContent = Encoding.UTF8.GetString(data);
             return ProcessSourceContent();
         }
 
@@ -102,8 +102,8 @@ namespace Komodo.Core
         public bool LoadString(string data, string sourceUrl)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data)); 
-            SourceUrl = sourceUrl;
-            SourceContent = data;
+            _SourceUrl = sourceUrl;
+            _SourceContent = data;
             return ProcessSourceContent();
         }
 
@@ -141,7 +141,7 @@ namespace Komodo.Core
         {
             List<string> temp = new List<string>();
 
-            temp = new List<string>(SourceContent.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries));
+            temp = new List<string>(_SourceContent.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries));
 
             if (temp != null && temp.Count > 0)
             {
@@ -161,14 +161,6 @@ namespace Komodo.Core
             return temp;
         }
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
+        #endregion 
     }
 }

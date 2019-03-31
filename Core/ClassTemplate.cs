@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Komodo.Core
 {
+    /// <summary>
+    /// File used as a template when defining a new class.
+    /// </summary>
     internal class ClassTemplate
     {
         #region Public-Members
@@ -18,6 +21,11 @@ namespace Komodo.Core
 
         #region Constructors-and-Factories
 
+        public ClassTemplate()
+        {
+
+        }
+
         #endregion
 
         #region Public-Methods
@@ -26,14 +34,6 @@ namespace Komodo.Core
 
         #region Private-Methods
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
+        #endregion 
     }
 }

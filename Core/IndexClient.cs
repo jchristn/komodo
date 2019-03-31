@@ -605,6 +605,13 @@ namespace Komodo.Core
             return stats;
         }
 
+        /// <summary>
+        /// Enumerate source documents held by the index.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="result">The result of the enumeration.</param>
+        /// <param name="error">Error code associated with the operation.</param>
+        /// <returns>True if successful.</returns>
         public bool Enumerate(EnumerationQuery query, out EnumerationResult result, out ErrorCode error)
         {
             error = null;
@@ -1317,11 +1324,11 @@ namespace Komodo.Core
 
                 if (filteredDocIds != null && filteredDocIds.Count > 0)
                 {
-                    List<SearchResult.Document> documents = new List<SearchResult.Document>();
+                    List<Document> documents = new List<Document>();
 
                     foreach (string currDocId in filteredDocIds)
                     {
-                        SearchResult.Document currDoc = new SearchResult.Document();
+                        Document currDoc = new Document();
                         currDoc.MasterDocId = currDocId;
                         currDoc.Score = Convert.ToDecimal(scores[currDocId].ToString("N4"));
 

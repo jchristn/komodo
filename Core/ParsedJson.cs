@@ -55,9 +55,9 @@ namespace Komodo.Core
 
         #region Private-Members
         
-        private string SourceContent { get; set; }
-        private string SourceUrl { get; set; }
-        private JToken CurrentJtoken { get; set; }
+        private string _SourceContent { get; set; }
+        private string _SourceUrl { get; set; }
+        private JToken _JToken { get; set; }
 
         #endregion
 
@@ -89,7 +89,7 @@ namespace Komodo.Core
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!File.Exists(filename)) throw new FileNotFoundException(nameof(filename));
-            SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
+            _SourceContent = Encoding.UTF8.GetString(File.ReadAllBytes(filename));
             return ProcessSourceContent();
         }
 
@@ -105,8 +105,8 @@ namespace Komodo.Core
             if (resp == null) return false;
             if (resp.StatusCode != 200) return false;
             if (resp.Data == null || resp.Data.Length < 1) return false;
-            SourceContent = Encoding.UTF8.GetString(resp.Data);
-            SourceUrl = url;
+            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            _SourceUrl = url;
             return ProcessSourceContent();
         }
 
@@ -119,8 +119,8 @@ namespace Komodo.Core
         public bool LoadBytes(byte[] data, string sourceUrl)
         {
             if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data)); 
-            SourceUrl = sourceUrl;
-            SourceContent = Encoding.UTF8.GetString(data);
+            _SourceUrl = sourceUrl;
+            _SourceContent = Encoding.UTF8.GetString(data);
             return ProcessSourceContent();
         }
 
@@ -133,8 +133,8 @@ namespace Komodo.Core
         public bool LoadString(string data, string sourceUrl)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data)); 
-            SourceUrl = sourceUrl;
-            SourceContent = data;
+            _SourceUrl = sourceUrl;
+            _SourceContent = data;
             return ProcessSourceContent();
         }
 
@@ -190,7 +190,7 @@ namespace Komodo.Core
             int arrayCount;
             int nodeCount;
 
-            CurrentJtoken = JToken.Parse(SourceContent);
+            _JToken = JToken.Parse(_SourceContent);
 
             Flattened = Flatten(out maxDepth, out arrayCount, out nodeCount);
             MaxDepth = maxDepth;
@@ -211,7 +211,7 @@ namespace Komodo.Core
             nodeCount = 0;
 
             List<DataNode> nodes = new List<DataNode>();
-            ExtractTokensAndValues(CurrentJtoken, "", 0, out nodes, out maxDepth, out arrayCount, out nodeCount);
+            ExtractTokensAndValues(_JToken, "", 0, out nodes, out maxDepth, out arrayCount, out nodeCount);
             return nodes;
         }
 
@@ -355,14 +355,6 @@ namespace Komodo.Core
             return ret;
         }
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
+        #endregion 
     }
 }

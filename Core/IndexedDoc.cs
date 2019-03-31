@@ -1054,14 +1054,6 @@ namespace Komodo.Core
 
         #endregion
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
+        #endregion 
     }
 }
