@@ -5,7 +5,7 @@
     <AssemblyName>KomodoCore</AssemblyName>
     <RootNamespace>KomodoCore</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Core Library</Product>
     <Description>Core libraries for Komodo Search</Description>
@@ -15,7 +15,7 @@
     <RepositoryType>Github</RepositoryType>
     <PackageLicenseUrl>https://github.com/jchristn/komodo/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageTags>komodo search index retrieval rest api server find</PackageTags>
-    <PackageReleaseNotes>Refactor, retarget to .NET Core and .NET Framework</PackageReleaseNotes>
+    <PackageReleaseNotes>Classes for SourceDocument and ParsedDocument</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

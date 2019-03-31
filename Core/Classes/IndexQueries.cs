@@ -487,6 +487,30 @@ namespace KomodoCore
             throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
         }
 
+        /// <summary>
+        /// Generate the query to retrieve source documents based on supplied enumeration query.
+        /// </summary>
+        /// <param name="query">Enumeration query.</param>
+        /// <returns>String.</returns>
+        public string SelectSourceDocumentsByEnumerationQuery(EnumerationQuery query)
+        {
+            string ret = "SELECT * FROM SourceDocuments ";
+
+            ret += SearchFilterToWhereClause(query.Filters);
+
+            if (query.MaxResults != null)
+            {
+                ret += "LIMIT " + query.MaxResults + " ";
+            }
+
+            if (query.StartIndex != null)
+            {
+                ret += "OFFSET " + query.StartIndex + " ";
+            }
+
+            return ret;
+        }
+
         #endregion
 
         #region Private-Methods
@@ -496,6 +520,71 @@ namespace KomodoCore
             if (String.IsNullOrEmpty(str)) throw new ArgumentNullException(nameof(str));
             if (_SqlDatabase != null) return _SqlDatabase.SanitizeString(str);
             else return SqliteWrapper.DatabaseClient.SanitizeString(str);
+        }
+
+        private string SearchFilterToWhereClause(List<SearchFilter> filters)
+        {
+            string ret = "";
+
+            if (filters != null && filters.Count > 0)
+            {
+                ret += "WHERE ";
+                int added = 0;
+
+                foreach (SearchFilter curr in filters)
+                {
+                    if (String.IsNullOrEmpty(curr.Field)) continue;
+
+                    string currSf = Sanitize(curr.Field);
+
+                    switch (curr.Condition)
+                    {
+                        case SearchCondition.Contains:
+                            currSf += " LIKE '%" + Sanitize(curr.Value) + "%' ";
+                            break;
+                        case SearchCondition.ContainsNot:
+                            currSf += " NOT LIKE '%" + Sanitize(curr.Value) + "%' ";
+                            break;
+                        case SearchCondition.EndsWith:
+                            currSf += " LIKE '%" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.Equals:
+                            currSf += " = '" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.GreaterThan:
+                            currSf += " > '" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.GreaterThanOrEqualTo:
+                            currSf += " >= '" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.IsNotNull:
+                            currSf += " IS NOT NULL ";
+                            break;
+                        case SearchCondition.IsNull:
+                            currSf += " IS NULL "; 
+                            break;
+                        case SearchCondition.LessThan:
+                            currSf += " < '" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.LessThanOrEqualTo:
+                            currSf += " <= '" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.NotEquals:
+                            currSf += " != '" + Sanitize(curr.Value) + "' ";
+                            break;
+                        case SearchCondition.StartsWith:
+                            currSf += " LIKE '" + Sanitize(curr.Value) + "%' ";
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    if (added > 0) ret += ",";
+                    ret += currSf;
+                }
+            }
+
+            return ret;
         }
 
         #endregion

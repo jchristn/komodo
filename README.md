@@ -6,10 +6,11 @@ Information storage, search, and retrieval libraries and server in C#.
 
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.1.0
+## New in v1.1.x
 
 The following capabilities and fixes were introduced in this commit:
 - Minor refactor
+- Enumeration of indexed documents
 - Retarget to .NET Core and .NET Framework
 - Eliminate standalone sqlite DLLs
 - MIT license

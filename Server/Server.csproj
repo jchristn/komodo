@@ -6,7 +6,7 @@
     <AssemblyName>KomodoServer</AssemblyName>
     <RootNamespace>KomodoServer</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>RESTful API server for Komodo Search</Description>
@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>restful api server find index komodo search</PackageTags>
-    <PackageReleaseNotes>Refactor, retarget to .NET Core and .NET Framework</PackageReleaseNotes>
+    <PackageReleaseNotes>Enumeration of source documents within an index</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

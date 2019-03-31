@@ -25,7 +25,7 @@ namespace KomodoServer
 
                     if (md.CurrRequest.RawUrlEntries.Count == 2)
                     {
-                        if (md.CurrRequest.RawUrlEntries[1].ToLower().Equals("stats")) return GetIndexStats(md);
+                        if (md.CurrRequest.RawUrlEntries[1].ToLower().Equals("stats")) return GetIndexStats(md); 
 
                         return GetIndexDocument(md);
                     } 
@@ -33,6 +33,11 @@ namespace KomodoServer
 
                 case HttpMethod.PUT:
                     if (md.CurrRequest.RawUrlEntries.Count == 1) return PutSearchIndex(md);
+                    if (md.CurrRequest.RawUrlEntries.Count == 2
+                        && md.CurrRequest.RawUrlEntries[1].Equals("enumerate"))
+                    {
+                        return PutEnumerateIndex(md);
+                    } 
                     break;
 
                 case HttpMethod.POST:

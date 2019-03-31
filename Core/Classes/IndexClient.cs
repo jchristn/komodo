@@ -605,6 +605,52 @@ namespace KomodoCore
             return stats;
         }
 
+        public bool Enumerate(EnumerationQuery query, out EnumerationResult result, out ErrorCode error)
+        {
+            error = null;
+            result = new EnumerationResult(query);
+            result.MarkStarted();
+
+            #region Check-for-Null-Values
+
+            if (_Destroying)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Enumerate index is being destroyed");
+                error = new ErrorCode("DESTROY_IN_PROGRESS");
+                return false;
+            }
+
+            if (query == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Enumerate query not supplied");
+                error = new ErrorCode("MISSING_PARAM", "Query");
+                return false;
+            }
+             
+            #endregion
+
+            #region Process
+
+            if (!String.IsNullOrEmpty(query.PostbackUrl))
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " Enumeration starting async search with POSTback to " + query.PostbackUrl);
+                Task.Run(() => EnumerationTaskWrapper(query));
+
+                result = new EnumerationResult(query);
+                result.Async = true;
+                result.IndexName = Name;
+                result.MarkStarted();
+
+                return true;
+            }
+            else
+            {
+                return EnumerationInternal(query, out result, out error);
+            }
+
+            #endregion
+        }
+
         #endregion
 
         #region Private-Methods
@@ -933,7 +979,7 @@ namespace KomodoCore
                 return false;
             }
 
-            foreach (SearchQuery.SearchFilter currFilter in query.Required.Filter)
+            foreach (SearchFilter currFilter in query.Required.Filter)
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
@@ -978,7 +1024,7 @@ namespace KomodoCore
                 return false;
             }
 
-            foreach (SearchQuery.SearchFilter currFilter in query.Required.Filter)
+            foreach (SearchFilter currFilter in query.Required.Filter)
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
@@ -1020,7 +1066,7 @@ namespace KomodoCore
                 return false;
             }
 
-            foreach (SearchQuery.SearchFilter currFilter in query.Required.Filter)
+            foreach (SearchFilter currFilter in query.Required.Filter)
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
@@ -1050,7 +1096,7 @@ namespace KomodoCore
             return null;
         }
          
-        private bool FilterMatch(SearchQuery.SearchFilter filter, DataNode node)
+        private bool FilterMatch(SearchFilter filter, DataNode node)
         {
             if (filter == null) return false;
             if (node == null) return false;
@@ -1064,7 +1110,7 @@ namespace KomodoCore
 
             switch (filter.Condition)
             {
-                case SearchQuery.SearchCondition.Equals:
+                case SearchCondition.Equals:
                     if (String.IsNullOrEmpty(filter.Value) && node.Data == null) return true;
                     if (String.IsNullOrEmpty(filter.Value) && node.Data != null) return false;
                     if (!String.IsNullOrEmpty(filter.Value) && node.Data == null) return false;
@@ -1072,7 +1118,7 @@ namespace KomodoCore
                     if (filter.Value.Equals(dataString)) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.NotEquals:
+                case SearchCondition.NotEquals:
                     if (String.IsNullOrEmpty(filter.Value) && node.Data == null) return false;
                     if (String.IsNullOrEmpty(filter.Value) && node.Data != null) return true;
                     if (!String.IsNullOrEmpty(filter.Value) && node.Data == null) return true;
@@ -1080,43 +1126,43 @@ namespace KomodoCore
                     if (!filter.Value.Equals(dataString)) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.GreaterThan:
+                case SearchCondition.GreaterThan:
                     if (!Decimal.TryParse(filter.Value, out filterDecimal)) return false;
                     if (node.Data == null) return false;
                     if (!Decimal.TryParse(node.Data.ToString(), out dataDecimal)) return false;
                     if (dataDecimal > filterDecimal) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.GreaterThanOrEqualTo:
+                case SearchCondition.GreaterThanOrEqualTo:
                     if (!Decimal.TryParse(filter.Value, out filterDecimal)) return false;
                     if (node.Data == null) return false;
                     if (!Decimal.TryParse(node.Data.ToString(), out dataDecimal)) return false;
                     if (dataDecimal >= filterDecimal) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.LessThan:
+                case SearchCondition.LessThan:
                     if (!Decimal.TryParse(filter.Value, out filterDecimal)) return false;
                     if (node.Data == null) return false;
                     if (!Decimal.TryParse(node.Data.ToString(), out dataDecimal)) return false;
                     if (dataDecimal < filterDecimal) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.LessThanOrEqualTo:
+                case SearchCondition.LessThanOrEqualTo:
                     if (!Decimal.TryParse(filter.Value, out filterDecimal)) return false;
                     if (node.Data == null) return false;
                     if (!Decimal.TryParse(node.Data.ToString(), out dataDecimal)) return false;
                     if (dataDecimal <= filterDecimal) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.IsNull:
+                case SearchCondition.IsNull:
                     if (node.Data == null) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.IsNotNull:
+                case SearchCondition.IsNotNull:
                     if (node.Data != null) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.Contains:
+                case SearchCondition.Contains:
                     if (String.IsNullOrEmpty(filter.Value) && node.Data == null) return true;
                     if (String.IsNullOrEmpty(filter.Value) && node.Data != null) return false;
                     if (!String.IsNullOrEmpty(filter.Value) && node.Data == null) return false;
@@ -1124,7 +1170,7 @@ namespace KomodoCore
                     if (dataString.Contains(filter.Value)) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.ContainsNot:
+                case SearchCondition.ContainsNot:
                     if (String.IsNullOrEmpty(filter.Value) && node.Data == null) return false;
                     if (String.IsNullOrEmpty(filter.Value) && node.Data != null) return true;
                     if (!String.IsNullOrEmpty(filter.Value) && node.Data == null) return true;
@@ -1132,7 +1178,7 @@ namespace KomodoCore
                     if (dataString.Contains(filter.Value)) return false;
                     return true; 
 
-                case SearchQuery.SearchCondition.StartsWith:
+                case SearchCondition.StartsWith:
                     if (String.IsNullOrEmpty(filter.Value) && node.Data == null) return true;
                     if (String.IsNullOrEmpty(filter.Value) && node.Data != null) return false;
                     if (!String.IsNullOrEmpty(filter.Value) && node.Data == null) return false;
@@ -1140,7 +1186,7 @@ namespace KomodoCore
                     if (dataString.StartsWith(filter.Value)) return true;
                     return false;
 
-                case SearchQuery.SearchCondition.EndsWith:
+                case SearchCondition.EndsWith:
                     if (String.IsNullOrEmpty(filter.Value) && node.Data == null) return true;
                     if (String.IsNullOrEmpty(filter.Value) && node.Data != null) return false;
                     if (!String.IsNullOrEmpty(filter.Value) && node.Data == null) return false;
@@ -1188,6 +1234,8 @@ namespace KomodoCore
         {
             error = null;
             result = new SearchResult(query);
+            result.GUID = query.GUID;
+            result.IndexName = _Index.IndexName;
             result.MarkStarted();
 
             try
@@ -1356,6 +1404,85 @@ namespace KomodoCore
                 default:
                     return DocType.Unknown;
             } 
+        }
+
+        private void EnumerationTaskWrapper(EnumerationQuery query)
+        {
+            EnumerationResult result = null;
+            ErrorCode error = null;
+
+            bool success = EnumerationInternal(query, out result, out error);
+            byte[] data = null;
+
+            if (success) data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
+            else data = Encoding.UTF8.GetBytes(Common.SerializeJson(error, true));
+
+            RestResponse resp = RestRequest.SendRequestSafe(
+                query.PostbackUrl,
+                "application/json",
+                "POST",
+                null, null, false, true, null,
+                data);
+
+            if (resp == null)
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " EnumerationTaskWrapper no response from POSTback URL " + query.PostbackUrl);
+                return;
+            }
+            else
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " EnumerationTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
+                return;
+            }
+        }
+
+        private bool EnumerationInternal(EnumerationQuery query, out EnumerationResult result, out ErrorCode error)
+        {
+            error = null;
+            result = new EnumerationResult(query);
+            result.GUID = query.GUID;
+            result.IndexName = _Index.IndexName;
+            result.MarkStarted();
+
+            try
+            {
+                #region Check-for-Null-Values
+
+                if (query == null)
+                {
+                    error = new ErrorCode("MISSING_PARAM", "Query");
+                    return false;
+                }
+
+                if (query.MaxResults == null || query.MaxResults > 5000) query.MaxResults = 5000;
+
+                #endregion
+
+                #region Execute-Query
+
+                string dbQuery = _IndexQueries.SelectSourceDocumentsByEnumerationQuery(query);
+
+                DataTable dbResult = null;
+                if (_SqlDatabase != null) dbResult = _SqlDatabase.RawQuery(dbQuery);
+                else dbResult = _SqliteDatabase.Query(dbQuery);
+
+                List<SourceDocument> sourceDocs = new List<SourceDocument>();
+                foreach (DataRow row in dbResult.Rows)
+                {
+                    sourceDocs.Add(SourceDocument.FromDataRow(row));
+                }
+                
+                result.AttachResults(sourceDocs);
+                
+                #endregion
+                 
+                return true;
+            }
+            finally
+            {
+                result.MarkEnded();
+                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal finished (" + result.TotalTimeMs + "ms)");
+            }
         }
 
         #endregion

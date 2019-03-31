@@ -15,6 +15,11 @@ namespace KomodoCore
         #region Public-Members
 
         /// <summary>
+        /// The GUID of the search operation.
+        /// </summary>
+        public string GUID { get; set; }
+
+        /// <summary>
         /// The search query performed.
         /// </summary>
         public SearchQuery Query { get; set; }
@@ -67,7 +72,14 @@ namespace KomodoCore
         /// </summary>
         public SearchResult()
         {
-            
+            Query = null;
+            Async = false;
+            IndexName = null;
+            StartTimeUtc = null;
+            EndTimeUtc = null;
+            TotalTimeMs = null;
+            MatchCount = null;
+            Matches = new List<Document>(); 
         }
 
         /// <summary>
