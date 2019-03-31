@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -16,29 +17,28 @@ namespace KomodoServer
         {
             #region Check-Input
 
-            if (md.CurrRequest.RawUrlEntries.Count < 1)
+            if (md.Http.RawUrlEntries.Count < 1)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndex raw URL entries does not contain exactly one item");
-                return new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                return new HttpResponse(md.Http, false, 400, null, "application/json",
                     new ErrorResponse(400, "URL must contain exactly one element.", null).ToJson(true), true);
             }
 
             #endregion
 
             #region Get-Values
-
-            bool pretty = Common.IsTrue(md.CurrRequest.RetrieveHeaderValue("pretty"));
-            string indexName = md.CurrRequest.RawUrlEntries[0];
+            
+            string indexName = md.Http.RawUrlEntries[0];
             Index ret = _Index.GetIndexByName(indexName);
             
             if (ret == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndex unable to retrieve index " + indexName);
-                return new HttpResponse(md.CurrRequest, false, 404, null, "application/json",
+                return new HttpResponse(md.Http, false, 404, null, "application/json",
                     new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
             }
              
-            return new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(ret, pretty), true);
+            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, md.Params.Pretty), true);
             
             #endregion
         }

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using SyslogLogging;
 using RestWrapper;
-using KomodoCore;
+using Komodo.Core;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class ConsoleManager
     {
@@ -122,14 +122,6 @@ namespace KomodoServer
             }
         }
 
-        #endregion
-
-        #region Public-Static-Methods
-
-        #endregion
-
-        #region Private-Static-Methods
-
-        #endregion
+        #endregion 
     }
 }

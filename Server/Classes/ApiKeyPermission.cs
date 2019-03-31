@@ -2,41 +2,113 @@
 using System.Collections.Generic;
 using System.IO;
 using SyslogLogging;
-using KomodoCore;
+using Komodo.Core;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
+    /// <summary>
+    /// Permissions associated with an API key and user.
+    /// </summary>
     public class ApiKeyPermission
     {
         #region Public-Members
 
+        /// <summary>
+        /// ID of the permission object.
+        /// </summary>
         public int ApiKeyPermissionId { get; set; }
+
+        /// <summary>
+        /// ID of the user.
+        /// </summary>
         public int UserMasterId { get; set; }
+
+        /// <summary>
+        /// ID of the API key.
+        /// </summary>
         public int ApiKeyId { get; set; }
+
+        /// <summary>
+        /// Notes about the permissions.
+        /// </summary>
         public string Notes { get; set; }
 
-        public int? AllowSearch { get; set; }
-        public int? AllowCreateDocument { get; set; }
-        public int? AllowDeleteDocument { get; set; }
-        public int? AllowCreateIndex { get; set; }
-        public int? AllowDeleteIndex { get; set; }
-        public int? AllowReindex { get; set; }
+        /// <summary>
+        /// Allow or disallow search.
+        /// </summary>
+        public bool AllowSearch { get; set; }
 
-        public string Guid { get; set; }
-        public int? Active { get; set; }
+        /// <summary>
+        /// Allow or disallow document creation.
+        /// </summary>
+        public bool AllowCreateDocument { get; set; }
+
+        /// <summary>
+        /// Allow or disallow document deletion.
+        /// </summary>
+        public bool AllowDeleteDocument { get; set; }
+
+        /// <summary>
+        /// Allow or disallow index creation.
+        /// </summary>
+        public bool AllowCreateIndex { get; set; }
+
+        /// <summary>
+        /// Allow or disallow index deletion.
+        /// </summary>
+        public bool AllowDeleteIndex { get; set; }
+
+        /// <summary>
+        /// Allow or disallow re-indexing.
+        /// </summary>
+        public bool AllowReindex { get; set; }
+
+        /// <summary>
+        /// GUID of the permission object.
+        /// </summary>
+        public string GUID { get; set; }
+
+        /// <summary>
+        /// Indicates whether or not the permission is active and valid.
+        /// </summary>
+        public bool Active { get; set; }
+
+        /// <summary>
+        /// Creation time.
+        /// </summary>
         public DateTime? Created { get; set; }
+
+        /// <summary>
+        /// Time of last update.
+        /// </summary>
         public DateTime? LastUpdate { get; set; }
+
+        /// <summary>
+        /// Expiration timestamp for the permission.
+        /// </summary>
         public DateTime? Expiration { get; set; }
+
+        #endregion
+
+        #region Private-Members
 
         #endregion
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
         public ApiKeyPermission()
         {
 
         }
 
+        /// <summary>
+        /// Load API key permissions from file.
+        /// </summary>
+        /// <param name="filename">Filename.</param>
+        /// <returns>List of ApiKeyPermission.</returns>
         public static List<ApiKeyPermission> FromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
@@ -74,6 +146,11 @@ namespace KomodoServer
             return ret;
         }
 
+        /// <summary>
+        /// Retrieve default permit permissions.
+        /// </summary>
+        /// <param name="curr">The user.</param>
+        /// <returns>ApiKeyPermission.</returns>
         public static ApiKeyPermission DefaultPermit(UserMaster curr)
         {
             if (curr == null) throw new ArgumentNullException(nameof(curr));
@@ -81,17 +158,21 @@ namespace KomodoServer
             ret.ApiKeyPermissionId = 0;
             ret.ApiKeyId = 0;
             ret.UserMasterId = Convert.ToInt32(curr.UserMasterId);
-            ret.AllowSearch = 1;
-            ret.AllowCreateDocument = 1;
-            ret.AllowDeleteDocument = 1;
-            ret.AllowCreateIndex = 1;
-            ret.AllowDeleteIndex = 1;
+            ret.AllowSearch = true;
+            ret.AllowCreateDocument = true;
+            ret.AllowDeleteDocument = true;
+            ret.AllowCreateIndex = true;
+            ret.AllowDeleteIndex = true;
             return ret;
         }
 
         #endregion
 
         #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

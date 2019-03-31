@@ -1,7 +1,7 @@
 ﻿using System;
-using KomodoCore;
+using Komodo.Core;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class ErrorResponse
     {
@@ -15,13 +15,17 @@ namespace KomodoServer
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public ErrorResponse(
             int status,
             string text,
             object data)
-        { 
+        {
             Data = data;
             HttpStatus = status;
             Text = text;
@@ -107,6 +111,10 @@ namespace KomodoServer
         {
             return Common.SerializeJson(this, pretty);
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

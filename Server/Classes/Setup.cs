@@ -2,16 +2,35 @@
 using System.Collections.Generic;
 using System.Text;
 using SyslogLogging;
-using KomodoCore;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class Setup
     {
+        #region Public-Members
+
+        #endregion
+
+        #region Private-Members
+
+        #endregion
+
+        #region Constructors-and-Factories
+
         public Setup()
         {
             RunSetup();
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         private void RunSetup()
         {
@@ -160,36 +179,36 @@ namespace KomodoServer
                     Console.WriteLine("Creating new configuration files for API keys, users, and permissions.");
 
                     currApiKey = new ApiKey();
-                    currApiKey.Active = 1;
+                    currApiKey.Active = true;
                     currApiKey.ApiKeyId = 1;
                     currApiKey.Created = timestamp;
                     currApiKey.LastUpdate = timestamp;
                     currApiKey.Expiration = timestamp.AddYears(100);
-                    currApiKey.Guid = "default";
+                    currApiKey.GUID = "default";
                     currApiKey.Notes = "Created by setup script";
                     currApiKey.UserMasterId = 1;
                     apiKeys.Add(currApiKey);
 
                     currPerm = new ApiKeyPermission();
-                    currPerm.Active = 1;
-                    currPerm.AllowSearch = 1;
-                    currPerm.AllowCreateDocument = 1;
-                    currPerm.AllowDeleteDocument = 1;
-                    currPerm.AllowCreateIndex = 1;
-                    currPerm.AllowDeleteIndex = 1;
-                    currPerm.AllowReindex = 1;
+                    currPerm.Active = true;
+                    currPerm.AllowSearch = true;
+                    currPerm.AllowCreateDocument = true;
+                    currPerm.AllowDeleteDocument = true;
+                    currPerm.AllowCreateIndex = true;
+                    currPerm.AllowDeleteIndex = true;
+                    currPerm.AllowReindex = true;
                     currPerm.ApiKeyId = 1;
                     currPerm.ApiKeyPermissionId = 1;
                     currPerm.Created = timestamp;
                     currPerm.LastUpdate = timestamp;
                     currPerm.Expiration = timestamp.AddYears(100);
-                    currPerm.Guid = "default";
+                    currPerm.GUID = "default";
                     currPerm.Notes = "Created by setup script";
                     currPerm.UserMasterId = 1;
                     permissions.Add(currPerm);
 
                     currUser = new UserMaster();
-                    currUser.Active = 1;
+                    currUser.Active = true;
                     currUser.Address1 = "123 Some Street";
                     currUser.Cellphone = "408-555-1212";
                     currUser.City = "San Jose";
@@ -198,13 +217,13 @@ namespace KomodoServer
                     currUser.FirstName = "First";
                     currUser.LastName = "Last";
                     currUser.Email = "default@default.com";
-                    currUser.IsAdmin = 1;
+                    currUser.IsAdmin = true;
                     currUser.NodeId = 0;
                     currUser.Password = "default";
                     currUser.PostalCode = "95128";
                     currUser.State = "CA";
                     currUser.UserMasterId = 1;
-                    currUser.Guid = "default";
+                    currUser.GUID = "default";
                     currUser.Created = timestamp;
                     currUser.LastUpdate = timestamp;
                     currUser.Expiration = timestamp.AddYears(100);
@@ -231,8 +250,8 @@ namespace KomodoServer
                     Console.WriteLine("We have created your first user account and permissions.");
                     Console.WriteLine("  Email    : " + currUser.Email);
                     Console.WriteLine("  Password : " + currUser.Password);
-                    Console.WriteLine("  GUID     : " + currUser.Guid);
-                    Console.WriteLine("  API Key  : " + currApiKey.Guid);
+                    Console.WriteLine("  GUID     : " + currUser.GUID);
+                    Console.WriteLine("  API Key  : " + currApiKey.GUID);
                     Console.WriteLine("");
                     Console.WriteLine("This was done by creating the following files:");
                     Console.WriteLine("  " + currConfig.Files.UserMaster);
@@ -248,35 +267,35 @@ namespace KomodoServer
             else
             {
                 currApiKey = new ApiKey();
-                currApiKey.Active = 1;
+                currApiKey.Active = true;
                 currApiKey.ApiKeyId = 1;
                 currApiKey.Created = timestamp;
                 currApiKey.LastUpdate = timestamp;
                 currApiKey.Expiration = timestamp.AddYears(100);
-                currApiKey.Guid = "default";
+                currApiKey.GUID = "default";
                 currApiKey.Notes = "Created by setup script";
                 currApiKey.UserMasterId = 1;
                 apiKeys.Add(currApiKey);
 
                 currPerm = new ApiKeyPermission();
-                currPerm.Active = 1;
-                currPerm.AllowSearch = 1;
-                currPerm.AllowCreateDocument = 1;
-                currPerm.AllowDeleteDocument = 1;
-                currPerm.AllowCreateIndex = 1;
-                currPerm.AllowDeleteIndex = 1;
+                currPerm.Active = true;
+                currPerm.AllowSearch = true;
+                currPerm.AllowCreateDocument = true;
+                currPerm.AllowDeleteDocument = true;
+                currPerm.AllowCreateIndex = true;
+                currPerm.AllowDeleteIndex = true;
                 currPerm.ApiKeyId = 1;
                 currPerm.ApiKeyPermissionId = 1;
                 currPerm.Created = timestamp;
                 currPerm.LastUpdate = timestamp;
                 currPerm.Expiration = timestamp.AddYears(100);
-                currPerm.Guid = "default";
+                currPerm.GUID = "default";
                 currPerm.Notes = "Created by setup script";
                 currPerm.UserMasterId = 1;
                 permissions.Add(currPerm);
 
                 currUser = new UserMaster();
-                currUser.Active = 1;
+                currUser.Active = true;
                 currUser.Address1 = "123 Some Street";
                 currUser.Cellphone = "408-555-1212";
                 currUser.City = "San Jose";
@@ -285,13 +304,13 @@ namespace KomodoServer
                 currUser.FirstName = "First";
                 currUser.LastName = "Last";
                 currUser.Email = "default@default.com";
-                currUser.IsAdmin = 1;
+                currUser.IsAdmin = true;
                 currUser.NodeId = 0;
                 currUser.Password = "default";
                 currUser.PostalCode = "95128";
                 currUser.State = "CA";
                 currUser.UserMasterId = 1;
-                currUser.Guid = "default";
+                currUser.GUID = "default";
                 currUser.Created = timestamp;
                 currUser.LastUpdate = timestamp;
                 currUser.Expiration = timestamp.AddYears(100);
@@ -318,8 +337,8 @@ namespace KomodoServer
                 Console.WriteLine("We have created your first user account and permissions.");
                 Console.WriteLine("  Email    : " + currUser.Email);
                 Console.WriteLine("  Password : " + currUser.Password);
-                Console.WriteLine("  GUID     : " + currUser.Guid);
-                Console.WriteLine("  API Key  : " + currApiKey.Guid);
+                Console.WriteLine("  GUID     : " + currUser.GUID);
+                Console.WriteLine("  API Key  : " + currApiKey.GUID);
                 Console.WriteLine("");
                 Console.WriteLine("This was done by creating the following files:");
                 Console.WriteLine("  " + currConfig.Files.UserMaster);
@@ -351,5 +370,7 @@ namespace KomodoServer
             
             #endregion
         }
+
+        #endregion
     }
 }

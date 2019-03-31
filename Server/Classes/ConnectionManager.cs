@@ -5,10 +5,14 @@ using System.Linq;
 using SyslogLogging;
 using WatsonWebserver;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class ConnectionManager
     {
+        #region Public-Members
+
+        #endregion
+
         #region Private-Members
 
         private List<Connection> ActiveConnections;
@@ -69,6 +73,10 @@ namespace KomodoServer
 
             return curr;
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

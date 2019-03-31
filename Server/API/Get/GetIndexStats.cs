@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -16,12 +17,12 @@ namespace KomodoServer
         { 
             #region Process
              
-            string indexName = md.CurrRequest.RawUrlEntries[0];  
+            string indexName = md.Http.RawUrlEntries[0];  
             Index currIndex = _Index.GetIndexByName(indexName);
             if (currIndex == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexStats unable to retrieve index " + indexName);
-                return new HttpResponse(md.CurrRequest, false, 404, null, "application/json",
+                return new HttpResponse(md.Http, false, 404, null, "application/json",
                     new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
             }
 
@@ -29,11 +30,11 @@ namespace KomodoServer
             if (stats == null)
             { 
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexStats unable to retrieve statistics for index " + indexName);
-                return new HttpResponse(md.CurrRequest, false, 500, null, "application/json",
+                return new HttpResponse(md.Http, false, 500, null, "application/json",
                     new ErrorResponse(500, "Unable to retrieve statistics for index '" + indexName + "'.", null).ToJson(true), true);
             }
              
-            return new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(stats, true), true); 
+            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(stats, true), true); 
             
             #endregion
         }

@@ -10,7 +10,7 @@ using RestWrapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace KomodoCore
+namespace Komodo.Core
 {
     public class KomodoSdk
     {

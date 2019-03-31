@@ -2,7 +2,7 @@
 using SyslogLogging;
 using WatsonWebserver;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class Connection
     {
@@ -18,12 +18,24 @@ namespace KomodoServer
 
         #endregion
 
+        #region Private-Members
+
+        #endregion
+
         #region Constructors-and-Factories
 
         public Connection()
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

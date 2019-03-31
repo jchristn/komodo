@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -16,19 +17,19 @@ namespace KomodoServer
         {
             HttpResponse resp;
 
-            if (md.CurrRequest.Data == null || md.CurrRequest.Data.Length < 1)
+            if (md.Http.Data == null || md.Http.Data.Length < 1)
             {
-                resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                resp = new HttpResponse(md.Http, false, 400, null, "application/json",
                     new ErrorResponse(400, "No request body.", null).ToJson(true), true);
                 return resp;
             }
 
-            Index req = Common.DeserializeJson<Index>(md.CurrRequest.Data);
+            Index req = Common.DeserializeJson<Index>(md.Http.Data);
 
             if (_Index.IndexExists(req.IndexName))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndices index " + req.IndexName + " already exists");
-                resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                resp = new HttpResponse(md.Http, false, 400, null, "application/json",
                     new ErrorResponse(400, "Index already exists.", null).ToJson(true), true);
                 return resp;
             }
@@ -36,12 +37,12 @@ namespace KomodoServer
             if (!_Index.AddIndex(req))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndices unable to add index");
-                resp = new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                resp = new HttpResponse(md.Http, false, 400, null, "application/json",
                     new ErrorResponse(400, "Unable to create index.", null).ToJson(true), true);
             }
 
             _Logging.Log(LoggingModule.Severity.Debug, "PostIndices created index " + req.IndexName);
-            resp = new HttpResponse(md.CurrRequest, true, 201, null, "application/json", null, true);
+            resp = new HttpResponse(md.Http, true, 201, null, "application/json", null, true);
             return resp;
         }
     }

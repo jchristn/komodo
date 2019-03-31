@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using SyslogLogging;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class DiskInfo
     {
@@ -17,6 +17,10 @@ namespace KomodoServer
         public long TotalSizeGigabytes { get; set; }
         public long AvailableSizeBytes { get; set; }
         public long AvailableSizeGigabytes { get; set; }
+
+        #endregion
+
+        #region Private-Members
 
         #endregion
 
@@ -56,6 +60,14 @@ namespace KomodoServer
 
             return ret;
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -27,7 +28,7 @@ namespace KomodoServer
                 }
             }
 
-            return new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
+            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
             
             #endregion
         }

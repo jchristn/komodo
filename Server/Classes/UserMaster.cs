@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using SyslogLogging;
-using KomodoCore;
+using Komodo.Core;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class UserMaster
     {
@@ -27,12 +27,16 @@ namespace KomodoServer
         public string PostalCode { get; set; }
         public string Country { get; set; }
         
-        public int? IsAdmin { get; set; }
-        public string Guid { get; set; }
-        public int? Active { get; set; }
+        public bool IsAdmin { get; set; }
+        public string GUID { get; set; }
+        public bool Active { get; set; }
         public DateTime? Created { get; set; }
         public DateTime? LastUpdate { get; set; }
         public DateTime? Expiration { get; set; }
+
+        #endregion
+
+        #region Private-Members
 
         #endregion
 
@@ -79,11 +83,15 @@ namespace KomodoServer
 
             return ret;
         }
-        
+
         #endregion
 
         #region Public-Methods
-        
+
+        #endregion
+
+        #region Private-Methods
+
         #endregion
     }
 }

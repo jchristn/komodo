@@ -9,7 +9,9 @@ If you have any issues or feedback, please file an issue here in Github.  We'd l
 ## New in v1.1.x
 
 The following capabilities and fixes were introduced in this commit:
-- Minor refactor
+- Minor refactor of server and core classes including namespace/organization changes
+- Collapsed retrieval of querystring items into request parameters
+- Error ID is now an enum
 - Enumeration of indexed documents
 - Retarget to .NET Core and .NET Framework
 - Eliminate standalone sqlite DLLs

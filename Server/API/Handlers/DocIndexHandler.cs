@@ -7,10 +7,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public static class DocIndexHandler
     {

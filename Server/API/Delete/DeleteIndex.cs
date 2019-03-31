@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -16,10 +17,10 @@ namespace KomodoServer
         {
             #region Check-Input
 
-            if (md.CurrRequest.RawUrlEntries.Count < 1)
+            if (md.Http.RawUrlEntries.Count < 1)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "DeleteIndex raw URL entries does not contain exactly one item");
-                return new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                return new HttpResponse(md.Http, false, 400, null, "application/json",
                     new ErrorResponse(400, "URL must contain exactly one element.", null).ToJson(true), true);
             }
 
@@ -27,20 +28,17 @@ namespace KomodoServer
 
             #region Get-Values
              
-            string indexName = md.CurrRequest.RawUrlEntries[0];
-            bool cleanup = false;
-            if (md.CurrRequest.QuerystringEntries.ContainsKey("cleanup")) cleanup = Common.IsTrue(md.CurrRequest.QuerystringEntries["cleanup"]);
-             
+            string indexName = md.Http.RawUrlEntries[0];             
             Index currIndex = _Index.GetIndexByName(indexName); 
             if (currIndex == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "DeleteIndex unable to retrieve index " + indexName);
-                return new HttpResponse(md.CurrRequest, false, 404, null, "application/json",
+                return new HttpResponse(md.Http, false, 404, null, "application/json",
                     new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
             }
 
-            _Index.RemoveIndex(indexName, cleanup);
-            return new HttpResponse(md.CurrRequest, true, 204, null, "application/json", null, true);
+            _Index.RemoveIndex(indexName, md.Params.Cleanup);
+            return new HttpResponse(md.Http, true, 204, null, "application/json", null, true);
             
             #endregion
         }

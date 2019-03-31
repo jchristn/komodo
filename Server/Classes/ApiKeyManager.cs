@@ -4,12 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class ApiKeyManager
     {
+        #region Public-Members
+
+        #endregion
+
         #region Private-Members
 
         private LoggingModule Logging;
@@ -91,7 +96,7 @@ namespace KomodoServer
             {
                 foreach (ApiKey curr in ApiKeys)
                 {
-                    if (String.Compare(curr.Guid, guid) == 0) return curr;
+                    if (String.Compare(curr.GUID, guid) == 0) return curr;
                 }
             }
             return null;
@@ -133,19 +138,19 @@ namespace KomodoServer
             ret.ApiKeyPermissionId = 0;
             ret.ApiKeyId = 0;
             ret.UserMasterId = Convert.ToInt32(userMasterId);
-            ret.AllowSearch = 0;
-            ret.AllowCreateDocument = 0;
-            ret.AllowDeleteDocument = 0;
-            ret.AllowCreateIndex = 0;
-            ret.AllowDeleteIndex = 0;
-            
+            ret.AllowSearch = false;
+            ret.AllowCreateDocument = false;
+            ret.AllowDeleteDocument = false;
+            ret.AllowCreateIndex = false;
+            ret.AllowDeleteIndex = false;
+
             if (apiKeyId == null)
             {
-                ret.AllowSearch = 1;
-                ret.AllowCreateDocument= 1;
-                ret.AllowDeleteDocument = 1;
-                ret.AllowCreateIndex = 1;
-                ret.AllowDeleteIndex = 1;
+                ret.AllowSearch = true;
+                ret.AllowCreateDocument = true;
+                ret.AllowDeleteDocument = true;
+                ret.AllowCreateIndex = true;
+                ret.AllowDeleteIndex = true;
                 return ret;
             }
             else
@@ -159,11 +164,11 @@ namespace KomodoServer
                         if (!Common.IsTrue(curr.Active)) continue;
                         if (!Common.IsLaterThanNow(curr.Expiration)) continue;
 
-                        if (Common.IsTrue(curr.AllowSearch)) ret.AllowSearch = 1;
-                        if (Common.IsTrue(curr.AllowCreateDocument)) ret.AllowCreateDocument= 1;
-                        if (Common.IsTrue(curr.AllowDeleteDocument)) ret.AllowDeleteDocument= 1;
-                        if (Common.IsTrue(curr.AllowCreateIndex)) ret.AllowCreateIndex = 1;
-                        if (Common.IsTrue(curr.AllowDeleteIndex)) ret.AllowDeleteIndex = 1;
+                        if (Common.IsTrue(curr.AllowSearch)) ret.AllowSearch = true;
+                        if (Common.IsTrue(curr.AllowCreateDocument)) ret.AllowCreateDocument = true;
+                        if (Common.IsTrue(curr.AllowDeleteDocument)) ret.AllowDeleteDocument = true;
+                        if (Common.IsTrue(curr.AllowCreateIndex)) ret.AllowCreateIndex = true;
+                        if (Common.IsTrue(curr.AllowDeleteIndex)) ret.AllowDeleteIndex = true;
                     }
                 }
 
@@ -197,7 +202,7 @@ namespace KomodoServer
                 return false;
             }
 
-            if (currApiKey.Active == 1)
+            if (currApiKey.Active)
             {
                 #region Check-Key-Expiration
 
@@ -210,7 +215,7 @@ namespace KomodoServer
                         return false;
                     }
 
-                    if (currUserMaster.Active == 1)
+                    if (currUserMaster.Active)
                     {
                         #region Check-User-Expiration
 
@@ -246,6 +251,10 @@ namespace KomodoServer
                 return false;
             }
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion
     }

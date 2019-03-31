@@ -3,10 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp2.0;net462</TargetFrameworks>
-    <AssemblyName>KomodoServer</AssemblyName>
-    <RootNamespace>KomodoServer</RootNamespace>
+    <AssemblyName>Komodo.Server</AssemblyName>
+    <RootNamespace>Komodo.Server</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>RESTful API server for Komodo Search</Description>
@@ -17,6 +17,7 @@
     <RepositoryType>Github</RepositoryType>
     <PackageTags>restful api server find index komodo search</PackageTags>
     <PackageReleaseNotes>Enumeration of source documents within an index</PackageReleaseNotes>
+    <PackageId>Komodo.Server</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -3,9 +3,10 @@ using System.Net;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {

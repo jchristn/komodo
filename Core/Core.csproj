@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-    <AssemblyName>KomodoCore</AssemblyName>
-    <RootNamespace>KomodoCore</RootNamespace>
+    <AssemblyName>Komodo.Core</AssemblyName>
+    <RootNamespace>Komodo.Core</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Core Library</Product>
     <Description>Core libraries for Komodo Search</Description>
@@ -16,6 +16,7 @@
     <PackageLicenseUrl>https://github.com/jchristn/komodo/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageTags>komodo search index retrieval rest api server find</PackageTags>
     <PackageReleaseNotes>Classes for SourceDocument and ParsedDocument</PackageReleaseNotes>
+    <PackageId>Komodo.Core</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

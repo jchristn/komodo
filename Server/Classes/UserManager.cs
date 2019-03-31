@@ -4,12 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
+using Komodo.Core;
 
-namespace KomodoServer
+namespace Komodo.Server.Classes
 {
     public class UserManager
     {
+        #region Public-Members
+
+        #endregion
+
         #region Private-Members
 
         private LoggingModule Logging;
@@ -81,7 +85,7 @@ namespace KomodoServer
             {
                 foreach (UserMaster curr in Users)
                 {
-                    if (String.Compare(curr.Guid, guid) == 0) return curr;
+                    if (String.Compare(curr.GUID, guid) == 0) return curr;
                 }
             }
             return null;
@@ -113,7 +117,7 @@ namespace KomodoServer
             }
             return null;
         }
-        
+
         public bool AuthenticateCredentials(string email, string password, out UserMaster curr)
         {
             curr = null;
@@ -129,7 +133,7 @@ namespace KomodoServer
 
             if (String.Compare(curr.Password, password) == 0)
             {
-                if (curr.Active == 1)
+                if (curr.Active)
                 {
                     if (Common.IsLaterThanNow(curr.Expiration))
                     {
@@ -153,7 +157,11 @@ namespace KomodoServer
                 return false;
             }
         }
-        
+
+        #endregion
+
+        #region Private-Methods
+
         #endregion
     }
 }

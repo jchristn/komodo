@@ -9,11 +9,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using KomodoCore;
 using WatsonWebserver;
 using SyslogLogging;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -26,7 +27,7 @@ namespace KomodoServer
         public static ApiKeyManager _ApiKey;
         public static IndexManager _Index;
         public static ConsoleManager _Console;
-        public static Server _Server;
+        public static WatsonWebserver.Server _Server;
 
         public static void Main(string[] args)
         {
@@ -77,7 +78,7 @@ namespace KomodoServer
                 _ApiKey = new ApiKeyManager(_Logging, ApiKey.FromFile(_Config.Files.ApiKey), ApiKeyPermission.FromFile(_Config.Files.ApiKeyPermission));
                 _Index = new IndexManager(_Config.Files.Indices, _Logging);
 
-                _Server = new Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived, true);
+                _Server = new WatsonWebserver.Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived, true);
                 _Server.AddContentRoute("/SearchApp/", true);
                 _Server.AddContentRoute("/Assets/", true);
 
@@ -239,13 +240,13 @@ namespace KomodoServer
 
                 #endregion
 
-                #region Retrieve-Auth-Parameters
+                #region Retrieve-Authentication
 
                 apiKey = req.RetrieveHeaderValue(_Config.Server.HeaderApiKey);
                 email = req.RetrieveHeaderValue(_Config.Server.HeaderEmail);
                 password = req.RetrieveHeaderValue(_Config.Server.HeaderPassword);
                 version = req.RetrieveHeaderValue(_Config.Server.HeaderVersion);
-
+                
                 #endregion
 
                 #region Admin-API
@@ -318,13 +319,30 @@ namespace KomodoServer
 
                 #region Build-Metadata
 
-                md.CurrRequest = req;
-                md.CurrUser = currUserMaster;
-                md.CurrApiKey = currApiKey;
-                md.CurrPerm = currApiKeyPermission;
+                md.Http = req;
+                md.User = currUserMaster;
+                md.ApiKey = currApiKey;
+                md.Permission = currApiKeyPermission;
 
-                #endregion
+                md.Params = new RequestParameters();
+                if (md.Http.QuerystringEntries.ContainsKey("cleanup")) md.Params.Cleanup = Convert.ToBoolean(md.Http.QuerystringEntries["cleanup"]);
+
+                if (md.Http.QuerystringEntries.ContainsKey("dbtype")) md.Params.DbType = md.Http.QuerystringEntries["dbtype"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbserver")) md.Params.DbServer = md.Http.QuerystringEntries["dbserver"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbport")) md.Params.DbPort = Convert.ToInt32(md.Http.QuerystringEntries["dbport"]);
+                if (md.Http.QuerystringEntries.ContainsKey("dbuser")) md.Params.DbUser = md.Http.QuerystringEntries["dbuser"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbpass")) md.Params.DbPass = md.Http.QuerystringEntries["dbpass"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbinstance")) md.Params.DbInstance = md.Http.QuerystringEntries["dbinstance"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbname")) md.Params.DbName = md.Http.QuerystringEntries["dbname"];
+
+                if (md.Http.QuerystringEntries.ContainsKey("filename")) md.Params.Filename = md.Http.QuerystringEntries["filename"];
+                if (md.Http.QuerystringEntries.ContainsKey("parsed")) md.Params.Parsed = Convert.ToBoolean(md.Http.QuerystringEntries["parsed"]);
+                if (md.Http.QuerystringEntries.ContainsKey("pretty")) md.Params.Pretty = Convert.ToBoolean(md.Http.QuerystringEntries["pretty"]);
+                if (md.Http.QuerystringEntries.ContainsKey("type")) md.Params.Type = md.Http.QuerystringEntries["type"];
+                if (md.Http.QuerystringEntries.ContainsKey("url")) md.Params.Url = md.Http.QuerystringEntries["url"];
                  
+                #endregion
+
                 #region Call-User-API
 
                 resp = UserApiHandler(md);

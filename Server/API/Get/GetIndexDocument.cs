@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
-using KomodoCore;
 using RestWrapper;
+using Komodo.Core;
+using Komodo.Server.Classes;
 
-namespace KomodoServer
+namespace Komodo.Server
 {
     public partial class KomodoServer
     {
@@ -16,10 +17,10 @@ namespace KomodoServer
         {
             #region Check-Input
 
-            if (md.CurrRequest.RawUrlEntries.Count != 2)
+            if (md.Http.RawUrlEntries.Count != 2)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexDocument raw URL entries does not contain exactly two items");
-                return new HttpResponse(md.CurrRequest, false, 400, null, "application/json",
+                return new HttpResponse(md.Http, false, 400, null, "application/json",
                     new ErrorResponse(400, "URL must contain exactly two elements.", null).ToJson(true), true);
             }
 
@@ -27,17 +28,15 @@ namespace KomodoServer
 
             #region Get-Values
 
-            bool pretty = Common.IsTrue(md.CurrRequest.RetrieveHeaderValue("pretty"));
-            string indexName = md.CurrRequest.RawUrlEntries[0];
-            string documentId = md.CurrRequest.RawUrlEntries[1];
-            bool parsed = Common.IsTrue(md.CurrRequest.RetrieveHeaderValue("parsed"));
-
+            string indexName = md.Http.RawUrlEntries[0];
+            string documentId = md.Http.RawUrlEntries[1];
+            
             Index currIndex = _Index.GetIndexByName(indexName);
             
             if (currIndex == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexDocument unable to retrieve index " + indexName);
-                return new HttpResponse(md.CurrRequest, false, 404, null, "application/json",
+                return new HttpResponse(md.Http, false, 404, null, "application/json",
                     new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
             }
 
@@ -45,22 +44,22 @@ namespace KomodoServer
             if (currClient == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexDocument unable to retrieve client for index " + indexName);
-                return new HttpResponse(md.CurrRequest, false, 500, null, "application/json",
+                return new HttpResponse(md.Http, false, 500, null, "application/json",
                     new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true), true);
             }
 
-            if (!parsed)
+            if (!md.Params.Parsed)
             {
                 byte[] data = null;
                 if (!currClient.GetSourceDocument(documentId, out data))
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "GetIndexDocument unable to find source document ID " + documentId + " in index " + indexName);
-                    return new HttpResponse(md.CurrRequest, false, 404, null, "application/json",
+                    return new HttpResponse(md.Http, false, 404, null, "application/json",
                         new ErrorResponse(404, "Unable to find document.", null).ToJson(true), true);
                 }
                 else
                 {
-                    return new HttpResponse(md.CurrRequest, true, 200, null, "application/octet-stream", data, true);
+                    return new HttpResponse(md.Http, true, 200, null, "application/octet-stream", data, true);
                 }
             }
             else
@@ -69,12 +68,12 @@ namespace KomodoServer
                 if (!currClient.GetParsedDocument(documentId, out doc))
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "GetIndexDocument unable to find parsed document ID " + documentId + " in index " + indexName);
-                    return new HttpResponse(md.CurrRequest, false, 404, null, "application/json",
+                    return new HttpResponse(md.Http, false, 404, null, "application/json",
                         new ErrorResponse(404, "Unable to find document.", null).ToJson(true), true);
                 }
                 else
                 {
-                    return new HttpResponse(md.CurrRequest, true, 200, null, "application/json", Common.SerializeJson(doc, pretty), true);
+                    return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(doc, md.Params.Pretty), true);
                 }
             }
             
