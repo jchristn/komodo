@@ -103,14 +103,14 @@ namespace Komodo.Core
                     query =
                         "CREATE TABLE IF NOT EXISTS SourceDocuments " +
                         "(" +
-                        "  Id                INTEGER PRIMARY KEY, " +
-                        "  IndexName         VARCHAR(128), " +
-                        "  MasterDocId       VARCHAR(128), " +
-                        "  Name              VARCHAR(128), " +
-                        "  Tags              VARCHAR(128), " +
-                        "  DocType           VARCHAR(32), " +
-                        "  SourceUrl         VARCHAR(256), " +
-                        "  ContentType       VARCHAR(128), " +
+                        "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "  IndexName         VARCHAR(128)  COLLATE NOCASE, " +
+                        "  MasterDocId       VARCHAR(128)  COLLATE NOCASE, " +
+                        "  Name              VARCHAR(128)  COLLATE NOCASE, " +
+                        "  Tags              VARCHAR(128)  COLLATE NOCASE, " +
+                        "  DocType           VARCHAR(32)   COLLATE NOCASE, " +
+                        "  SourceUrl         VARCHAR(256)  COLLATE NOCASE, " +
+                        "  ContentType       VARCHAR(128)  COLLATE NOCASE, " +
                         "  ContentLength     INTEGER, " +
                         "  Created           VARCHAR(32), " +
                         "  Indexed           VARCHAR(32) " +
@@ -167,10 +167,10 @@ namespace Komodo.Core
                     query =
                         "CREATE TABLE IF NOT EXISTS ParsedDocuments " +
                         "(" +
-                        "  Id                   INTEGER PRIMARY KEY, " +
-                        "  IndexName            VARCHAR(128), " +
-                        "  MasterDocId          VARCHAR(128), " +
-                        "  DocType              VARCHAR(32), " +
+                        "  Id                   INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "  IndexName            VARCHAR(128)   COLLATE NOCASE, " +
+                        "  MasterDocId          VARCHAR(128)   COLLATE NOCASE, " +
+                        "  DocType              VARCHAR(32)    COLLATE NOCASE, " +
                         "  SourceContentLength  INTEGER, " +
                         "  ContentLength        INTEGER, " +
                         "  Created              VARCHAR(32), " +
@@ -226,10 +226,10 @@ namespace Komodo.Core
                     query =
                         "CREATE TABLE IF NOT EXISTS Terms " +
                         "(" +
-                        "  Id                INTEGER PRIMARY KEY, " +
-                        "  IndexName         VARCHAR(128), " +
-                        "  MasterDocId       VARCHAR(128), " +
-                        "  Term              BLOB, " +
+                        "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "  IndexName         VARCHAR(128)  COLLATE NOCASE, " +
+                        "  MasterDocId       VARCHAR(128)  COLLATE NOCASE, " +
+                        "  Term              BLOB, "  + 
                         "  Created           VARCHAR(32), " +
                         "  Indexed           VARCHAR(32) " +
                         ")";

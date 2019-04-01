@@ -19,8 +19,6 @@ The following capabilities and fixes were introduced in this commit:
 
 ## Enclosed Projects
 
-Please refer to the ```README.md``` file in each project for its version history and quickstart.
-
 The following projects are included:
 
 | Project       | Description                                               |
@@ -29,15 +27,19 @@ The following projects are included:
 | Core          | Core library incl parsing and index management            |
 | Server        | RESTful API server                                        |
 | TestParser    | Console application to exercise parsers                   |
-| Sdk           | Class library to add to consume API server                |
+| Sdk           | C# class library to consume RESTful APIs                  |
 | TestSdk       | Console application using the Sdk to consume API server   |
+
+## API Documentation
+
+Please refer to the ```README.md``` file in the ```Server``` project for API documentation. 
 
 ## Starting the Server
 
 ### Using .NET Core
 ```
 cd bin\debug\netcoreapp2.0
-dotnet KomodoServer.dll
+dotnet Komodo.Server.dll
 ```
 
 ### Using .NET Framework
@@ -45,12 +47,12 @@ dotnet KomodoServer.dll
 Windows
 ```
 cd bin\debug
-KomodoServer.exe
+Komodo.Server.exe
 ```
 Mono - use the Mono ahead of time compiler first (otherwise weird things will happen and you will find yourself in gdb hell)
 ```
 sudo mono --aot=nrgctx-trampolines=8096,nimt-trampolines=8096,ntrampolines=4048 --server KomodoServer.exe
-sudo mono --server KomodoServer.exe
+sudo mono --server Komodo.Server.exe
 ```
 
 ## Project Roadmap

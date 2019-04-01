@@ -1,4 +1,4 @@
-# Server
+# Komodo Search - Server
 
 API server instance for Komodo to expose APIs for information storage, search, and retrieval. 
 
@@ -371,7 +371,7 @@ Response body:
 
 ## Add a Document to an Index
 ```
-POST /First?type=json
+POST /First?type=json&name=foo&tags=tag1,tag2,tag3
 Request body: <json document>
 Response:
 {
@@ -493,7 +493,18 @@ Request body:
   GUID: "00000000-0000-0000-0000-000000000000",
   MaxResults: 100,
   StartIndex: 0,
-  Filters: [],
+  Filters: [
+    {
+      Field: "Id",
+      Condition: "GreaterThan",
+      Value: "0"
+    },
+    {
+      Field: "Tags",
+      Condition: "Contains",
+      Value: "tag1"
+    }
+  ],
   PostbackUrl: null
 }
 Response:
@@ -501,22 +512,36 @@ Response:
     "Query": {
         "MaxResults": 100,
         "StartIndex": 0,
-        "Filters": []
+        "Filters": [
+            {
+                "Field": "Id",
+                "Condition": "GreaterThan",
+                "Value": "0"
+            },
+            {
+                "Field": "Tags",
+                "Condition": "Contains",
+                "Value": "tag1"
+            }
+        ]
     },
     "Async": false,
     "IndexName": "first",
-    "StartTimeUtc": "2019-03-31T06:20:57.9129628Z",
-    "EndTimeUtc": "2019-03-31T06:20:57.9334269Z",
-    "TotalTimeMs": 20.4641,
+    "StartTimeUtc": "2019-04-01T04:57:30.723648Z",
+    "EndTimeUtc": "2019-04-01T04:57:30.7322003Z",
+    "TotalTimeMs": 8.5523,
     "Matches": [
         {
             "Id": 1,
             "IndexName": "first",
-            "MasterDocId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7",
-            "DocType": "Json",
-            "ContentLength": 483,
-            "Created": "2019-03-27T06:17:47.2960956Z"
-        }, ... 
+            "MasterDocId": "666f4364-26b1-4969-be59-a4e191bb0987",
+            "Name": "joel",
+            "Tags": "tag1,tag2,tag3",
+            "DocType": "Text",
+            "ContentType": "text/plain",
+            "ContentLength": 3697,
+            "Created": "2019-04-01T04:56:55.5823126Z"
+        }
     ]
 }
 ```
