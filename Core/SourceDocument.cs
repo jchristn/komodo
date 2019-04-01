@@ -30,6 +30,16 @@ namespace Komodo.Core
         public string MasterDocId { get; set; }
 
         /// <summary>
+        /// The name of the document (may not be unique).
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Document tags.
+        /// </summary>
+        public string Tags { get; set; }
+
+        /// <summary>
         /// The type of document.
         /// </summary>
         public DocType DocType { get; set; }
@@ -38,6 +48,11 @@ namespace Komodo.Core
         /// The source URL of the document.
         /// </summary>
         public string SourceUrl { get; set; }
+
+        /// <summary>
+        /// Content type of the document.
+        /// </summary>
+        public string ContentType { get; set; }
 
         /// <summary>
         /// The content length of the source document.
@@ -84,12 +99,15 @@ namespace Komodo.Core
             if (row["Id"] != DBNull.Value) ret.Id = Convert.ToInt32(row["Id"]);
             if (row["IndexName"] != DBNull.Value) ret.IndexName = row["IndexName"].ToString();
             if (row["MasterDocId"] != DBNull.Value) ret.MasterDocId = row["MasterDocId"].ToString();
+            if (row["Name"] != DBNull.Value) ret.Name = row["Name"].ToString();
+            if (row["Tags"] != DBNull.Value) ret.Tags = row["Tags"].ToString();
 
             DocType dt = DocType.Unknown;
             if (row["DocType"] != DBNull.Value) Enum.TryParse<DocType>(row["DocType"].ToString(), out dt);
             ret.DocType = dt;
 
             if (row["SourceUrl"] != DBNull.Value) ret.SourceUrl = row["SourceUrl"].ToString();
+            if (row["ContentType"] != DBNull.Value) ret.ContentType = row["ContentType"].ToString();
             if (row["ContentLength"] != DBNull.Value) ret.ContentLength = Convert.ToInt64(row["ContentLength"]);
             if (row["Created"] != DBNull.Value) ret.Created = Convert.ToDateTime(row["Created"].ToString());
             if (row["Indexed"] != DBNull.Value) ret.Indexed = Convert.ToDateTime(row["Indexed"].ToString());

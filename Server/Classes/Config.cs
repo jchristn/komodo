@@ -108,7 +108,7 @@ namespace Komodo.Server.Classes
             /// Enable or disable SSL.
             /// </summary>
             public bool Ssl { get; set; }
-
+             
             /// <summary>
             /// Custom header used to specify API key for authentication within the request.
             /// </summary>
@@ -123,12 +123,7 @@ namespace Komodo.Server.Classes
             /// Custom header used to specify the password for authentication within the request.
             /// </summary>
             public string HeaderPassword { get; set; }
-
-            /// <summary>
-            /// Custom header used to specify the API version being requested.
-            /// </summary>
-            public string HeaderVersion { get; set; }
-
+            
             /// <summary>
             /// API key to use for admin operations (please keep secret).
             /// </summary>

@@ -102,7 +102,6 @@ namespace Komodo.Server.Classes
             currConfig.Server.HeaderApiKey = "x-api-key";
             currConfig.Server.HeaderEmail = "x-email";
             currConfig.Server.HeaderPassword = "x-password";
-            currConfig.Server.HeaderVersion = "x-version";
             currConfig.Server.AdminApiKey = "komodoadmin";
             currConfig.Server.ListenerPort = 9090;
             currConfig.Server.ListenerHostname = "127.0.0.1";

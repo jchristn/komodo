@@ -145,7 +145,6 @@ namespace Komodo.Server
                 string apiKey = "";
                 string email = "";
                 string password = "";
-                string version = "";
 
                 UserMaster currUserMaster = null;
                 ApiKey currApiKey = null;
@@ -234,7 +233,6 @@ namespace Komodo.Server
                 apiKey = req.RetrieveHeaderValue(_Config.Server.HeaderApiKey);
                 email = req.RetrieveHeaderValue(_Config.Server.HeaderEmail);
                 password = req.RetrieveHeaderValue(_Config.Server.HeaderPassword);
-                version = req.RetrieveHeaderValue(_Config.Server.HeaderVersion);
                 
                 #endregion
 
@@ -316,19 +314,21 @@ namespace Komodo.Server
                 md.Params = new RequestParameters();
                 if (md.Http.QuerystringEntries.ContainsKey("cleanup")) md.Params.Cleanup = Convert.ToBoolean(md.Http.QuerystringEntries["cleanup"]);
 
-                if (md.Http.QuerystringEntries.ContainsKey("dbtype")) md.Params.DbType = md.Http.QuerystringEntries["dbtype"];
-                if (md.Http.QuerystringEntries.ContainsKey("dbserver")) md.Params.DbServer = md.Http.QuerystringEntries["dbserver"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbtype")) md.Params.DbType = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbtype"]);
+                if (md.Http.QuerystringEntries.ContainsKey("dbserver")) md.Params.DbServer = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbserver"]);
                 if (md.Http.QuerystringEntries.ContainsKey("dbport")) md.Params.DbPort = Convert.ToInt32(md.Http.QuerystringEntries["dbport"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbuser")) md.Params.DbUser = md.Http.QuerystringEntries["dbuser"];
-                if (md.Http.QuerystringEntries.ContainsKey("dbpass")) md.Params.DbPass = md.Http.QuerystringEntries["dbpass"];
-                if (md.Http.QuerystringEntries.ContainsKey("dbinstance")) md.Params.DbInstance = md.Http.QuerystringEntries["dbinstance"];
-                if (md.Http.QuerystringEntries.ContainsKey("dbname")) md.Params.DbName = md.Http.QuerystringEntries["dbname"];
+                if (md.Http.QuerystringEntries.ContainsKey("dbuser")) md.Params.DbUser = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbuser"]);
+                if (md.Http.QuerystringEntries.ContainsKey("dbpass")) md.Params.DbPass = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbpass"]);
+                if (md.Http.QuerystringEntries.ContainsKey("dbinstance")) md.Params.DbInstance = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbinstance"]);
+                if (md.Http.QuerystringEntries.ContainsKey("dbname")) md.Params.DbName = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbname"]);
 
-                if (md.Http.QuerystringEntries.ContainsKey("filename")) md.Params.Filename = md.Http.QuerystringEntries["filename"];
+                if (md.Http.QuerystringEntries.ContainsKey("filename")) md.Params.Filename = WebUtility.UrlDecode(md.Http.QuerystringEntries["filename"]);
+                if (md.Http.QuerystringEntries.ContainsKey("name")) md.Params.Name = WebUtility.UrlDecode(md.Http.QuerystringEntries["name"]);
                 if (md.Http.QuerystringEntries.ContainsKey("parsed")) md.Params.Parsed = Convert.ToBoolean(md.Http.QuerystringEntries["parsed"]);
                 if (md.Http.QuerystringEntries.ContainsKey("pretty")) md.Params.Pretty = Convert.ToBoolean(md.Http.QuerystringEntries["pretty"]);
-                if (md.Http.QuerystringEntries.ContainsKey("type")) md.Params.Type = md.Http.QuerystringEntries["type"];
-                if (md.Http.QuerystringEntries.ContainsKey("url")) md.Params.Url = md.Http.QuerystringEntries["url"];
+                if (md.Http.QuerystringEntries.ContainsKey("tags")) md.Params.Tags = WebUtility.UrlDecode(md.Http.QuerystringEntries["tags"]);
+                if (md.Http.QuerystringEntries.ContainsKey("type")) md.Params.Type = WebUtility.UrlDecode(md.Http.QuerystringEntries["type"]);
+                if (md.Http.QuerystringEntries.ContainsKey("url")) md.Params.Url = WebUtility.UrlDecode(md.Http.QuerystringEntries["url"]);
                  
                 #endregion
 
@@ -379,8 +379,7 @@ namespace Komodo.Server
             string headers =
                 _Config.Server.HeaderApiKey + ", " +
                 _Config.Server.HeaderEmail + ", " +
-                _Config.Server.HeaderPassword + ", " +
-                _Config.Server.HeaderVersion;
+                _Config.Server.HeaderPassword;
 
             if (requestedHeaders != null)
             {

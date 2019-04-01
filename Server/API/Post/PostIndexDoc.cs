@@ -101,7 +101,15 @@ namespace Komodo.Server
 
             ErrorCode error = null;
             string masterDocId = null;
-            if (!currClient.AddDocument(currDocType, md.Http.Data, md.Params.Url, out error, out masterDocId))
+            if (!currClient.AddDocument(
+                currDocType, 
+                md.Http.Data, 
+                md.Params.Url,
+                md.Params.Name,
+                md.Params.Tags,
+                md.Http.ContentType,
+                out error, 
+                out masterDocId))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to add document to index " + indexName);
                 return new HttpResponse(md.Http, false, 500, null, "application/json",

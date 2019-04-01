@@ -76,8 +76,11 @@ namespace Komodo.Core
                         "  [Id]            [bigint] IDENTITY(1,1) NOT NULL, " +
                         "  [IndexName]     [nvarchar] (128) NULL, " +
                         "  [MasterDocId]   [nvarchar] (128) NULL, " +
+                        "  [Name]          [nvarchar] (128) NULL, " +
+                        "  [Tags]          [nvarchar] (128) NULL, " +
                         "  [DocType]       [nvarchar] (32) NULL, " +
                         "  [SourceUrl]     [nvarchar] (256) NULL, " +
+                        "  [ContentType]   [nvarchar] (128) NULL, " +
                         "  [ContentLength] [bigint] NULL, " +
                         "  [Created]       [datetime2] (7) NULL, " +
                         "  [Indexed]       [datetime2] (7) NULL, " +
@@ -103,8 +106,11 @@ namespace Komodo.Core
                         "  Id                INTEGER PRIMARY KEY, " +
                         "  IndexName         VARCHAR(128), " +
                         "  MasterDocId       VARCHAR(128), " +
+                        "  Name              VARCHAR(128), " +
+                        "  Tags              VARCHAR(128), " +
                         "  DocType           VARCHAR(32), " +
                         "  SourceUrl         VARCHAR(256), " +
+                        "  ContentType       VARCHAR(128), " +
                         "  ContentLength     INTEGER, " +
                         "  Created           VARCHAR(32), " +
                         "  Indexed           VARCHAR(32) " +

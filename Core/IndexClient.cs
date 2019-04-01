@@ -201,7 +201,15 @@ namespace Komodo.Core
         /// <param name="error">Error code associated with the operation.</param>
         /// <param name="masterDocId">Document ID of the added document.</param>
         /// <returns>True if successful.</returns>
-        public bool AddDocument(DocType docType, byte[] sourceData, string sourceUrl, out ErrorCode error, out string masterDocId)
+        public bool AddDocument(
+            DocType docType, 
+            byte[] sourceData, 
+            string sourceUrl, 
+            string name,
+            string tags,
+            string contentType,
+            out ErrorCode error, 
+            out string masterDocId)
         {
             error = null;
             masterDocId = null;
@@ -265,8 +273,11 @@ namespace Komodo.Core
                 // Source documents table
                 Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
                 sourceDocVals.Add("IndexName", _Index.IndexName);
+                sourceDocVals.Add("Name", name);
+                sourceDocVals.Add("Tags", tags);
                 sourceDocVals.Add("MasterDocId", doc.MasterDocId);
                 sourceDocVals.Add("SourceUrl", sourceUrl);
+                sourceDocVals.Add("ContentType", contentType);
                 sourceDocVals.Add("ContentLength", sourceData.Length);
                 sourceDocVals.Add("DocType", docType.ToString());
                 sourceDocVals.Add("Created", ts);

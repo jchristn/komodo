@@ -60,6 +60,11 @@ namespace Komodo.Server.Classes
         public string Filename { get; set; }
 
         /// <summary>
+        /// Querystring 'name' key, typically used to indicate a document name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Querystring 'parsed' key, indicating whether or not the parsed document should be used.
         /// </summary>
         public bool Parsed { get; set; }
@@ -68,6 +73,11 @@ namespace Komodo.Server.Classes
         /// Querystring 'pretty' key, indicating whether or not pretty formatting should be used.
         /// </summary>
         public bool Pretty { get; set; }
+
+        /// <summary>
+        /// Querystring 'tags' key, typically used to indicate the tag data to attach to a document being indexed.
+        /// </summary>
+        public string Tags { get; set; }
 
         /// <summary>
         /// Querystring 'type' key, indicating the type of document. 
