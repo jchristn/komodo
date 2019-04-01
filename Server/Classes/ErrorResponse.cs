@@ -3,14 +3,36 @@ using Komodo.Core;
 
 namespace Komodo.Server.Classes
 {
+    /// <summary>
+    /// Object used when conveying an error in an API response.
+    /// </summary>
     public class ErrorResponse
     {
         #region Public-Members
 
+        /// <summary>
+        /// Indicates whether or not the request succeeded.
+        /// </summary>
         public bool Success;
+
+        /// <summary>
+        /// HTTP status code.
+        /// </summary>
         public int HttpStatus;
+
+        /// <summary>
+        /// Text description of the HTTP status code.
+        /// </summary>
         public string HttpText;
+
+        /// <summary>
+        /// Human-readable text.
+        /// </summary>
         public string Text;
+
+        /// <summary>
+        /// Error-related data.
+        /// </summary>
         public object Data;
 
         #endregion
@@ -21,6 +43,12 @@ namespace Komodo.Server.Classes
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="status">HTTP status code.</param>
+        /// <param name="text">Human-readable text.</param>
+        /// <param name="data">Error-related data.</param>
         public ErrorResponse(
             int status,
             string text,
@@ -107,6 +135,11 @@ namespace Komodo.Server.Classes
 
         #region Public-Methods
 
+        /// <summary>
+        /// Serialize the object to JSON.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
         public string ToJson(bool pretty)
         {
             return Common.SerializeJson(this, pretty);

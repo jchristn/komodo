@@ -36,7 +36,7 @@ namespace KomodoTestSdk
                 
                 while (_RunForever)
                 {
-                    string cmd = Common.InputString("komodo [? for help]:", null, false);
+                    string cmd = Common.InputString("Komodo [? for help]:", null, false);
                     switch (cmd)
                     {
                         case "?":
@@ -60,7 +60,7 @@ namespace KomodoTestSdk
                         case "delete index":
                             DeleteIndex();
                             break;
-                        case "add":
+                        case "add doc":
                             AddDocument();
                             break;
                         case "get source":
@@ -69,11 +69,17 @@ namespace KomodoTestSdk
                         case "get parsed":
                             GetParsedDocument();
                             break;
-                        case "delete":
+                        case "delete doc":
                             DeleteDocument();
                             break;
                         case "search":
                             Search();
+                            break;
+                        case "enum":
+                            Enumerate();
+                            break;
+                        case "stats":
+                            Stats();
                             break;
                     }
                 }
@@ -113,11 +119,13 @@ namespace KomodoTestSdk
             Console.WriteLine(" list          list indices");
             Console.WriteLine(" create index  create an index");
             Console.WriteLine(" delete index  delete an index");
-            Console.WriteLine(" add           add a document to an index");
+            Console.WriteLine(" add doc       add a document to an index");
             Console.WriteLine(" get source    retrieve source document from an index");
             Console.WriteLine(" get parsed    retrieve parsed document from an index");
-            Console.WriteLine(" delete        delete a document from an index");
+            Console.WriteLine(" delete doc    delete a document from an index");
             Console.WriteLine(" search        search an index");
+            Console.WriteLine(" enum          enumerate an index");
+            Console.WriteLine(" stats         get statistics for an index");
             Console.WriteLine("");
         }
 
@@ -280,6 +288,47 @@ namespace KomodoTestSdk
             {
                 Console.WriteLine("Success");
                 if (result != null) Console.WriteLine(Common.SerializeJson(result, true));
+            }
+        }
+
+        static void Enumerate()
+        {
+            // Search(string indexName, SearchQuery query, out SearchResult result)
+            string indexName = Common.InputString("Index name:", null, true);
+            if (String.IsNullOrEmpty(indexName)) return;
+
+            string filename = Common.InputString("Enumeration filename:", "enum1.json", true);
+            if (String.IsNullOrEmpty(filename)) return;
+
+            EnumerationQuery query = Common.DeserializeJson<EnumerationQuery>(Common.ReadBinaryFile(filename));
+            EnumerationResult result = null;
+
+            if (!_Sdk.Enumerate(indexName, query, out result))
+            {
+                Console.WriteLine("Failed");
+            }
+            else
+            {
+                Console.WriteLine("Success");
+                if (result != null) Console.WriteLine(Common.SerializeJson(result, true));
+            }
+        }
+
+        static void Stats()
+        {
+            // Search(string indexName, SearchQuery query, out SearchResult result)
+            string indexName = Common.InputString("Index name:", null, true);
+            if (String.IsNullOrEmpty(indexName)) return;
+
+            IndexStats stats = null;
+            if (!_Sdk.GetIndexStats(indexName, out stats))
+            {
+                Console.WriteLine("Failed");
+            }
+            else
+            {
+                Console.WriteLine("Success");
+                if (stats != null) Console.WriteLine(Common.SerializeJson(stats, true));
             }
         }
 

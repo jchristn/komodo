@@ -32,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="BlobHelper" Version="1.1.0" />
     <PackageReference Include="DatabaseWrapper" Version="1.2.7" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.1" />
     <PackageReference Include="KvpbaseSDK" Version="3.1.5" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="NUglify" Version="1.5.12" />

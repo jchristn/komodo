@@ -13,12 +13,7 @@ namespace Komodo.Core
     public class SearchResult
     {
         #region Public-Members
-
-        /// <summary>
-        /// The GUID of the search operation.
-        /// </summary>
-        public string GUID { get; set; }
-
+        
         /// <summary>
         /// The search query performed.
         /// </summary>

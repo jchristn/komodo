@@ -6,7 +6,7 @@
     <AssemblyName>Komodo.Server</AssemblyName>
     <RootNamespace>Komodo.Server</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>RESTful API server for Komodo Search</Description>
@@ -49,7 +49,7 @@
     <PackageReference Include="RestWrapper" Version="1.0.9" />
     <PackageReference Include="SyslogLogging" Version="1.0.10" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.110" />
-    <PackageReference Include="Watson" Version="1.5.1" />
+    <PackageReference Include="Watson" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>

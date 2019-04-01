@@ -1241,7 +1241,6 @@ namespace Komodo.Core
         {
             error = null;
             result = new SearchResult(query);
-            result.GUID = query.GUID;
             result.IndexName = _Index.IndexName;
             result.MarkStarted();
 
@@ -1342,7 +1341,7 @@ namespace Komodo.Core
                                 _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve parsed doc");
                                 currDoc.Errors.Add("Unable to retrieve parsed document");
                             }
-
+                            
                             currDoc.DocumentType = currIndexedDoc.DocumentType;
 
                             if (query.IncludeParsedDoc)
@@ -1468,7 +1467,6 @@ namespace Komodo.Core
                 #region Execute-Query
 
                 string dbQuery = _IndexQueries.SelectSourceDocumentsByEnumerationQuery(query);
-
                 DataTable dbResult = null;
                 if (_SqlDatabase != null) dbResult = _SqlDatabase.RawQuery(dbQuery);
                 else dbResult = _SqliteDatabase.Query(dbQuery);

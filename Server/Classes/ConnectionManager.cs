@@ -7,6 +7,9 @@ using WatsonWebserver;
 
 namespace Komodo.Server.Classes
 {
+    /// <summary>
+    /// Connection manager.
+    /// </summary>
     public class ConnectionManager
     {
         #region Public-Members
@@ -15,23 +18,31 @@ namespace Komodo.Server.Classes
 
         #region Private-Members
 
-        private List<Connection> ActiveConnections;
-        private readonly object ConnectionLock;
+        private List<Connection> _Connections;
+        private readonly object _Lock;
 
         #endregion
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
         public ConnectionManager()
         {
-            ActiveConnections = new List<Connection>();
-            ConnectionLock = new object();
+            _Connections = new List<Connection>();
+            _Lock = new object();
         }
 
         #endregion
 
         #region Public-Methods
 
+        /// <summary>
+        /// Add a connection.
+        /// </summary>
+        /// <param name="threadId">Thread ID.</param>
+        /// <param name="req">HttpRequest object.</param>
         public void Add(int threadId, HttpRequest req)
         {
             if (threadId <= 0) return;
@@ -46,29 +57,37 @@ namespace Komodo.Server.Classes
             conn.StartTime = DateTime.Now;
             conn.EndTime = DateTime.Now;
 
-            lock (ConnectionLock)
+            lock (_Lock)
             {
-                ActiveConnections.Add(conn);
+                _Connections.Add(conn);
             }
         }
 
+        /// <summary>
+        /// Close a connection.
+        /// </summary>
+        /// <param name="threadId">Thread ID.</param>
         public void Close(int threadId)
         {
             if (threadId <= 0) return;
 
-            lock (ConnectionLock)
+            lock (_Lock)
             {
-                ActiveConnections = ActiveConnections.Where(x => x.ThreadId != threadId).ToList();
+                _Connections = _Connections.Where(x => x.ThreadId != threadId).ToList();
             }
         }
         
+        /// <summary>
+        /// Retrieve a list of active connections.
+        /// </summary>
+        /// <returns>List of Connection objects.</returns>
         public List<Connection> GetActiveConnections()
         {
             List<Connection> curr = new List<Connection>();
 
-            lock (ConnectionLock)
+            lock (_Lock)
             {
-                curr = new List<Connection>(ActiveConnections);
+                curr = new List<Connection>(_Connections);
             }
 
             return curr;

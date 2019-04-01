@@ -7,31 +7,71 @@ using Komodo.Core;
 
 namespace Komodo.Server.Classes
 {
+    /// <summary>
+    /// User object.
+    /// </summary>
     public class UserMaster
     {
         #region Public-Members
 
+        /// <summary>
+        /// ID of the user.
+        /// </summary>
         public int? UserMasterId { get; set; }
-        public int? NodeId { get; set; }
-        public int? ExpirationSec { get; set; }
+
+        /// <summary>
+        /// First name.
+        /// </summary>
         public string FirstName { get; set; }
+
+        /// <summary>
+        /// Last name.
+        /// </summary>
         public string LastName { get; set; }
+
+        /// <summary>
+        /// Company name.
+        /// </summary>
         public string CompanyName { get; set; }
+
+        /// <summary>
+        /// Email address (used for authentication).
+        /// </summary>
         public string Email { get; set; }
+
+        /// <summary>
+        /// Password (used for authentication).
+        /// </summary>
         public string Password { get; set; }
-        public string Cellphone { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string PostalCode { get; set; }
-        public string Country { get; set; }
         
+        /// <summary>
+        /// Indicates whether or not the user is a system admin.
+        /// </summary>
         public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// GUID of the user.
+        /// </summary>
         public string GUID { get; set; }
+
+        /// <summary>
+        /// Indicates whether or not the account is active.
+        /// </summary>
         public bool Active { get; set; }
+
+        /// <summary>
+        /// Time of creation.
+        /// </summary>
         public DateTime? Created { get; set; }
+        
+        /// <summary>
+        /// Time of last update.
+        /// </summary>
         public DateTime? LastUpdate { get; set; }
+
+        /// <summary>
+        /// Time when the user account will expire.
+        /// </summary>
         public DateTime? Expiration { get; set; }
 
         #endregion
@@ -42,11 +82,19 @@ namespace Komodo.Server.Classes
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
         public UserMaster()
         {
 
         }
 
+        /// <summary>
+        /// Load a list of users from a file.
+        /// </summary>
+        /// <param name="filename">Filename and path.</param>
+        /// <returns>List of users.</returns>
         public static List<UserMaster> FromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));

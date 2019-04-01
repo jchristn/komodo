@@ -24,8 +24,6 @@ namespace Komodo.Server
                 return resp;
             }
 
-            EnumerationQuery query = Common.DeserializeJson<EnumerationQuery>(md.Http.Data);
-             
             string indexName = md.Http.RawUrlEntries[0];
             Index currIndex = _Index.GetIndexByName(indexName);
             if (currIndex == null || currIndex == default(Index))
@@ -34,7 +32,7 @@ namespace Komodo.Server
                 return new HttpResponse(md.Http, false, 404, null, "application/json",
                     new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true), true);
             }
-             
+
             IndexClient currClient = _Index.GetIndexClient(indexName);
             if (currClient == null)
             {
@@ -43,6 +41,12 @@ namespace Komodo.Server
                     new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true), true);
             }
 
+            EnumerationQuery query = Common.DeserializeJson<EnumerationQuery>(md.Http.Data);
+            if (query.Filters == null) query.Filters = new List<SearchFilter>();
+
+            SearchFilter sf = new SearchFilter("IndexName", SearchCondition.Equals, indexName);
+            query.Filters.Add(sf);
+            
             EnumerationResult result = null;
             ErrorCode error = null;
             if (!currClient.Enumerate(query, out result, out error))

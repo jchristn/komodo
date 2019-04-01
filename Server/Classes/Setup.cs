@@ -7,6 +7,9 @@ using Komodo.Server.Classes;
 
 namespace Komodo.Server.Classes
 {
+    /// <summary>
+    /// Perform requisite setup tasks to start the Komodo server.
+    /// </summary>
     public class Setup
     {
         #region Public-Members
@@ -19,6 +22,9 @@ namespace Komodo.Server.Classes
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the setup wizard.
+        /// </summary>
         public Setup()
         {
             RunSetup();
@@ -209,19 +215,12 @@ namespace Komodo.Server.Classes
 
                     currUser = new UserMaster();
                     currUser.Active = true;
-                    currUser.Address1 = "123 Some Street";
-                    currUser.Cellphone = "408-555-1212";
-                    currUser.City = "San Jose";
                     currUser.CompanyName = "Default Company";
-                    currUser.Country = "USA";
                     currUser.FirstName = "First";
                     currUser.LastName = "Last";
                     currUser.Email = "default@default.com";
                     currUser.IsAdmin = true;
-                    currUser.NodeId = 0;
                     currUser.Password = "default";
-                    currUser.PostalCode = "95128";
-                    currUser.State = "CA";
                     currUser.UserMasterId = 1;
                     currUser.GUID = "default";
                     currUser.Created = timestamp;
@@ -296,19 +295,12 @@ namespace Komodo.Server.Classes
 
                 currUser = new UserMaster();
                 currUser.Active = true;
-                currUser.Address1 = "123 Some Street";
-                currUser.Cellphone = "408-555-1212";
-                currUser.City = "San Jose";
                 currUser.CompanyName = "Default Company";
-                currUser.Country = "USA";
                 currUser.FirstName = "First";
                 currUser.LastName = "Last";
                 currUser.Email = "default@default.com";
                 currUser.IsAdmin = true;
-                currUser.NodeId = 0;
                 currUser.Password = "default";
-                currUser.PostalCode = "95128";
-                currUser.State = "CA";
                 currUser.UserMasterId = 1;
                 currUser.GUID = "default";
                 currUser.Created = timestamp;

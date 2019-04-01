@@ -9,6 +9,9 @@ using Komodo.Core;
 
 namespace Komodo.Server.Classes
 {
+    /// <summary>
+    /// Console manager.
+    /// </summary>
     public class ConsoleManager
     {
         #region Public-Members
@@ -26,6 +29,12 @@ namespace Komodo.Server.Classes
 
         #region Constructors-and-Factories
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="config">Server configuration.</param>
+        /// <param name="indices">List of indices.</param>
+        /// <param name="exitApplication">Function to call when terminating the server.</param>
         public ConsoleManager(
             Config config,
             IndexManager indices,
@@ -46,6 +55,9 @@ namespace Komodo.Server.Classes
 
         #region Public-Methods
 
+        /// <summary>
+        /// Terminate the console.
+        /// </summary>
         public void Stop()
         {
             _Enabled = false;

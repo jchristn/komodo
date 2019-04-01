@@ -8,7 +8,7 @@ using WatsonWebserver;
 namespace Komodo.Server.Classes
 {
     /// <summary>
-    /// Request metadata.
+    /// Metadata from an incoming HTTP request.
     /// </summary>
     public class RequestMetadata
     {

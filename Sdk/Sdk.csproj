@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <PackageId>Komodo.Sdk</PackageId>
+    <Version>1.1.4</Version>
+    <Authors>Joel Christner</Authors>
+    <Company>Joel Christner</Company>
+    <Product>Komodo</Product>
+    <Description>C# SDK for Komodo search platform</Description>
+    <Copyright>(c)2019 Joel Christner</Copyright>
+    <PackageLicenseUrl>https://github.com/jchristn/komodo/blob/master/LICENSE.TXT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jchristn/komodo/tree/master/Sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jchristn/komodo/tree/master/Sdk</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>information info search retrieval storage</PackageTags>
+    <PackageReleaseNotes>Fixes and added APIs</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

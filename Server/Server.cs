@@ -28,7 +28,7 @@ namespace Komodo.Server
         public static IndexManager _Index;
         public static ConsoleManager _Console;
         public static WatsonWebserver.Server _Server;
-
+        
         public static void Main(string[] args)
         {
             try
@@ -78,9 +78,10 @@ namespace Komodo.Server
                 _ApiKey = new ApiKeyManager(_Logging, ApiKey.FromFile(_Config.Files.ApiKey), ApiKeyPermission.FromFile(_Config.Files.ApiKeyPermission));
                 _Index = new IndexManager(_Config.Files.Indices, _Logging);
 
-                _Server = new WatsonWebserver.Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived, true);
-                _Server.AddContentRoute("/SearchApp/", true);
-                _Server.AddContentRoute("/Assets/", true);
+                _Server = new WatsonWebserver.Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived);
+                _Server.ContentRoutes.Add("/SearchApp/", true);
+                _Server.ContentRoutes.Add("/Assets/", true);
+                _Server.AccessControl.Mode = AccessControlMode.DefaultPermit;
 
                 #endregion
                  
@@ -128,19 +129,7 @@ namespace Komodo.Server
 
             return ret;
         }
-
-        public static void Usage()
-        {
-            //                 1234567890123456789012345678901234567890123456789012345678901234567890123456789");
-            Console.WriteLine("");
-            Console.WriteLine("Usage:");
-            Console.WriteLine("  C:\\> KomodoServer [-c=<configfile>]");
-            Console.WriteLine("");
-            Console.WriteLine("Where:");
-            Console.WriteLine("  -c=<configfile>       Configuration file to load");
-            Console.WriteLine("");
-        }
-
+        
         public static HttpResponse RequestReceived(HttpRequest req)
         {
             HttpResponse resp = new HttpResponse(req, false, 500, null, "application/json",

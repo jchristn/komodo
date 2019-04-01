@@ -579,8 +579,9 @@ namespace Komodo.Core
                             continue;
                     }
 
-                    if (added > 0) ret += ",";
+                    if (added > 0) ret += " AND ";
                     ret += currSf;
+                    added++;
                 }
             }
 
