@@ -22,7 +22,7 @@ namespace Komodo.Core
         /// <summary>
         /// The type of document.
         /// </summary>
-        public DocType DocumentType { get; set; }
+        public DocType? DocumentType { get; set; }
 
         /// <summary>
         /// The score of the document, between 0 and 1.  Only relevant when optional filters are supplied in the search.

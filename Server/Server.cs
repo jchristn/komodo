@@ -57,15 +57,15 @@ namespace Komodo.Server
 
                 #endregion
                 
-                #region Initialize-Global-Variables
+                #region Initialize-Globals
 
                 _Config = Config.FromFile("System.json");
 
                 _Logging = new LoggingModule(
                     _Config.Logging.SyslogServerIp,
                     _Config.Logging.SyslogServerPort,
-                    Common.IsTrue(_Config.Logging.ConsoleLogging),
-                    LoggingModule.Severity.Debug,
+                    _Config.Logging.ConsoleLogging,
+                    (LoggingModule.Severity)_Config.Logging.MinimumLevel,
                     false,
                     true,
                     true,
@@ -78,19 +78,17 @@ namespace Komodo.Server
                 _ApiKey = new ApiKeyManager(_Logging, ApiKey.FromFile(_Config.Files.ApiKey), ApiKeyPermission.FromFile(_Config.Files.ApiKeyPermission));
                 _Index = new IndexManager(_Config.Files.Indices, _Logging);
 
-                _Server = new WatsonWebserver.Server(_Config.Server.ListenerHostname, _Config.Server.ListenerPort, Common.IsTrue(_Config.Server.Ssl), RequestReceived);
+                _Server = new WatsonWebserver.Server(
+                    _Config.Server.ListenerHostname, 
+                    _Config.Server.ListenerPort, 
+                    _Config.Server.Ssl, 
+                    RequestReceived);
+
                 _Server.ContentRoutes.Add("/SearchApp/", true);
                 _Server.ContentRoutes.Add("/Assets/", true);
                 _Server.AccessControl.Mode = AccessControlMode.DefaultPermit;
-
-                #endregion
                  
-                #region Console
-
-                if (Common.IsTrue(_Config.EnableConsole))
-                {
-                    _Console = new ConsoleManager(_Config, _Index, ExitApplication);
-                }
+                if (_Config.EnableConsole) _Console = new ConsoleManager(_Config, _Index, ExitApplication); 
 
                 #endregion
 
@@ -151,7 +149,7 @@ namespace Komodo.Server
                 ApiKeyPermission currApiKeyPermission = null;
                 RequestMetadata md = new RequestMetadata();
 
-                if (Common.IsTrue(_Config.Logging.LogHttpRequests))
+                if (_Config.Logging.LogHttpRequests)
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived request received: " + Environment.NewLine + req.ToString());
                 }
@@ -348,7 +346,7 @@ namespace Komodo.Server
             {
                 _Conn.Close(Thread.CurrentThread.ManagedThreadId);
 
-                if (Common.IsTrue(_Config.Logging.LogHttpRequests))
+                if (_Config.Logging.LogHttpRequests)
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
                 } 
@@ -398,7 +396,7 @@ namespace Komodo.Server
             responseHeaders.Add("Accept-Charset", "ISO-8859-1, utf-8");
             responseHeaders.Add("Connection", "keep-alive");
 
-            if (Common.IsTrue(_Config.Server.Ssl))
+            if (_Config.Server.Ssl)
             {
                 responseHeaders.Add("Host", "https://" + _Config.Server.ListenerHostname + ":" + _Config.Server.ListenerPort);
             }

@@ -1341,6 +1341,8 @@ namespace Komodo.Core
                         Document currDoc = new Document();
                         currDoc.MasterDocId = currDocId;
                         currDoc.Score = Convert.ToDecimal(scores[currDocId].ToString("N4"));
+                        currDoc.DocumentType = null;
+                        currDoc.Errors = null;
 
                         byte[] data = null; 
                         IndexedDoc currIndexedDoc = null;

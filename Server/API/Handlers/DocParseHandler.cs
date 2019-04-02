@@ -64,7 +64,7 @@ namespace Komodo.Server
             #region Retrieve-Data
 
             resp = RestRequest.SendRequestSafe(url, "text/plain", "GET", null, null, false,
-                Common.IsTrue(currConfig.Rest.AcceptInvalidCerts), null, null);
+                currConfig.Rest.AcceptInvalidCerts, null, null);
 
             if (resp == null)
             {

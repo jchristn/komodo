@@ -204,14 +204,14 @@ namespace Komodo.Server.Classes
                 {
                     foreach (ApiKeyPermission curr in perms)
                     {
-                        if (!Common.IsTrue(curr.Active)) continue;
+                        if (!curr.Active) continue;
                         if (!Common.IsLaterThanNow(curr.Expiration)) continue;
 
-                        if (Common.IsTrue(curr.AllowSearch)) ret.AllowSearch = true;
-                        if (Common.IsTrue(curr.AllowCreateDocument)) ret.AllowCreateDocument = true;
-                        if (Common.IsTrue(curr.AllowDeleteDocument)) ret.AllowDeleteDocument = true;
-                        if (Common.IsTrue(curr.AllowCreateIndex)) ret.AllowCreateIndex = true;
-                        if (Common.IsTrue(curr.AllowDeleteIndex)) ret.AllowDeleteIndex = true;
+                        if (curr.AllowSearch) ret.AllowSearch = true;
+                        if (curr.AllowCreateDocument) ret.AllowCreateDocument = true;
+                        if (curr.AllowDeleteDocument) ret.AllowDeleteDocument = true;
+                        if (curr.AllowCreateIndex) ret.AllowCreateIndex = true;
+                        if (curr.AllowDeleteIndex) ret.AllowDeleteIndex = true;
                     }
                 }
 
