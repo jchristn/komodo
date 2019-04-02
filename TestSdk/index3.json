@@ -1,0 +1,62 @@
+{
+  "IndexName": "Third",
+  "RootDirectory": "Third",
+  "Options": {
+    "SplitCharacters": [
+      "]",
+      "[",
+      ",",
+      ".",
+      " ",
+      "'",
+      "\"",
+      ";",
+      "<",
+      ">",
+      ".",
+      "/",
+      "\\",
+      "|",
+      "{",
+      "}",
+      "(",
+      ")"
+    ],
+    "NormalizeCase": true,
+    "RemovePunctuation": true,
+    "RemoveStopWords": true,
+    "PerformStemming": true,
+    "MinTokenLength": 3,
+    "MaxTokenLength": 32,
+    "StopWords": []
+  },
+  "Database": {
+    "Type": "Sqlite",
+    "Filename": "Third/Komodo.db",
+    "Hostname": "localhost",
+    "Port": 8100,
+    "DatabaseName": "komodo",
+    "InstanceName": "komodo",
+    "Username": "komodo",
+    "Password": "komodo",
+    "Debug": false
+  },
+  "StorageSource": {
+    "Type": "Kvpbase",
+    "Kvpbase": {
+      "Endpoint": "http://localhost:8001/",
+      "UserGuid": "default",
+      "Container": "source",
+      "ApiKey": "default"
+    }
+  },
+  "StorageParsed": {
+    "Type": "Kvpbase",
+    "Kvpbase": {
+      "Endpoint": "http://localhost:8001/",
+      "UserGuid": "default",
+      "Container": "parsed",
+      "ApiKey": "default"
+    }
+  }
+}
