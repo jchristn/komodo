@@ -997,6 +997,8 @@ namespace Komodo.Core
                 return false;
             }
 
+            bool result = false;
+
             foreach (SearchFilter currFilter in query.Required.Filter)
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
@@ -1009,12 +1011,13 @@ namespace Komodo.Core
                 {
                     if (currNode.Key.Equals(currFilter.Field))
                     {
-                        if (!FilterMatch(currFilter, currNode)) return false;
+                        if (FilterMatch(currFilter, currNode)) result = true;
+                        break;
                     }
                 }
             }
 
-            return true;
+            return result;
         }
 
         private bool OptionalFiltersMatch(IndexedDoc doc, SearchQuery query, out decimal score)
@@ -1041,15 +1044,10 @@ namespace Komodo.Core
                 _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " OptionalFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
                 return false;
             }
-
+             
             foreach (SearchFilter currFilter in query.Required.Filter)
             {
-                if (String.IsNullOrEmpty(currFilter.Field))
-                {
-                    _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " OptionalFiltersMatch null key supplied in filter");
-                    continue;
-                }
-
+                if (String.IsNullOrEmpty(currFilter.Field)) continue;
                 bool matchFound = false;
 
                 foreach (DataNode currNode in nodes)
