@@ -98,7 +98,7 @@ namespace Komodo.Core
             {
                 foreach (Index currIndex in _Indices)
                 {
-                    if (currIndex.IndexName.Equals(indexName)) return currIndex;
+                    if (currIndex.IndexName.ToLower().Equals(indexName)) return currIndex;
                 }
 
                 _Logging.Log(LoggingModule.Severity.Warn, "IndexManager GetIndexByName index " + indexName + " does not exist");
@@ -120,7 +120,7 @@ namespace Komodo.Core
             {
                 foreach (Index currIndex in _Indices)
                 {
-                    if (currIndex.IndexName.Equals(indexName)) return true;
+                    if (currIndex.IndexName.ToLower().Equals(indexName)) return true;
                 }
 
                 _Logging.Log(LoggingModule.Severity.Warn, "IndexManager IndexExists index " + indexName + " does not exist");
@@ -209,7 +209,7 @@ namespace Komodo.Core
 
                 foreach (Index tempIndex in _Indices)
                 {
-                    if (!tempIndex.IndexName.Equals(indexName)) updated.Add(currIndex);
+                    if (!tempIndex.IndexName.ToLower().Equals(indexName)) updated.Add(currIndex);
                 }
 
                 if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(updated, true))))
@@ -262,7 +262,7 @@ namespace Komodo.Core
 
             lock (_IndexClientLock)
             {
-                IndexClient curr = _IndexClients.Where(x => x.Name.Equals(indexName)).FirstOrDefault();
+                IndexClient curr = _IndexClients.Where(x => x.Name.ToLower().Equals(indexName)).FirstOrDefault();
                 if (curr == default(IndexClient)) return null;
                 return curr;
             }
