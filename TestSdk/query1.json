@@ -1,24 +1,26 @@
 {
-MaxResults: 5,
-StartIndex: null,
-Required: {
-Terms: [ "Joel" ],
-Filter: [ 
-{
-"Field": "lineitems.lineitemid",
-"Condition": "GreaterThan",
-"Value": "0"
-}
-]
-},
-Optional: {
-Terms: [ ],
-Filter: [ ]
-},
-Exclude: {
-Terms: [ ],
-Filter: [ ]
-},
-IncludeContent: false,
-IncludeParsedDoc: false
+  "MaxResults": 5,
+  "StartIndex": null,
+  "Required": {
+    "Terms": [
+      "Joel"
+    ],
+    "Filter": [
+      {
+        "Field": "lineitems.lineitemid",
+        "Condition": "GreaterThan",
+        "Value": "0"
+      }
+    ]
+  },
+  "Optional": {
+    "Terms": [],
+    "Filter": []
+  },
+  "Exclude": {
+    "Terms": [],
+    "Filter": []
+  },
+  "IncludeContent": false,
+  "IncludeParsedDoc": false
 }
