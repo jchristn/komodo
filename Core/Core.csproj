@@ -8,7 +8,7 @@
     <Version>1.1.5</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Core Library</Product>
-    <Description>Core libraries for Komodo Search</Description>
+    <Description>Core libraries for Komodo Search (for use with Komodo server, clone at https://github.com/jchristn/komodo)</Description>
     <Copyright>(c)2019 Joel Christner</Copyright>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>

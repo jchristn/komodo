@@ -7,14 +7,15 @@
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo</Product>
-    <Description>C# SDK for Komodo search platform</Description>
+    <Description>C# SDK for Komodo search platform (clone at https://github.com/jchristn/komodo)</Description>
     <Copyright>(c)2019 Joel Christner</Copyright>
     <PackageLicenseUrl>https://github.com/jchristn/komodo/blob/master/LICENSE.TXT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/jchristn/komodo/tree/master/Sdk</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo/tree/master/Sdk</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>information info search retrieval storage</PackageTags>
-    <PackageReleaseNotes>Added StoreDocument API.</PackageReleaseNotes>
+    <PackageReleaseNotes>For use with the Komodo search platform server (clone at https://github.com/jchristn/komodo)</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
