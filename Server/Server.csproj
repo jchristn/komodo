@@ -6,7 +6,7 @@
     <AssemblyName>Komodo.Server</AssemblyName>
     <RootNamespace>Komodo.Server</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.4</Version>
+    <Version>1.1.5</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>RESTful API server for Komodo Search</Description>
@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>restful api server find index komodo search</PackageTags>
-    <PackageReleaseNotes>Enumeration of source documents within an index</PackageReleaseNotes>
+    <PackageReleaseNotes>Major code cleanup.  Purpose-built postings manager for improved scale on indexing, search, and storage.  Removed terms table.  Searches now continue until exhaustion or until max results count is met.  Fix for match counts on search results.  Index bypass now available, a way to store a document in an Index without indexing it (simple object storage).</PackageReleaseNotes>
     <PackageId>Komodo.Server</PackageId>
   </PropertyGroup>
 

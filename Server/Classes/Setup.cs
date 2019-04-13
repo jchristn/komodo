@@ -42,7 +42,7 @@ namespace Komodo.Server.Classes
         {
             #region Variables
 
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
             Config currConfig = new Config();
             
             ApiKey currApiKey = new ApiKey();
@@ -74,30 +74,16 @@ namespace Komodo.Server.Classes
              
             currConfig.DocumentationUrl = "https://github.com/jchristn/komodo"; 
             currConfig.EnableConsole = true;
-            
-            #endregion
-
-            #region Set-Defaults-for-Config-Sections
-
-            #region Files
-
+             
             currConfig.Files = new Config.FilesSettings();
             currConfig.Files.ApiKey = "./ApiKey.json";
             currConfig.Files.ApiKeyPermission = "./ApiKeyPermission.json";
             currConfig.Files.UserMaster = "./UserMaster.json";
             currConfig.Files.Indices = "./Indices.json";
-
-            #endregion
-
-            #region Debug
-
+             
             currConfig.Debug = new Config.DebugSettings();
             currConfig.Debug.Database = false;
-
-            #endregion
-
-            #region Server
-
+             
             currConfig.Server = new Config.ServerSettings();
             currConfig.Server.HeaderApiKey = "x-api-key";
             currConfig.Server.HeaderEmail = "x-email";
@@ -105,11 +91,7 @@ namespace Komodo.Server.Classes
             currConfig.Server.AdminApiKey = "komodoadmin";
             currConfig.Server.ListenerPort = 9090;
             currConfig.Server.ListenerHostname = "127.0.0.1";
-
-            #endregion
              
-            #region Logging
-
             currConfig.Logging = new Config.LoggingSettings();
             currConfig.Logging.ConsoleLogging = true;
             currConfig.Logging.Header = "komodo";
@@ -118,27 +100,14 @@ namespace Komodo.Server.Classes
             currConfig.Logging.LogHttpRequests = false;
             currConfig.Logging.LogHttpResponses = false;
             currConfig.Logging.MinimumLevel = 1;
-
-            #endregion
-
-            #region REST
-
+             
             currConfig.Rest = new Config.RestSettings();
             currConfig.Rest.AcceptInvalidCerts = true;
             currConfig.Rest.UseWebProxy = false;
-
+              
             #endregion
 
-            #region Indexer
-
-            currConfig.Indexer = new Config.IndexerSettings();
-            currConfig.Indexer.IndexerIntervalMs = 5000;
-
-            #endregion
-
-            #endregion
-
-            #region System-Config
+            #region Overwrite
 
             if (
                 Common.FileExists("./System.json")
@@ -166,7 +135,7 @@ namespace Komodo.Server.Classes
 
             #endregion
 
-            #region Users-API-Keys-and-Permissions
+            #region Authentication
 
             if (
                 Common.FileExists(currConfig.Files.ApiKey)
@@ -342,8 +311,8 @@ namespace Komodo.Server.Classes
                
             #region Wrap-Up
 
-            //          1         2         3         4         5         6         7
-            // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+            //                          1         2         3         4         5         6         7
+            //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 
             Console.WriteLine("");
             Console.WriteLine("All finished!");
@@ -353,7 +322,7 @@ namespace Komodo.Server.Classes
             Console.WriteLine("");
             Console.WriteLine("Verify Komodo is running in your browser:");
             Console.WriteLine("");
-            Console.WriteLine("http://localhost:" + currConfig.Server.ListenerPort + "/loopback");
+            Console.WriteLine("http://localhost:" + currConfig.Server.ListenerPort);
             Console.WriteLine("");
             Console.WriteLine("Press ENTER to start.");
             Console.WriteLine("");

@@ -26,12 +26,12 @@ namespace Komodo.Core
         /// <summary>
         /// Maximum number of results to retrieve.
         /// </summary>
-        public int? MaxResults { get; set; }
+        public int MaxResults { get; set; }
 
         /// <summary>
         /// The starting index position for the search.
         /// </summary>
-        public int? StartIndex { get; set; }
+        public int StartIndex { get; set; }
 
         /// <summary>
         /// Required terms and search filter that must be satisfied to include a document in the results.

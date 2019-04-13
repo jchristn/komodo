@@ -13,6 +13,8 @@ using RestWrapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Komodo.Core.Database;
+
 namespace Komodo.Core
 {
     /// <summary>
@@ -27,12 +29,30 @@ namespace Komodo.Core
         /// </summary>
         public string Name { get; private set; }
 
+        /// <summary>
+        /// Maximum results to be returned by a search.
+        /// </summary>
+        public int MaxResults
+        {
+            get
+            {
+                return _MaxResults;
+            }
+            set
+            {
+                if (value > 1000) throw new ArgumentException("Max results must be one thousand or less.");
+                if (value < 1) throw new ArgumentException("Max results must be at least one.");
+                _MaxResults = value;
+            }
+        }
+
         #endregion
 
         #region Private-Members
 
         private bool _Disposed = false;
         private bool _Destroying = false;
+        public int _MaxResults = 1000;
 
         private Index _Index;
         private LoggingModule _Logging;
@@ -44,9 +64,9 @@ namespace Komodo.Core
         private IndexQueries _IndexQueries = null;
 
         private Blobs _BlobSource;
-        private Blobs _BlobParsed;
+        private Blobs _BlobParsed; 
 
-        private readonly object _DbLock;
+        private PostingsManager _Postings;
 
         #endregion
 
@@ -63,10 +83,7 @@ namespace Komodo.Core
         /// <summary>
         /// Instantiate the Index.
         /// </summary>
-        /// <param name="name">The name of the index.</param>
-        /// <param name="rootDirectory">The root directory of the index.</param>
-        /// <param name="dbDebug">Enable or disable database debugging.</param>
-        /// <param name="indexOptions">Options for the index.</param>
+        /// <param name="index">Index object.</param> 
         /// <param name="logging">Logging module.</param>
         public IndexClient(Index index, LoggingModule logging)
         {
@@ -78,21 +95,18 @@ namespace Komodo.Core
             if (index.Database == null) throw new ArgumentException("Index does not contain database settings.");
             if (index.StorageParsed == null) throw new ArgumentException("Index does not contain storage configuration for parsed documents.");
             if (index.StorageSource == null) throw new ArgumentException("Index does not contain storage configuration for source documents.");
+            if (index.Postings == null) throw new ArgumentException("Index does not contain settings for the postings manager.");
 
             _Index = index;
             Name = index.IndexName;
 
             _Logging = logging;
             _RootDirectory = index.RootDirectory;
-            
-            _DbLock = new object();
-
+             
             CreateDirectories();
             InitializeDatabase();
-
-            _IndexQueries = new IndexQueries(_Index, _SqlDatabase, _SqliteDatabase);
-            InitializeDatabaseTables();
             InitializeBlobManager();
+            InitializePostingsManager();
 
             _Logging.Log(LoggingModule.Severity.Info, "IndexClient started for index " + Name);
         }
@@ -193,7 +207,7 @@ namespace Komodo.Core
         }
 
         /// <summary>
-        /// Add a document to the index.
+        /// Parse a document and add to the index.
         /// </summary>
         /// <param name="docType">The type of document.</param>
         /// <param name="sourceData">The source data from the document.</param>
@@ -220,14 +234,14 @@ namespace Komodo.Core
             {
                 if (_Destroying)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument index is being destroyed");
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument index is being destroyed");
                     error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
                     return false;
                 }
 
                 if ((sourceData == null || sourceData.Length < 1) && String.IsNullOrEmpty(sourceUrl))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument source URL not supplied");
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument source URL not supplied");
                     error = new ErrorCode(ErrorId.MISSING_PARAMS, "SourceUrl");
                     return false;
                 }
@@ -240,7 +254,7 @@ namespace Komodo.Core
                     byte[] data = crawler.RetrieveBytes();
                     if (data == null || data.Length < 1)
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument unable to retrieve data from source " + sourceUrl);
+                        _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to retrieve data from source " + sourceUrl);
                         error = new ErrorCode(ErrorId.RETRIEVE_FAILED, sourceUrl);
                         return false;
                     }
@@ -255,7 +269,7 @@ namespace Komodo.Core
                 doc = GenerateIndexedDoc(docType, sourceData, sourceUrl);
                 if (doc == null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument unable to parse source data");
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to parse source data");
                     error = new ErrorCode(ErrorId.PARSE_ERROR, sourceUrl);
                     return false;
                 }
@@ -299,27 +313,30 @@ namespace Komodo.Core
 
                 if (doc.Terms != null && doc.Terms.Count > 0)
                 {
-                    foreach (string currTerm in doc.Terms)
+                    foreach (Posting p in doc.Postings)
                     {
-                        Dictionary<string, object> termsVals = new Dictionary<string, object>();
-                        termsVals.Add("IndexName", _Index.IndexName);
-                        termsVals.Add("MasterDocId", doc.MasterDocId);
-                        termsVals.Add("Term", currTerm);
-                        termsVals.Add("Created", ts);
-
-                        if (_SqlDatabase != null) _SqlDatabase.Insert("Terms", termsVals);
-                        else _SqliteDatabase.Insert("Terms", termsVals);
-                    }
+                        if (!_Postings.AddPosting(p))
+                        {
+                            _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to add posting for term " + p.Term + " in document ID " + doc.MasterDocId);
+                        }
+                    } 
                 }
 
                 #endregion
 
                 #region Add-to-Filesystem
 
-                if (!WriteSourceDocument(sourceData, doc)
-                    || !WriteParsedDocument(doc))
+                if (!WriteSourceDocument(sourceData, doc))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " AddDocument unable to write source document");
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to write source document");
+                    error = new ErrorCode(ErrorId.WRITE_ERROR);
+                    cleanupRequired = true;
+                    return false;
+                }
+
+                if (!WriteParsedDocument(doc))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to write parsed document");
                     error = new ErrorCode(ErrorId.WRITE_ERROR);
                     cleanupRequired = true;
                     return false;
@@ -335,22 +352,140 @@ namespace Komodo.Core
 
                 if (cleanupRequired && doc != null)
                 {
-                    _Logging.Log(LoggingModule.Severity.Info, "Index " + Name + " AddDocument starting cleanup due to failed add operation");
+                    _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] AddDocument starting cleanup due to failed add operation");
 
                     if (_SqlDatabase != null)
                     {
                         DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, doc.MasterDocId);
                         _SqlDatabase.Delete("SourceDocuments", e);
-                        _SqlDatabase.Delete("ParsedDocuments", e);
-                        _SqlDatabase.Delete("Terms", e); 
+                        _SqlDatabase.Delete("ParsedDocuments", e); 
                     }
                     else
                     {
                         SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, doc.MasterDocId);
                         _SqliteDatabase.Delete("SourceDocuments", e);
-                        _SqliteDatabase.Delete("ParsedDocuments", e);
-                        _SqliteDatabase.Delete("Terms", e);
+                        _SqliteDatabase.Delete("ParsedDocuments", e); 
                     }
+
+                    if (doc.Terms != null && doc.Terms.Count > 0)
+                    {
+                        _Postings.RemoveDocument(doc.MasterDocId, doc.Terms);
+                    }
+                }
+
+                #endregion
+            }
+        }
+
+        /// <summary>
+        /// Store a document in the index without parsing.
+        /// </summary>
+        /// <returns></returns>
+        public bool StoreDocument(
+            DocType docType,
+            byte[] sourceData,
+            string sourceUrl,
+            string name,
+            string tags,
+            string contentType,
+            out ErrorCode error,
+            out string masterDocId)
+        {
+            error = null;
+            masterDocId = null;
+            bool cleanupRequired = false; 
+
+            try
+            {
+                if (_Destroying)
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument index is being destroyed");
+                    error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
+                    return false;
+                }
+
+                if ((sourceData == null || sourceData.Length < 1) && String.IsNullOrEmpty(sourceUrl))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument source URL not supplied");
+                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "SourceUrl");
+                    return false;
+                }
+
+                #region Retrieve
+
+                if (!String.IsNullOrEmpty(sourceUrl))
+                {
+                    Crawler crawler = new Crawler(sourceUrl, docType);
+                    byte[] data = crawler.RetrieveBytes();
+                    if (data == null || data.Length < 1)
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument unable to retrieve data from source " + sourceUrl);
+                        error = new ErrorCode(ErrorId.RETRIEVE_FAILED, sourceUrl);
+                        return false;
+                    }
+                    sourceData = new byte[data.Length];
+                    Buffer.BlockCopy(data, 0, sourceData, 0, data.Length);
+                }
+
+                #endregion
+                 
+                #region Add-to-Database 
+
+                masterDocId = Guid.NewGuid().ToString();
+
+                string ts = null;
+                if (_SqlDatabase != null) ts = _SqlDatabase.Timestamp(DateTime.Now.ToUniversalTime());
+                else ts = _SqliteDatabase.Timestamp(DateTime.Now.ToUniversalTime());
+
+                // Source documents table
+                Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
+                sourceDocVals.Add("IndexName", _Index.IndexName);
+                sourceDocVals.Add("Name", name);
+                sourceDocVals.Add("Tags", tags);
+                sourceDocVals.Add("MasterDocId", masterDocId);
+                sourceDocVals.Add("SourceUrl", sourceUrl);
+                sourceDocVals.Add("ContentType", contentType);
+                sourceDocVals.Add("ContentLength", sourceData.Length);
+                sourceDocVals.Add("DocType", docType.ToString());
+                sourceDocVals.Add("Created", ts);
+
+                if (_SqlDatabase != null) _SqlDatabase.Insert("SourceDocuments", sourceDocVals);
+                else _SqliteDatabase.Insert("SourceDocuments", sourceDocVals);
+                 
+                #endregion
+
+                #region Add-to-Filesystem
+
+                if (!WriteSourceDocument(sourceData, masterDocId))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument unable to write source document");
+                    error = new ErrorCode(ErrorId.WRITE_ERROR);
+                    cleanupRequired = true;
+                    return false;
+                }
+
+                #endregion
+
+                return true;
+            }
+            finally
+            {
+                #region Cleanup
+
+                if (cleanupRequired)
+                {
+                    _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] StoreDocument starting cleanup due to failed add operation");
+
+                    if (_SqlDatabase != null)
+                    {
+                        DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
+                        _SqlDatabase.Delete("SourceDocuments", e); 
+                    }
+                    else
+                    {
+                        SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
+                        _SqliteDatabase.Delete("SourceDocuments", e); 
+                    } 
                 }
 
                 #endregion
@@ -369,14 +504,14 @@ namespace Komodo.Core
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DocumentExists index is being destroyed");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DocumentExists index is being destroyed");
                 error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
                 return false;
             }
 
             if (String.IsNullOrEmpty(masterDocId))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DocumentExists document ID not supplied");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DocumentExists document ID not supplied");
                 error = new ErrorCode(ErrorId.MISSING_PARAMS, "MasterDocId");
                 return false;
             }
@@ -410,44 +545,52 @@ namespace Komodo.Core
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DeleteDocument index is being destroyed");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DeleteDocument index is being destroyed");
                 error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
                 return false;
             }
 
             if (String.IsNullOrEmpty(masterDocId))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " DeleteDocument document ID not supplied");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DeleteDocument document ID not supplied");
                 error = new ErrorCode(ErrorId.MISSING_PARAMS, "MasterDocId");
                 return false;
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "Index " + Name + " DeleteDocument starting deletion of doc ID " + masterDocId);
+            _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] DeleteDocument starting deletion of doc ID " + masterDocId);
+             
+            IndexedDoc doc = null;
+            if (!GetParsedDocument(masterDocId, out doc))
+            {
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DeleteDocument unable to read parsed document ID " + masterDocId);
+                error = new ErrorCode(ErrorId.RETRIEVE_FAILED, null);
+                return false;
+            }
 
             if (_SqlDatabase != null)
             {
                 DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
                 _SqlDatabase.Delete("SourceDocuments", e);
-                _SqlDatabase.Delete("ParsedDocuments", e);
-                _SqlDatabase.Delete("Terms", e);
+                _SqlDatabase.Delete("ParsedDocuments", e); 
             }
             else
             {
                 SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
                 _SqliteDatabase.Delete("SourceDocuments", e);
-                _SqliteDatabase.Delete("ParsedDocuments", e);
-                _SqliteDatabase.Delete("Terms", e);
+                _SqliteDatabase.Delete("ParsedDocuments", e); 
             }
 
             bool deleteSource = DeleteSourceDocument(masterDocId);
             bool deleteParsed = DeleteParsedDocument(masterDocId);
-            if (!deleteSource || !deleteParsed)
+            bool deletePostings = _Postings.RemoveDocument(doc.MasterDocId, doc.Terms);
+
+            if (!deleteSource || !deleteParsed || !deletePostings)
             {
                 error = new ErrorCode(ErrorId.DELETE_ERROR, masterDocId);
                 return false;
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "Index " + Name + " DeleteDocument successfully deleted doc ID " + masterDocId);
+            _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] DeleteDocument successfully deleted doc ID " + masterDocId);
             return true;
         }
 
@@ -474,7 +617,7 @@ namespace Komodo.Core
             doc = null;
             return ReadParsedDocument(masterDocId, out doc);
         }
-
+         
         /// <summary>
         /// Search the index.
         /// </summary>
@@ -488,35 +631,52 @@ namespace Komodo.Core
             result = new SearchResult(query);
             result.MarkStarted();
 
-            #region Check-for-Null-Values
+            #region Setup
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search index is being destroyed");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search index is being destroyed");
                 error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
                 return false;
             }
 
             if (query == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search query not supplied");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search query not supplied");
                 error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
                 return false;
             }
 
             if (query.Required == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search required filter not supplied");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search required filter not supplied");
                 error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Filter");
                 return false;
             }
 
             if (query.Required.Terms == null || query.Required.Terms.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Search required terms not supplied");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search required terms not supplied");
                 error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Terms");
                 return false;
             }
+              
+            if (query.Optional == null || query.Optional.Terms == null)
+            {
+                query.Optional = new QueryFilter();
+                query.Optional.Terms = new List<string>();
+            }
+
+            if (query.Exclude == null || query.Exclude.Terms == null)
+            {
+                query.Exclude = new QueryFilter();
+                query.Exclude.Terms = new List<string>();
+            }
+
+            if (query.StartIndex < 0) query.StartIndex = 0;
+
+            if (query.MaxResults > _MaxResults) query.MaxResults = _MaxResults;
+            if (query.MaxResults < 1) query.MaxResults = 1;
 
             #endregion
 
@@ -524,7 +684,7 @@ namespace Komodo.Core
 
             if (!String.IsNullOrEmpty(query.PostbackUrl))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " Search starting async search with POSTback to " + query.PostbackUrl);
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] Search starting async search with POSTback to " + query.PostbackUrl);
                 Task.Run(() => SearchTaskWrapper(query));
 
                 result = new SearchResult(query);
@@ -536,7 +696,8 @@ namespace Komodo.Core
             }
             else
             {
-                return SearchInternal(query, out result, out error);
+                long indexEnd = 0;
+                return SearchInternal(query, out result, out error, out indexEnd);
             }
 
             #endregion
@@ -633,14 +794,14 @@ namespace Komodo.Core
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Enumerate index is being destroyed");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Enumerate index is being destroyed");
                 error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
                 return false;
             }
 
             if (query == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " Enumerate query not supplied");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Enumerate query not supplied");
                 error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
                 return false;
             }
@@ -651,7 +812,7 @@ namespace Komodo.Core
 
             if (!String.IsNullOrEmpty(query.PostbackUrl))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " Enumeration starting async search with POSTback to " + query.PostbackUrl);
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] Enumeration starting async search with POSTback to " + query.PostbackUrl);
                 Task.Run(() => EnumerationTaskWrapper(query));
 
                 result = new EnumerationResult(query);
@@ -683,10 +844,13 @@ namespace Komodo.Core
             if (disposing)
             {
                 if (_SqliteDatabase != null) _SqliteDatabase.Dispose();
+                if (_Postings != null) _Postings.Dispose();
             }
 
             _Disposed = true;
         }
+
+        #region Initialization
 
         private void CreateDirectories()
         { 
@@ -711,16 +875,18 @@ namespace Komodo.Core
                     if (!Common.CreateDirectory(_Index.StorageParsed.Disk.Directory))
                         throw new IOException("Unable to create parsed documents directory.");
                 }
-            }
+            } 
         }
 
         private void InitializeDatabase()
         {
+            #region Initialize-Database-Client
+
             switch (_Index.Database.Type)
             {
-                case DatabaseType.Mssql:
-                case DatabaseType.Mysql:
-                case DatabaseType.Pgsql:
+                case DatabaseType.MsSql:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
                     _SqlDatabase = new DatabaseWrapper.DatabaseClient(
                         DatabaseTypeToString(_Index.Database.Type),
                         _Index.Database.Hostname,
@@ -731,55 +897,63 @@ namespace Komodo.Core
                         _Index.Database.DatabaseName);
                     _SqlDatabase.DebugRawQuery = _Index.Database.Debug;
                     _SqlDatabase.DebugResultRowCount = _Index.Database.Debug;
-                    return;
+                    break;
 
-                case DatabaseType.Sqlite:
+                case DatabaseType.SQLite:
                     _SqliteDatabase = new SqliteWrapper.DatabaseClient(
                         _Index.Database.Filename,
                         _Index.Database.Debug);
-                    return;
+                    break;
+
+                default:
+                    throw new ArgumentException("Unknown database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
             }
 
-            throw new ArgumentException("Unknown database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
+            #endregion
+
+            #region Initialize-Tables
+
+            _IndexQueries = new IndexQueries(_Index, _SqlDatabase, _SqliteDatabase);
+
+            string sourceDocsQuery = _IndexQueries.CreateSourceDocsTable();
+            string parsedDocsQuery = _IndexQueries.CreateParsedDocsTable();
+            string termsQuery = _IndexQueries.CreateTermsTable();
+            string termsMapQuery = _IndexQueries.CreateTermsMapTable();
+
+            switch (_Index.Database.Type)
+            {
+                case DatabaseType.MsSql:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                    _SqlDatabase.RawQuery(sourceDocsQuery);
+                    _SqlDatabase.RawQuery(parsedDocsQuery);
+                    _SqlDatabase.RawQuery(termsQuery);
+                    _SqlDatabase.RawQuery(termsMapQuery);
+                    break;
+
+                case DatabaseType.SQLite:
+                    _SqliteDatabase.Query(sourceDocsQuery);
+                    _SqliteDatabase.Query(parsedDocsQuery);
+                    _SqliteDatabase.Query(termsQuery);
+                    _SqliteDatabase.Query(termsMapQuery);
+                    break;
+            }
+
+            #endregion 
         }
 
         private string DatabaseTypeToString(DatabaseType dbType)
         {
             switch (dbType)
             {
-                case DatabaseType.Mssql:
+                case DatabaseType.MsSql:
                     return "mssql";
-                case DatabaseType.Mysql:
+                case DatabaseType.MySql:
                     return "mysql";
-                case DatabaseType.Pgsql:
+                case DatabaseType.PgSql:
                     return "pgsql";
-                case DatabaseType.Sqlite:
+                case DatabaseType.SQLite:
                     return "sqlite";
-            }
-
-            throw new ArgumentException("Unknown database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
-        }
-
-        private void InitializeDatabaseTables()
-        {
-            string sourceDocsQuery = _IndexQueries.CreateSourceDocsTable();
-            string parsedDocsQuery = _IndexQueries.CreateParsedDocsTable();
-            string termsQuery = _IndexQueries.CreateTermsTable();
-             
-            switch (_Index.Database.Type)
-            {
-                case DatabaseType.Mssql:
-                case DatabaseType.Mysql:
-                case DatabaseType.Pgsql:
-                    _SqlDatabase.RawQuery(sourceDocsQuery);
-                    _SqlDatabase.RawQuery(parsedDocsQuery);
-                    _SqlDatabase.RawQuery(termsQuery);
-                    return;
-                case DatabaseType.Sqlite:
-                    _SqliteDatabase.Query(sourceDocsQuery);
-                    _SqliteDatabase.Query(parsedDocsQuery);
-                    _SqliteDatabase.Query(termsQuery);
-                    return;
             }
 
             throw new ArgumentException("Unknown database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
@@ -823,6 +997,21 @@ namespace Komodo.Core
                     throw new ArgumentException("Unknown storage type in index " + _Index.IndexName);
             } 
         }
+         
+        private void InitializePostingsManager()
+        {
+            _Postings = new PostingsManager(
+                _Logging,
+                _Index.IndexName,
+                _Index.Postings.BaseDirectory,
+                _Index.Postings.DatabaseFilename,
+                _Index.Postings.DatabaseDebug
+                );
+        }
+
+        #endregion
+
+        #region Support
 
         private string Sanitize(string str)
         {
@@ -863,10 +1052,20 @@ namespace Komodo.Core
 
             return doc;
         }
-         
+
+        #endregion
+
+        #region Source-Documents
+
         private bool WriteSourceDocument(byte[] data, IndexedDoc doc)
         {
             string filename = doc.MasterDocId + ".source";
+            return _BlobSource.Write(filename, false, data).Result;
+        }
+
+        private bool WriteSourceDocument(byte[] data, string masterDocId)
+        {
+            string filename = masterDocId + ".source";
             return _BlobSource.Write(filename, false, data).Result;
         }
 
@@ -891,6 +1090,10 @@ namespace Komodo.Core
                 return false;
             }
         }
+
+        #endregion
+
+        #region Parsed-Documents
 
         private bool WriteParsedDocument(IndexedDoc doc)
         {
@@ -922,29 +1125,13 @@ namespace Komodo.Core
             }
         }
 
-        private List<string> GetMatchingDocIdsByTerms(SearchQuery query)
+        #endregion
+
+        #region Filter-Match
+
+        private bool DocMatchesFilters(IndexedDoc doc, SearchQuery query, out decimal filterScore)
         {
-            List<string> ret = new List<string>();
-
-            string dbQuery = _IndexQueries.SelectDocIdsByTerms(query);
-
-            DataTable result = null;
-            if (_SqlDatabase != null) result = _SqlDatabase.RawQuery(dbQuery);
-            else result = _SqliteDatabase.Query(dbQuery);
-
-            if (result == null || result.Rows.Count < 1) return ret;
-
-            foreach (DataRow currRow in result.Rows)
-            {
-                ret.Add(currRow["MasterDocId"].ToString());
-            }
-
-            return ret; 
-        }
-
-        private bool DocMatchesFilters(IndexedDoc doc, SearchQuery query, out decimal score)
-        {
-            score = 1m;
+            filterScore = 1m;
             
             #region Process
              
@@ -957,17 +1144,6 @@ namespace Komodo.Core
             {
                 _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches required filters");
             }
-             
-            if (!OptionalFiltersMatch(doc, query, out score))
-            {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " does not match optional filters");
-                return false;
-            }
-            else
-            {
-                score = Convert.ToDecimal(score.ToString("N4"));
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches optional filters [score " + score + "]");
-            }
 
             if (!ExcludeFiltersMatch(doc, query))
             {
@@ -977,6 +1153,17 @@ namespace Komodo.Core
             else
             {
                 _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches exclude filters");
+            }
+
+            if (!OptionalFiltersMatch(doc, query, out filterScore))
+            {
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " does not match optional filters");
+                return false;
+            }
+            else
+            {
+                filterScore = Convert.ToDecimal(filterScore.ToString("N4"));
+                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches optional filters [score " + filterScore + "]");
             }
 
             return true;
@@ -993,7 +1180,7 @@ namespace Komodo.Core
             List<DataNode> nodes = DataNodesFromIndexedDoc(doc);
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " RequiredFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
                 return false;
             }
 
@@ -1003,7 +1190,7 @@ namespace Komodo.Core
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " RequiredFiltersMatch null key supplied in filter");
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch null key supplied in filter");
                     continue;
                 }
 
@@ -1020,18 +1207,18 @@ namespace Komodo.Core
             return result;
         }
 
-        private bool OptionalFiltersMatch(IndexedDoc doc, SearchQuery query, out decimal score)
+        private bool OptionalFiltersMatch(IndexedDoc doc, SearchQuery query, out decimal filterScore)
         {
-            score = 1m;
+            filterScore = 1m;
             if (query.Optional == null || query.Optional.Filter == null || query.Optional.Filter.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " OptionalFiltersMatch no optional filters found");
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] OptionalFiltersMatch no optional filters found");
                 return true;
             }
 
             if (doc.Text != null || doc.Html != null)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " OptionalFiltersMatch document type is text or HTML, skipping");
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] OptionalFiltersMatch document type is text or HTML, skipping");
                 return true;  // not appropriate searches
             }
 
@@ -1041,7 +1228,7 @@ namespace Komodo.Core
             List<DataNode> nodes = DataNodesFromIndexedDoc(doc);
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " OptionalFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] OptionalFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
                 return false;
             }
              
@@ -1064,8 +1251,8 @@ namespace Komodo.Core
                 }
             }
 
-            _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " OptionalFiltersMatch document ID " + doc.MasterDocId + " [" + filterCount + " filters, " + matchCount + " matches: " + score + " score]");
-            if (matchCount > 0 && filterCount > 0) score = (decimal)matchCount / filterCount;
+            _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] OptionalFiltersMatch document ID " + doc.MasterDocId + " [" + filterCount + " filters, " + matchCount + " matches: " + filterScore + " score]");
+            if (matchCount > 0 && filterCount > 0) filterScore = (decimal)matchCount / filterCount;
             return true;
         }
 
@@ -1078,7 +1265,7 @@ namespace Komodo.Core
             List<DataNode> nodes = DataNodesFromIndexedDoc(doc);
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " RequiredFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
                 return false;
             }
 
@@ -1086,7 +1273,7 @@ namespace Komodo.Core
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " RequiredFiltersMatch null key supplied in filter");
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch null key supplied in filter");
                     continue;
                 }
 
@@ -1211,17 +1398,22 @@ namespace Komodo.Core
                     return false;
 
                 default:
-                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " FilterMatch unknown condition: " + filter.Condition.ToString());
+                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] FilterMatch unknown condition: " + filter.Condition.ToString());
                     return false;
             } 
         }
+
+        #endregion
+
+        #region Search
 
         private void SearchTaskWrapper(SearchQuery query)
         {
             SearchResult result = null;
             ErrorCode error = null;
 
-            bool success = SearchInternal(query, out result, out error);
+            long indexEnd = 0;
+            bool success = SearchInternal(query, out result, out error, out indexEnd);
             byte[] data = null;
 
             if (success) data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
@@ -1236,192 +1428,211 @@ namespace Komodo.Core
 
             if (resp == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchTaskWrapper no response from POSTback URL " + query.PostbackUrl);
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchTaskWrapper no response from POSTback URL " + query.PostbackUrl);
                 return;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
                 return;
             } 
         }
 
-        private bool SearchInternal(SearchQuery query, out SearchResult result, out ErrorCode error)
+        private bool SearchInternal(SearchQuery query, out SearchResult result, out ErrorCode error, out long indexEnd)
         {
             error = null;
             result = new SearchResult(query);
             result.IndexName = _Index.IndexName;
+            result.MatchCount = new MatchCounts();
             result.MarkStarted();
+
+            indexEnd = query.StartIndex;
 
             try
             {
-                #region Check-for-Null-Values
+                #region Variables
 
-                if (query == null)
-                {
-                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
-                    return false;
-                }
-
-                if (query.Required == null)
-                {
-                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Filter");
-                    return false;
-                }
-
-                if (query.Required.Terms == null || query.Required.Terms.Count < 1)
-                {
-                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Terms");
-                    return false;
-                }
+                Dictionary<string, decimal> docsMatching = new Dictionary<string, decimal>();
+                Dictionary<string, decimal> currDocsMatching = new Dictionary<string, decimal>();
 
                 #endregion
 
-                #region Process-Terms
+                #region Process
 
-                List<string> docIds = GetMatchingDocIdsByTerms(query);
-                if (docIds == null || docIds.Count < 1)
+                while (docsMatching.Count < query.MaxResults)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal found no results");
-                    return true;
-                }
-                else
-                {
-                    _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal found " + docIds.Count + " results");
-                }
+                    bool endOfSearch = false;
 
-                result.SetTermsMatchCount(docIds.Count);
+                    #region Process-Terms
 
-                #endregion
-
-                #region Process-Filters
-
-                List<string> filteredDocIds = new List<string>();
-                Dictionary<string, decimal> scores = new Dictionary<string, decimal>();
-
-                if ((query.Required.Filter != null && query.Required.Filter.Count > 0)
-                    || (query.Optional.Filter != null && query.Optional.Filter.Count > 0)
-                    || (query.Exclude.Filter != null && query.Exclude.Filter.Count > 0))
-                { 
-                    foreach (string currDocId in docIds)
+                    while (true)
                     {
-                        IndexedDoc currParsedDoc = null;
-                        if (!ReadParsedDocument(currDocId, out currParsedDoc))
-                        {
-                            _Logging.Log(LoggingModule.Severity.Warn, "IndexClient " + Name + " SearchInternal unable to read parsed document ID " + currDocId);
-                            continue;
-                        }
+                        _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal retrieving documents matching terms, index " + indexEnd + " max results " + query.MaxResults);
 
-                        decimal score = 1m;
-                        if (!DocMatchesFilters(currParsedDoc, query, out score))
+                        _Postings.GetMatchingDocuments(
+                            indexEnd,
+                            query.MaxResults,
+                            query.Required.Terms,
+                            query.Optional.Terms,
+                            query.Exclude.Terms,
+                            out currDocsMatching,
+                            out indexEnd);
+
+                        if (currDocsMatching == null || currDocsMatching.Count < 1)
                         {
-                            _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal document ID " + currDocId + " does not match filters");
-                            continue;
+                            // no more documents
+                            endOfSearch = true;
+                            break; 
                         }
                         else
                         {
-                            scores.Add(currDocId, score);
-                            filteredDocIds.Add(currDocId);
+                            result.MatchCount.TermsMatch += currDocsMatching.Count;
                         }
-                    } 
+
+                        foreach (KeyValuePair<string, decimal> curr in currDocsMatching)
+                        {
+                            if (!docsMatching.ContainsKey(curr.Key)) docsMatching.Add(curr.Key, curr.Value);
+                            _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal adding document " + curr.Key);
+                        }
+
+                        if (currDocsMatching.Count >= query.MaxResults)
+                        {
+                            _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal potential results " + currDocsMatching.Count + " exceeds max results " + query.MaxResults);
+                            break;
+                        }
+                    }
+
+                    if (endOfSearch)
+                    {
+                        // no more documents
+                        _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal reached end of search results");
+                        break;
+                    }
+                    else
+                    {
+                        // increment limit and offset
+                        indexEnd += query.MaxResults;
+                    }
+
+                    #endregion
+
+                    #region Process-Filters
+
+                    if ((query.Required.Filter != null && query.Required.Filter.Count > 0)
+                        || (query.Optional.Filter != null && query.Optional.Filter.Count > 0)
+                        || (query.Exclude.Filter != null && query.Exclude.Filter.Count > 0))
+                    {
+                        foreach (KeyValuePair<string, decimal> curr in currDocsMatching)
+                        {
+                            IndexedDoc currParsedDoc = null;
+                            if (!ReadParsedDocument(curr.Key, out currParsedDoc))
+                            {
+                                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchInternal unable to read parsed document ID " + curr.Key);
+                                continue;
+                            }
+
+                            decimal filterScore = 1m;
+                            if (!DocMatchesFilters(currParsedDoc, query, out filterScore))
+                            {
+                                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal document ID " + curr.Key + " does not match filters, removing");
+                                if (docsMatching.ContainsKey(curr.Key)) docsMatching.Remove(curr.Key);
+                                currDocsMatching.Remove(curr.Key);
+                                continue;
+                            }
+                            else
+                            {
+                                result.MatchCount.FilterMatch = result.MatchCount.FilterMatch + 1;
+                                docsMatching[curr.Key] = (curr.Value + filterScore) / 2;
+                            }
+                        }
+                    }
+
+                    #endregion
+                }
+
+                if (docsMatching.Count > query.MaxResults)
+                {
+                    docsMatching = docsMatching.Take(query.MaxResults).ToDictionary(pair => pair.Key, pair => pair.Value);
                 }
 
                 #endregion
 
                 #region Append-Documents
 
-                if (filteredDocIds != null && filteredDocIds.Count > 0)
+                if (docsMatching != null && docsMatching.Count > 0)
                 {
                     List<Document> documents = new List<Document>();
 
-                    foreach (string currDocId in filteredDocIds)
+                    foreach (KeyValuePair<string, decimal> curr in docsMatching)
                     {
                         Document currDoc = new Document();
-                        currDoc.MasterDocId = currDocId;
-                        currDoc.Score = Convert.ToDecimal(scores[currDocId].ToString("N4"));
+                        currDoc.MasterDocId = curr.Key;
+                        currDoc.Score = Convert.ToDecimal(curr.Value.ToString("N4"));
                         currDoc.DocumentType = null;
-                        currDoc.Errors = null;
+                        currDoc.Errors = new List<string>();
 
                         byte[] data = null; 
                         IndexedDoc currIndexedDoc = null;
 
                         if (query.IncludeParsedDoc || query.IncludeContent)
-                        { 
-                            if (!ReadParsedDocument(currDocId, out currIndexedDoc))
+                        {
+                            if (!ReadParsedDocument(curr.Key, out currIndexedDoc))
                             {
-                                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve parsed doc");
+                                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchInternal document ID " + curr.Key + " cannot retrieve parsed doc");
                                 currDoc.Errors.Add("Unable to retrieve parsed document");
                             }
-                            
-                            currDoc.DocumentType = currIndexedDoc.DocumentType;
-
-                            if (query.IncludeParsedDoc)
+                            else
                             {
-                                currDoc.Parsed = currIndexedDoc;
-                            }
+                                currDoc.DocumentType = currIndexedDoc.DocumentType;
 
-                            if (query.IncludeContent)
-                            {
-                                if (!ReadSourceDocument(currDocId, out data))
+                                if (query.IncludeParsedDoc)
                                 {
-                                    _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " SearchInternal document ID " + currDocId + " cannot retrieve source doc");
-                                    currDoc.Errors.Add("Unable to retrieve source document");
+                                    currDoc.Parsed = currIndexedDoc;
                                 }
-                                else
+
+                                if (query.IncludeContent)
                                 {
-                                    if (currIndexedDoc != null && currIndexedDoc.DocumentType == DocType.Json)
+                                    if (!ReadSourceDocument(curr.Key, out data))
                                     {
-                                        JToken jsonData = JToken.Parse(Encoding.UTF8.GetString(data));
-                                        currDoc.Data = jsonData;
+                                        _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchInternal document ID " + curr + " cannot retrieve source doc");
+                                        currDoc.Errors.Add("Unable to retrieve source document");
                                     }
                                     else
                                     {
-                                        currDoc.Data = Encoding.UTF8.GetString(data);
+                                        if (currIndexedDoc != null && currIndexedDoc.DocumentType == DocType.Json)
+                                        {
+                                            JToken jsonData = JToken.Parse(Encoding.UTF8.GetString(data));
+                                            currDoc.Data = jsonData;
+                                        }
+                                        else
+                                        {
+                                            currDoc.Data = Encoding.UTF8.GetString(data);
+                                        }
                                     }
                                 }
-                            } 
+                            }
                         }
 
-                        _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal appended doc ID " + currDocId + " to result");
-                        documents.Add(currDoc);
-                    }
-
-                    result.AttachResults(documents);
+                        _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal appended doc ID " + curr.Key + " to result");
+                        result.Documents.Add(currDoc);
+                    } 
                 }
-
-                result.SortMatchesByScore();
 
                 #endregion
 
+                result.SortMatchesByScore();
                 return true;
             }
             finally
             {
                 result.MarkEnded();
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal finished (" + result.TotalTimeMs + "ms)");
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal finished (" + result.TotalTimeMs + "ms)");
             }
         }
 
-        private DocType DocTypeFromString(string val)
-        {
-            if (String.IsNullOrEmpty(val)) throw new ArgumentNullException(nameof(val));
+        #endregion
 
-            switch (val.ToLower())
-            {
-                case "html":
-                    return DocType.Html;
-                case "json":
-                    return DocType.Json;
-                case "xml":
-                    return DocType.Xml;
-                case "text":
-                    return DocType.Text;
-                case "sql":
-                    return DocType.Sql;
-                default:
-                    return DocType.Unknown;
-            } 
-        }
+        #region Enumeration
 
         private void EnumerationTaskWrapper(EnumerationQuery query)
         {
@@ -1443,12 +1654,12 @@ namespace Komodo.Core
 
             if (resp == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "Index " + Name + " EnumerationTaskWrapper no response from POSTback URL " + query.PostbackUrl);
+                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] EnumerationTaskWrapper no response from POSTback URL " + query.PostbackUrl);
                 return;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " EnumerationTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] EnumerationTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
                 return;
             }
         }
@@ -1497,9 +1708,11 @@ namespace Komodo.Core
             finally
             {
                 result.MarkEnded();
-                _Logging.Log(LoggingModule.Severity.Debug, "Index " + Name + " SearchInternal finished (" + result.TotalTimeMs + "ms)");
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal finished (" + result.TotalTimeMs + "ms)");
             }
         }
+
+        #endregion
 
         #endregion
     }

@@ -26,7 +26,7 @@ namespace Komodo.Core
         /// <summary>
         /// Document IDs for nodes.
         /// </summary>
-        public Dictionary<string, string> NodeDocIds { get; set; }  // i.e. xml.child.data -> a19a83e...
+        public Dictionary<string, string> aNodeDocIds { get; set; }  // i.e. xml.child.data -> a19a83e...
 
         /// <summary>
         /// Schema for the object.
@@ -109,8 +109,7 @@ namespace Komodo.Core
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
-            ret.DocumentType = DocType.Html;
-            ret.NodeDocIds = new Dictionary<string, string>();
+            ret.DocumentType = DocType.Html; 
             ret.Html = html;
             ret._Options = options;
             ret.Postings = new List<Posting>();
@@ -132,8 +131,7 @@ namespace Komodo.Core
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
-            ret.DocumentType = DocType.Json;
-            ret.NodeDocIds = new Dictionary<string, string>();
+            ret.DocumentType = DocType.Json; 
             ret.Json = json;
             ret._Options = options;
             ret.Postings = new List<Posting>();
@@ -155,8 +153,7 @@ namespace Komodo.Core
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
-            ret.DocumentType = DocType.Sql;
-            ret.NodeDocIds = new Dictionary<string, string>();
+            ret.DocumentType = DocType.Sql; 
             ret.Sql = sql;
             ret._Options = options;
             ret.Postings = new List<Posting>();
@@ -178,8 +175,7 @@ namespace Komodo.Core
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
-            ret.DocumentType = DocType.Xml;
-            ret.NodeDocIds = new Dictionary<string, string>();
+            ret.DocumentType = DocType.Xml; 
             ret.Xml = xml;
             ret._Options = options;
             ret.Postings = new List<Posting>();
@@ -201,8 +197,7 @@ namespace Komodo.Core
 
             IndexedDoc ret = new IndexedDoc();
             ret.MasterDocId = Guid.NewGuid().ToString();
-            ret.DocumentType = DocType.Text;
-            ret.NodeDocIds = new Dictionary<string, string>();
+            ret.DocumentType = DocType.Text; 
             ret.Text = text;
             ret._Options = options;
             ret.Postings = new List<Posting>();
@@ -224,16 +219,7 @@ namespace Komodo.Core
             string ret = "";
             ret += "---" + Environment.NewLine;
             ret += "Master Document ID  : " + MasterDocId + Environment.NewLine;
-
-            if (NodeDocIds != null)
-            {
-                ret += "  Node Document IDs : " + NodeDocIds.Count() + Environment.NewLine;
-                foreach (KeyValuePair<string, string> curr in NodeDocIds)
-                {
-                    ret += "    " + curr.Key + ": " + curr.Value + Environment.NewLine;
-                }
-            }
-
+             
             if (Postings != null)
             {
                 ret += "  Postings          : " + Postings.Count() + Environment.NewLine;
@@ -276,8 +262,7 @@ namespace Komodo.Core
 
         private void ProcessHtml()
         {
-            Html = Normalizer.NormalizeHtml(_Options, Html);
-            GenerateHtmlNodeDocumentIds();
+            Html = Normalizer.NormalizeHtml(_Options, Html); 
             GenerateHtmlPostingsAndTokens();
             Schema = Html.Schema;
             return;
@@ -285,8 +270,7 @@ namespace Komodo.Core
 
         private void ProcessJson()
         {
-            Json = Normalizer.NormalizeJson(_Options, Json);
-            GenerateJsonNodeDocumentIds();
+            Json = Normalizer.NormalizeJson(_Options, Json); 
             GenerateJsonPostingsAndTokens();
             Schema = Json.Schema;
             return;
@@ -294,8 +278,7 @@ namespace Komodo.Core
 
         private void ProcessSql()
         {
-            Sql = Normalizer.NormalizeSql(_Options, Sql);
-            GenerateSqlNodeDocumentIds();
+            Sql = Normalizer.NormalizeSql(_Options, Sql); 
             GenerateSqlPostingsAndTokens();
             Schema = Sql.Schema;
             return;
@@ -303,8 +286,7 @@ namespace Komodo.Core
 
         private void ProcessXml()
         {
-            Xml = Normalizer.NormalizeXml(_Options, Xml);
-            GenerateXmlNodeDocumentIds();
+            Xml = Normalizer.NormalizeXml(_Options, Xml); 
             GenerateXmlPostingsAndTokens();
             Schema = Xml.Schema;
             return;
@@ -312,88 +294,16 @@ namespace Komodo.Core
 
         private void ProcessText()
         {
-            Text = Normalizer.NormalizeText(_Options, Text);
-            GenerateTextNodeDocumentIds();
+            Text = Normalizer.NormalizeText(_Options, Text); 
             GenerateTextPostingsAndTokens();
             Schema = null;
             return;
         }
 
         #endregion
-
-        #region Node-ID-Generators-from-Schema
-
-        private void GenerateHtmlNodeDocumentIds()
-        {
-            NodeDocIds = new Dictionary<string, string>();
-            NodeDocIds.Add("Title", Guid.NewGuid().ToString());
-            NodeDocIds.Add("MetaDesc", Guid.NewGuid().ToString());
-            NodeDocIds.Add("MetaDescOpengraph", Guid.NewGuid().ToString());
-            NodeDocIds.Add("MetaKeywords", Guid.NewGuid().ToString());
-            NodeDocIds.Add("MetaImgOpengraph", Guid.NewGuid().ToString());
-            NodeDocIds.Add("MetaVideoTagsOpengraph", Guid.NewGuid().ToString());
-            NodeDocIds.Add("ImageUrls", Guid.NewGuid().ToString());
-            NodeDocIds.Add("Links", Guid.NewGuid().ToString());
-            NodeDocIds.Add("Head", Guid.NewGuid().ToString());
-            NodeDocIds.Add("Body", Guid.NewGuid().ToString());
-        }
-
-        private void GenerateJsonNodeDocumentIds()
-        {
-            NodeDocIds = new Dictionary<string, string>();
-            if (Json == null) return;
-            if (Json.Schema == null) return;
-            if (Json.Schema.Count < 1) return;
-
-            foreach (KeyValuePair<string, DataType> curr in Json.Schema)
-            {
-                NodeDocIds.Add(curr.Key, MasterDocId + "." + Guid.NewGuid().ToString());
-            }
-        }
-
-        private void GenerateSqlNodeDocumentIds()
-        {
-            NodeDocIds = new Dictionary<string, string>();
-            if (Sql == null) return;
-            if (Sql.Schema == null) return;
-            if (Sql.Schema.Count < 1) return;
-
-            foreach (KeyValuePair<string, DataType> curr in Sql.Schema)
-            {
-                NodeDocIds.Add(curr.Key, MasterDocId + "." + Guid.NewGuid().ToString());
-            }
-        }
-
-        private void GenerateXmlNodeDocumentIds()
-        {
-            NodeDocIds = new Dictionary<string, string>();
-            if (Xml == null) return;
-            if (Xml.Schema == null) return;
-            if (Xml.Schema.Count < 1) return;
-
-            foreach (KeyValuePair<string, DataType> curr in Xml.Schema)
-            {
-                NodeDocIds.Add(curr.Key, MasterDocId + "." + Guid.NewGuid().ToString());
-            }
-        }
-
-        private void GenerateTextNodeDocumentIds()
-        {
-            NodeDocIds = new Dictionary<string, string>();
-            return;
-        }
-
-        #endregion
-
+         
         #region Postings-Generators
-
-        private string RetrieveDocumentId(string key)
-        {
-            if (NodeDocIds == null || NodeDocIds.Count < 1) return null;
-            if (NodeDocIds.ContainsKey(key)) return NodeDocIds[key];
-            return null;
-        }
-
+         
         private Posting RetrievePosting(string key, object val)
         {
             if (Postings == null || Postings.Count < 1) return null;
@@ -402,9 +312,9 @@ namespace Komodo.Core
         
             foreach (Posting p in Postings)
             {
-                if (String.Compare(p.DocumentId, key) == 0)
+                if (p.MasterDocId.Equals(key)) 
                 {
-                    if (p.Term == null) continue;
+                    if (String.IsNullOrEmpty(p.Term)) continue;
                     if (String.Compare(p.Term.ToString(), val.ToString()) == 0) return p;
                 }
             }
@@ -433,32 +343,9 @@ namespace Komodo.Core
 
                         string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
-                        
+
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("Title", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Title";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Title";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -481,30 +368,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("MetaDesc", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "MetaDesc";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "MetaDesc";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -527,30 +391,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("MetaDescOpengraph", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "MetaDescOpengraph";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "MetaDescOpengraph";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -573,30 +414,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("MetaKeywords", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "MetaKeywords";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "MetaKeywords";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -621,30 +439,7 @@ namespace Komodo.Core
                             if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                             Terms.Add(currTerm);
-
-                            Posting currPosting = RetrievePosting("MetaVideoTagsOpengraph", currTerm);
-                            if (currPosting != null)
-                            {
-                                // remove and update
-                                Postings.Remove(currPosting);
-                                currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                                currPosting.DocumentId = "MetaVideoTagsOpengraph";
-                                currPosting.Frequency = currPosting.Frequency + 1;
-                                currPosting.Positions.Add(termCount);
-                                Postings.Add(currPosting);
-                            }
-                            else
-                            {
-                                // create new entry
-                                currPosting = new Posting();
-                                currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                                currPosting.DocumentId = "MetaVideoTagsOpengraph";
-                                currPosting.Frequency = 1;
-                                currPosting.Positions = new List<long>();
-                                currPosting.Positions.Add(termCount);
-                                Postings.Add(currPosting);
-                            }
-
+                            AddOrUpdatePosting(currTerm, termCount);
                             termCount++;
                         }
                     }
@@ -665,30 +460,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("ImageUrls", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "ImageUrls";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "ImageUrls";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -708,30 +480,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("Links", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Links";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Links";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -754,30 +503,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("Head", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Head";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Head";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -800,30 +526,7 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting("Body", currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Body";
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = "Body";
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
                     }
                 }
@@ -842,9 +545,7 @@ namespace Komodo.Core
             if (Json != null && Json.Flattened != null && Json.Flattened.Count > 0)
             {
                 foreach (DataNode curr in Json.Flattened)
-                {
-                    string documentId = RetrieveDocumentId(curr.Key);
-                    if (String.IsNullOrEmpty(documentId)) continue;
+                {  
                     if (curr.Data == null) continue;
                          
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -859,36 +560,13 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting(documentId, currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = documentId;
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting); 
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = documentId;
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting); 
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
-                    }
-
-                    Terms = Terms.Distinct().ToList();
+                    } 
                 }
             }
+
+            Terms = Terms.Distinct().ToList();
         }
 
         private void GenerateSqlPostingsAndTokens()
@@ -899,9 +577,7 @@ namespace Komodo.Core
             if (Sql != null && Sql.Flattened != null && Sql.Flattened.Count > 0)
             {
                 foreach (DataNode curr in Sql.Flattened)
-                {
-                    string documentId = RetrieveDocumentId(curr.Key);
-                    if (String.IsNullOrEmpty(documentId)) continue;
+                { 
                     if (curr.Data == null) continue;
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -916,36 +592,13 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting(documentId, currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = documentId;
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = documentId;
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
-                    }
-
-                    Terms = Terms.Distinct().ToList();
+                    } 
                 }
-            } 
+            }
+
+            Terms = Terms.Distinct().ToList();
         }
 
         private void GenerateXmlPostingsAndTokens()
@@ -956,9 +609,7 @@ namespace Komodo.Core
             if (Xml != null && Xml.Flattened != null && Xml.Flattened.Count > 0)
             {
                 foreach (DataNode curr in Xml.Flattened)
-                {
-                    string documentId = RetrieveDocumentId(curr.Key);
-                    if (String.IsNullOrEmpty(documentId)) continue;
+                { 
                     if (curr.Data == null) continue;
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -973,36 +624,13 @@ namespace Komodo.Core
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                         Terms.Add(currTerm);
-
-                        Posting currPosting = RetrievePosting(documentId, currTerm);
-                        if (currPosting != null)
-                        {
-                            // remove and update
-                            Postings.Remove(currPosting);
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = documentId;
-                            currPosting.Frequency = currPosting.Frequency + 1;
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-                        else
-                        {
-                            // create new entry
-                            currPosting = new Posting();
-                            currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                            currPosting.DocumentId = documentId;
-                            currPosting.Frequency = 1;
-                            currPosting.Positions = new List<long>();
-                            currPosting.Positions.Add(termCount);
-                            Postings.Add(currPosting);
-                        }
-
+                        AddOrUpdatePosting(currTerm, termCount);
                         termCount++;
-                    }
-
-                    Terms = Terms.Distinct().ToList();
+                    } 
                 }
-            } 
+            }
+
+            Terms = Terms.Distinct().ToList();
         }
 
         private void GenerateTextPostingsAndTokens()
@@ -1021,35 +649,45 @@ namespace Komodo.Core
                     if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                     Terms.Add(currTerm);
-
-                    Posting currPosting = RetrievePosting(MasterDocId, currTerm);
-                    if (currPosting != null)
-                    {
-                        // remove and update
-                        Postings.Remove(currPosting);
-                        currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        currPosting.DocumentId = MasterDocId;
-                        currPosting.Frequency = currPosting.Frequency + 1;
-                        currPosting.Positions.Add(termCount);
-                        Postings.Add(currPosting);
-                    }
-                    else
-                    {
-                        // create new entry
-                        currPosting = new Posting();
-                        currPosting.Term = currTerm.Trim().Trim(Environment.NewLine.ToCharArray());
-                        currPosting.DocumentId = MasterDocId;
-                        currPosting.Frequency = 1;
-                        currPosting.Positions = new List<long>();
-                        currPosting.Positions.Add(termCount);
-                        Postings.Add(currPosting);
-                    }
-
+                    AddOrUpdatePosting(currTerm, termCount);
                     termCount++;
-                }
-
+                } 
             }
+
             Terms = Terms.Distinct().ToList(); 
+        }
+
+        private void AddOrUpdatePosting(string term, int termCount)
+        {
+            if (String.IsNullOrEmpty(term)) return;
+            term = term.Trim().Trim(Environment.NewLine.ToCharArray());
+
+            Posting match = Postings.Where(s => s.Term.Equals(term)).FirstOrDefault();
+            if (match == null || match == default(Posting))
+            {
+                #region First-Entry
+
+                match = new Posting();
+                match.Term = term;
+                match.MasterDocId = MasterDocId;
+                match.Frequency = 1;
+                match.Positions = new List<long>();
+                match.Positions.Add(termCount);
+                Postings.Add(match);
+
+                #endregion
+            }
+            else
+            {
+                #region Update
+
+                Postings.Remove(match);
+                match.Frequency = match.Frequency + 1;
+                match.Positions.Add(termCount);
+                Postings.Add(match);
+
+                #endregion
+            }
         }
 
         #endregion

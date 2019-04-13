@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
     <PackageId>Komodo.Sdk</PackageId>
-    <Version>1.1.4</Version>
+    <Version>1.1.5</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo</Product>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/jchristn/komodo/tree/master/Sdk</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>information info search retrieval storage</PackageTags>
-    <PackageReleaseNotes>Fixes and added APIs</PackageReleaseNotes>
+    <PackageReleaseNotes>Added StoreDocument API.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -138,7 +138,7 @@ namespace Komodo.Server
             {
                 #region Variables
 
-                DateTime startTime = DateTime.Now;
+                DateTime startTime = DateTime.Now.ToUniversalTime();
                 
                 string apiKey = "";
                 string email = "";
@@ -159,8 +159,7 @@ namespace Komodo.Server
                 #region Options-Handler
 
                 if (req.Method == HttpMethod.OPTIONS)
-                {
-                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived " + Thread.CurrentThread.ManagedThreadId + ": OPTIONS request received");
+                { 
                     resp = OptionsHandler(req);
                     return resp;
                 }
@@ -188,8 +187,7 @@ namespace Komodo.Server
                 }
 
                 if (req.RawUrlEntries == null || req.RawUrlEntries.Count == 0)
-                {
-                    _Logging.Log(LoggingModule.Severity.Info, "RequestReceived null raw URL list detected, redirecting to documentation page");
+                { 
                     resp = new HttpResponse(req, true, 200, null, "text/html", RootHtml(), true);
                     return resp;
                 }
@@ -302,32 +300,34 @@ namespace Komodo.Server
 
                 #endregion
 
-                #region Build-Metadata
+                #region Build-and-Validate-Metadata
 
                 md.Http = req;
                 md.User = currUserMaster;
                 md.ApiKey = currApiKey;
                 md.Permission = currApiKeyPermission;
 
-                md.Params = new RequestParameters();
-                if (md.Http.QuerystringEntries.ContainsKey("cleanup")) md.Params.Cleanup = Convert.ToBoolean(md.Http.QuerystringEntries["cleanup"]);
+                if (md.Http.QuerystringEntries != null && md.Http.QuerystringEntries.Count > 0)
+                {
+                    md.Params = RequestParameters.FromDictionary(md.Http.QuerystringEntries);
+                }
+                else
+                {
+                    md.Params = new RequestParameters();
+                }
+                
+                if (!String.IsNullOrEmpty(md.Params.Type))
+                {
+                    List<string> matchVals = new List<string> { "json", "xml", "html", "sql", "text" };
+                    if (!matchVals.Contains(md.Params.Type))
+                    {
+                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived invalid 'type' value found in querystring: " + md.Params.Type);
+                        resp = new HttpResponse(md.Http, false, 400, null, "application/json",
+                            new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html/sql/text].", null).ToJson(true), true);
+                        return resp;
+                    }
+                }
 
-                if (md.Http.QuerystringEntries.ContainsKey("dbtype")) md.Params.DbType = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbtype"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbserver")) md.Params.DbServer = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbserver"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbport")) md.Params.DbPort = Convert.ToInt32(md.Http.QuerystringEntries["dbport"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbuser")) md.Params.DbUser = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbuser"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbpass")) md.Params.DbPass = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbpass"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbinstance")) md.Params.DbInstance = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbinstance"]);
-                if (md.Http.QuerystringEntries.ContainsKey("dbname")) md.Params.DbName = WebUtility.UrlDecode(md.Http.QuerystringEntries["dbname"]);
-
-                if (md.Http.QuerystringEntries.ContainsKey("filename")) md.Params.Filename = WebUtility.UrlDecode(md.Http.QuerystringEntries["filename"]);
-                if (md.Http.QuerystringEntries.ContainsKey("name")) md.Params.Name = WebUtility.UrlDecode(md.Http.QuerystringEntries["name"]);
-                if (md.Http.QuerystringEntries.ContainsKey("parsed")) md.Params.Parsed = Convert.ToBoolean(md.Http.QuerystringEntries["parsed"]);
-                if (md.Http.QuerystringEntries.ContainsKey("pretty")) md.Params.Pretty = Convert.ToBoolean(md.Http.QuerystringEntries["pretty"]);
-                if (md.Http.QuerystringEntries.ContainsKey("tags")) md.Params.Tags = WebUtility.UrlDecode(md.Http.QuerystringEntries["tags"]);
-                if (md.Http.QuerystringEntries.ContainsKey("type")) md.Params.Type = WebUtility.UrlDecode(md.Http.QuerystringEntries["type"]);
-                if (md.Http.QuerystringEntries.ContainsKey("url")) md.Params.Url = WebUtility.UrlDecode(md.Http.QuerystringEntries["url"]);
-                 
                 #endregion
 
                 #region Call-User-API

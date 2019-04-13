@@ -47,13 +47,13 @@ Request body:
   },
   "Database": {
     "Type": "Sqlite",
-    "Filename": "First.db",
+    "Filename": "Komodo.db",
     "Hostname": "localhost",
     "Port": 8100,
-    "DatabaseName": "firstidx",
-    "InstanceName": "firstidx",
-    "Username": "joel",
-    "Password": "joel",
+    "DatabaseName": "Komodo",
+    "InstanceName": "Komodo",
+    "Username": "komodo",
+    "Password": "komodo",
     "Debug": false
   },
   "StorageSource": {
@@ -67,6 +67,11 @@ Request body:
     "Disk": {
       "Directory": "ParsedDocuments"
     }
+  },
+  "Postings": {
+    "BaseDirectory": "First/Postings",
+    "DatabaseFilename": "Postings.db",
+    "DatabaseDebug": false
   }
 }
 Response:
@@ -123,6 +128,11 @@ Response:
     "Disk": {
       "Directory": "ParsedDocuments"
     }
+  },
+  "Postings": {
+    "BaseDirectory": "First/Postings",
+    "DatabaseFilename": "Postings.db",
+    "DatabaseDebug": false
   }
 }
 ```
@@ -285,14 +295,7 @@ POST /_index?type=json
 Response body:
 {
     "MasterDocId": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd",
-    "DocumentType": "Json",
-    "NodeDocIds": {
-        "undefined": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd.6564d937-3a22-453b-98ab-7d8e5264b2a3",
-        "_id": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd.80fa901e-aa1b-4b16-9b10-38b95d841ea0",
-        "index": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd.c81176d2-0b52-4f09-bcc1-2d60d16a9b22",
-        "guid": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd.7fe65a58-4e83-4f6d-adb1-799e9b8b4f53",
-        ... 
-    },
+    "DocumentType": "Json", 
     "Schema": {
         "undefined": "Array",
         "_id": "String",
@@ -302,16 +305,14 @@ Response body:
     },
     "Postings": [
         {
-            "Term": "5c99acba82e8738d61dd091e",
-            "DocumentId": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd.80fa901e-aa1b-4b16-9b10-38b95d841ea0",
+            "Term": "5c99acba82e8738d61dd091e", 
             "Frequency": 1,
             "Positions": [
                 0
             ]
         },
         {
-            "Term": "69efa262 c510 4f6b 9b9c 2d1432c94035",
-            "DocumentId": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd.7fe65a58-4e83-4f6d-adb1-799e9b8b4f53",
+            "Term": "69efa262 c510 4f6b 9b9c 2d1432c94035", 
             "Frequency": 1,
             "Positions": [
                 0
@@ -378,6 +379,18 @@ Response:
     
   "DocumentId": "1e9fac69-07b5-4d46-ac08-0a40968864be",
   "AddTimeMs": 250
+}
+```
+
+## Store a Document in an Index, without indexing or parsing
+```
+POST /First?type=json&name=foo&tags=tag1,tag2,tag3&bypass=true
+Request body: <json document>
+Response:
+{
+    
+  "DocumentId": "1e9fac69-07b5-4d46-ac08-0a40968864be",
+  "AddTimeMs": 16
 }
 ```
 
@@ -579,15 +592,7 @@ GET /First/b7705bc9-789a-4a62-ba54-1b2043b6d1e7?parsed=true
 Response:
 {
     "MasterDocId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7",
-    "DocumentType": "Json",
-    "NodeDocIds": {
-        "ordernumber": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.8db87c13-fdc0-42e9-9817-5fd3064633ac",
-        "amount": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.a7130c17-c065-42c2-aaab-b0f38d75f493",
-        "customer": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.1cf7805e-fe61-4fd2-bfac-5958ecf1483d",
-        "customer.firstname": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.0bfd62d9-8f18-4e1a-8cb1-f4aaebd11cfd",
-        "customer.lastname": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.2f7f869d-e2f3-48d8-a9d9-76aa13ec5c68",
-        ... 
-    },
+    "DocumentType": "Json", 
     "Schema": {
         "ordernumber": "Integer",
         "amount": "Integer",
@@ -596,35 +601,16 @@ Response:
     },
     "Postings": [
         {
-            "Term": "100",
-            "DocumentId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.a7130c17-c065-42c2-aaab-b0f38d75f493",
+            "Term": "joel", 
             "Frequency": 1,
             "Positions": [
                 0
             ]
         },
-        {
-            "Term": "joel",
-            "DocumentId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.0bfd62d9-8f18-4e1a-8cb1-f4aaebd11cfd",
-            "Frequency": 1,
-            "Positions": [
-                0
-            ]
-        },
-        {
-            "Term": "christner",
-            "DocumentId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7.2f7f869d-e2f3-48d8-a9d9-76aa13ec5c68",
-            "Frequency": 1,
-            "Positions": [
-                0
-            ]
-        },
-        ... 
+        ...
     ],
-    "Terms": [
-        "100",
-        "joel",
-        "christner",
+    "Terms": [ 
+        "joel", 
         ...
     ],
     "Json": {

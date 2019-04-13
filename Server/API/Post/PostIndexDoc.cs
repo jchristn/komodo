@@ -28,15 +28,6 @@ namespace Komodo.Server
                 return resp;
             }
 
-            List<string> matchVals = new List<string> { "json", "xml", "html", "sql", "text" };
-            if (!matchVals.Contains(md.Params.Type))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc invalid 'type' value found in querystring: " + md.Params.Type);
-                resp = new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html/sql/text].", null).ToJson(true), true);
-                return resp;
-            }
-
             DocType currDocType = DocType.Json;
             switch (md.Params.Type)
             {
@@ -89,7 +80,7 @@ namespace Komodo.Server
 
             #endregion
 
-            #region Add-to-Index
+            #region Add-or-Store
 
             IndexClient currClient = _Index.GetIndexClient(indexName);
             if (currClient == null)
@@ -101,19 +92,40 @@ namespace Komodo.Server
 
             ErrorCode error = null;
             string masterDocId = null;
-            if (!currClient.AddDocument(
-                currDocType, 
-                md.Http.Data, 
-                md.Params.Url,
-                md.Params.Name,
-                md.Params.Tags,
-                md.Http.ContentType,
-                out error, 
-                out masterDocId))
+
+            if (md.Params.Bypass)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to add document to index " + indexName);
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(500, "Unable to add document to index '" + indexName + "'.", error).ToJson(true), true);
+                if (!currClient.StoreDocument(
+                    currDocType,
+                    md.Http.Data,
+                    md.Params.Url,
+                    md.Params.Name,
+                    md.Params.Tags,
+                    md.Http.ContentType,
+                    out error, 
+                    out masterDocId))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to store document in index " + indexName);
+                    return new HttpResponse(md.Http, false, 500, null, "application/json",
+                        new ErrorResponse(500, "Unable to store document in index '" + indexName + "'.", error).ToJson(true), true);
+                }
+            }
+            else
+            {
+                if (!currClient.AddDocument(
+                    currDocType,
+                    md.Http.Data,
+                    md.Params.Url,
+                    md.Params.Name,
+                    md.Params.Tags,
+                    md.Http.ContentType,
+                    out error,
+                    out masterDocId))
+                {
+                    _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to add document to index " + indexName);
+                    return new HttpResponse(md.Http, false, 500, null, "application/json",
+                        new ErrorResponse(500, "Unable to add document to index '" + indexName + "'.", error).ToJson(true), true);
+                }
             }
 
             #endregion

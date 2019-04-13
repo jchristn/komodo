@@ -137,10 +137,32 @@ namespace Komodo.Core
             }
         }
 
+        public static List<string> InputStringList(string question, bool allowEmpty)
+        {
+            List<string> ret = new List<string>();
+
+            while (true)
+            {
+                Console.Write(question);
+
+                Console.Write(" ");
+
+                string userInput = Console.ReadLine();
+
+                if (String.IsNullOrEmpty(userInput))
+                {
+                    if (ret.Count < 1 && !allowEmpty) continue;
+                    return ret;
+                }
+
+                ret.Add(userInput);
+            }
+        }
+
         #endregion
 
         #region Serialization
-         
+
         public static string SerializeJson(object obj, bool pretty)
         {
             if (obj == null) return null;
@@ -760,13 +782,13 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static double TotalMsFrom(DateTime start_time)
+        public static double TotalMsFrom(DateTime start)
         {
             try
             {
-                DateTime end_time = DateTime.Now;
-                TimeSpan total_time = (end_time - start_time);
-                return total_time.TotalMilliseconds;
+                DateTime end = DateTime.Now;
+                TimeSpan total = (end - start);
+                return total.TotalMilliseconds;
             }
             catch (Exception)
             {

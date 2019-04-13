@@ -360,6 +360,56 @@ namespace Komodo.Core
         }
 
         /// <summary>
+        /// Store a document in the specified index without parsing and indexing.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="docType">Type of document.</param>
+        /// <param name="data">Data from the document.</param>
+        /// <param name="response">Response data from the server.</param>
+        /// <returns>True if successful.</returns>
+        public bool StoreDocument(string indexName, string sourceUrl, DocType docType, byte[] data, out IndexResponse response)
+        {
+            response = null;
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            if (String.IsNullOrEmpty(sourceUrl)
+                && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
+
+            string docTypeStr = DocTypeString(docType);
+
+            string url = indexName + "?type=" + docTypeStr + "&bypass=true";
+            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+
+            RestResponse resp = RestRequest.SendRequestSafe(
+                _Endpoint + url,
+                "application/json",
+                "POST",
+                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
+                data);
+
+            if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
+            {
+                response = Common.DeserializeJson<IndexResponse>(resp.Data);
+                Debug.WriteLine("KomodoSdk StoreDocument returning success");
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("KomodoSdk StoreDocument failed");
+                if (resp != null)
+                {
+                    Debug.WriteLine("Response:");
+                    Debug.WriteLine(resp.ToString());
+                }
+                else
+                {
+                    Debug.WriteLine("Response is null");
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Retrieve a document source from the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>

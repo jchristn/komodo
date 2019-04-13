@@ -49,12 +49,7 @@ namespace Komodo.Server.Classes
         /// REST settings.
         /// </summary>
         public RestSettings Rest { get; set; }
-
-        /// <summary>
-        /// Indexer settings.
-        /// </summary>
-        public IndexerSettings Indexer { get; set; }
-
+         
         #endregion
 
         #region Private-Members
@@ -228,18 +223,7 @@ namespace Komodo.Server.Classes
             /// </summary>
             public bool AcceptInvalidCerts;
         }
-
-        /// <summary>
-        /// Indexer settings.
-        /// </summary>
-        public class IndexerSettings
-        {
-            /// <summary>
-            /// Number of milliseconds in between indexer operations.
-            /// </summary>
-            public int IndexerIntervalMs { get; set; }
-        }
-
+         
         #endregion
           
         #region Public-Methods

@@ -23,7 +23,7 @@ namespace Komodo.Core
         /// The number of documents that matchd the specified terms and the specified filters.
         /// </summary>
         public int FilterMatch { get; set; }
-
+         
         #endregion
 
         #region Private-Members
@@ -38,7 +38,7 @@ namespace Komodo.Core
         public MatchCounts()
         {
             TermsMatch = 0;
-            FilterMatch = 0;
+            FilterMatch = 0; 
         }
 
         #endregion

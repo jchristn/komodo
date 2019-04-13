@@ -16,13 +16,13 @@ namespace Komodo.Core
     [JsonConverter(typeof(StringEnumConverter))]
     public enum DatabaseType
     {
-        [EnumMember(Value = "Mssql")]
-        Mssql,
-        [EnumMember(Value = "Mysql")]
-        Mysql,
-        [EnumMember(Value = "Pgsql")]
-        Pgsql,
-        [EnumMember(Value = "Sqlite")]
-        Sqlite
+        [EnumMember(Value = "MsSql")]
+        MsSql,
+        [EnumMember(Value = "MySql")]
+        MySql,
+        [EnumMember(Value = "PgSql")]
+        PgSql,
+        [EnumMember(Value = "SQLite")]
+        SQLite
     }
 }

@@ -28,7 +28,8 @@
     "PerformStemming": true,
     "MinTokenLength": 3,
     "MaxTokenLength": 32,
-    "StopWords": []
+    "StopWords": [],
+    "IndexerIntervalMs": 10000
   },
   "Database": {
     "Type": "Sqlite",
@@ -51,6 +52,12 @@
     "Type": "Disk",
     "Disk": {
       "Directory": "First/ParsedDocuments"
+    }
+  },
+  "StorageTerms": {
+    "Type": "Disk",
+    "Disk": {
+      "Directory": "First/Terms"
     }
   }
 }

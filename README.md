@@ -10,11 +10,16 @@ If you have any issues or feedback, please file an issue here in Github.  We'd l
 
 The following capabilities and fixes were introduced in this commit:
 
-- Refactor of server and core classes 
+- Major refactor and code cleanup
+- Purpose-built posting manager to improve scale of indexing, search, and storage
+- Removed terms table
+- Searches now continue until exhaustion or until max results are met
 - Collapsed retrieval of querystring items into request parameters 
+- Simple storage API to store a document in an index without indexing or parsing
 - Enumeration of indexed documents
 - Retarget to .NET Core and .NET Framework
 - Eliminate standalone sqlite DLLs
+- Various bugfixes
 - MIT license
 
 ## Enclosed Projects

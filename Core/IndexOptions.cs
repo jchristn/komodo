@@ -72,7 +72,7 @@ namespace Komodo.Core
             RemoveStopWords = true;
             PerformStemming = true;
             MinTokenLength = 3;
-            MaxTokenLength = 64;
+            MaxTokenLength = 64; 
 
             StopWords = SetDefaultStopWords();
         }

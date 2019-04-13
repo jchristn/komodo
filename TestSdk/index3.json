@@ -28,7 +28,8 @@
     "PerformStemming": true,
     "MinTokenLength": 3,
     "MaxTokenLength": 32,
-    "StopWords": []
+    "StopWords": [],
+    "IndexerIntervalMs": 10000
   },
   "Database": {
     "Type": "Sqlite",
@@ -56,6 +57,15 @@
       "Endpoint": "http://localhost:8001/",
       "UserGuid": "default",
       "Container": "parsed",
+      "ApiKey": "default"
+    }
+  },
+  "StorageTerms": {
+    "Type": "Kvpbase",
+    "Kvpbase": {
+      "Endpoint": "http://localhost:8001/",
+      "UserGuid": "default",
+      "Container": "terms",
       "ApiKey": "default"
     }
   }

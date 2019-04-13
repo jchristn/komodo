@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlobHelper;
+using DatabaseWrapper;
 
 namespace Komodo.Core
 {
@@ -45,6 +46,11 @@ namespace Komodo.Core
         /// Storage settings for the index parsed documents.
         /// </summary>
         public StorageSettings StorageParsed { get; set; }
+
+        /// <summary>
+        /// Storage settings for terms documents.
+        /// </summary>
+        public PostingsSettings Postings { get; set; }
 
         #endregion
 
@@ -136,20 +142,7 @@ namespace Komodo.Core
             /// <summary>
             /// Enable or disable query logging.
             /// </summary>
-            public bool Debug { get; set; }
-             
-            /// <summary>
-            /// Retrieve default database settings.
-            /// </summary>
-            /// <returns>DatabaseSettings.</returns>
-            public static DatabaseSettings Default(string indexName, string rootDirectory)
-            {
-                DatabaseSettings ret = new DatabaseSettings();
-                ret.Type = DatabaseType.Sqlite;
-                ret.Filename = rootDirectory + "/" + indexName + ".db";
-                ret.Debug = false;
-                return ret;
-            }
+            public bool Debug { get; set; } 
         }
 
         /// <summary>
@@ -180,39 +173,30 @@ namespace Komodo.Core
             /// <summary>
             /// Kvpbase storage settings.
             /// </summary>
-            public KvpbaseSettings Kvpbase { get; set; }
-              
+            public KvpbaseSettings Kvpbase { get; set; } 
+        }
+        
+        /// <summary>
+        /// Settings for the postings manager.
+        /// </summary>
+        public class PostingsSettings
+        {
             /// <summary>
-            /// Retrieve default storage settings for source documents.
+            /// The base directory for the terms map database and terms databases.
             /// </summary>
-            /// <returns>StorageSettings.</returns>
-            public static StorageSettings DefaultSource()
-            {
-                StorageSettings ret = new StorageSettings();
-                ret.Type = StorageType.Disk;
-                ret.Disk = new DiskSettings("SourceDocuments");
-                ret.Azure = null;
-                ret.AwsS3 = null;
-                ret.Kvpbase = null;
-                return ret;
-            }
+            public string BaseDirectory { get; set; }
 
             /// <summary>
-            /// Retrieve default storage settings for parsed documents.
+            /// The filename for the terms map database.
             /// </summary>
-            /// <returns>StorageSettings.</returns>
-            public static StorageSettings DefaultParsed()
-            {
-                StorageSettings ret = new StorageSettings();
-                ret.Type = StorageType.Disk;
-                ret.Disk = new DiskSettings("ParsedDocuments");
-                ret.Azure = null;
-                ret.AwsS3 = null;
-                ret.Kvpbase = null;
-                return ret;
-            } 
+            public string DatabaseFilename { get; set; }
+
+            /// <summary>
+            /// Enable or disable debugging on database operations.
+            /// </summary>
+            public bool DatabaseDebug { get; set; } 
         }
-         
+
         #endregion
     }
 }

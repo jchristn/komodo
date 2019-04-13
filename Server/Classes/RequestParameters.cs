@@ -1,10 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
-using System.IO;
-using SyslogLogging;
-using Komodo.Core;
-using WatsonWebserver;
-
+ 
 namespace Komodo.Server.Classes
 {
     /// <summary>
@@ -14,6 +11,11 @@ namespace Komodo.Server.Classes
     {
         #region Public-Members
         
+        /// <summary>
+        /// Bypass indexing, i.e. store a document without indexing.
+        /// </summary>
+        public bool Bypass { get; set; }
+
         /// <summary>
         /// Querystring 'cleanup' key, indicating that a cleanup should be performed.
         /// </summary>
@@ -108,6 +110,34 @@ namespace Komodo.Server.Classes
         #endregion
 
         #region Public-Methods
+
+        public static RequestParameters FromDictionary(Dictionary<string, string> qs)
+        {
+            RequestParameters ret = new RequestParameters();
+
+            if (qs == null) return ret;
+
+            if (qs.ContainsKey("bypass")) ret.Bypass = Convert.ToBoolean(qs["bypass"]);
+            if (qs.ContainsKey("cleanup")) ret.Cleanup = Convert.ToBoolean(qs["cleanup"]);
+
+            if (qs.ContainsKey("dbtype")) ret.DbType = WebUtility.UrlDecode(qs["dbtype"]);
+            if (qs.ContainsKey("dbserver")) ret.DbServer = WebUtility.UrlDecode(qs["dbserver"]);
+            if (qs.ContainsKey("dbport")) ret.DbPort = Convert.ToInt32(qs["dbport"]);
+            if (qs.ContainsKey("dbuser")) ret.DbUser = WebUtility.UrlDecode(qs["dbuser"]);
+            if (qs.ContainsKey("dbpass")) ret.DbPass = WebUtility.UrlDecode(qs["dbpass"]);
+            if (qs.ContainsKey("dbinstance")) ret.DbInstance = WebUtility.UrlDecode(qs["dbinstance"]);
+            if (qs.ContainsKey("dbname")) ret.DbName = WebUtility.UrlDecode(qs["dbname"]);
+
+            if (qs.ContainsKey("filename")) ret.Filename = WebUtility.UrlDecode(qs["filename"]);
+            if (qs.ContainsKey("name")) ret.Name = WebUtility.UrlDecode(qs["name"]);
+            if (qs.ContainsKey("parsed")) ret.Parsed = Convert.ToBoolean(qs["parsed"]);
+            if (qs.ContainsKey("pretty")) ret.Pretty = Convert.ToBoolean(qs["pretty"]);
+            if (qs.ContainsKey("tags")) ret.Tags = WebUtility.UrlDecode(qs["tags"]);
+            if (qs.ContainsKey("type")) ret.Type = WebUtility.UrlDecode(qs["type"]);
+            if (qs.ContainsKey("url")) ret.Url = WebUtility.UrlDecode(qs["url"]);
+
+            return ret;
+        }
 
         #endregion
 

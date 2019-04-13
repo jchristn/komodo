@@ -54,8 +54,8 @@ namespace Komodo.Server.Classes
             conn.SourcePort = req.SourcePort;
             conn.Method = req.Method;
             conn.RawUrl = req.RawUrlWithoutQuery;
-            conn.StartTime = DateTime.Now;
-            conn.EndTime = DateTime.Now;
+            conn.StartTime = DateTime.Now.ToUniversalTime();
+            conn.EndTime = DateTime.Now.ToUniversalTime();
 
             lock (_Lock)
             {

@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using DatabaseWrapper;
 using SqliteWrapper;
 
-namespace Komodo.Core
+namespace Komodo.Core.Database
 {
     /// <summary>
-    /// Query builders needed to interact with database tables.
+    /// Query builders needed to interact with index database tables.
     /// </summary>
     public class IndexQueries
     {
@@ -64,7 +64,7 @@ namespace Komodo.Core
 
             switch (_Index.Database.Type)
             {
-                case DatabaseType.Mssql:
+                case DatabaseType.MsSql:
                     query =
                         "USE " + _Index.Database.DatabaseName + ";" +
                         "IF NOT EXISTS " +
@@ -97,9 +97,9 @@ namespace Komodo.Core
                         ")" +
                         "ON [PRIMARY]";
                     return query;
-                case DatabaseType.Mysql:
-                case DatabaseType.Pgsql:
-                case DatabaseType.Sqlite:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                case DatabaseType.SQLite:
                     query =
                         "CREATE TABLE IF NOT EXISTS SourceDocuments " +
                         "(" +
@@ -131,7 +131,7 @@ namespace Komodo.Core
 
             switch (_Index.Database.Type)
             { 
-                case DatabaseType.Mssql:
+                case DatabaseType.MsSql:
                     query =
                         "USE " + _Index.Database.DatabaseName + ";" +
                         "IF NOT EXISTS " +
@@ -161,9 +161,9 @@ namespace Komodo.Core
                         ")" +
                         "ON [PRIMARY]";
                     return query;
-                case DatabaseType.Mysql:
-                case DatabaseType.Pgsql:
-                case DatabaseType.Sqlite:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                case DatabaseType.SQLite:
                     query =
                         "CREATE TABLE IF NOT EXISTS ParsedDocuments " +
                         "(" +
@@ -192,7 +192,7 @@ namespace Komodo.Core
 
             switch (_Index.Database.Type)
             {
-                case DatabaseType.Mssql:
+                case DatabaseType.MsSql:
                     query =
                         "USE " + _Index.Database.DatabaseName + ";" +
                         "IF NOT EXISTS " +
@@ -205,8 +205,7 @@ namespace Komodo.Core
                         "  [IndexName]           [nvarchar] (128) NULL, " +
                         "  [MasterDocId]         [nvarchar] (128) NULL, " +
                         "  [Term]                [nvarchar] (128) NULL, " +
-                        "  [Created]             [datetime2] (7) NULL, " +
-                        "  [Indexed]             [datetime2] (7) NULL, " +
+                        "  [Created]             [datetime2] (7) NULL, " + 
                         "  CONSTRAINT [PK_Terms] PRIMARY KEY CLUSTERED " +
                         "  ( " +
                         "    [Id] ASC " +
@@ -220,25 +219,81 @@ namespace Komodo.Core
                         ")" +
                         "ON [PRIMARY]";
                     return query;
-                case DatabaseType.Mysql:
-                case DatabaseType.Pgsql:
-                case DatabaseType.Sqlite:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                case DatabaseType.SQLite:
                     query =
                         "CREATE TABLE IF NOT EXISTS Terms " +
                         "(" +
                         "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "  IndexName         VARCHAR(128)  COLLATE NOCASE, " +
                         "  MasterDocId       VARCHAR(128)  COLLATE NOCASE, " +
-                        "  Term              BLOB, "  + 
-                        "  Created           VARCHAR(32), " +
-                        "  Indexed           VARCHAR(32) " +
+                        "  Term              VARCHAR(128)  COLLATE NOCASE, " +
+                        "  Created           VARCHAR(32) " + 
                         ")";
                     return query;
             }
 
             throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
         }
-         
+
+        /// <summary>
+        /// Generate the query to create the terms map table.
+        /// </summary>
+        /// <returns>String.</returns>
+        public string CreateTermsMapTable()
+        {
+            string query = "";
+
+            switch (_Index.Database.Type)
+            {
+                case DatabaseType.MsSql:
+                    query =
+                        "USE " + _Index.Database.DatabaseName + ";" +
+                        "IF NOT EXISTS " +
+                        "(" +
+                        "  SELECT * FROM sysobjects WHERE name = 'Terms' AND xtype = 'U' " +
+                        ")" +
+                        "CREATE TABLE Terms " +
+                        "(" +
+                        "  [Id]                  [bigint] IDENTITY(1,1) NOT NULL, " +
+                        "  [IndexName]           [nvarchar] (128) NULL, " +
+                        "  [Term]                [nvarchar] (128) NULL, " +
+                        "  [TermId]              [nvarchar] (128) NULL, " +
+                        "  [Created]             [datetime2] (7) NULL, " +
+                        "  [Updated]             [datetime2] (7) NULL, " +
+                        "  CONSTRAINT [PK_Terms] PRIMARY KEY CLUSTERED " +
+                        "  ( " +
+                        "    [Id] ASC " +
+                        "  ) " +
+                        "  WITH " +
+                        "  ( " +
+                        "    STATISTICS_NORECOMPUTE = OFF, " +
+                        "    IGNORE_DUP_KEY = OFF " +
+                        "  ) " +
+                        "  ON [PRIMARY]" +
+                        ")" +
+                        "ON [PRIMARY]";
+                    return query;
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                case DatabaseType.SQLite:
+                    query =
+                        "CREATE TABLE IF NOT EXISTS Terms " +
+                        "(" +
+                        "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "  IndexName         VARCHAR(128)  COLLATE NOCASE, " + 
+                        "  Term              BLOB, " +
+                        "  TermId            VARCHAR(128)  COLLATE NOCASE, " +
+                        "  Created           VARCHAR(32), " +
+                        "  Updated           VARCHAR(32) " +
+                        ")";
+                    return query;
+            }
+
+            throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
+        }
+
         /// <summary>
         /// Generate the query to retrieve document IDs based on query terms match.
         /// </summary>
@@ -253,7 +308,7 @@ namespace Komodo.Core
             
             switch (_Index.Database.Type)
             {
-                case DatabaseType.Mssql:
+                case DatabaseType.MsSql:
                     #region Mssql
                      
                     dbQuery =
@@ -346,9 +401,9 @@ namespace Komodo.Core
 
                     #region Pagination
 
-                    if (query.MaxResults != null && query.MaxResults > 0 && query.MaxResults <= 100)
+                    if (query.MaxResults > 0 && query.MaxResults <= 100)
                     {
-                        if (query.StartIndex != null && query.StartIndex > 0)
+                        if (query.StartIndex > 0)
                         {
                             dbQuery +=
                                 " ORDER BY MasterDocId OFFSET " + query.StartIndex + " ROWS " +
@@ -374,9 +429,9 @@ namespace Komodo.Core
 
                     #endregion
 
-                case DatabaseType.Mysql:
-                case DatabaseType.Pgsql:
-                case DatabaseType.Sqlite:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                case DatabaseType.SQLite:
                     #region Sqlite
 
                     dbQuery =
@@ -469,13 +524,13 @@ namespace Komodo.Core
 
                     #region Pagination
 
-                    if (query.MaxResults != null && query.MaxResults > 0 && query.MaxResults <= 100)
+                    if (query.MaxResults > 0 && query.MaxResults <= 100)
                     {
                         dbQuery += "LIMIT " + query.MaxResults;
 
-                        if (query.StartIndex != null && query.StartIndex > 0)
+                        if (query.StartIndex > 0)
                         {
-                            dbQuery += ", " + query.StartIndex;
+                            dbQuery += " OFFSET " + query.StartIndex;
                         }
                     }
                     else

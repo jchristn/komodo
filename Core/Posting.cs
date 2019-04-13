@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,24 +15,34 @@ namespace Komodo.Core
         #region Public-Members
 
         /// <summary>
-        /// Term.
+        /// Database ID.
         /// </summary>
-        public object Term { get; set; }
+        public int? Id { get; set; }
 
         /// <summary>
-        /// Document ID within which the term was found.
+        /// Term.
         /// </summary>
-        public string DocumentId { get; set; }
-
+        public string Term { get; set; }
+        
+        /// <summary>
+        /// Master document ID.
+        /// </summary>
+        public string MasterDocId { get; set; }
+         
         /// <summary>
         /// The frequency with which the term was found.
         /// </summary>
-        public int Frequency { get; set; }
+        public long Frequency { get; set; }
 
         /// <summary>
         /// The character positions where the term was found.
         /// </summary>
         public List<long> Positions { get; set; }
+
+        /// <summary>
+        /// Time at which the posting was created in the database.
+        /// </summary>
+        public DateTime? Created { get; set; }
 
         #endregion
 
@@ -49,6 +60,24 @@ namespace Komodo.Core
 
         }
 
+        /// <summary>
+        /// Convert a DataRow to a Posting.
+        /// </summary>
+        /// <param name="row">DataRow.</param>
+        /// <returns>Posting.</returns>
+        public static Posting FromDataRow(DataRow row)
+        {
+            if (row == null) throw new ArgumentNullException(nameof(row));
+
+            Posting ret = new Posting();
+            ret.Id = Convert.ToInt32(row["Id"]);
+            ret.MasterDocId = row["MasterDocId"].ToString(); 
+            ret.Frequency = Convert.ToInt64(row["Frequency"]);
+            ret.Positions = Common.DeserializeJson<List<long>>(row["Positions"].ToString());
+            ret.Created = Convert.ToDateTime(row["Created"].ToString());
+            return ret;
+        }
+
         #endregion
 
         #region Public-Methods
@@ -60,7 +89,7 @@ namespace Komodo.Core
         public override string ToString()
         {
             string ret = "";
-            ret += Term.ToString() + " [" + DocumentId + ", " + Frequency + " freq]: ";
+            ret += "[" + Term + " frequency " + Frequency + "]: ";
             if (Positions != null)
             {
                 int added = 0;

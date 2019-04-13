@@ -47,7 +47,7 @@ namespace Komodo.Core
         /// <summary>
         /// Counts of documents that matched the query.
         /// </summary>
-        public MatchCounts MatchCount { get; private set; } 
+        public MatchCounts MatchCount { get; set; } 
 
         /// <summary>
         /// Documents that matched the query.
@@ -117,34 +117,7 @@ namespace Komodo.Core
             TimeSpan span = Convert.ToDateTime(EndTimeUtc) - Convert.ToDateTime(StartTimeUtc);
             TotalTimeMs = Convert.ToDecimal(span.TotalMilliseconds);
         }
-
-        /// <summary>
-        /// Set the number of documents that matched the supplied terms.
-        /// </summary>
-        /// <param name="count"></param>
-        public void SetTermsMatchCount(int count)
-        {
-            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
-            MatchCount.TermsMatch = count;
-        }
-
-        /// <summary>
-        /// Attach matching documents to the results.
-        /// </summary>
-        /// <param name="documents">List of documents.</param>
-        public void AttachResults(List<Document> documents)
-        {
-            if (documents != null)
-            {
-                foreach (Document curr in documents)
-                {
-                    Documents.Add(curr);
-                }
-
-                MatchCount.FilterMatch = documents.Count;
-            }
-        }
-
+         
         /// <summary>
         /// In-place descending sort of matching documents by the score assigned to each.
         /// </summary>
