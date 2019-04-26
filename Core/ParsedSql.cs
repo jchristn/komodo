@@ -173,7 +173,7 @@ namespace Komodo.Core
 
         private bool ProcessSourceContent()
         {
-            _SourceContent = _Database.RawQuery(_Query);
+            _SourceContent = _Database.Query(_Query);
             if (_SourceContent == null || _SourceContent.Rows.Count < 1)
             {
                 Rows = 0;

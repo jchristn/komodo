@@ -50,6 +50,11 @@ namespace Komodo.Core
         public string SourceUrl { get; set; }
 
         /// <summary>
+        /// The title of the document.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
         /// Content type of the document.
         /// </summary>
         public string ContentType { get; set; }
@@ -107,6 +112,7 @@ namespace Komodo.Core
             ret.DocType = dt;
 
             if (row["SourceUrl"] != DBNull.Value) ret.SourceUrl = row["SourceUrl"].ToString();
+            if (row["Title"] != DBNull.Value) ret.Title = row["Title"].ToString();
             if (row["ContentType"] != DBNull.Value) ret.ContentType = row["ContentType"].ToString();
             if (row["ContentLength"] != DBNull.Value) ret.ContentLength = Convert.ToInt64(row["ContentLength"]);
             if (row["Created"] != DBNull.Value) ret.Created = Convert.ToDateTime(row["Created"].ToString());

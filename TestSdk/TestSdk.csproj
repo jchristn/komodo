@@ -60,6 +60,7 @@
     <None Include="index3.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Indices.json" />
     <None Include="order1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

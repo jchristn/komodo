@@ -11,6 +11,7 @@
       "'",
       "\"",
       ";",
+      ":",
       "<",
       ">",
       ".",
@@ -20,7 +21,10 @@
       "{",
       "}",
       "(",
-      ")"
+      ")",
+      "-",
+      "_",
+      "@"
     ],
     "NormalizeCase": true,
     "RemovePunctuation": true,
@@ -31,9 +35,20 @@
     "StopWords": [],
     "IndexerIntervalMs": 10000
   },
-  "Database": {
+  "DocumentsDatabase": {
     "Type": "Sqlite",
-    "Filename": "Second/Komodo.db",
+    "Filename": "Second/Documents.db",
+    "Hostname": "localhost",
+    "Port": 8100,
+    "DatabaseName": "komodo",
+    "InstanceName": "komodo",
+    "Username": "komodo",
+    "Password": "komodo",
+    "Debug": false
+  },
+  "PostingsDatabase": {
+    "Type": "Sqlite",
+    "Filename": "Second/Postings.db",
     "Hostname": "localhost",
     "Port": 8100,
     "DatabaseName": "komodo",
@@ -53,11 +68,5 @@
     "Disk": {
       "Directory": "Second/ParsedDocuments"
     }
-  },
-  "StorageTerms": {
-    "Type": "Disk",
-    "Disk": {
-      "Directory": "Second/Terms"
-    }
-  }
+  } 
 }

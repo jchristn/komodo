@@ -270,7 +270,7 @@ namespace Komodo.Core
         {
             if (!IsDb) throw new InvalidOperationException("Crawler initialized with file or web parameters, use RetrieveString instead");
 
-            DataTable result = DbClient.RawQuery(DbQuery);
+            DataTable result = DbClient.Query(DbQuery);
             return result;
         }
 

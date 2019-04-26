@@ -47,7 +47,12 @@ namespace Komodo.Core
         /// <summary>
         /// Counts of documents that matched the query.
         /// </summary>
-        public MatchCounts MatchCount { get; set; } 
+        public MatchCounts MatchCount { get; set; }
+
+        /// <summary>
+        /// List of terms that were not part of the index.
+        /// </summary>
+        public List<string> TermsNotFound { get; set; }
 
         /// <summary>
         /// Documents that matched the query.
@@ -74,7 +79,8 @@ namespace Komodo.Core
             EndTimeUtc = null;
             TotalTimeMs = null;
             MatchCount = null;
-            Documents = new List<Document>(); 
+            TermsNotFound = new List<string>();
+            Documents = new List<Document>();
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace Komodo.Core
         /// <summary>
         /// Characters on which to split terms.
         /// </summary>
-        public string[] SplitCharacters = new string[] { "]", "[", ",", ".", " ", "'", "\"", ";", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")" };
+        public string[] SplitCharacters = new string[] { "]", "[", ",", ".", " ", "'", "\"", ";", ":", "<", ">", ".", "/", "\\", "|", "{", "}", "(", ")", "@", "-", "_" };
          
         #endregion
 

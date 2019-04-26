@@ -35,7 +35,7 @@ Request body:
   "RootDirectory": "First",
   "Options": {
     "SplitCharacters": [
-      "]","[",",","."," ","'","\"",";","<",">",".","/","\\","|","{","}","(",")"
+      "]","[",",","."," ","'","\"",";","<",">",".","/","\\","|","{","}","(",")","@","_","-"
     ],
     "NormalizeCase": true,
     "RemovePunctuation": true,
@@ -45,9 +45,20 @@ Request body:
     "MaxTokenLength": 32,
     "StopWords": []
   },
-  "Database": {
+  "DocumentsDatabase": {
     "Type": "Sqlite",
-    "Filename": "Komodo.db",
+    "Filename": "First/Documents.db",
+    "Hostname": "localhost",
+    "Port": 8100,
+    "DatabaseName": "Komodo",
+    "InstanceName": "Komodo",
+    "Username": "komodo",
+    "Password": "komodo",
+    "Debug": false
+  },
+  "PostingsDatabase": {
+    "Type": "Sqlite",
+    "Filename": "First/Postings.db",
     "Hostname": "localhost",
     "Port": 8100,
     "DatabaseName": "Komodo",
@@ -67,15 +78,80 @@ Request body:
     "Disk": {
       "Directory": "ParsedDocuments"
     }
-  },
-  "Postings": {
-    "BaseDirectory": "First/Postings",
-    "DatabaseFilename": "Postings.db",
-    "DatabaseDebug": false
   }
 }
 Response:
 201/Created
+```
+
+The object for ```DocumentsDatabase``` and ```PostingsDatabase``` supports the following types:
+- Sqlite
+- Mssql
+
+The object for ```StorageSource``` and ```StorageParsed``` supports the following types:
+- Disk
+- AwsS3
+- Azure
+- Kvpbase
+
+### Storage Settings
+
+The object structure for ```Type == StorageType.Disk``` is shown above.
+
+For ```AwsS3```:
+```
+{
+  "Hostname": "<hostname>",       // leave null if using AWS S3, set if using other S3-compatible storage
+  "Ssl": true,                    // enable or disable SSL
+  "AccessKey": "<access key>",    // AWS access key
+  "SecretKey": "<secret key>",    // AWS secret key
+  "Region": "<aws region>",       // AWS region, see below, e.g. USWest1
+  "Bucket": "<bucket name>"       // name of the S3 bucket
+}
+```
+
+Supported AWS S3 regions:
+```
+APNortheast1 = 0,
+APNortheast2 = 1,
+APNortheast3 = 2,
+APSoutheast1 = 3,
+APSoutheast2 = 4,
+APSouth1 = 5,
+CACentral1 = 6,
+CNNorth1 = 7,
+EUCentral1 = 8,
+EUNorth1 = 9,
+EUWest1 = 10,
+EUWest2 = 11,
+EUWest3 = 12,
+SAEast1 = 13,
+USEast1 = 14,
+USEast2 = 15,
+USGovCloudEast1 = 16,
+USGovCloudWest1 = 17,
+USWest1 = 18,
+USWest2 = 19
+```
+
+For ```Azure```:
+```
+{
+  "AccountName": "<azure account name>",
+  "AccessKey": "<access key>",
+  "Endpoint": "<azure BLOB URL>",         // of the form https://[accountname].blob.core.windows.net/
+  "Container": "<azure container name>"
+}
+```
+
+For ```Kvpbase```:
+```
+{
+  "Endpoint": "<kvpbase URL>",      // of the form http[s]://[hostname]:[port]/
+  "UserGuid": "<kvpbase user GUID>",
+  "Container": "<kvpbase container name>",
+  "ApiKey": "<kvpbase API key>"
+}
 ```
 
 ## Retrieve List of Indices
@@ -96,7 +172,7 @@ Response:
   "RootDirectory": "First",
   "Options": {
     "SplitCharacters": [
-      "]","[",",","."," ","'","\"",";","<",">",".","/","\\","|","{",""}","(",")"
+      "]","[",",","."," ","'","\"",";","<",">",".","/","\\","|","{",""}","(",")","@","_","-"
     ],
     "NormalizeCase": true,
     "RemovePunctuation": true,
@@ -106,34 +182,10 @@ Response:
     "MaxTokenLength": 32,
     "StopWords": []
   },
-  "Database": {
-    "Type": "Sqlite",
-    "Filename": "First.db",
-    "Hostname": "localhost",
-    "Port": 8100,
-    "DatabaseName": "firstidx",
-    "InstanceName": "firstidx",
-    "Username": "joel",
-    "Password": "joel",
-    "Debug": false
-  },
-  "StorageSource": {
-    "Type": "Disk",
-    "Disk": {
-      "Directory": "SourceDocuments"
-    }
-  },
-  "StorageParsed": {
-    "Type": "Disk",
-    "Disk": {
-      "Directory": "ParsedDocuments"
-    }
-  },
-  "Postings": {
-    "BaseDirectory": "First/Postings",
-    "DatabaseFilename": "Postings.db",
-    "DatabaseDebug": false
+  "DocumentsDatabase": {
+    ...
   }
+  ...
 }
 ```
 
@@ -151,7 +203,8 @@ Response:
         "Count": 0,
         "SizeBytesParsed": 0,
         "SizeBytesSource": 0
-    }
+    },
+    "TermsCount": 0
 }
 ```
 
@@ -232,10 +285,8 @@ Response body:
     ],
     "Tokens": [
         "5c99acba82e8738d61dd091e",
-        "0",
         "69efa262-c510-4f6b-9b9c-2d1432c94035",
         "false",
-        "$1,348.47",
         ... 
     ]
 }
@@ -372,7 +423,7 @@ Response body:
 
 ## Add a Document to an Index
 ```
-POST /First?type=json&name=foo&tags=tag1,tag2,tag3
+POST /First?type=json
 Request body: <json document>
 Response:
 {
@@ -382,9 +433,13 @@ Response:
 }
 ```
 
+In the querystring, ```type``` can be set to ```json```, ```text```, ```xml```, or ```sql```.
+
+You can additionally add querystring entries for ```name```, ```tags```, ```sourceurl```, and ```title```.
+
 ## Store a Document in an Index, without indexing or parsing
 ```
-POST /First?type=json&name=foo&tags=tag1,tag2,tag3&bypass=true
+POST /First?type=json&bypass=true
 Request body: <json document>
 Response:
 {
@@ -393,6 +448,8 @@ Response:
   "AddTimeMs": 16
 }
 ```
+
+Using ```bypass=true``` will bypass indexing and simply store the object in Komodo without creating postings.  This document will NOT appear in search results, but will appear when enumerating the index.  
 
 ## Query the Index
 ```
@@ -491,6 +548,33 @@ Response body:
 }
 ```
 
+The ```Filter``` object is a list of ```SearchFilter``` objects.  At least one term must be included in ```Required.Terms```.  Terms-based searches rely on the database, whereas Filter-based searches will iterate over the content itself.  Thus, filter-based searches will take longer as the indexed content will be evaluated against the supplied filters.  Filter-based searches can only be used on structured data (i.e. JSON, XML, or SQL) and cannot be used on text documents.  Only terms-based searches can be used on text documents since there is no structure to the data.
+
+The structure of a ```SearchFilter``` is as follows:
+```
+{
+  "Field": "<field name>",      // The name of the field to search
+  "Condition": "<condition>",   // The match condition, i.e. GreaterThan, shown below
+  "Value": "<value>"            // The value that must be matched by the field in accordance with the condition
+}
+```
+
+Valid values for ```Condition``` are:
+```
+Equals,
+NotEquals,
+GreaterThan,
+GreaterThanOrEqualTo,
+LessThan,
+LessThanOrEqualTo,
+IsNull,
+IsNotNull,
+Contains,
+ContainsNot,
+StartsWith,
+EndsWith
+```
+
 ## Delete an Index
 ```
 DELETE /First
@@ -498,7 +582,10 @@ Response:
 204/No data
 ```
 
-## List Documents in an Index
+## Enumerate Documents in an Index
+
+NOTE: this will enumerate both indexed documents and stored documents (when stored without indexing).
+
 ```
 PUT /First/enumerate
 Request body:
@@ -550,6 +637,7 @@ Response:
             "MasterDocId": "666f4364-26b1-4969-be59-a4e191bb0987",
             "Name": "joel",
             "Tags": "tag1,tag2,tag3",
+            "Title": "Hello!",
             "DocType": "Text",
             "ContentType": "text/plain",
             "ContentLength": 3697,

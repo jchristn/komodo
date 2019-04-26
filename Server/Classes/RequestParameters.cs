@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Collections.Generic;
- 
+
+using Komodo.Core;
+
 namespace Komodo.Server.Classes
 {
     /// <summary>
@@ -82,6 +84,11 @@ namespace Komodo.Server.Classes
         public string Tags { get; set; }
 
         /// <summary>
+        /// Querystring 'title' key, typically used to indicate the title of a document for indexing.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
         /// Querystring 'type' key, indicating the type of document. 
         /// </summary>
         public string Type { get; set; }
@@ -117,6 +124,28 @@ namespace Komodo.Server.Classes
 
             if (qs == null) return ret;
 
+            /*
+            if (qs.ContainsKey("bypass")) ret.Bypass = Convert.ToBoolean(qs["bypass"]);
+            if (qs.ContainsKey("cleanup")) ret.Cleanup = Convert.ToBoolean(qs["cleanup"]);
+
+            if (qs.ContainsKey("dbtype")) ret.DbType = qs["dbtype"];
+            if (qs.ContainsKey("dbserver")) ret.DbServer = qs["dbserver"];
+            if (qs.ContainsKey("dbport")) ret.DbPort = Convert.ToInt32(qs["dbport"]);
+            if (qs.ContainsKey("dbuser")) ret.DbUser = qs["dbuser"];
+            if (qs.ContainsKey("dbpass")) ret.DbPass = qs["dbpass"];
+            if (qs.ContainsKey("dbinstance")) ret.DbInstance = qs["dbinstance"];
+            if (qs.ContainsKey("dbname")) ret.DbName = qs["dbname"];
+
+            if (qs.ContainsKey("filename")) ret.Filename = qs["filename"];
+            if (qs.ContainsKey("name")) ret.Name = qs["name"];
+            if (qs.ContainsKey("parsed")) ret.Parsed = Convert.ToBoolean(qs["parsed"]);
+            if (qs.ContainsKey("pretty")) ret.Pretty = Convert.ToBoolean(qs["pretty"]);
+            if (qs.ContainsKey("tags")) ret.Tags = qs["tags"];
+            if (qs.ContainsKey("title")) ret.Title = qs["title"];
+            if (qs.ContainsKey("type")) ret.Type = qs["type"];
+            if (qs.ContainsKey("url")) ret.Url = qs["url"];
+            */
+
             if (qs.ContainsKey("bypass")) ret.Bypass = Convert.ToBoolean(qs["bypass"]);
             if (qs.ContainsKey("cleanup")) ret.Cleanup = Convert.ToBoolean(qs["cleanup"]);
 
@@ -133,9 +162,10 @@ namespace Komodo.Server.Classes
             if (qs.ContainsKey("parsed")) ret.Parsed = Convert.ToBoolean(qs["parsed"]);
             if (qs.ContainsKey("pretty")) ret.Pretty = Convert.ToBoolean(qs["pretty"]);
             if (qs.ContainsKey("tags")) ret.Tags = WebUtility.UrlDecode(qs["tags"]);
+            if (qs.ContainsKey("title")) ret.Title = WebUtility.UrlDecode(qs["title"]);
             if (qs.ContainsKey("type")) ret.Type = WebUtility.UrlDecode(qs["type"]);
             if (qs.ContainsKey("url")) ret.Url = WebUtility.UrlDecode(qs["url"]);
-
+             
             return ret;
         }
 

@@ -63,6 +63,9 @@ namespace KomodoTestSdk
                         case "add doc":
                             AddDocument();
                             break;
+                        case "store doc":
+                            StoreDocument();
+                            break;
                         case "get source":
                             GetSourceDocument();
                             break;
@@ -120,6 +123,7 @@ namespace KomodoTestSdk
             Console.WriteLine(" create index  create an index");
             Console.WriteLine(" delete index  delete an index");
             Console.WriteLine(" add doc       add a document to an index");
+            Console.WriteLine(" store doc     store a document without indexing");
             Console.WriteLine(" get source    retrieve source document from an index");
             Console.WriteLine(" get parsed    retrieve parsed document from an index");
             Console.WriteLine(" delete doc    delete a document from an index");
@@ -181,22 +185,49 @@ namespace KomodoTestSdk
                 Console.WriteLine("Success");
             }
         }
-         
+
         static void AddDocument()
-        { 
+        {
             string indexName = Common.InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
             string sourceUrl = Common.InputString("Source URL:", null, true);
             DocType docType = GetDocType();
-
+            string title = Common.InputString("Title:", null, true);
+            string tags = Common.InputString("Tags:", null, true);
             string sourceFile = Common.InputString("Filename:", "order1.json", true);
             byte[] data = null;
 
             if (!String.IsNullOrEmpty(sourceFile)) data = Common.ReadBinaryFile(sourceFile);
 
             IndexResponse resp = null;
-            if (!_Sdk.AddDocument(indexName, sourceUrl, docType, data, out resp))
+            if (!_Sdk.AddDocument(indexName, sourceUrl, title, tags, docType, data, out resp))
+            {
+                Console.WriteLine("Failed");
+            }
+            else
+            {
+                Console.WriteLine("Success");
+                if (resp != null) Console.WriteLine(Common.SerializeJson(resp, true));
+            }
+        }
+
+        static void StoreDocument()
+        {
+            string indexName = Common.InputString("Index name:", null, true);
+            if (String.IsNullOrEmpty(indexName)) return;
+
+            string sourceUrl = Common.InputString("Source URL:", null, true);
+            DocType docType = GetDocType();
+            string title = Common.InputString("Title:", null, true);
+            string tags = Common.InputString("Tags:", null, true);
+            string sourceFile = Common.InputString("Filename:", "order1.json", true);
+            byte[] data = null;
+
+            if (!String.IsNullOrEmpty(sourceFile)) data = Common.ReadBinaryFile(sourceFile);
+
+            IndexResponse resp = null;
+            if (!_Sdk.StoreDocument(indexName, sourceUrl, title, tags, docType, data, out resp))
             {
                 Console.WriteLine("Failed");
             }

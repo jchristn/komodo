@@ -300,13 +300,15 @@ namespace Komodo.Core
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
         /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param>
         /// <returns>True if successful.</returns>
-        public bool AddDocument(string indexName, string sourceUrl, DocType docType, byte[] data)
+        public bool AddDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data)
         {
             IndexResponse resp = null;
-            return AddDocument(indexName, sourceUrl, docType, data, out resp);
+            return AddDocument(indexName, sourceUrl, title, tags, docType, data, out resp);
         }
 
         /// <summary>
@@ -314,11 +316,13 @@ namespace Komodo.Core
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
         /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param>
         /// <param name="response">Response data from the server.</param>
         /// <returns>True if successful.</returns>
-        public bool AddDocument(string indexName, string sourceUrl, DocType docType, byte[] data, out IndexResponse response)
+        public bool AddDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data, out IndexResponse response)
         {
             response = null;
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
@@ -329,6 +333,8 @@ namespace Komodo.Core
 
             string url = indexName + "?type=" + docTypeStr;
             if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+            if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
+            if (!String.IsNullOrEmpty(tags)) url += "&tags=" + WebUtility.UrlEncode(tags);
 
             RestResponse resp = RestRequest.SendRequestSafe(
                 _Endpoint + url,
@@ -364,11 +370,13 @@ namespace Komodo.Core
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
         /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param>
         /// <param name="response">Response data from the server.</param>
         /// <returns>True if successful.</returns>
-        public bool StoreDocument(string indexName, string sourceUrl, DocType docType, byte[] data, out IndexResponse response)
+        public bool StoreDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data, out IndexResponse response)
         {
             response = null;
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
@@ -379,6 +387,8 @@ namespace Komodo.Core
 
             string url = indexName + "?type=" + docTypeStr + "&bypass=true";
             if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+            if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
+            if (!String.IsNullOrEmpty(tags)) url += "&tags=" + WebUtility.UrlEncode(tags);
 
             RestResponse resp = RestRequest.SendRequestSafe(
                 _Endpoint + url,

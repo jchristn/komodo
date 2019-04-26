@@ -52,8 +52,12 @@ namespace Komodo.Core
             if (String.IsNullOrEmpty(indicesFilename)) throw new ArgumentNullException(nameof(indicesFilename));
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
+            DateTime ts = DateTime.Now;
+
             _Logging = logging;
             _IndicesFilename = indicesFilename;
+
+            _Logging.Log(LoggingModule.Severity.Info, "IndexManager starting");
 
             _Indices = new List<Index>();
             _IndexClients = new List<IndexClient>();
@@ -64,7 +68,7 @@ namespace Komodo.Core
             LoadIndicesFile();
             InitializeIndexClients();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexManager started");
+            _Logging.Log(LoggingModule.Severity.Info, "IndexManager started [" + Common.TotalMsFrom(ts) + "ms]");
         }
 
         #endregion

@@ -6,21 +6,19 @@ Information storage, search, and retrieval libraries and server in C#.
 
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.1.x
+## New in v1.2.x
 
-The following capabilities and fixes were introduced in this commit:
+The following capabilities and fixes were introduced in this version:
 
-- Major refactor and code cleanup
-- Purpose-built posting manager to improve scale of indexing, search, and storage
-- Removed terms table
-- Searches now continue until exhaustion or until max results are met
-- Collapsed retrieval of querystring items into request parameters 
-- Simple storage API to store a document in an index without indexing or parsing
-- Enumeration of indexed documents
-- Retarget to .NET Core and .NET Framework
-- Eliminate standalone sqlite DLLs
-- Various bugfixes
-- MIT license
+- Support for both Sqlite and SQL Server for both documents database and postings database
+- Simplified architecture using one large database vs several small databases for postings 
+- Postings database settings now same structure as Documents database settings
+- Settings and database query cleanup
+- Source documents now have 'Title' field
+- Fix URL encode/decode for querystring parameters (like title, source URL, etc)
+- Index stats now includes terms count
+- Added more split/stop characters to default Index configuration: (@ ._-)
+- Posting positions are now trimmed if necessary to fit into database table
 
 ## Enclosed Projects
 
@@ -67,6 +65,19 @@ The following items are on the horizon for this project.  No timeline has been e
 - Implement support for MySQL, and PostgreSQL as an alternative to Sqlite or MSSQL for index metadata
 
 ## Version History
+
+v1.1.x
+- Major refactor and code cleanup
+- Purpose-built posting manager to improve scale of indexing, search, and storage
+- Removed terms table
+- Searches now continue until exhaustion or until max results are met
+- Collapsed retrieval of querystring items into request parameters 
+- Simple storage API to store a document in an index without indexing or parsing
+- Enumeration of indexed documents
+- Retarget to .NET Core and .NET Framework
+- Eliminate standalone sqlite DLLs
+- Various bugfixes
+- MIT license
 
 v1.0.x
 - Initial release with disk support

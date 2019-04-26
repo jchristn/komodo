@@ -59,9 +59,14 @@ namespace Komodo.Core
 
         private string _RootDirectory;
 
-        private DatabaseWrapper.DatabaseClient _SqlDatabase = null;
-        private SqliteWrapper.DatabaseClient _SqliteDatabase = null;
+        private DatabaseWrapper.DatabaseClient _DocsDbSql = null;
+        private SqliteWrapper.DatabaseClient _DocsDbSqlite = null;
+
+        private DatabaseWrapper.DatabaseClient _PostingsDbSql = null;
+        private SqliteWrapper.DatabaseClient _PostingsDbSqlite = null;
+
         private IndexQueries _IndexQueries = null;
+        private PostingsQueries _PostingsQueries = null;
 
         private Blobs _BlobSource;
         private Blobs _BlobParsed; 
@@ -92,10 +97,12 @@ namespace Komodo.Core
             if (String.IsNullOrEmpty(index.IndexName)) throw new ArgumentException("Index does not contain a name.");
             if (logging == null) throw new ArgumentNullException(nameof(logging));
 
-            if (index.Database == null) throw new ArgumentException("Index does not contain database settings.");
+            if (index.DocumentsDatabase == null) throw new ArgumentException("Index does not contain documents database settings.");
+            if (index.PostingsDatabase == null) throw new ArgumentException("Index does not contain postings database settings.");
             if (index.StorageParsed == null) throw new ArgumentException("Index does not contain storage configuration for parsed documents.");
             if (index.StorageSource == null) throw new ArgumentException("Index does not contain storage configuration for source documents.");
-            if (index.Postings == null) throw new ArgumentException("Index does not contain settings for the postings manager.");
+
+            DateTime ts = DateTime.Now;
 
             _Index = index;
             Name = index.IndexName;
@@ -103,12 +110,19 @@ namespace Komodo.Core
             _Logging = logging;
             _RootDirectory = index.RootDirectory;
              
+            _Logging.Log(LoggingModule.Severity.Info, "IndexClient creating directories for index " + Name);
             CreateDirectories();
-            InitializeDatabase();
+
+            _Logging.Log(LoggingModule.Severity.Info, "IndexClient initializing database clients for index " + Name);
+            InitializeDatabases();
+
+            _Logging.Log(LoggingModule.Severity.Info, "IndexClient initializing storage client for index " + Name);
             InitializeBlobManager();
+
+            _Logging.Log(LoggingModule.Severity.Info, "IndexClient initializing postings manager for index " + Name);
             InitializePostingsManager();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexClient started for index " + Name);
+            _Logging.Log(LoggingModule.Severity.Info, "IndexClient started for index " + Name + " [" + Common.TotalMsFrom(ts) + "ms]");
         }
 
         #endregion
@@ -130,7 +144,7 @@ namespace Komodo.Core
         {
             _Destroying = true;
              
-            if (_SqlDatabase != null)
+            if (_DocsDbSql != null)
             {
                 #region Not-Sqlite
 
@@ -139,8 +153,8 @@ namespace Komodo.Core
                     DatabaseWrapper.Operators.And,
                     new DatabaseWrapper.Expression("IndexName", DatabaseWrapper.Operators.Equals, _Index.IndexName));
 
-                DataTable sourceResult = _SqlDatabase.Select("SourceDocuments", null, null, null, e, null);
-                _SqlDatabase.Delete("SourceDocuments", e);
+                DataTable sourceResult = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
+                _DocsDbSql.Delete("SourceDocuments", e);
 
                 if (sourceResult != null && sourceResult.Rows.Count > 0)
                 {
@@ -151,8 +165,8 @@ namespace Komodo.Core
                     }
                 }
 
-                DataTable parsedResult = _SqlDatabase.Select("ParsedDocuments", null, null, null, e, null);
-                _SqlDatabase.Delete("ParsedDocuments", e);
+                DataTable parsedResult = _DocsDbSql.Select("ParsedDocuments", null, null, null, e, null);
+                _DocsDbSql.Delete("ParsedDocuments", e);
 
                 if (parsedResult != null && parsedResult.Rows.Count > 0)
                 {
@@ -163,7 +177,7 @@ namespace Komodo.Core
                     }
                 }
 
-                _SqlDatabase.Delete("Terms", e);
+                _DocsDbSql.Delete("Terms", e);
 
                 #endregion
             }
@@ -176,8 +190,8 @@ namespace Komodo.Core
                     SqliteWrapper.Operators.And,
                     new SqliteWrapper.Expression("IndexName", SqliteWrapper.Operators.Equals, _Index.IndexName));
 
-                DataTable sourceResult = _SqliteDatabase.Select("SourceDocuments", null, null, null, e, null);
-                _SqliteDatabase.Delete("SourceDocuments", e);
+                DataTable sourceResult = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
+                _DocsDbSqlite.Delete("SourceDocuments", e);
 
                 if (sourceResult != null && sourceResult.Rows.Count > 0)
                 {
@@ -188,8 +202,8 @@ namespace Komodo.Core
                     }
                 }
 
-                DataTable parsedResult = _SqliteDatabase.Select("ParsedDocuments", null, null, null, e, null);
-                _SqliteDatabase.Delete("ParsedDocuments", e);
+                DataTable parsedResult = _DocsDbSqlite.Select("ParsedDocuments", null, null, null, e, null);
+                _DocsDbSqlite.Delete("ParsedDocuments", e);
 
                 if (parsedResult != null && parsedResult.Rows.Count > 0)
                 {
@@ -200,7 +214,7 @@ namespace Komodo.Core
                     }
                 }
 
-                _SqliteDatabase.Delete("Terms", e);
+                _DocsDbSqlite.Delete("Terms", e);
 
                 #endregion
             } 
@@ -222,6 +236,7 @@ namespace Komodo.Core
             string name,
             string tags,
             string contentType,
+            string title,
             out ErrorCode error, 
             out string masterDocId)
         {
@@ -281,8 +296,8 @@ namespace Komodo.Core
                 #region Add-to-Database 
 
                 string ts = null;
-                if (_SqlDatabase != null) ts = _SqlDatabase.Timestamp(DateTime.Now.ToUniversalTime());
-                else ts = _SqliteDatabase.Timestamp(DateTime.Now.ToUniversalTime());
+                if (_DocsDbSql != null) ts = _DocsDbSql.Timestamp(DateTime.Now.ToUniversalTime());
+                else ts = _DocsDbSqlite.Timestamp(DateTime.Now.ToUniversalTime());
 
                 // Source documents table
                 Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
@@ -292,12 +307,14 @@ namespace Komodo.Core
                 sourceDocVals.Add("MasterDocId", doc.MasterDocId);
                 sourceDocVals.Add("SourceUrl", sourceUrl);
                 sourceDocVals.Add("ContentType", contentType);
+                sourceDocVals.Add("Title", title);
                 sourceDocVals.Add("ContentLength", sourceData.Length);
                 sourceDocVals.Add("DocType", docType.ToString());
                 sourceDocVals.Add("Created", ts);
+                sourceDocVals.Add("Indexed", ts);
 
-                if (_SqlDatabase != null) _SqlDatabase.Insert("SourceDocuments", sourceDocVals);
-                else _SqliteDatabase.Insert("SourceDocuments", sourceDocVals);
+                if (_DocsDbSql != null) _DocsDbSql.Insert("SourceDocuments", sourceDocVals);
+                else _DocsDbSqlite.Insert("SourceDocuments", sourceDocVals);
 
                 // Parsed documents table
                 Dictionary<string, object> parsedDocVals = new Dictionary<string, object>();
@@ -308,8 +325,8 @@ namespace Komodo.Core
                 parsedDocVals.Add("ContentLength", Common.SerializeJson(doc, false).Length);
                 parsedDocVals.Add("Created", ts);
 
-                if (_SqlDatabase != null) _SqlDatabase.Insert("ParsedDocuments", parsedDocVals);
-                else _SqliteDatabase.Insert("ParsedDocuments", parsedDocVals);
+                if (_DocsDbSql != null) _DocsDbSql.Insert("ParsedDocuments", parsedDocVals);
+                else _DocsDbSqlite.Insert("ParsedDocuments", parsedDocVals);
 
                 if (doc.Terms != null && doc.Terms.Count > 0)
                 {
@@ -354,17 +371,17 @@ namespace Komodo.Core
                 {
                     _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] AddDocument starting cleanup due to failed add operation");
 
-                    if (_SqlDatabase != null)
+                    if (_DocsDbSql != null)
                     {
                         DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, doc.MasterDocId);
-                        _SqlDatabase.Delete("SourceDocuments", e);
-                        _SqlDatabase.Delete("ParsedDocuments", e); 
+                        _DocsDbSql.Delete("SourceDocuments", e);
+                        _DocsDbSql.Delete("ParsedDocuments", e); 
                     }
                     else
                     {
                         SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, doc.MasterDocId);
-                        _SqliteDatabase.Delete("SourceDocuments", e);
-                        _SqliteDatabase.Delete("ParsedDocuments", e); 
+                        _DocsDbSqlite.Delete("SourceDocuments", e);
+                        _DocsDbSqlite.Delete("ParsedDocuments", e); 
                     }
 
                     if (doc.Terms != null && doc.Terms.Count > 0)
@@ -388,6 +405,7 @@ namespace Komodo.Core
             string name,
             string tags,
             string contentType,
+            string title,
             out ErrorCode error,
             out string masterDocId)
         {
@@ -434,8 +452,8 @@ namespace Komodo.Core
                 masterDocId = Guid.NewGuid().ToString();
 
                 string ts = null;
-                if (_SqlDatabase != null) ts = _SqlDatabase.Timestamp(DateTime.Now.ToUniversalTime());
-                else ts = _SqliteDatabase.Timestamp(DateTime.Now.ToUniversalTime());
+                if (_DocsDbSql != null) ts = _DocsDbSql.Timestamp(DateTime.Now.ToUniversalTime());
+                else ts = _DocsDbSqlite.Timestamp(DateTime.Now.ToUniversalTime());
 
                 // Source documents table
                 Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
@@ -444,19 +462,20 @@ namespace Komodo.Core
                 sourceDocVals.Add("Tags", tags);
                 sourceDocVals.Add("MasterDocId", masterDocId);
                 sourceDocVals.Add("SourceUrl", sourceUrl);
+                sourceDocVals.Add("Title", title);
                 sourceDocVals.Add("ContentType", contentType);
                 sourceDocVals.Add("ContentLength", sourceData.Length);
                 sourceDocVals.Add("DocType", docType.ToString());
                 sourceDocVals.Add("Created", ts);
 
-                if (_SqlDatabase != null) _SqlDatabase.Insert("SourceDocuments", sourceDocVals);
-                else _SqliteDatabase.Insert("SourceDocuments", sourceDocVals);
+                if (_DocsDbSql != null) _DocsDbSql.Insert("SourceDocuments", sourceDocVals);
+                else _DocsDbSqlite.Insert("SourceDocuments", sourceDocVals);
                  
                 #endregion
 
                 #region Add-to-Filesystem
 
-                if (!WriteSourceDocument(sourceData, masterDocId))
+                if (!WriteSourceDocument(sourceData, contentType, masterDocId))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument unable to write source document");
                     error = new ErrorCode(ErrorId.WRITE_ERROR);
@@ -476,15 +495,15 @@ namespace Komodo.Core
                 {
                     _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] StoreDocument starting cleanup due to failed add operation");
 
-                    if (_SqlDatabase != null)
+                    if (_DocsDbSql != null)
                     {
                         DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
-                        _SqlDatabase.Delete("SourceDocuments", e); 
+                        _DocsDbSql.Delete("SourceDocuments", e); 
                     }
                     else
                     {
                         SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
-                        _SqliteDatabase.Delete("SourceDocuments", e); 
+                        _DocsDbSqlite.Delete("SourceDocuments", e); 
                     } 
                 }
 
@@ -518,15 +537,15 @@ namespace Komodo.Core
 
             DataTable result = null;
 
-            if (_SqlDatabase != null)
+            if (_DocsDbSql != null)
             {
                 DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
-                result = _SqlDatabase.Select("SourceDocuments", null, null, null, e, null);
+                result = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
             }
             else
             {
                 SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
-                result = _SqliteDatabase.Select("SourceDocuments", null, null, null, e, null);
+                result = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
             }
 
             if (result != null && result.Rows.Count > 0) return true;
@@ -567,17 +586,17 @@ namespace Komodo.Core
                 return false;
             }
 
-            if (_SqlDatabase != null)
+            if (_DocsDbSql != null)
             {
                 DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
-                _SqlDatabase.Delete("SourceDocuments", e);
-                _SqlDatabase.Delete("ParsedDocuments", e); 
+                _DocsDbSql.Delete("SourceDocuments", e);
+                _DocsDbSql.Delete("ParsedDocuments", e); 
             }
             else
             {
                 SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
-                _SqliteDatabase.Delete("SourceDocuments", e);
-                _SqliteDatabase.Delete("ParsedDocuments", e); 
+                _DocsDbSqlite.Delete("SourceDocuments", e);
+                _DocsDbSqlite.Delete("ParsedDocuments", e); 
             }
 
             bool deleteSource = DeleteSourceDocument(masterDocId);
@@ -713,13 +732,14 @@ namespace Komodo.Core
             stats.SourceDocuments = new IndexStats.SourceDocumentStats();
             stats.SourceDocuments.Count = 0;
             stats.SourceDocuments.SizeBytes = 0;
-
+            
             stats.ParsedDocuments = new IndexStats.ParsedDocumentStats();
             stats.ParsedDocuments.Count = 0;
             stats.ParsedDocuments.SizeBytesParsed = 0;
             stats.ParsedDocuments.SizeBytesSource = 0;
 
             stats.IndexName = _Index.IndexName;
+            stats.TermsCount = _Postings.GetTermsCount();
 
             #region Source-Docs-Stats
 
@@ -730,8 +750,8 @@ namespace Komodo.Core
                 "FROM SourceDocuments";
 
             DataTable sourceDocsResult = null;
-            if (_SqlDatabase != null) sourceDocsResult = _SqlDatabase.RawQuery(sourceDocsQuery);
-            else sourceDocsResult = _SqliteDatabase.Query(sourceDocsQuery);
+            if (_DocsDbSql != null) sourceDocsResult = _DocsDbSql.Query(sourceDocsQuery);
+            else sourceDocsResult = _DocsDbSqlite.Query(sourceDocsQuery);
             
             if (sourceDocsResult != null && sourceDocsResult.Rows.Count > 0)
             {
@@ -756,8 +776,8 @@ namespace Komodo.Core
                 "FROM ParsedDocuments";
 
             DataTable parsedDocsResult = null;
-            if (_SqlDatabase != null) parsedDocsResult = _SqlDatabase.RawQuery(parsedDocsQuery);
-            else parsedDocsResult = _SqliteDatabase.Query(parsedDocsQuery);
+            if (_DocsDbSql != null) parsedDocsResult = _DocsDbSql.Query(parsedDocsQuery);
+            else parsedDocsResult = _DocsDbSqlite.Query(parsedDocsQuery);
              
             if (parsedDocsResult != null && parsedDocsResult.Rows.Count > 0)
             {
@@ -843,7 +863,7 @@ namespace Komodo.Core
 
             if (disposing)
             {
-                if (_SqliteDatabase != null) _SqliteDatabase.Dispose();
+                if (_DocsDbSqlite != null) _DocsDbSqlite.Dispose();
                 if (_Postings != null) _Postings.Dispose();
             }
 
@@ -878,68 +898,122 @@ namespace Komodo.Core
             } 
         }
 
-        private void InitializeDatabase()
+        private void InitializeDatabases()
         {
+            #region Documents-Database
+
             #region Initialize-Database-Client
 
-            switch (_Index.Database.Type)
+            switch (_Index.DocumentsDatabase.Type)
             {
                 case DatabaseType.MsSql:
                 case DatabaseType.MySql:
                 case DatabaseType.PgSql:
-                    _SqlDatabase = new DatabaseWrapper.DatabaseClient(
-                        DatabaseTypeToString(_Index.Database.Type),
-                        _Index.Database.Hostname,
-                        _Index.Database.Port,
-                        _Index.Database.Username,
-                        _Index.Database.Password,
-                        _Index.Database.InstanceName,
-                        _Index.Database.DatabaseName);
-                    _SqlDatabase.DebugRawQuery = _Index.Database.Debug;
-                    _SqlDatabase.DebugResultRowCount = _Index.Database.Debug;
+                    _DocsDbSql = new DatabaseWrapper.DatabaseClient(
+                        DatabaseTypeToString(_Index.DocumentsDatabase.Type),
+                        _Index.DocumentsDatabase.Hostname,
+                        _Index.DocumentsDatabase.Port,
+                        _Index.DocumentsDatabase.Username,
+                        _Index.DocumentsDatabase.Password,
+                        _Index.DocumentsDatabase.InstanceName,
+                        _Index.DocumentsDatabase.DatabaseName);
+                    _DocsDbSql.DebugRawQuery = _Index.DocumentsDatabase.Debug;
+                    _DocsDbSql.DebugResultRowCount = _Index.DocumentsDatabase.Debug;
                     break;
 
                 case DatabaseType.SQLite:
-                    _SqliteDatabase = new SqliteWrapper.DatabaseClient(
-                        _Index.Database.Filename,
-                        _Index.Database.Debug);
+                    _DocsDbSqlite = new SqliteWrapper.DatabaseClient(
+                        _Index.DocumentsDatabase.Filename,
+                        _Index.DocumentsDatabase.Debug);
                     break;
 
                 default:
-                    throw new ArgumentException("Unknown database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
+                    throw new ArgumentException("Unknown documents database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
             }
 
             #endregion
 
             #region Initialize-Tables
 
-            _IndexQueries = new IndexQueries(_Index, _SqlDatabase, _SqliteDatabase);
+            _IndexQueries = new IndexQueries(_Index, _DocsDbSql, _DocsDbSqlite);
 
             string sourceDocsQuery = _IndexQueries.CreateSourceDocsTable();
             string parsedDocsQuery = _IndexQueries.CreateParsedDocsTable();
-            string termsQuery = _IndexQueries.CreateTermsTable();
-            string termsMapQuery = _IndexQueries.CreateTermsMapTable();
 
-            switch (_Index.Database.Type)
+            switch (_Index.DocumentsDatabase.Type)
             {
                 case DatabaseType.MsSql:
                 case DatabaseType.MySql:
                 case DatabaseType.PgSql:
-                    _SqlDatabase.RawQuery(sourceDocsQuery);
-                    _SqlDatabase.RawQuery(parsedDocsQuery);
-                    _SqlDatabase.RawQuery(termsQuery);
-                    _SqlDatabase.RawQuery(termsMapQuery);
+                    _DocsDbSql.Query(sourceDocsQuery);
+                    _DocsDbSql.Query(parsedDocsQuery);
                     break;
 
                 case DatabaseType.SQLite:
-                    _SqliteDatabase.Query(sourceDocsQuery);
-                    _SqliteDatabase.Query(parsedDocsQuery);
-                    _SqliteDatabase.Query(termsQuery);
-                    _SqliteDatabase.Query(termsMapQuery);
+                    _DocsDbSqlite.Query(sourceDocsQuery);
+                    _DocsDbSqlite.Query(parsedDocsQuery);
+                    break;
+            }
+
+            #endregion
+
+            #endregion
+
+            #region Postings-Database
+
+            #region Initialize-Database-Client
+
+            switch (_Index.PostingsDatabase.Type)
+            {
+                case DatabaseType.MsSql:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                    _PostingsDbSql = new DatabaseWrapper.DatabaseClient(
+                        DatabaseTypeToString(_Index.PostingsDatabase.Type),
+                        _Index.PostingsDatabase.Hostname,
+                        _Index.PostingsDatabase.Port,
+                        _Index.PostingsDatabase.Username,
+                        _Index.PostingsDatabase.Password,
+                        _Index.PostingsDatabase.InstanceName,
+                        _Index.PostingsDatabase.DatabaseName);
+                    _PostingsDbSql.DebugRawQuery = _Index.PostingsDatabase.Debug;
+                    _PostingsDbSql.DebugResultRowCount = _Index.PostingsDatabase.Debug;
+                    break;
+
+                case DatabaseType.SQLite:
+                    _PostingsDbSqlite = new SqliteWrapper.DatabaseClient(
+                        _Index.PostingsDatabase.Filename,
+                        _Index.PostingsDatabase.Debug);
+                    break;
+
+                default:
+                    throw new ArgumentException("Unknown postings database type, use one of: Mssql, Mysql, Pgsql, Sqlite.");
+            }
+
+            #endregion
+
+            #region Initialize-Tables
+
+            _PostingsQueries = new PostingsQueries(_Index, _PostingsDbSql, _PostingsDbSqlite);
+
+            string termsTableQuery = _PostingsQueries.CreateTermsMapTable();
+
+            switch (_Index.DocumentsDatabase.Type)
+            {
+                case DatabaseType.MsSql:
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                    _PostingsDbSql.Query(termsTableQuery); 
+                    break;
+
+                case DatabaseType.SQLite:
+                    _PostingsDbSqlite.Query(termsTableQuery); 
                     break;
             }
 
             #endregion 
+
+            #endregion
         }
 
         private string DatabaseTypeToString(DatabaseType dbType)
@@ -1001,11 +1075,10 @@ namespace Komodo.Core
         private void InitializePostingsManager()
         {
             _Postings = new PostingsManager(
-                _Logging,
-                _Index.IndexName,
-                _Index.Postings.BaseDirectory,
-                _Index.Postings.DatabaseFilename,
-                _Index.Postings.DatabaseDebug
+                _Index,
+                _Logging, 
+                _PostingsDbSql,
+                _PostingsDbSqlite
                 );
         }
 
@@ -1016,7 +1089,7 @@ namespace Komodo.Core
         private string Sanitize(string str)
         {
             if (String.IsNullOrEmpty(str)) throw new ArgumentNullException(nameof(str));
-            if (_SqlDatabase != null) return _SqlDatabase.SanitizeString(str);
+            if (_DocsDbSql != null) return _DocsDbSql.SanitizeString(str);
             else return SqliteWrapper.DatabaseClient.SanitizeString(str);
         }
          
@@ -1060,13 +1133,13 @@ namespace Komodo.Core
         private bool WriteSourceDocument(byte[] data, IndexedDoc doc)
         {
             string filename = doc.MasterDocId + ".source";
-            return _BlobSource.Write(filename, false, data).Result;
+            return _BlobSource.Write(filename, "application/json", data).Result;
         }
 
-        private bool WriteSourceDocument(byte[] data, string masterDocId)
+        private bool WriteSourceDocument(byte[] data, string masterDocId, string contentType)
         {
             string filename = masterDocId + ".source";
-            return _BlobSource.Write(filename, false, data).Result;
+            return _BlobSource.Write(filename, contentType, data).Result;
         }
 
         private bool DeleteSourceDocument(string masterDocId)
@@ -1098,7 +1171,7 @@ namespace Komodo.Core
         private bool WriteParsedDocument(IndexedDoc doc)
         {
             string filename = doc.MasterDocId + ".parsed.json";
-            return _BlobParsed.Write(filename, false, Encoding.UTF8.GetBytes(Common.SerializeJson(doc, false))).Result;
+            return _BlobParsed.Write(filename, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(doc, false))).Result;
         }
         
         private bool DeleteParsedDocument(string masterDocId)
@@ -1454,6 +1527,7 @@ namespace Komodo.Core
 
                 Dictionary<string, decimal> docsMatching = new Dictionary<string, decimal>();
                 Dictionary<string, decimal> currDocsMatching = new Dictionary<string, decimal>();
+                List<string> termsNotFound = new List<string>();
 
                 #endregion
 
@@ -1469,14 +1543,25 @@ namespace Komodo.Core
                     {
                         _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal retrieving documents matching terms, index " + indexEnd + " max results " + query.MaxResults);
 
+                        List<string> currTermsNotFound = new List<string>();
+
                         _Postings.GetMatchingDocuments(
                             indexEnd,
                             query.MaxResults,
                             query.Required.Terms,
                             query.Optional.Terms,
                             query.Exclude.Terms,
+                            out currTermsNotFound,
                             out currDocsMatching,
                             out indexEnd);
+
+                        if (currTermsNotFound != null && currTermsNotFound.Count > 0)
+                        {
+                            foreach (string curr in currTermsNotFound)
+                            {
+                                termsNotFound.Add(curr);
+                            } 
+                        }
 
                         if (currDocsMatching == null || currDocsMatching.Count < 1)
                         {
@@ -1620,6 +1705,7 @@ namespace Komodo.Core
 
                 #endregion
 
+                result.TermsNotFound = termsNotFound.Distinct().ToList();
                 result.SortMatchesByScore();
                 return true;
             }
@@ -1690,8 +1776,8 @@ namespace Komodo.Core
 
                 string dbQuery = _IndexQueries.SelectSourceDocumentsByEnumerationQuery(query);
                 DataTable dbResult = null;
-                if (_SqlDatabase != null) dbResult = _SqlDatabase.RawQuery(dbQuery);
-                else dbResult = _SqliteDatabase.Query(dbQuery);
+                if (_DocsDbSql != null) dbResult = _DocsDbSql.Query(dbQuery);
+                else dbResult = _DocsDbSqlite.Query(dbQuery);
 
                 List<SourceDocument> sourceDocs = new List<SourceDocument>();
                 foreach (DataRow row in dbResult.Rows)

@@ -102,6 +102,7 @@ namespace Komodo.Server
                     md.Params.Name,
                     md.Params.Tags,
                     md.Http.ContentType,
+                    md.Params.Title,
                     out error, 
                     out masterDocId))
                 {
@@ -119,6 +120,7 @@ namespace Komodo.Server
                     md.Params.Name,
                     md.Params.Tags,
                     md.Http.ContentType,
+                    md.Params.Title,
                     out error,
                     out masterDocId))
                 {

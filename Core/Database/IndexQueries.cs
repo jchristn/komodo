@@ -41,7 +41,7 @@ namespace Komodo.Core.Database
             SqliteWrapper.DatabaseClient sqliteDatabase)
         {
             if (index == null) throw new ArgumentNullException(nameof(index));
-            if (index.Database == null) throw new ArgumentException("Index does not contain database settings.");
+            if (index.DocumentsDatabase == null) throw new ArgumentException("Index does not contain document database settings.");
             if (sqlDatabase == null && sqliteDatabase == null) throw new ArgumentException("One of the the two database clients must be null.");
             if (sqlDatabase != null && sqliteDatabase != null) throw new ArgumentException("One of the the two database clients must be null.");
 
@@ -62,11 +62,11 @@ namespace Komodo.Core.Database
         {
             string query = "";
 
-            switch (_Index.Database.Type)
+            switch (_Index.DocumentsDatabase.Type)
             {
                 case DatabaseType.MsSql:
                     query =
-                        "USE " + _Index.Database.DatabaseName + ";" +
+                        "USE " + _Index.DocumentsDatabase.DatabaseName + ";" +
                         "IF NOT EXISTS " +
                         "(" +
                         "  SELECT * FROM sysobjects WHERE name = 'SourceDocuments' AND xtype = 'U' " +
@@ -80,6 +80,7 @@ namespace Komodo.Core.Database
                         "  [Tags]          [nvarchar] (128) NULL, " +
                         "  [DocType]       [nvarchar] (32) NULL, " +
                         "  [SourceUrl]     [nvarchar] (256) NULL, " +
+                        "  [Title]         [nvarchar] (128) NULL, " +
                         "  [ContentType]   [nvarchar] (128) NULL, " +
                         "  [ContentLength] [bigint] NULL, " +
                         "  [Created]       [datetime2] (7) NULL, " +
@@ -99,6 +100,7 @@ namespace Komodo.Core.Database
                     return query;
                 case DatabaseType.MySql:
                 case DatabaseType.PgSql:
+                    throw new Exception("Unsupported document database type: " + _Index.DocumentsDatabase.Type.ToString());
                 case DatabaseType.SQLite:
                     query =
                         "CREATE TABLE IF NOT EXISTS SourceDocuments " +
@@ -110,6 +112,7 @@ namespace Komodo.Core.Database
                         "  Tags              VARCHAR(128)  COLLATE NOCASE, " +
                         "  DocType           VARCHAR(32)   COLLATE NOCASE, " +
                         "  SourceUrl         VARCHAR(256)  COLLATE NOCASE, " +
+                        "  Title             VARCHAR(128)  COLLATE NOCASE, " +
                         "  ContentType       VARCHAR(128)  COLLATE NOCASE, " +
                         "  ContentLength     INTEGER, " +
                         "  Created           VARCHAR(32), " +
@@ -118,7 +121,7 @@ namespace Komodo.Core.Database
                     return query;
             }
 
-            throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
+            throw new ArgumentException("Invalid document database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
         }
 
         /// <summary>
@@ -129,11 +132,11 @@ namespace Komodo.Core.Database
         {
             string query = "";
 
-            switch (_Index.Database.Type)
+            switch (_Index.DocumentsDatabase.Type)
             { 
                 case DatabaseType.MsSql:
                     query =
-                        "USE " + _Index.Database.DatabaseName + ";" +
+                        "USE " + _Index.DocumentsDatabase.DatabaseName + ";" +
                         "IF NOT EXISTS " +
                         "(" +
                         "  SELECT * FROM sysobjects WHERE name = 'ParsedDocuments' AND xtype = 'U' " +
@@ -160,9 +163,10 @@ namespace Komodo.Core.Database
                         "  ON [PRIMARY]" +
                         ")" +
                         "ON [PRIMARY]";
-                    return query;
+                    return query; 
                 case DatabaseType.MySql:
                 case DatabaseType.PgSql:
+                    throw new Exception("Unsupported database type: " + _Index.DocumentsDatabase.Type.ToString());
                 case DatabaseType.SQLite:
                     query =
                         "CREATE TABLE IF NOT EXISTS ParsedDocuments " +
@@ -181,373 +185,7 @@ namespace Komodo.Core.Database
 
             throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
         }
-
-        /// <summary>
-        /// Generate the query to create the terms table.
-        /// </summary>
-        /// <returns>String.</returns>
-        public string CreateTermsTable()
-        {
-            string query = "";
-
-            switch (_Index.Database.Type)
-            {
-                case DatabaseType.MsSql:
-                    query =
-                        "USE " + _Index.Database.DatabaseName + ";" +
-                        "IF NOT EXISTS " +
-                        "(" +
-                        "  SELECT * FROM sysobjects WHERE name = 'Terms' AND xtype = 'U' " +
-                        ")" +
-                        "CREATE TABLE Terms " +
-                        "(" +
-                        "  [Id]                  [bigint] IDENTITY(1,1) NOT NULL, " +
-                        "  [IndexName]           [nvarchar] (128) NULL, " +
-                        "  [MasterDocId]         [nvarchar] (128) NULL, " +
-                        "  [Term]                [nvarchar] (128) NULL, " +
-                        "  [Created]             [datetime2] (7) NULL, " + 
-                        "  CONSTRAINT [PK_Terms] PRIMARY KEY CLUSTERED " +
-                        "  ( " +
-                        "    [Id] ASC " +
-                        "  ) " +
-                        "  WITH " +
-                        "  ( " +
-                        "    STATISTICS_NORECOMPUTE = OFF, " +
-                        "    IGNORE_DUP_KEY = OFF " +
-                        "  ) " +
-                        "  ON [PRIMARY]" +
-                        ")" +
-                        "ON [PRIMARY]";
-                    return query;
-                case DatabaseType.MySql:
-                case DatabaseType.PgSql:
-                case DatabaseType.SQLite:
-                    query =
-                        "CREATE TABLE IF NOT EXISTS Terms " +
-                        "(" +
-                        "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "  IndexName         VARCHAR(128)  COLLATE NOCASE, " +
-                        "  MasterDocId       VARCHAR(128)  COLLATE NOCASE, " +
-                        "  Term              VARCHAR(128)  COLLATE NOCASE, " +
-                        "  Created           VARCHAR(32) " + 
-                        ")";
-                    return query;
-            }
-
-            throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
-        }
-
-        /// <summary>
-        /// Generate the query to create the terms map table.
-        /// </summary>
-        /// <returns>String.</returns>
-        public string CreateTermsMapTable()
-        {
-            string query = "";
-
-            switch (_Index.Database.Type)
-            {
-                case DatabaseType.MsSql:
-                    query =
-                        "USE " + _Index.Database.DatabaseName + ";" +
-                        "IF NOT EXISTS " +
-                        "(" +
-                        "  SELECT * FROM sysobjects WHERE name = 'Terms' AND xtype = 'U' " +
-                        ")" +
-                        "CREATE TABLE Terms " +
-                        "(" +
-                        "  [Id]                  [bigint] IDENTITY(1,1) NOT NULL, " +
-                        "  [IndexName]           [nvarchar] (128) NULL, " +
-                        "  [Term]                [nvarchar] (128) NULL, " +
-                        "  [TermId]              [nvarchar] (128) NULL, " +
-                        "  [Created]             [datetime2] (7) NULL, " +
-                        "  [Updated]             [datetime2] (7) NULL, " +
-                        "  CONSTRAINT [PK_Terms] PRIMARY KEY CLUSTERED " +
-                        "  ( " +
-                        "    [Id] ASC " +
-                        "  ) " +
-                        "  WITH " +
-                        "  ( " +
-                        "    STATISTICS_NORECOMPUTE = OFF, " +
-                        "    IGNORE_DUP_KEY = OFF " +
-                        "  ) " +
-                        "  ON [PRIMARY]" +
-                        ")" +
-                        "ON [PRIMARY]";
-                    return query;
-                case DatabaseType.MySql:
-                case DatabaseType.PgSql:
-                case DatabaseType.SQLite:
-                    query =
-                        "CREATE TABLE IF NOT EXISTS Terms " +
-                        "(" +
-                        "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "  IndexName         VARCHAR(128)  COLLATE NOCASE, " + 
-                        "  Term              BLOB, " +
-                        "  TermId            VARCHAR(128)  COLLATE NOCASE, " +
-                        "  Created           VARCHAR(32), " +
-                        "  Updated           VARCHAR(32) " +
-                        ")";
-                    return query;
-            }
-
-            throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
-        }
-
-        /// <summary>
-        /// Generate the query to retrieve document IDs based on query terms match.
-        /// </summary>
-        /// <param name="query">Search query.</param>
-        /// <returns>String.</returns>
-        public string SelectDocIdsByTerms(SearchQuery query)
-        {
-            string dbQuery = "";
-            int requiredAdded = 0; 
-            int excludeAdded = 0;
-            int optionalAdded = 0;
-            
-            switch (_Index.Database.Type)
-            {
-                case DatabaseType.MsSql:
-                    #region Mssql
-                     
-                    dbQuery =
-                        "SELECT DISTINCT MasterDocId " +
-                        "FROM Terms " +
-                        "WHERE ("; 
-
-                    #region Required-Terms
-
-                    // open paren, required terms subclause
-                    dbQuery += "(";
-
-                    dbQuery += "Term IN (";
-                     
-                    foreach (string currTerm in query.Required.Terms)
-                    {
-                        string sanitizedTerm = String.Copy(currTerm);
-                        if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
-                        sanitizedTerm = Sanitize(sanitizedTerm);
-
-                        if (requiredAdded > 0) dbQuery += ",";
-                        dbQuery += "'" + sanitizedTerm + "'";
-                        requiredAdded++;
-                    }
-
-                    dbQuery += ")";
-
-                    // close paren, required terms subclause
-                    dbQuery += ")";
-
-                    #endregion
-
-                    #region Optional-Terms
-
-                    if (query.Optional != null && query.Optional.Terms != null && query.Optional.Terms.Count > 0)
-                    {
-                        // open paren, optional terms subclause
-                        dbQuery += " AND (Term IS NOT NULL OR ";
-
-                        dbQuery += "Term IN (";
-
-                        foreach (string currTerm in query.Optional.Terms)
-                        {
-                            string sanitizedTerm = String.Copy(currTerm);
-                            if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
-                            sanitizedTerm = Sanitize(sanitizedTerm);
-
-                            if (optionalAdded > 0) dbQuery += ",";
-                            dbQuery += "'" + sanitizedTerm + "'";
-                            optionalAdded++;
-                        }
-
-                        dbQuery += ")";
-
-                        // close paren, optional terms subclause
-                        dbQuery += ")";
-                    }
-
-                    #endregion
-
-                    #region Excluded-Terms
-
-                    if (query.Exclude != null && query.Exclude.Terms != null && query.Exclude.Terms.Count > 0)
-                    {
-                        // open paren, exclude terms subclause
-                        dbQuery += " AND (";
-
-                        dbQuery += "Term NOT IN (";
-
-                        foreach (string currTerm in query.Exclude.Terms)
-                        {
-                            string sanitizedTerm = String.Copy(currTerm);
-                            if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
-                            sanitizedTerm = Sanitize(sanitizedTerm);
-
-                            if (requiredAdded > 0) dbQuery += ",";
-                            dbQuery += "'" + sanitizedTerm + "'";
-                            excludeAdded++;
-                        }
-
-                        dbQuery += ")";
-
-                        // close paren, exclude terms subclause
-                        dbQuery += ")";
-                    }
-
-                    #endregion
-
-                    dbQuery += ") ";
-
-                    #region Pagination
-
-                    if (query.MaxResults > 0 && query.MaxResults <= 100)
-                    {
-                        if (query.StartIndex > 0)
-                        {
-                            dbQuery +=
-                                " ORDER BY MasterDocId OFFSET " + query.StartIndex + " ROWS " +
-                                " FETCH NEXT " + query.MaxResults + " ROWS ONLY";
-                        }
-                        else
-                        {
-                            dbQuery +=
-                                " ORDER BY MasterDocId OFFSET 0 ROWS " +
-                                " FETCH NEXT " + query.MaxResults + " ROWS ONLY";
-                        }
-                    }
-                    else
-                    {
-                        dbQuery +=
-                            " ORDER BY MasterDocId OFFSET 0 ROWS " +
-                            " FETCH NEXT 10 ROWS ONLY";
-                    }
-
-                    #endregion
-
-                    return dbQuery;
-
-                    #endregion
-
-                case DatabaseType.MySql:
-                case DatabaseType.PgSql:
-                case DatabaseType.SQLite:
-                    #region Sqlite
-
-                    dbQuery =
-                        "SELECT DISTINCT MasterDocId " +
-                        "FROM Terms " +
-                        "WHERE (";
-
-                    #region Required-Terms
-
-                    // open paren, required terms subclause
-                    dbQuery += "(";
-
-                    dbQuery += "Term IN (";
-
-                    foreach (string currTerm in query.Required.Terms)
-                    {
-                        string sanitizedTerm = String.Copy(currTerm);
-                        if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
-                        sanitizedTerm = Sanitize(sanitizedTerm);
-
-                        if (requiredAdded > 0) dbQuery += ",";
-                        dbQuery += "'" + sanitizedTerm + "'";
-                        requiredAdded++;
-                    }
-
-                    dbQuery += ")";
-
-                    // close paren, required terms subclause
-                    dbQuery += ")";
-
-                    #endregion
-
-                    #region Optional-Terms
-
-                    if (query.Optional != null && query.Optional.Terms != null && query.Optional.Terms.Count > 0)
-                    {
-                        // open paren, optional terms subclause
-                        dbQuery += " AND (Term IS NOT NULL OR ";
-
-                        dbQuery += "Term IN (";
-                         
-                        foreach (string currTerm in query.Optional.Terms)
-                        {
-                            string sanitizedTerm = String.Copy(currTerm);
-                            if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
-                            sanitizedTerm = Sanitize(sanitizedTerm);
-
-                            if (optionalAdded > 0) dbQuery += ",";
-                            dbQuery += "'" + sanitizedTerm + "'";
-                            optionalAdded++;
-                        }
-
-                        dbQuery += ")";
-
-                        // close paren, optional terms subclause
-                        dbQuery += ")";
-                    }
-
-                    #endregion
-
-                    #region Excluded-Terms
-
-                    if (query.Exclude != null && query.Exclude.Terms != null && query.Exclude.Terms.Count > 0)
-                    {
-                        // open paren, exclude terms subclause
-                        dbQuery += " AND (";
-
-                        dbQuery += "Term NOT IN (";
-                         
-                        foreach (string currTerm in query.Exclude.Terms)
-                        {
-                            string sanitizedTerm = String.Copy(currTerm);
-                            if (_Index.Options.NormalizeCase) sanitizedTerm = sanitizedTerm.ToLower();
-                            sanitizedTerm = Sanitize(sanitizedTerm);
-
-                            if (requiredAdded > 0) dbQuery += ",";
-                            dbQuery += "'" + sanitizedTerm + "'";
-                            excludeAdded++;
-                        }
-
-                        dbQuery += ")";
-
-                        // close paren, exclude terms subclause
-                        dbQuery += ")";
-                    }
-
-                    #endregion
-
-                    dbQuery += ") ";
-
-                    #region Pagination
-
-                    if (query.MaxResults > 0 && query.MaxResults <= 100)
-                    {
-                        dbQuery += "LIMIT " + query.MaxResults;
-
-                        if (query.StartIndex > 0)
-                        {
-                            dbQuery += " OFFSET " + query.StartIndex;
-                        }
-                    }
-                    else
-                    {
-                        dbQuery += "LIMIT 10";
-                    }
-
-                    #endregion
-
-                    return dbQuery;
-
-                    #endregion
-            }
-
-            throw new ArgumentException("Invalid database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
-        }
-
+         
         /// <summary>
         /// Generate the query to retrieve source documents based on supplied enumeration query.
         /// </summary>
@@ -555,21 +193,46 @@ namespace Komodo.Core.Database
         /// <returns>String.</returns>
         public string SelectSourceDocumentsByEnumerationQuery(EnumerationQuery query)
         {
-            string ret = "SELECT * FROM SourceDocuments ";
+            string ret = "";
 
-            ret += SearchFilterToWhereClause(query.Filters);
-
-            if (query.MaxResults != null)
+            switch (_Index.DocumentsDatabase.Type)
             {
-                ret += "LIMIT " + query.MaxResults + " ";
+                case DatabaseType.MsSql:
+                    ret = "SELECT * FROM SourceDocuments ";
+                    ret += SearchFilterToWhereClause(query.Filters);
+                    ret += " ";
+                    ret += "ORDER BY Id ASC ";
+
+                    if (query.StartIndex != null)
+                    {
+                        ret += "OFFSET " + query.StartIndex + " ROWS ";
+                    }
+
+                    if (query.MaxResults != null)
+                    {
+                        ret += "FETCH NEXT " + query.MaxResults + " ROWS ONLY";
+                    }
+                    return ret;
+                case DatabaseType.MySql:
+                case DatabaseType.PgSql:
+                    throw new Exception("Unsupported document database type: " + _Index.DocumentsDatabase.Type.ToString());
+                case DatabaseType.SQLite:
+                    ret = "SELECT * FROM SourceDocuments ";
+                    ret += SearchFilterToWhereClause(query.Filters);
+
+                    if (query.MaxResults != null)
+                    {
+                        ret += "LIMIT " + query.MaxResults + " ";
+                    }
+
+                    if (query.StartIndex != null)
+                    {
+                        ret += "OFFSET " + query.StartIndex + " ";
+                    }
+                    return ret;
             }
 
-            if (query.StartIndex != null)
-            {
-                ret += "OFFSET " + query.StartIndex + " ";
-            }
-
-            return ret;
+            throw new ArgumentException("Invalid document database type, use one of: Mssql, Mysql, Pgsql, Sqlite");
         }
 
         #endregion

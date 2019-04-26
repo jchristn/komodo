@@ -28,6 +28,10 @@ namespace Komodo.Core
         /// </summary>
         public ParsedDocumentStats ParsedDocuments { get; set; }
 
+        /// <summary>
+        /// The number of terms stored in the index.
+        /// </summary>
+        public long TermsCount { get; set; }
         #endregion
 
         #region Private-Members

@@ -31,11 +31,16 @@ namespace Komodo.Core
         /// Index options for the index.
         /// </summary>
         public IndexOptions Options { get; set; }
-         
+
         /// <summary>
-        /// Database settings for the index.
+        /// Database settings for the documents database.
         /// </summary>
-        public DatabaseSettings Database { get; set; }
+        public DatabaseSettings DocumentsDatabase { get; set; }
+
+        /// <summary>
+        /// Database settings for the postings database.
+        /// </summary>
+        public DatabaseSettings PostingsDatabase { get; set; }
 
         /// <summary>
         /// Storage settings for the index source documents.
@@ -46,12 +51,7 @@ namespace Komodo.Core
         /// Storage settings for the index parsed documents.
         /// </summary>
         public StorageSettings StorageParsed { get; set; }
-
-        /// <summary>
-        /// Storage settings for terms documents.
-        /// </summary>
-        public PostingsSettings Postings { get; set; }
-
+         
         #endregion
 
         #region Private-Members
@@ -175,28 +175,7 @@ namespace Komodo.Core
             /// </summary>
             public KvpbaseSettings Kvpbase { get; set; } 
         }
-        
-        /// <summary>
-        /// Settings for the postings manager.
-        /// </summary>
-        public class PostingsSettings
-        {
-            /// <summary>
-            /// The base directory for the terms map database and terms databases.
-            /// </summary>
-            public string BaseDirectory { get; set; }
-
-            /// <summary>
-            /// The filename for the terms map database.
-            /// </summary>
-            public string DatabaseFilename { get; set; }
-
-            /// <summary>
-            /// Enable or disable debugging on database operations.
-            /// </summary>
-            public bool DatabaseDebug { get; set; } 
-        }
-
+         
         #endregion
     }
 }
