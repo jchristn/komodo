@@ -131,7 +131,7 @@ namespace Komodo.Core
 
             while (!TermExists(posting.Term, out map))
             {
-                _Logging.Log(LoggingModule.Severity.Info, "[" + _Index.IndexName + "] AddPosting creating table for term " + posting.Term);
+                _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] AddPosting creating table for term " + posting.Term);
                 query = _Queries.AddTermMap(posting.Term);
                 result = DatabaseQuery(query);
             }
@@ -184,7 +184,7 @@ namespace Komodo.Core
                             if (count == 0)
                             {
                                 termEmpty = true;
-                                _Logging.Log(LoggingModule.Severity.Info, "[" + _Index.IndexName + "] RemoveDocument term " + currTerm + " is now empty");
+                                _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] RemoveDocument term " + currTerm + " is now empty");
                             }
                         }
                     }

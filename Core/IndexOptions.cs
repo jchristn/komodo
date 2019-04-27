@@ -74,7 +74,7 @@ namespace Komodo.Core
             MinTokenLength = 3;
             MaxTokenLength = 64; 
 
-            StopWords = SetDefaultStopWords();
+            SetStopWordsFromFile();
         }
 
         #endregion
@@ -109,24 +109,22 @@ namespace Komodo.Core
             return ret;
         }
 
-        #endregion
-
-        #region Private-Methods
-
-        private List<string> SetDefaultStopWords()
+        /// <summary>
+        /// Set the stop words for the index using StopWords.txt in the working directory or in the Docs directory, if either exists.
+        /// </summary>
+        public void SetStopWordsFromFile()
         {
             string[] lines;
 
             if (File.Exists("StopWords.txt"))
-            {    
+            {
                 try
                 {
                     lines = File.ReadAllLines("StopWords.txt");
-                    return lines.ToList();
+                    StopWords = lines.ToList();
                 }
                 catch (Exception)
                 {
-                    return new List<string>();
                 }
             }
             else if (Directory.Exists("Docs"))
@@ -136,21 +134,18 @@ namespace Komodo.Core
                     try
                     {
                         lines = File.ReadAllLines("StopWords.txt");
-                        return lines.ToList();
+                        StopWords = lines.ToList();
                     }
                     catch (Exception)
                     {
-                        return new List<string>();
                     }
                 }
             }
-            else
-            {
-                return new List<string>();
-            }
-
-            return new List<string>();
         }
+
+        #endregion
+
+        #region Private-Methods
 
         #endregion 
     }

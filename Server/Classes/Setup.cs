@@ -308,21 +308,97 @@ namespace Komodo.Server.Classes
             }
 
             #endregion
-               
+
+            #region First-Index
+
+            bool indexCreated = false;
+
+            if (!Common.FileExists("Indices.json"))
+            {
+                Index index = new Index();
+                index.IndexName = "First";
+                index.RootDirectory = "First";
+                index.Options = new IndexOptions();
+
+                index.DocumentsDatabase = new Index.DatabaseSettings();
+                index.DocumentsDatabase.Type = DatabaseType.SQLite;
+                index.DocumentsDatabase.Filename = "First/Documents.db";
+                index.DocumentsDatabase.Hostname = "localhost";
+                index.DocumentsDatabase.Port = 8100;
+                index.DocumentsDatabase.DatabaseName = "Komodo";
+                index.DocumentsDatabase.InstanceName = "Komodo";
+                index.DocumentsDatabase.Username = "Komodo";
+                index.DocumentsDatabase.Password = "Komodo";
+                index.DocumentsDatabase.Debug = false;
+
+                index.PostingsDatabase = new Index.DatabaseSettings();
+                index.PostingsDatabase.Type = DatabaseType.SQLite;
+                index.PostingsDatabase.Filename = "First/Postings.db";
+                index.PostingsDatabase.Hostname = "localhost";
+                index.PostingsDatabase.Port = 8100;
+                index.PostingsDatabase.DatabaseName = "Komodo";
+                index.PostingsDatabase.InstanceName = "Komodo";
+                index.PostingsDatabase.Username = "Komodo";
+                index.PostingsDatabase.Password = "Komodo";
+                index.PostingsDatabase.Debug = false;
+
+                index.StorageSource = new Index.StorageSettings();
+                index.StorageSource.Type = BlobHelper.StorageType.Disk;
+                index.StorageSource.Disk = new BlobHelper.DiskSettings("First/SourceDocuments");
+
+                index.StorageParsed = new Index.StorageSettings();
+                index.StorageParsed.Type = BlobHelper.StorageType.Disk;
+                index.StorageParsed.Disk = new BlobHelper.DiskSettings("First/ParsedDocuments");
+
+                List<Index> indices = new List<Index>();
+                indices.Add(index);
+
+                Common.WriteFile("Indices.json", Encoding.UTF8.GetBytes(Common.SerializeJson(indices, true)));
+                indexCreated = true;
+            }
+
+
+            #endregion
+
             #region Wrap-Up
+
+            string baseUrl = "http://localhost:" + currConfig.Server.ListenerPort;
 
             //                          1         2         3         4         5         6         7
             //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-
             Console.WriteLine("");
             Console.WriteLine("All finished!");
             Console.WriteLine("");
             Console.WriteLine("If you ever want to return to this setup wizard, just re-run the application");
             Console.WriteLine("from the terminal with the 'setup' argument.");
             Console.WriteLine("");
-            Console.WriteLine("Verify Komodo is running in your browser:");
+            Console.WriteLine("Verify Komodo is running in your browser using the following URL:");
             Console.WriteLine("");
-            Console.WriteLine("http://localhost:" + currConfig.Server.ListenerPort);
+            Console.WriteLine(baseUrl);
+
+            if (indexCreated)
+            {
+
+                //                          1         2         3         4         5         6         7
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.WriteLine("");
+                Console.WriteLine("We've created your first index for you called 'First'.  It is accessible");
+                Console.WriteLine("through the following URL:");
+                Console.WriteLine("");
+                Console.WriteLine(baseUrl + "/First");
+                Console.WriteLine("");
+                Console.WriteLine("Try POSTing a JSON document to the index using the API key 'default' using");
+                Console.WriteLine("the following URL:");
+                Console.WriteLine("");
+                Console.WriteLine(baseUrl + "/First?type=json&name=My+First+Document&x-api-key=default");
+            }
+
+            //                          1         2         3         4         5         6         7
+            //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+            Console.WriteLine("");
+            Console.WriteLine("It is recommended that you configure System.json to your specifications and");
+            Console.WriteLine("enable SSL if possible.  Create additional indices using either the API, or,");
+            Console.WriteLine("modify the Indices.json file.  Then, restart Komodo.");
             Console.WriteLine("");
             Console.WriteLine("Press ENTER to start.");
             Console.WriteLine("");

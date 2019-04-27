@@ -134,12 +134,12 @@ namespace Komodo.Server
                 new ErrorResponse(500, "Outer exception.", null).ToJson(true),
                 true);
 
+            DateTime startTime = DateTime.Now.ToUniversalTime();
+
             try
             {
                 #region Variables
 
-                DateTime startTime = DateTime.Now.ToUniversalTime();
-                
                 string apiKey = "";
                 string email = "";
                 string password = "";
@@ -346,6 +346,8 @@ namespace Komodo.Server
             {
                 _Conn.Close(Thread.CurrentThread.ManagedThreadId);
 
+                _Logging.Log(LoggingModule.Severity.Debug, req.Method + " " + req.RawUrlWithoutQuery + " " + resp.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]");
+
                 if (_Config.Logging.LogHttpRequests)
                 {
                     _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
@@ -428,7 +430,9 @@ namespace Komodo.Server
 
             ret += Welcome();
             ret += "Komodo Server version " + _Version + Environment.NewLine;
-
+            ret += "Information storage, search, and retrieval platform" + Environment.NewLine;
+            ret += Environment.NewLine;
+            ret += "Documentation and source code: <a href='https://github.com/jchristn/komodo' target='_blank'>https://github.com/jchristn/komodo</a>" + Environment.NewLine;
             ret +=
                 "    </pre>" +
                 "  </body>" +

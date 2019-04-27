@@ -78,8 +78,7 @@ namespace Komodo.Server.Classes
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!Common.FileExists(filename)) throw new FileNotFoundException(nameof(filename));
-
-            Console.WriteLine("---");
+             
             Console.WriteLine("Reading API keys from " + filename);
             string contents = Common.ReadTextFile(@filename);
 
@@ -88,8 +87,7 @@ namespace Komodo.Server.Classes
                 Common.ExitApplication("ApiKey", "Unable to read contents of " + filename, -1);
                 return null;
             }
-
-            Console.WriteLine("Deserializing " + filename);
+             
             List<ApiKey> ret = null;
 
             try
