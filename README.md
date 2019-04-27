@@ -1,6 +1,6 @@
 # Komodo Search
 
-Information storage, search, and retrieval libraries and server in C#.  
+Information storage, search, and retrieval platform.  Komodo was written in C# and includes a RESTful server with robust APIs.
 
 ## Help, Feedback, Contribute
 
