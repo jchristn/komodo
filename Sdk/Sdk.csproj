@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
     <PackageId>Komodo.Sdk</PackageId>
-    <Version>1.1.5</Version>
+    <Version>1.1.6</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo</Product>
@@ -16,6 +16,7 @@
     <PackageTags>information info search retrieval storage</PackageTags>
     <PackageReleaseNotes>For use with the Komodo search platform server (clone at https://github.com/jchristn/komodo)</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/assets/komodo-icon.ico</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
