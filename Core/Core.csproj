@@ -17,7 +17,7 @@
     <PackageTags>komodo search index retrieval rest api server find</PackageTags>
     <PackageReleaseNotes>Major code cleanup.  Purpose-built postings manager for improved scale on indexing, search, and storage.  Removed terms table.  Searches now continue until exhaustion or until max results count is met.  Fix for match counts on search results.  Index bypass now available, a way to store a document in an Index without indexing it (simple object storage).</PackageReleaseNotes>
     <PackageId>Komodo.Core</PackageId>
-    <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/assets/komodo-icon.ico</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/Assets/komodo-icon.ico</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
