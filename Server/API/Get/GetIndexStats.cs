@@ -22,19 +22,20 @@ namespace Komodo.Server
             if (currIndex == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexStats unable to retrieve index " + indexName);
-                return new HttpResponse(md.Http, false, 404, null, "application/json",
-                    new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 404, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown index.", null).ToJson(true)));
             }
 
             IndexStats stats = _Index.GetIndexStats(indexName);
             if (stats == null)
             { 
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndexStats unable to retrieve statistics for index " + indexName);
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(500, "Unable to retrieve statistics for index '" + indexName + "'.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to retrieve statistics for index '" + indexName + "'.", null).ToJson(true)));
             }
-             
-            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(stats, true), true); 
+
+            return new HttpResponse(md.Http, 200, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(stats, true)));
             
             #endregion
         }

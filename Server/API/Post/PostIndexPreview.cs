@@ -20,8 +20,8 @@ namespace Komodo.Server
             if (String.IsNullOrEmpty(md.Params.Type))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexPreview no document type supplied");
-                return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true)));
             }
 
             List<string> errors;
@@ -36,13 +36,14 @@ namespace Komodo.Server
                 success = DocIndexHandler.FromUrl(_Config, md.Params.Url, md.Params.Type, out idx, out resp, out errors);
                 if (success)
                 {
-                    return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                    return new HttpResponse(md.Http, 200, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                 }
                 else
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index HTML from supplied URL");
-                    return new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Unable to parse HTML from supplied URL.", errors).ToJson(true), true);
+                    return new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse HTML from supplied URL.", errors).ToJson(true)));
                 }
 
                 #endregion
@@ -57,45 +58,48 @@ namespace Komodo.Server
                         success = DocIndexHandler.FromHtmlFile(md.Params.Filename, out idx, out errors);
                         if (success)
                         {
-                            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                            return new HttpResponse(md.Http, 200, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                         }
                         else
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index HTML from supplied filename");
-                            return new HttpResponse(md.Http, false, 400, null, "application/json",
-                                new ErrorResponse(400, "Unable to parse HTML from supplied filename.", errors).ToJson(true), true);
+                            return new HttpResponse(md.Http, 400, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse HTML from supplied filename.", errors).ToJson(true)));
                         }
 
                     case "json":
                         success = DocIndexHandler.FromJsonFile(md.Params.Filename, out idx, out errors);
                         if (success)
                         {
-                            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                            return new HttpResponse(md.Http, 200, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                         }
                         else
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index JSON from supplied filename");
-                            return new HttpResponse(md.Http, false, 400, null, "application/json",
-                                new ErrorResponse(400, "Unable to parse JSON from supplied filename.", errors).ToJson(true), true);
+                            return new HttpResponse(md.Http, 400, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse JSON from supplied filename.", errors).ToJson(true)));
                         }
 
                     case "xml":
                         success = DocIndexHandler.FromXmlFile(md.Params.Filename, out idx, out errors);
                         if (success)
                         {
-                            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                            return new HttpResponse(md.Http, 200, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                         }
                         else
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index XML from supplied filename");
-                            return new HttpResponse(md.Http, false, 400, null, "application/json",
-                                new ErrorResponse(400, "Unable to parse XML from supplied filename.", null).ToJson(true), true);
+                            return new HttpResponse(md.Http, 400, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse XML from supplied filename.", null).ToJson(true)));
                         }
 
                     default:
                         _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview invalid document type for processing via filename");
-                        return new HttpResponse(md.Http, false, 400, null, "application/json",
-                            new ErrorResponse(400, "Invalid document type supplied for processing via filename.", null).ToJson(true), true);
+                        return new HttpResponse(md.Http, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(new ErrorResponse(400, "Invalid document type supplied for processing via filename.", null).ToJson(true)));
                 }
 
                 #endregion
@@ -112,45 +116,48 @@ namespace Komodo.Server
                         success = DocIndexHandler.FromHtmlString(data, out idx, out errors);
                         if (success)
                         {
-                            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                            return new HttpResponse(md.Http, 200, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                         }
                         else
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index HTML from supplied data");
-                            return new HttpResponse(md.Http, false, 400, null, "application/json",
-                                new ErrorResponse(400, "Unable to parse HTML from supplied data.", errors).ToJson(true), true);
+                            return new HttpResponse(md.Http, 400, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse HTML from supplied data.", errors).ToJson(true)));
                         }
 
                     case "json":
                         success = DocIndexHandler.FromJsonString(data, out idx, out errors);
                         if (success)
                         {
-                            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                            return new HttpResponse(md.Http, 200, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                         }
                         else
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index JSON from supplied data");
-                            return new HttpResponse(md.Http, false, 400, null, "application/json",
-                                new ErrorResponse(400, "Unable to parse JSON from supplied data.", errors).ToJson(true), true);
+                            return new HttpResponse(md.Http, 400, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse JSON from supplied data.", errors).ToJson(true)));
                         }
 
                     case "xml":
                         success = DocIndexHandler.FromXmlString(md.Params.Filename, out idx, out errors);
                         if (success)
                         {
-                            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                            return new HttpResponse(md.Http, 200, null, "application/json",
+                                Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                         }
                         else
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index XML from supplied data");
-                            return new HttpResponse(md.Http, false, 400, null, "application/json",
-                                new ErrorResponse(400, "Unable to parse XML from supplied data.", null).ToJson(true), true);
+                            return new HttpResponse(md.Http, 400, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse XML from supplied data.", null).ToJson(true)));
                         }
 
                     default:
                         _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview invalid document type for processing via data");
-                        return new HttpResponse(md.Http, false, 400, null, "application/json",
-                            new ErrorResponse(400, "Invalid document type supplied for processing via data.", null).ToJson(true), true);
+                        return new HttpResponse(md.Http, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(new ErrorResponse(400, "Invalid document type supplied for processing via data.", null).ToJson(true)));
                 }
 
                 #endregion
@@ -162,8 +169,8 @@ namespace Komodo.Server
                 if (md.Http.Data == null || md.Http.Data.Length < 1)
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview no query found in payload");
-                    return new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Unable to find SQL query in request payload.", null).ToJson(true), true);
+                    return new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to find SQL query in request payload.", null).ToJson(true)));
                 }
 
                 success = DocIndexHandler.FromSqlQuery(
@@ -178,13 +185,14 @@ namespace Komodo.Server
 
                 if (success)
                 {
-                    return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(idx, md.Params.Pretty), true);
+                    return new HttpResponse(md.Http, 200, null, "application/json",
+                        Encoding.UTF8.GetBytes(Common.SerializeJson(idx, md.Params.Pretty)));
                 }
                 else
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to index SQL from supplied config and query");
-                    return new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Unable to parse SQL from supplied config and query.", null).ToJson(true), true);
+                    return new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to parse SQL from supplied config and query.", null).ToJson(true)));
                 }
                 #endregion
             }
@@ -193,8 +201,8 @@ namespace Komodo.Server
                 #region Unknown
 
                 _Logging.Log(LoggingModule.Severity.Warn, "PostDocIndexPreview unable to derive data source from request");
-                return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(400, "Unable to derive data source from request.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unable to derive data source from request.", null).ToJson(true)));
 
                 #endregion
             }

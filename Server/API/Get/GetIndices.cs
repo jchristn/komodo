@@ -28,7 +28,8 @@ namespace Komodo.Server
                 }
             }
 
-            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
+            return new HttpResponse(md.Http, 200, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(ret, true)));
             
             #endregion
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -71,8 +72,8 @@ namespace Komodo.Server
 
                 default: 
                     _Logging.Log(LoggingModule.Severity.Warn, "UserApiHandler unknown HTTP method '" + md.Http.Method + "'");
-                    return new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Unsupported method.", null).ToJson(true), true); 
+                    return new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unsupported method.", null).ToJson(true)));
             }
 
             #endregion
@@ -80,8 +81,8 @@ namespace Komodo.Server
             #region Unknown-URL
 
             _Logging.Log(LoggingModule.Severity.Warn, "UserApiHandler unknown URL " + md.Http.Method + " " + md.Http.RawUrlWithoutQuery);
-            return new HttpResponse(md.Http, false, 404, null, "application/json",
-                new ErrorResponse(404, "Unknown endpoint.", null).ToJson(true), true);
+            return new HttpResponse(md.Http, 404, null, "application/json",
+                Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown endpoint.", null).ToJson(true)));
 
             #endregion
         }

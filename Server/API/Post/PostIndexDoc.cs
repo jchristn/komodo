@@ -23,8 +23,8 @@ namespace Komodo.Server
             if (String.IsNullOrEmpty(md.Params.Type))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc no 'type' value found in querystring");
-                resp = new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true), true);
+                resp = new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true)));
                 return resp;
             }
 
@@ -53,8 +53,8 @@ namespace Komodo.Server
 
                 default:
                     _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc invalid 'type' value found in querystring: " + md.Params.Type);
-                    resp = new HttpResponse(md.Http, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html].", null).ToJson(true), true);
+                    resp = new HttpResponse(md.Http, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html].", null).ToJson(true)));
                     return resp;
             }
 
@@ -74,8 +74,8 @@ namespace Komodo.Server
             if (currIndex == null || currIndex == default(Index))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unknown index " + indexName);
-                return new HttpResponse(md.Http, false, 404, null, "application/json",
-                    new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 404, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true)));
             }
 
             #endregion
@@ -86,8 +86,8 @@ namespace Komodo.Server
             if (currClient == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to retrieve client for index " + indexName);
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true), true); 
+                return new HttpResponse(md.Http, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true)));
             }
 
             ErrorCode error = null;
@@ -107,8 +107,8 @@ namespace Komodo.Server
                     out masterDocId))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to store document in index " + indexName);
-                    return new HttpResponse(md.Http, false, 500, null, "application/json",
-                        new ErrorResponse(500, "Unable to store document in index '" + indexName + "'.", error).ToJson(true), true);
+                    return new HttpResponse(md.Http, 500, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to store document in index '" + indexName + "'.", error).ToJson(true)));
                 }
             }
             else
@@ -125,8 +125,8 @@ namespace Komodo.Server
                     out masterDocId))
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to add document to index " + indexName);
-                    return new HttpResponse(md.Http, false, 500, null, "application/json",
-                        new ErrorResponse(500, "Unable to add document to index '" + indexName + "'.", error).ToJson(true), true);
+                    return new HttpResponse(md.Http, 500, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to add document to index '" + indexName + "'.", error).ToJson(true)));
                 }
             }
 
@@ -137,7 +137,9 @@ namespace Komodo.Server
             sw.Stop();
 
             IndexResponse ret = new IndexResponse(masterDocId, sw.ElapsedMilliseconds);
-            resp = new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, true), true);
+            resp = new HttpResponse(md.Http, 200, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(ret, true)));
+
             return resp;
 
             #endregion

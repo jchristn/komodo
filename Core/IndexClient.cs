@@ -1491,14 +1491,15 @@ namespace Komodo.Core
 
             if (success) data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
             else data = Encoding.UTF8.GetBytes(Common.SerializeJson(error, true));
-    
-            RestResponse resp = RestRequest.SendRequestSafe(
-                query.PostbackUrl,
-                "application/json",
-                "POST",
-                null, null, false, true, null,
-                data);
 
+            RestRequest req = new RestRequest(
+                query.PostbackUrl,
+                HttpMethod.POST,
+                null,
+                "application/json",
+                true);
+             
+            RestResponse resp = req.Send(data); 
             if (resp == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchTaskWrapper no response from POSTback URL " + query.PostbackUrl);
@@ -1731,13 +1732,14 @@ namespace Komodo.Core
             if (success) data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
             else data = Encoding.UTF8.GetBytes(Common.SerializeJson(error, true));
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 query.PostbackUrl,
+                HttpMethod.POST,
+                null,
                 "application/json",
-                "POST",
-                null, null, false, true, null,
-                data);
+                true);
 
+            RestResponse resp = req.Send(data);
             if (resp == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] EnumerationTaskWrapper no response from POSTback URL " + query.PostbackUrl);

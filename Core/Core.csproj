@@ -31,15 +31,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BlobHelper" Version="1.2.1" />
-    <PackageReference Include="DatabaseWrapper" Version="1.3.1" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.3" />
-    <PackageReference Include="KvpbaseSDK" Version="3.1.5" />
+    <PackageReference Include="BlobHelper" Version="1.2.2" />
+    <PackageReference Include="DatabaseWrapper" Version="1.3.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.7" />
+    <PackageReference Include="KvpbaseSDK" Version="3.1.7" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="NUglify" Version="1.5.12" />
-    <PackageReference Include="RestWrapper" Version="1.0.9" />
-    <PackageReference Include="SqliteHelper" Version="1.0.10" />
-    <PackageReference Include="SyslogLogging" Version="1.0.10" />
+    <PackageReference Include="NUglify" Version="1.5.13" />
+    <PackageReference Include="RestWrapper" Version="2.0.4" />
+    <PackageReference Include="SqliteHelper" Version="1.0.12" />
+    <PackageReference Include="SyslogLogging" Version="1.0.11" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="XmlToPox" Version="1.0.2" />
   </ItemGroup>

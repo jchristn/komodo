@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text;
 using System.Threading;
 using SyslogLogging;
 using WatsonWebserver;
@@ -28,12 +29,14 @@ namespace Komodo.Server
                 case HttpMethod.GET: 
                     if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/admin/connections", false))
                     {
-                        return new HttpResponse(req, true, 200, null, "application/json", Common.SerializeJson(_Conn.GetActiveConnections(), true), true);
+                        return new HttpResponse(req, 200, null, "application/json",
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(_Conn.GetActiveConnections(), true)));
                     }
 
                     if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/admin/disks", false))
                     {
-                        return new HttpResponse(req, true, 200, null, "application/json", Common.SerializeJson(DiskInfo.GetAllDisks(), true), true);
+                        return new HttpResponse(req, 200, null, "application/json", 
+                            Encoding.UTF8.GetBytes(Common.SerializeJson(DiskInfo.GetAllDisks(), true)));
                     }
                     
                     break; 
@@ -52,14 +55,13 @@ namespace Komodo.Server
 
                 default:
                     _Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown http method: " + req.Method);
-                    return new HttpResponse(req, false, 400, null, "application/json",
-                        new ErrorResponse(400, "Unsupported HTTP method.", null).ToJson(true),
-                        true);
+                    return new HttpResponse(req, 400, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unsupported HTTP method.", null).ToJson(true)));
             }
 
             _Logging.Log(LoggingModule.Severity.Warn, "AdminApiHandler unknown endpoint URL: " + req.RawUrlWithoutQuery);
-            return new HttpResponse(req, false, 400, null, "application/json",
-                new ErrorResponse(400, "Unknown endpoint.", null).ToJson(true), true);
+            return new HttpResponse(req, 400, null, "application/json",
+                Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unknown endpoint.", null).ToJson(true)));
 
             #endregion
         }

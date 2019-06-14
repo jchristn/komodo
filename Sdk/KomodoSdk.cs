@@ -64,12 +64,16 @@ namespace Komodo.Core
         /// <returns>True if successful.</returns>
         public bool Loopback()
         {
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + "loopback",
+                HttpMethod.GET,
+                _AuthHeaders,
                 "application/json",
-                "GET",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
+
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send(); 
 
             if (resp != null && resp.StatusCode == 200)
             {
@@ -100,13 +104,18 @@ namespace Komodo.Core
         public bool GetIndices(out List<string> indices)
         {
             indices = new List<string>();
-            RestResponse resp = RestRequest.SendRequestSafe(
-                _Endpoint + "indices",
-                "application/json",
-                "GET",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
 
+            RestRequest req = new RestRequest(
+                _Endpoint + "indices",
+                HttpMethod.GET,
+                _AuthHeaders,
+                "application/json",
+                true);
+
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
             {
                 indices = Common.DeserializeJson<List<string>>(resp.Data);
@@ -142,13 +151,17 @@ namespace Komodo.Core
 
             string url = indexName;
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.GET,
+                _AuthHeaders,
                 "application/json",
-                "GET",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
             { 
                 index = Common.DeserializeJson<Index>(resp.Data);
@@ -184,13 +197,17 @@ namespace Komodo.Core
 
             string url = indexName + "/stats";
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.GET,
+                _AuthHeaders,
                 "application/json",
-                "GET",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
             { 
                 stats = Common.DeserializeJson<IndexStats>(resp.Data);
@@ -226,13 +243,17 @@ namespace Komodo.Core
 
             string url = "indices";
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.POST,
+                _AuthHeaders,
                 "application/json",
-                "POST",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                Encoding.UTF8.GetBytes(Common.SerializeJson(index, true)));
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(index, true)));
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
             { 
                 Debug.WriteLine("KomodoSdk CreateIndex returning success");
@@ -267,13 +288,17 @@ namespace Komodo.Core
             string url = indexName;
             if (cleanup) url += "?cleanup=true";
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.DELETE,
+                _AuthHeaders,
                 "application/json",
-                "DELETE",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
             {
                 Debug.WriteLine("KomodoSdk DeleteIndex returning success");
@@ -336,13 +361,17 @@ namespace Komodo.Core
             if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
             if (!String.IsNullOrEmpty(tags)) url += "&tags=" + WebUtility.UrlEncode(tags);
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.POST,
+                _AuthHeaders,
                 "application/json",
-                "POST",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                data);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send(data);
+             
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
             {
                 response = Common.DeserializeJson<IndexResponse>(resp.Data);
@@ -390,13 +419,17 @@ namespace Komodo.Core
             if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
             if (!String.IsNullOrEmpty(tags)) url += "&tags=" + WebUtility.UrlEncode(tags);
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.POST,
+                _AuthHeaders,
                 "application/json",
-                "POST",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                data);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send(data);
+             
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
             {
                 response = Common.DeserializeJson<IndexResponse>(resp.Data);
@@ -434,13 +467,17 @@ namespace Komodo.Core
 
             string url = indexName + "/" + docId;
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.GET,
+                _AuthHeaders,
                 "application/json",
-                "GET",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
             {
                 data = new byte[resp.Data.Length];
@@ -479,13 +516,17 @@ namespace Komodo.Core
 
             string url = indexName + "/" + docId + "?parsed=true&pretty=true";
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.GET,
+                _AuthHeaders,
                 "application/json",
-                "GET",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
             {
                 doc = Common.DeserializeJson<IndexedDoc>(resp.Data);
@@ -521,13 +562,17 @@ namespace Komodo.Core
 
             string url = indexName + "/" + docId;
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.DELETE,
+                _AuthHeaders,
                 "application/json",
-                "DELETE",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                null);
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send();
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
             { 
                 Debug.WriteLine("KomodoSdk DeleteDocument returning success");
@@ -563,14 +608,18 @@ namespace Komodo.Core
             if (query == null) throw new ArgumentNullException(nameof(query));
               
             string url = indexName;
-            
-            RestResponse resp = RestRequest.SendRequestSafe(
-                _Endpoint + url,
-                "application/json",
-                "PUT",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
 
+            RestRequest req = new RestRequest(
+                _Endpoint + url,
+                HttpMethod.PUT,
+                _AuthHeaders,
+                "application/json",
+                true);
+
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299 && resp.Data != null && resp.Data.Length > 0)
             {
                 result = Common.DeserializeJson<SearchResult>(resp.Data);
@@ -608,13 +657,17 @@ namespace Komodo.Core
 
             string url = indexName + "/enumerate";
 
-            RestResponse resp = RestRequest.SendRequestSafe(
+            RestRequest req = new RestRequest(
                 _Endpoint + url,
+                HttpMethod.PUT,
+                _AuthHeaders,
                 "application/json",
-                "PUT",
-                null, null, false, AcceptInvalidCertificates, _AuthHeaders,
-                Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
+                true);
 
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
+             
             if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299 && resp.Data != null && resp.Data.Length > 0)
             {
                 result = Common.DeserializeJson<EnumerationResult>(resp.Data);

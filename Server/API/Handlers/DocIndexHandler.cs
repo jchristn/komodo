@@ -63,9 +63,16 @@ namespace Komodo.Server
 
             #region Retrieve-Data
 
-            resp = RestRequest.SendRequestSafe(url, "text/plain", "GET", null, null, false,
-                currConfig.Rest.AcceptInvalidCerts, null, null);
+            RestRequest req = new RestRequest(
+                url,
+                RestWrapper.HttpMethod.GET,
+                null,
+                "text/plain",
+                true);
 
+            req.IgnoreCertificateErrors = currConfig.Rest.AcceptInvalidCerts;
+
+            resp = req.Send(); 
             if (resp == null)
             {
                 errors.Add("Unable to retrieve response from URL.");

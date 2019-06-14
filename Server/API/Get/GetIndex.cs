@@ -20,8 +20,8 @@ namespace Komodo.Server
             if (md.Http.RawUrlEntries.Count < 1)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndex raw URL entries does not contain exactly one item");
-                return new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(400, "URL must contain exactly one element.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "URL must contain exactly one element.", null).ToJson(true)));
             }
 
             #endregion
@@ -34,11 +34,12 @@ namespace Komodo.Server
             if (ret == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "GetIndex unable to retrieve index " + indexName);
-                return new HttpResponse(md.Http, false, 404, null, "application/json",
-                    new ErrorResponse(404, "Unknown index.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 404, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown index.", null).ToJson(true)));
             }
-             
-            return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(ret, md.Params.Pretty), true);
+
+            return new HttpResponse(md.Http, 200, null, "application/json",
+                Encoding.UTF8.GetBytes(Common.SerializeJson(ret, md.Params.Pretty)));
             
             #endregion
         }

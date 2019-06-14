@@ -230,12 +230,14 @@ namespace Komodo.Core
             {
                 #region Url
 
-                RestResponse resp = RestRequest.SendRequest(
+                RestRequest req = new RestRequest(
                     SourceFile,
+                    HttpMethod.GET,
                     null,
-                    "GET",
-                    null, null, false, true, null, null);
+                    null,
+                    true);
 
+                RestResponse resp = req.Send(); 
                 if (resp == null)
                 {
                     throw new IOException("Unable to read data from specified URL");

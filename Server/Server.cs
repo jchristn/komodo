@@ -130,9 +130,8 @@ namespace Komodo.Server
         
         public static HttpResponse RequestReceived(HttpRequest req)
         {
-            HttpResponse resp = new HttpResponse(req, false, 500, null, "application/json",
-                new ErrorResponse(500, "Outer exception.", null).ToJson(true),
-                true);
+            HttpResponse resp = new HttpResponse(req, 500, null, "application/json",
+                Encoding.UTF8.GetBytes(new ErrorResponse(500, "Outer exception.", null).ToJson(true)));
 
             DateTime startTime = DateTime.Now.ToUniversalTime();
 
@@ -172,7 +171,7 @@ namespace Komodo.Server
                 {
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
                     {
-                        resp = new HttpResponse(req, true, 200, null, null, null, true);
+                        resp = new HttpResponse(req, 200, null, null, null);
                         return resp;
                     }
                 }
@@ -181,14 +180,14 @@ namespace Komodo.Server
                 {
                     if (String.Compare(req.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
                     {
-                        resp = new HttpResponse(req, true, 200, null, "text/plain", "User-Agent: *\r\nDisallow:\r\n", true);
+                        resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("User-Agent: *\r\nDisallow:\r\n"));
                         return resp;
                     }
                 }
 
                 if (req.RawUrlEntries == null || req.RawUrlEntries.Count == 0)
                 { 
-                    resp = new HttpResponse(req, true, 200, null, "text/html", RootHtml(), true);
+                    resp = new HttpResponse(req, 200, null, "text/html", Encoding.UTF8.GetBytes(RootHtml()));
                     return resp;
                 }
 
@@ -207,13 +206,13 @@ namespace Komodo.Server
                     case HttpMethod.GET: 
                         if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/loopback", false))
                         {
-                            resp = new HttpResponse(req, true, 200, null, "text/plain", "Hello from Komodo!", true);
+                            resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("Hello from Komodo!"));
                             return resp;
                         } 
 
                         if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/version", false))
                         {
-                            resp = new HttpResponse(req, true, 200, null, "text/plain", _Version, true);
+                            resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes(_Version));
                             return resp;
                         } 
                         break; 
@@ -241,18 +240,16 @@ namespace Komodo.Server
                         if (String.IsNullOrEmpty(apiKey))
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but no API key specified");
-                            resp = new HttpResponse(req, false, 401, null, "application/json",
-                                new ErrorResponse(401, "No API key specified.", null).ToJson(true),
-                                true);
+                            resp = new HttpResponse(req, 401, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(401, "No API key specified.", null).ToJson(true)));
                             return resp;
                         }
 
                         if (String.Compare(_Config.Server.AdminApiKey, apiKey) != 0)
                         {
                             _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but invalid API key specified");
-                            resp = new HttpResponse(req, false, 401, null, "application/json",
-                                new ErrorResponse(401, null, null).ToJson(true),
-                                true);
+                            resp = new HttpResponse(req, 401, null, "application/json",
+                                Encoding.UTF8.GetBytes(new ErrorResponse(401, null, null).ToJson(true)));
                             return resp;
                         }
 
@@ -270,9 +267,8 @@ namespace Komodo.Server
                     if (!_ApiKey.VerifyApiKey(apiKey, _User, out currUserMaster, out currApiKey, out currApiKeyPermission))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify API key " + apiKey);
-                        resp = new HttpResponse(req, false, 401, null, "application/json",
-                           new ErrorResponse(401, null, null).ToJson(true),
-                           true);
+                        resp = new HttpResponse(req, 401, null, "application/json",
+                           Encoding.UTF8.GetBytes(new ErrorResponse(401, null, null).ToJson(true)));
                         return resp;
                     }
                 }
@@ -281,9 +277,8 @@ namespace Komodo.Server
                     if (!_User.AuthenticateCredentials(email, password, out currUserMaster))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify credentials for email " + email);
-                        resp = new HttpResponse(req, false, 401, null, "application/json",
-                            new ErrorResponse(401, null, null).ToJson(true),
-                            true);
+                        resp = new HttpResponse(req, 401, null, "application/json",
+                            Encoding.UTF8.GetBytes(new ErrorResponse(401, null, null).ToJson(true)));
                         return resp;
                     }
 
@@ -292,9 +287,8 @@ namespace Komodo.Server
                 else
                 {
                     _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived user API requested but no authentication material supplied");
-                    resp = new HttpResponse(req, false, 401, null, "application/json",
-                        new ErrorResponse(401, "No authentication material.", null).ToJson(true),
-                        true);
+                    resp = new HttpResponse(req, 401, null, "application/json",
+                        Encoding.UTF8.GetBytes(new ErrorResponse(401, "No authentication material.", null).ToJson(true)));
                     return resp;
                 }
 
@@ -322,8 +316,8 @@ namespace Komodo.Server
                     if (!matchVals.Contains(md.Params.Type))
                     {
                         _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived invalid 'type' value found in querystring: " + md.Params.Type);
-                        resp = new HttpResponse(md.Http, false, 400, null, "application/json",
-                            new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html/sql/text].", null).ToJson(true), true);
+                        resp = new HttpResponse(md.Http, 400, null, "application/json",
+                            Encoding.UTF8.GetBytes(new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html/sql/text].", null).ToJson(true)));
                         return resp;
                     }
                 }
@@ -408,7 +402,7 @@ namespace Komodo.Server
             }
 
             _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
-            return new HttpResponse(req, true, 200, responseHeaders, null, null, true);
+            return new HttpResponse(req, 200, responseHeaders, null, null);
         }
 
         public static bool ExitApplication()

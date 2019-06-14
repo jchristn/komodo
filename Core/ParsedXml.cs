@@ -97,7 +97,15 @@ namespace Komodo.Core
         public bool LoadUrl(string url)
         {
             if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
-            RestResponse resp = RestRequest.SendRequestSafe(url, "text/plain", "GET", null, null, false, false, null, null);
+
+            RestRequest req = new RestRequest(
+                url,
+                HttpMethod.GET,
+                null,
+                null,
+                true);
+
+            RestResponse resp = req.Send();
             if (resp == null) return false;
             if (resp.StatusCode != 200) return false;
             if (resp.Data == null || resp.Data.Length < 1) return false;

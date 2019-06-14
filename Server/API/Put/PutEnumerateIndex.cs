@@ -19,8 +19,8 @@ namespace Komodo.Server
 
             if (md.Http.Data == null || md.Http.Data.Length < 1)
             {
-                resp = new HttpResponse(md.Http, false, 400, null, "application/json",
-                    new ErrorResponse(400, "No request body.", null).ToJson(true), true);
+                resp = new HttpResponse(md.Http, 400, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "No request body.", null).ToJson(true)));
                 return resp;
             }
 
@@ -29,16 +29,16 @@ namespace Komodo.Server
             if (currIndex == null || currIndex == default(Index))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PutEnumerateIndex unknown index " + indexName);
-                return new HttpResponse(md.Http, false, 404, null, "application/json",
-                    new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 404, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true)));
             }
 
             IndexClient currClient = _Index.GetIndexClient(indexName);
             if (currClient == null)
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PutEnumerateIndex unable to retrieve client for index " + indexName);
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true), true);
+                return new HttpResponse(md.Http, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true)));
             }
 
             EnumerationQuery query = Common.DeserializeJson<EnumerationQuery>(md.Http.Data);
@@ -52,17 +52,19 @@ namespace Komodo.Server
             if (!currClient.Enumerate(query, out result, out error))
             {
                 _Logging.Log(LoggingModule.Severity.Warn, "PutEnumerateIndex unable to execute enumeration in index " + indexName);
-                return new HttpResponse(md.Http, false, 500, null, "application/json",
-                    new ErrorResponse(500, "Unable to search index '" + indexName + "'.", error).ToJson(true), true);
+                return new HttpResponse(md.Http, 500, null, "application/json",
+                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to search index '" + indexName + "'.", error).ToJson(true)));
             }
 
             if (!String.IsNullOrEmpty(query.PostbackUrl))
             {
-                return new HttpResponse(md.Http, true, 202, null, "application/json", Common.SerializeJson(result, true), true);
+                return new HttpResponse(md.Http, 202, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(result, true)));
             }
             else
             {
-                return new HttpResponse(md.Http, true, 200, null, "application/json", Common.SerializeJson(result, true), true);
+                return new HttpResponse(md.Http, 200, null, "application/json",
+                    Encoding.UTF8.GetBytes(Common.SerializeJson(result, true)));
             }
         }
     }
