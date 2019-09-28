@@ -3,64 +3,77 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
 using Komodo.Core;
+using Komodo.Core.Enums;
 using Komodo.Server.Classes;
 
 namespace Komodo.Server
 {
     public partial class KomodoServer
     {
-        static HttpResponse PutSearchIndex(RequestMetadata md)
+        private static async Task PutSearchIndex(RequestMetadata md)
         {
-            HttpResponse resp;
-
-            if (md.Http.Data == null || md.Http.Data.Length < 1)
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+             
+            if (md.Http.Request.Data == null || md.Http.Request.ContentLength < 1)
             {
-                resp = new HttpResponse(md.Http, 400, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "No request body.", null).ToJson(true)));
-                return resp;
+                md.Http.Response.StatusCode = 400;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(new ErrorResponse(400, "No request body.", null).ToJson(true));
+                return; 
             }
 
-            SearchQuery query = Common.DeserializeJson<SearchQuery>(md.Http.Data);
+            SearchQuery query = Common.DeserializeJson<SearchQuery>(Common.StreamToBytes(md.Http.Request.Data));
              
-            string indexName = md.Http.RawUrlEntries[0];
+            string indexName = md.Http.Request.RawUrlEntries[0];
             Index currIndex = _Index.GetIndexByName(indexName);
             if (currIndex == null || currIndex == default(Index))
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PutSearchIndex unknown index " + indexName);
-                return new HttpResponse(md.Http, 404, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true)));
+                _Logging.Warn(header + "PutSearchIndex unknown index " + indexName);
+                md.Http.Response.StatusCode = 404;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null).ToJson(true));
+                return;
             }
              
             IndexClient currClient = _Index.GetIndexClient(indexName);
             if (currClient == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PutSearchIndex unable to retrieve client for index " + indexName);
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true)));
+                _Logging.Warn(header + "PutSearchIndex unable to retrieve client for index " + indexName);
+                md.Http.Response.StatusCode = 500;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true));
+                return;
             }
 
-            SearchResult result = null;
-            ErrorCode error = null;
-            if (!currClient.Search(query, out result, out error))
+            SearchResult result = currClient.Search(query);
+
+            if (result.Error.Id != ErrorId.NONE)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PutSearchIndex unable to execute search in index " + indexName);
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to search index '" + indexName + "'.", error).ToJson(true)));
+                _Logging.Warn(header + "PutSearchIndex unable to execute search in index " + indexName);
+                md.Http.Response.StatusCode = 500;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(new ErrorResponse(500, "Unable to search index '" + indexName + "'.", result).ToJson(true));
+                return;
             }
 
             if (!String.IsNullOrEmpty(query.PostbackUrl))
             {
-                return new HttpResponse(md.Http, 202, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(result, true)));
+                md.Http.Response.StatusCode = 202;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(result, true));
+                return;
             }
             else
             {
-                return new HttpResponse(md.Http, 200, null, "application/json",
-                    Encoding.UTF8.GetBytes(Common.SerializeJson(result, true)));
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(result, md.Params.Pretty));
+                return;
             }
         }
     }

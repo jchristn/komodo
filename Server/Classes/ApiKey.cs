@@ -88,25 +88,7 @@ namespace Komodo.Server.Classes
                 return null;
             }
              
-            List<ApiKey> ret = null;
-
-            try
-            {
-                ret = Common.DeserializeJson<List<ApiKey>>(contents);
-                if (ret == null)
-                {
-                    Common.ExitApplication("ApiKey", "Unable to deserialize " + filename + " (null)", -1);
-                    return null;
-                }
-            }
-            catch (Exception e)
-            {
-                LoggingModule.ConsoleException("ApiKey", "Deserialization issue with " + filename, e);
-                Common.ExitApplication("ApiKey", "Unable to deserialize " + filename + " (exception)", -1);
-                return null;
-            }
-
-            return ret;
+            return Common.DeserializeJson<List<ApiKey>>(contents); 
         }
 
         #endregion

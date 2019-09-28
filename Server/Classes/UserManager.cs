@@ -173,7 +173,7 @@ namespace Komodo.Server.Classes
             user = GetUserByEmail(email);
             if (user == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials unable to find email " + email);
+                _Logging.Warn("AuthenticateCredentials unable to find email " + email);
                 return false;
             }
 
@@ -187,19 +187,19 @@ namespace Komodo.Server.Classes
                     }
                     else
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + user.UserMasterId + " expired at " + user.Expiration);
+                        _Logging.Warn("AuthenticateCredentials UserMasterId " + user.UserMasterId + " expired at " + user.Expiration);
                         return false;
                     }
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials UserMasterId " + user.UserMasterId + " marked inactive");
+                    _Logging.Warn("AuthenticateCredentials UserMasterId " + user.UserMasterId + " marked inactive");
                     return false;
                 }
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "AuthenticateCredentials invalid password supplied for email " + email + " (" + password + " vs " + user.Password + ")");
+                _Logging.Warn("AuthenticateCredentials invalid password supplied for email " + email + " (" + password + " vs " + user.Password + ")");
                 return false;
             }
         }

@@ -21,47 +21,37 @@ namespace Komodo.Core
         /// <summary>
         /// The GUID of the search operation.
         /// </summary>
-        public string GUID { get; private set; }
+        public string GUID = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Maximum number of results to retrieve.
         /// </summary>
-        public int MaxResults { get; set; }
+        public int MaxResults = 1000;
 
         /// <summary>
         /// The starting index position for the search.
         /// </summary>
-        public int StartIndex { get; set; }
+        public int StartIndex = 0;
 
         /// <summary>
         /// Required terms and search filter that must be satisfied to include a document in the results.
         /// </summary>
-        public QueryFilter Required { get; set; }
+        public QueryFilter Required = new QueryFilter();
 
         /// <summary>
         /// Optional terms and search filter that may match on documents but are not required.
         /// </summary>
-        public QueryFilter Optional { get; set; }
+        public QueryFilter Optional = new QueryFilter();
 
         /// <summary>
         /// Terms and search filter that must be excluded from the results.
         /// </summary>
-        public QueryFilter Exclude { get; set; }
-
-        /// <summary>
-        /// Set to true to include the source document content for each match.
-        /// </summary>
-        public bool IncludeContent { get; set; }
-
-        /// <summary>
-        /// Set to true to include the full parsed document object for each match.
-        /// </summary>
-        public bool IncludeParsedDoc { get; set; }
-
+        public QueryFilter Exclude = new QueryFilter();
+         
         /// <summary>
         /// Specify a URL to which the results should be submitted via HTTP POST.
         /// </summary>
-        public string PostbackUrl { get; set; }
+        public string PostbackUrl = null;
         
         #endregion
 

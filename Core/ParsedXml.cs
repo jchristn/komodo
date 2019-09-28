@@ -12,6 +12,7 @@ using HtmlAgilityPack;
 using NUglify;
 using RestWrapper;
 using XmlToPox;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {
@@ -102,14 +103,11 @@ namespace Komodo.Core
                 url,
                 HttpMethod.GET,
                 null,
-                null,
-                true);
+                null);
 
             RestResponse resp = req.Send();
-            if (resp == null) return false;
-            if (resp.StatusCode != 200) return false;
-            if (resp.Data == null || resp.Data.Length < 1) return false;
-            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            if (resp == null || resp.StatusCode != 200 || resp.Data == null || resp.ContentLength < 1) return false;
+            _SourceContent = Encoding.UTF8.GetString(Common.StreamToBytes(resp.Data));
             _SourceUrl = url;
             return ProcessSourceContent();
         }
@@ -335,20 +333,16 @@ namespace Komodo.Core
                 if (curr.Data == null) continue;
                 if (String.IsNullOrEmpty(curr.Data.ToString())) continue;
 
-                string token = "";
-                foreach (char c in curr.Data.ToString())
-                {
-                    if ((int)c < 32) continue;
-                    if ((int)c > 57 && (int)c < 64) continue;
-                    if ((int)c > 90 && (int)c < 97) continue;
-                    if ((int)c > 122) continue;
-                    token += c;
-                }
+                ParsedText pt = new ParsedText();
+                pt.LoadString(curr.Data.ToString(), _SourceUrl);
 
-                if (String.IsNullOrEmpty(token)) continue;
-                ret.Add(token.ToLower());
+                foreach (string currToken in pt.Tokens)
+                {
+                    ret.Add(currToken.ToLower());
+                }
             }
 
+            ret = ret.Distinct().ToList();
             return ret;
         }
 

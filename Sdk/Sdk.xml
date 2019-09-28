@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Komodo.SDK</name>
+    </assembly>
+    <members>
+        <member name="T:Komodo.SDK.KomodoException">
+            <summary>
+            Komodo exception.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.KomodoException.StatusCode">
+            <summary>
+            HTTP status code.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.KomodoException.ResponseData">
+            <summary>
+            Response data from Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.KomodoException.Type">
+            <summary>
+            The type of exception.
+            </summary>
+        </member>
+        <member name="T:Komodo.SDK.ExceptionType">
+            <summary>
+            The type of Kvpbase exception.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.Unknown">
+            <summary>
+            Unknown exception type.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.CannotConnect">
+            <summary>
+            Could not connect to the server or could not retrieve a response.
+            </summary> 
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.InternalServerError">
+            <summary>
+            A server-side error was encountered.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.PayloadTooLarge">
+            <summary>
+            Request data too large.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.Conflict">
+            <summary>
+            A conflict exists, for example, attempting to write an object using a key that already exists.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.NotFound">
+            <summary>
+            The requested resource was not found.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.Unauthorized">
+            <summary>
+            You were not authorized to perform the request.
+            </summary>
+        </member>
+        <member name="F:Komodo.SDK.ExceptionType.BadRequest">
+            <summary>
+            Your request was malformed.
+            </summary>
+        </member>
+        <member name="T:Komodo.SDK.KomodoSdk">
+            <summary>
+            SDK for Komodo information storage, search, and retrieval platform.
+            </summary>
+        </member>
+        <member name="P:Komodo.SDK.KomodoSdk.AcceptInvalidCertificates">
+            <summary>
+            Accept or decline server certificates that cannot be verified or are invalid.
+            </summary>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.#ctor(System.String,System.String)">
+            <summary>
+            Initialize the SDK.
+            </summary>
+            <param name="endpoint">Endpoint URL of the form http://[hostname]:[port]/.</param>
+            <param name="apiKey">API key to use when accessing Komodo.</param> 
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.Loopback">
+            <summary>
+            Test authenticated connectivity to Komodo.
+            </summary>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.GetIndices">
+            <summary>
+            Return the list of indices available on the server.
+            </summary> 
+            <returns>List of index names.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.GetIndex(System.String)">
+            <summary>
+            Retrieve index details.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <returns>Index.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.GetIndexStats(System.String)">
+            <summary>
+            Retrieve statistics related to an index.
+            </summary>
+            <param name="indexName">Name of the index.</param> 
+            <returns>Index statistics.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.CreateIndex(Komodo.Core.Index)">
+            <summary>
+            Creates an index.
+            </summary> 
+            <param name="index">Index.</param> 
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.DeleteIndex(System.String,System.Boolean)">
+            <summary>
+            Deletes an index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="cleanup">True to delete files associated with the index.</param> 
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,Komodo.Core.Enums.DocType,System.Byte[])">
+            <summary>
+            Add a document to the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param> 
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.String,Komodo.Core.Enums.DocType,System.Byte[])">
+            <summary>
+            Store a document in the specified index without parsing and indexing.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param> 
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.GetSourceDocument(System.String,System.String)">
+            <summary>
+            Retrieve a document source from the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docId">Document ID.</param>
+            <returns>Komodo object.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.GetParsedDocument(System.String,System.String)">
+            <summary>
+            Retrieve a parsed, indexed document from the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docId">Document ID.</param> 
+            <returns>Indexed document.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.DeleteDocument(System.String,System.String)">
+            <summary>
+            Deletes a document from the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docId">Document ID.</param> 
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.Search(System.String,Komodo.Core.SearchQuery)">
+            <summary>
+            Search the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="query">Search query.</param> 
+            <returns>Search result.</returns>
+        </member>
+        <member name="M:Komodo.SDK.KomodoSdk.Enumerate(System.String,Komodo.Core.EnumerationQuery)">
+            <summary>
+            Enumerate source documents in the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="query">Enumeration query.</param> 
+            <returns>Enumeration result.</returns>
+        </member>
+    </members>
+</doc>

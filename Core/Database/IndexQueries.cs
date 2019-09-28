@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DatabaseWrapper;
 using SqliteWrapper;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core.Database
 {
@@ -75,14 +76,15 @@ namespace Komodo.Core.Database
                         "(" +
                         "  [Id]            [bigint] IDENTITY(1,1) NOT NULL, " +
                         "  [IndexName]     [nvarchar] (128) NULL, " +
-                        "  [MasterDocId]   [nvarchar] (128) NULL, " +
+                        "  [DocumentId]    [nvarchar] (128) NULL, " +
                         "  [Name]          [nvarchar] (128) NULL, " +
                         "  [Tags]          [nvarchar] (128) NULL, " +
-                        "  [DocType]       [nvarchar] (32) NULL, " +
+                        "  [DocumentType]  [nvarchar] (32) NULL, " +
                         "  [SourceUrl]     [nvarchar] (256) NULL, " +
                         "  [Title]         [nvarchar] (128) NULL, " +
                         "  [ContentType]   [nvarchar] (128) NULL, " +
                         "  [ContentLength] [bigint] NULL, " +
+                        "  [Md5]           [nvarchar] (64) NULL, " +
                         "  [Created]       [datetime2] (7) NULL, " +
                         "  [Indexed]       [datetime2] (7) NULL, " +
                         "  CONSTRAINT [PK_SourceDocuments] PRIMARY KEY CLUSTERED " +
@@ -107,14 +109,15 @@ namespace Komodo.Core.Database
                         "(" +
                         "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "  IndexName         VARCHAR(128)  COLLATE NOCASE, " +
-                        "  MasterDocId       VARCHAR(128)  COLLATE NOCASE, " +
+                        "  DocumentId        VARCHAR(128)  COLLATE NOCASE, " +
                         "  Name              VARCHAR(128)  COLLATE NOCASE, " +
                         "  Tags              VARCHAR(128)  COLLATE NOCASE, " +
-                        "  DocType           VARCHAR(32)   COLLATE NOCASE, " +
+                        "  DocumentType      VARCHAR(32)   COLLATE NOCASE, " +
                         "  SourceUrl         VARCHAR(256)  COLLATE NOCASE, " +
                         "  Title             VARCHAR(128)  COLLATE NOCASE, " +
                         "  ContentType       VARCHAR(128)  COLLATE NOCASE, " +
                         "  ContentLength     INTEGER, " +
+                        "  Md5               VARCHAR(64)  COLLATE NOCASE, " +
                         "  Created           VARCHAR(32), " +
                         "  Indexed           VARCHAR(32) " +
                         ")";
@@ -145,8 +148,8 @@ namespace Komodo.Core.Database
                         "(" +
                         "  [Id]                  [bigint] IDENTITY(1,1) NOT NULL, " +
                         "  [IndexName]           [nvarchar] (128) NULL, " +
-                        "  [MasterDocId]         [nvarchar] (128) NULL, " +
-                        "  [DocType]             [nvarchar] (32) NULL, " +
+                        "  [DocumentId]          [nvarchar] (128) NULL, " +
+                        "  [DocumentType]        [nvarchar] (32) NULL, " +
                         "  [SourceContentLength] [bigint] NULL, " +
                         "  [ContentLength]       [bigint] NULL, " +
                         "  [Created]             [datetime2] (7) NULL, " +
@@ -173,8 +176,8 @@ namespace Komodo.Core.Database
                         "(" +
                         "  Id                   INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "  IndexName            VARCHAR(128)   COLLATE NOCASE, " +
-                        "  MasterDocId          VARCHAR(128)   COLLATE NOCASE, " +
-                        "  DocType              VARCHAR(32)    COLLATE NOCASE, " +
+                        "  DocumentId           VARCHAR(128)   COLLATE NOCASE, " +
+                        "  DocumentType         VARCHAR(32)    COLLATE NOCASE, " +
                         "  SourceContentLength  INTEGER, " +
                         "  ContentLength        INTEGER, " +
                         "  Created              VARCHAR(32), " +

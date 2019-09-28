@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace Komodo.Core
+namespace Komodo.Core.Enums
 {
     /// <summary>
     /// Types of data supported.
@@ -16,22 +16,49 @@ namespace Komodo.Core
     [JsonConverter(typeof(StringEnumConverter))]
     public enum DataType
     {
+        /// <summary>
+        /// Object
+        /// </summary>
         [EnumMember(Value = "Object")]
         Object,
+        /// <summary>
+        /// Array
+        /// </summary>
         [EnumMember(Value = "Array")]
         Array,
+        /// <summary>
+        /// Timestamp
+        /// </summary>
         [EnumMember(Value = "Timestamp")]
         Timestamp,
+        /// <summary>
+        /// Integer
+        /// </summary>
         [EnumMember(Value = "Integer")]
         Integer,
+        /// <summary>
+        /// Long
+        /// </summary>
         [EnumMember(Value = "Long")]
         Long,
+        /// <summary>
+        /// Decimal
+        /// </summary>
         [EnumMember(Value = "Decimal")]
         Decimal,
+        /// <summary>
+        /// String
+        /// </summary>
         [EnumMember(Value = "String")]
         String,
+        /// <summary>
+        /// Boolean
+        /// </summary>
         [EnumMember(Value = "Boolean")]
         Boolean,
+        /// <summary>
+        /// Null
+        /// </summary>
         [EnumMember(Value = "Null")]
         Null
     }

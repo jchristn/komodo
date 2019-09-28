@@ -13,7 +13,7 @@ using Komodo.Server.Classes;
 
 namespace Komodo.Server
 {
-    public static class DocParseHandler
+    internal static class DocParseHandler
     {
         #region Public-Members
 
@@ -23,9 +23,9 @@ namespace Komodo.Server
 
         #endregion
         
-        #region Public-Methods
+        #region Internal-Methods
 
-        public static bool FromUrl(Config currConfig, string url, string docType, out object parsed, out RestResponse resp, out List<string> errors)
+        internal static bool FromUrl(Settings currConfig, string url, string docType, out object parsed, out RestResponse resp, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -67,8 +67,7 @@ namespace Komodo.Server
                 url,
                 RestWrapper.HttpMethod.GET,
                 null,
-                "text/plain",
-                true);
+                "text/plain");
 
             req.IgnoreCertificateErrors = currConfig.Rest.AcceptInvalidCerts;
 
@@ -127,7 +126,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromHtmlString(string html, out ParsedHtml parsed, out List<string> errors)
+        internal static bool FromHtmlString(string html, out ParsedHtml parsed, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -153,7 +152,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromHtmlFile(string filename, out ParsedHtml parsed, out List<string> errors)
+        internal static bool FromHtmlFile(string filename, out ParsedHtml parsed, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -202,7 +201,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromJsonString(string json, out ParsedJson parsed, out List<string> errors)
+        internal static bool FromJsonString(string json, out ParsedJson parsed, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -228,7 +227,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromJsonFile(string filename, out ParsedJson parsed, out List<string> errors)
+        internal static bool FromJsonFile(string filename, out ParsedJson parsed, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -277,7 +276,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromXmlString(string xml, out ParsedXml parsed, out List<string> errors)
+        internal static bool FromXmlString(string xml, out ParsedXml parsed, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -295,7 +294,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromXmlFile(string filename, out ParsedXml parsed, out List<string> errors)
+        internal static bool FromXmlFile(string filename, out ParsedXml parsed, out List<string> errors)
         {
             errors = new List<string>();
             parsed = null;
@@ -344,7 +343,7 @@ namespace Komodo.Server
             #endregion
         }
 
-        public static bool FromSqlQuery(
+        internal static bool FromSqlQuery(
             string dbType,
             string dbServer,
             int dbPort,

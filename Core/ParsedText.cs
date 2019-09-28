@@ -31,7 +31,7 @@ namespace Komodo.Core
         private string _SourceContent { get; set; }
         private string _SourceUrl { get; set; }
 
-        private char[] SplitChars = new char[] { ' ', ',', '.', '#', ':', ';', '\'', '\"', '-', '_' };
+        private char[] SplitChars = new char[] { ' ', ',', '.', '#', ':', ';', '\'', '\"', '-', '_', '\r', '\n', '(', ')', '&', '?', '/', '[', ']', '{', '}', '|', '*', '<', '>', '\u001a' };
 
         #endregion
 
@@ -75,14 +75,11 @@ namespace Komodo.Core
                 url,
                 HttpMethod.GET,
                 null,
-                null,
-                true);
+                null);
 
             RestResponse resp = req.Send();
-            if (resp == null) return false;
-            if (resp.StatusCode != 200) return false;
-            if (resp.Data == null || resp.Data.Length < 1) return false;
-            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            if (resp == null || resp.StatusCode != 200 || resp.Data == null || resp.ContentLength < 1) return false;
+            _SourceContent = Encoding.UTF8.GetString(Common.StreamToBytes(resp.Data));
             _SourceUrl = url;
             return ProcessSourceContent();
         }

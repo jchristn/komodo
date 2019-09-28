@@ -9,7 +9,7 @@ using Komodo.Server.Classes;
 
 namespace Komodo.Server.Classes
 {
-    public class ApiKeyManager
+    internal class ApiKeyManager
     {
         #region Public-Members
 
@@ -26,12 +26,8 @@ namespace Komodo.Server.Classes
         #endregion
 
         #region Constructors-and-Factories
-
-        /// <summary>
-        /// Instantiate the object.
-        /// </summary>
-        /// <param name="logging">LoggingModule instance.</param>
-        public ApiKeyManager(LoggingModule logging)
+         
+        internal ApiKeyManager(LoggingModule logging)
         {
             if (logging == null) throw new ArgumentNullException(nameof(logging));
             _Logging = logging;
@@ -40,14 +36,8 @@ namespace Komodo.Server.Classes
             _ApiKeyLock = new object();
             _ApiKeyPermissionLock = new object();
         }
-
-        /// <summary>
-        /// Instantiate the object.
-        /// </summary>
-        /// <param name="logging">LoggingModule instance.</param>
-        /// <param name="keys">List of API keys.</param>
-        /// <param name="perms">List of API key permissions.</param>
-        public ApiKeyManager(LoggingModule logging, List<ApiKey> keys, List<ApiKeyPermission> perms)
+         
+        internal ApiKeyManager(LoggingModule logging, List<ApiKey> keys, List<ApiKeyPermission> perms)
         {
             if (logging == null) throw new ArgumentNullException(nameof(logging));
             _Logging = logging;
@@ -67,13 +57,9 @@ namespace Komodo.Server.Classes
 
         #endregion
 
-        #region Public-Methods
-
-        /// <summary>
-        /// Add an API key.
-        /// </summary>
-        /// <param name="curr">API key.</param>
-        public void Add(ApiKey curr)
+        #region Internal-Methods
+         
+        internal void Add(ApiKey curr)
         {
             if (curr == null) return;
             lock (_ApiKeyLock)
@@ -82,12 +68,8 @@ namespace Komodo.Server.Classes
             }
             return;
         }
-
-        /// <summary>
-        /// Remove an API key.
-        /// </summary>
-        /// <param name="curr">API key.</param>
-        public void Remove(ApiKey curr)
+         
+        internal void Remove(ApiKey curr)
         {
             if (curr == null) return;
             lock (_ApiKeyLock)
@@ -96,12 +78,8 @@ namespace Komodo.Server.Classes
             }
             return;
         }
-        
-        /// <summary>
-        /// Retrieve list of API keys.
-        /// </summary>
-        /// <returns>List of API keys.</returns>
-        public List<ApiKey> GetApiKeys()
+         
+        internal List<ApiKey> GetApiKeys()
         {
             List<ApiKey> curr = new List<ApiKey>();
             lock (_ApiKeyLock)
@@ -110,13 +88,8 @@ namespace Komodo.Server.Classes
             }
             return curr;
         }
-
-        /// <summary>
-        /// Retrieve API key by GUID.
-        /// </summary>
-        /// <param name="guid">GUID of the API key.</param>
-        /// <returns>API key.</returns>
-        public ApiKey GetApiKeyByGuid(string guid)
+         
+        internal ApiKey GetApiKeyByGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) return null;
             lock (_ApiKeyLock)
@@ -128,13 +101,8 @@ namespace Komodo.Server.Classes
             }
             return null;
         }
-
-        /// <summary>
-        /// Retrieve API key by ID.
-        /// </summary>
-        /// <param name="id">ID.</param>
-        /// <returns>API key.</returns>
-        public ApiKey GetApiKeyById(int? id)
+         
+        internal ApiKey GetApiKeyById(int? id)
         {
             if (id == null) return null;
             int idInternal = Convert.ToInt32(id);
@@ -147,13 +115,8 @@ namespace Komodo.Server.Classes
             }
             return null;
         }
-
-        /// <summary>
-        /// Retrieve permissions by API key ID.
-        /// </summary>
-        /// <param name="apiKeyId">ID for the API key.</param>
-        /// <returns>List of API key permissions.</returns>
-        public List<ApiKeyPermission> GetPermissionsByApiKeyId(int? apiKeyId)
+         
+        internal List<ApiKeyPermission> GetPermissionsByApiKeyId(int? apiKeyId)
         {
             List<ApiKeyPermission> ret = new List<ApiKeyPermission>();
             lock (_ApiKeyPermissionLock)
@@ -168,14 +131,8 @@ namespace Komodo.Server.Classes
             }
             return ret;
         }
-
-        /// <summary>
-        /// Get effective API key permissions for a given API key by ID or user ID.
-        /// </summary>
-        /// <param name="apiKeyId">API key ID.</param>
-        /// <param name="userMasterId">User ID.</param>
-        /// <returns>Populated API key permission object containing effective permissions.</returns>
-        public ApiKeyPermission GetEffectiveApiKeyPermissions(int? apiKeyId, int? userMasterId)
+         
+        internal ApiKeyPermission GetEffectiveApiKeyPermissions(int? apiKeyId, int? userMasterId)
         {
             ApiKeyPermission ret = new ApiKeyPermission();
             ret.ApiKeyPermissionId = 0;
@@ -218,17 +175,8 @@ namespace Komodo.Server.Classes
                 return ret;
             }
         }
-
-        /// <summary>
-        /// Verify API key.
-        /// </summary>
-        /// <param name="apiKey">API key GUID.</param>
-        /// <param name="userManager">UserManager instance.</param>
-        /// <param name="currUserMaster">The associated user.</param>
-        /// <param name="currApiKey">The associated API key.</param>
-        /// <param name="currPermission">The associated permissions.</param>
-        /// <returns>True if verified.</returns>
-        public bool VerifyApiKey(
+         
+        internal bool VerifyApiKey(
             string apiKey,
             UserManager userManager,
             out UserMaster currUserMaster,
@@ -243,14 +191,14 @@ namespace Komodo.Server.Classes
             currApiKey = GetApiKeyByGuid(apiKey);
             if (currApiKey == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to retrieve API key " + apiKey);
+                _Logging.Warn("VerifyApiKey unable to retrieve API key " + apiKey);
                 return false;
             }
 
             currPermission = GetEffectiveApiKeyPermissions(currApiKey.ApiKeyId, currUserMaster.UserMasterId);
             if (currPermission == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to build ApiKeyPermission object for UserMasterId " + currUserMaster.UserMasterId);
+                _Logging.Warn("VerifyApiKey unable to build ApiKeyPermission object for UserMasterId " + currUserMaster.UserMasterId);
                 return false;
             }
 
@@ -263,7 +211,7 @@ namespace Komodo.Server.Classes
                     currUserMaster = userManager.GetUserById(currApiKey.UserMasterId);
                     if (currUserMaster == null)
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey unable to find UserMasterId " + currApiKey.UserMasterId);
+                        _Logging.Warn("VerifyApiKey unable to find UserMasterId " + currApiKey.UserMasterId);
                         return false;
                     }
 
@@ -277,7 +225,7 @@ namespace Komodo.Server.Classes
                         }
                         else
                         {
-                            _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " expired at " + currUserMaster.Expiration);
+                            _Logging.Warn("VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " expired at " + currUserMaster.Expiration);
                             return false;
                         }
 
@@ -285,13 +233,13 @@ namespace Komodo.Server.Classes
                     }
                     else
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " marked inactive");
+                        _Logging.Warn("VerifyApiKey UserMasterId " + currUserMaster.UserMasterId + " marked inactive");
                         return false;
                     }
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " expired at " + currApiKey.Expiration);
+                    _Logging.Warn("VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " expired at " + currApiKey.Expiration);
                     return false;
                 }
 
@@ -299,7 +247,7 @@ namespace Komodo.Server.Classes
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " marked inactive");
+                _Logging.Warn("VerifyApiKey ApiKeyId " + currApiKey.ApiKeyId + " marked inactive");
                 return false;
             }
         }

@@ -12,41 +12,41 @@ namespace Komodo.Server.Classes
     public class RequestParameters
     {
         #region Public-Members
-        
+
         /// <summary>
         /// Bypass indexing, i.e. store a document without indexing.
         /// </summary>
-        public bool Bypass { get; set; }
+        public bool Bypass = false;
 
         /// <summary>
         /// Querystring 'cleanup' key, indicating that a cleanup should be performed.
         /// </summary>
-        public bool Cleanup { get; set; }
+        public bool Cleanup = false;
 
         /// <summary>
         /// Querystring 'dbtype', indicating the type of database.
         /// </summary>
-        public string DbType { get; set; }
+        public string DbType = null;
 
         /// <summary>
         /// Querystring 'dbserver', indicating the database server IP address or hostname.
         /// </summary>
-        public string DbServer { get; set; }
+        public string DbServer = null;
 
         /// <summary>
         /// Querystring 'dbport', indicating the port number on which the database is accessible.
         /// </summary>
-        public int DbPort { get; set; }
+        public int DbPort = 0;
 
         /// <summary>
         /// Querystring 'dbuser', indicating the database username.
         /// </summary>
-        public string DbUser { get; set; }
+        public string DbUser = null;
 
         /// <summary>
         /// Querystring 'dbpass', indicating the password for the database user.
         /// </summary>
-        public string DbPass { get; set; }
+        public string DbPass = null;
 
         /// <summary>
         /// Querystring 'dbinstance', indicating the MSSQL instance.
@@ -56,47 +56,47 @@ namespace Komodo.Server.Classes
         /// <summary>
         /// Querystring 'dbname', indicating the database name.
         /// </summary>
-        public string DbName { get; set; }
+        public string DbName = null;
 
         /// <summary>
         /// Querystring 'filename' key, indicating a source filename.
         /// </summary>
-        public string Filename { get; set; }
+        public string Filename = null;
 
         /// <summary>
         /// Querystring 'name' key, typically used to indicate a document name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name = null;
 
         /// <summary>
         /// Querystring 'parsed' key, indicating whether or not the parsed document should be used.
         /// </summary>
-        public bool Parsed { get; set; }
+        public bool Parsed = false;
 
         /// <summary>
         /// Querystring 'pretty' key, indicating whether or not pretty formatting should be used.
         /// </summary>
-        public bool Pretty { get; set; }
+        public bool Pretty = true;
 
         /// <summary>
         /// Querystring 'tags' key, typically used to indicate the tag data to attach to a document being indexed.
         /// </summary>
-        public string Tags { get; set; }
+        public string Tags = null;
 
         /// <summary>
         /// Querystring 'title' key, typically used to indicate the title of a document for indexing.
         /// </summary>
-        public string Title { get; set; }
+        public string Title = null;
 
         /// <summary>
         /// Querystring 'type' key, indicating the type of document. 
         /// </summary>
-        public string Type { get; set; }
+        public string Type = null;
 
         /// <summary>
         /// Querystring 'url' key, indicating the source URL for a document.
         /// </summary>
-        public string Url { get; set; }
+        public string Url = null;
 
         #endregion
 
@@ -110,15 +110,14 @@ namespace Komodo.Server.Classes
         /// Instantiate the object.
         /// </summary>
         public RequestParameters()
-        {
-            Cleanup = false;
+        { 
         }
 
         #endregion
 
-        #region Public-Methods
+        #region Internal-Methods
 
-        public static RequestParameters FromDictionary(Dictionary<string, string> qs)
+        internal static RequestParameters FromDictionary(Dictionary<string, string> qs)
         {
             RequestParameters ret = new RequestParameters();
 

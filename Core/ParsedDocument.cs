@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {
@@ -25,14 +26,14 @@ namespace Komodo.Core
         public string IndexName { get; set; }
 
         /// <summary>
-        /// The master document ID, assigned through indexing.
+        /// Document ID, assigned through indexing.
         /// </summary>
-        public string MasterDocId { get; set; }
+        public string DocumentId { get; set; }
 
         /// <summary>
         /// The type of document.
         /// </summary>
-        public DocType DocType { get; set; }
+        public DocType DocumentType { get; set; }
 
         /// <summary>
         /// The content length of the source document.
@@ -82,11 +83,11 @@ namespace Komodo.Core
             ParsedDocument ret = new ParsedDocument();
             if (row["Id"] != DBNull.Value) ret.Id = Convert.ToInt32(row["Id"]);
             if (row["IndexName"] != DBNull.Value) ret.IndexName = row["IndexName"].ToString();
-            if (row["MasterDocId"] != DBNull.Value) ret.MasterDocId = row["MasterDocId"].ToString();
+            if (row["DocumentId"] != DBNull.Value) ret.DocumentId = row["DocumentId"].ToString();
 
             DocType dt = DocType.Unknown;
-            if (row["DocType"] != DBNull.Value) Enum.TryParse<DocType>(row["DocType"].ToString(), out dt);
-            ret.DocType = dt;
+            if (row["DocumentType"] != DBNull.Value) Enum.TryParse<DocType>(row["DocumentType"].ToString(), out dt);
+            ret.DocumentType = dt;
 
             if (row["SourceContentLength"] != DBNull.Value) ret.SourceContentLength = Convert.ToInt64(row["SourceContentLength"]);
             if (row["ContentLength"] != DBNull.Value) ret.ContentLength = Convert.ToInt64(row["ContentLength"]);
@@ -99,6 +100,23 @@ namespace Komodo.Core
         #endregion
 
         #region Public-Methods
+
+        /// <summary>
+        /// Create a dictionary from the object.
+        /// </summary>
+        /// <returns>Dictionary.</returns>
+        public Dictionary<string, object> ToInsertDictionary()
+        {
+            Dictionary<string, object> ret = new Dictionary<string, object>();
+            ret.Add("IndexName", IndexName);
+            ret.Add("DocumentId", DocumentId);
+            ret.Add("DocumentType", DocumentType.ToString());
+            ret.Add("SourceContentLength", SourceContentLength);
+            ret.Add("ContentLength", ContentLength); 
+            ret.Add("Created", Created);
+            ret.Add("Indexed", Indexed);
+            return ret; 
+        }
 
         #endregion
 

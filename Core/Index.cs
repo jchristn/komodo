@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BlobHelper;
 using DatabaseWrapper;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {

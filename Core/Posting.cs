@@ -25,9 +25,9 @@ namespace Komodo.Core
         public string Term { get; set; }
         
         /// <summary>
-        /// Master document ID.
+        /// Document ID.
         /// </summary>
-        public string MasterDocId { get; set; }
+        public string DocumentId { get; set; }
          
         /// <summary>
         /// The frequency with which the term was found.
@@ -71,7 +71,7 @@ namespace Komodo.Core
 
             Posting ret = new Posting();
             ret.Id = Convert.ToInt32(row["Id"]);
-            ret.MasterDocId = row["MasterDocId"].ToString(); 
+            ret.DocumentId = row["DocumentId"].ToString(); 
             ret.Frequency = Convert.ToInt64(row["Frequency"]);
             ret.Positions = Common.DeserializeJson<List<long>>(row["Positions"].ToString());
             ret.Created = Convert.ToDateTime(row["Created"].ToString());

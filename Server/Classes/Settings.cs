@@ -11,15 +11,10 @@ namespace Komodo.Server.Classes
     /// <summary>
     /// Server configuration.
     /// </summary>
-    public class Config
+    public class Settings
     {
         #region Public-Members
-         
-        /// <summary>
-        /// URL to Komodo documentation.
-        /// </summary>
-        public string DocumentationUrl { get; set; }
-
+          
         /// <summary>
         /// Enable or disable the console.
         /// </summary>
@@ -61,7 +56,7 @@ namespace Komodo.Server.Classes
         /// <summary>
         /// Instantiate the object.
         /// </summary>
-        public Config()
+        public Settings()
         {
 
         }
@@ -71,12 +66,12 @@ namespace Komodo.Server.Classes
         /// </summary>
         /// <param name="filename">Filename.</param>
         /// <returns>Configuration object.</returns>
-        public static Config FromFile(string filename)
+        public static Settings FromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (!File.Exists(filename)) throw new FileNotFoundException("Unable to find " + filename);
             string contents = File.ReadAllText(filename);
-            Config ret = Common.DeserializeJson<Config>(contents);
+            Settings ret = Common.DeserializeJson<Settings>(contents);
             return ret;
         }
 
@@ -149,6 +144,11 @@ namespace Komodo.Server.Classes
             /// Path and filename to the indices file.
             /// </summary>
             public string Indices { get; set; }
+
+            /// <summary>
+            /// Path to directory where temp files are stored.
+            /// </summary>
+            public string TempFiles { get; set; }
         }
          
         /// <summary>
@@ -175,17 +175,7 @@ namespace Komodo.Server.Classes
             /// Minimum level required before sending a syslog message.
             /// </summary>
             public int MinimumLevel;
-
-            /// <summary>
-            /// Enable logging of incoming HTTP requests.
-            /// </summary>
-            public bool LogHttpRequests;
-
-            /// <summary>
-            /// Enable logging of responses to incoming HTTP requests.
-            /// </summary>
-            public bool LogHttpResponses;
-
+             
             /// <summary>
             /// Enable console logging.
             /// </summary>

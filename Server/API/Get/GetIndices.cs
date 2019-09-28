@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
@@ -13,8 +14,10 @@ namespace Komodo.Server
 {
     public partial class KomodoServer
     {
-        public static HttpResponse GetIndices(RequestMetadata md)
+        private static async Task GetIndices(RequestMetadata md)
         {
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+
             #region Get-Values
 
             List<Index> indices = _Index.GetIndices();
@@ -28,9 +31,11 @@ namespace Komodo.Server
                 }
             }
 
-            return new HttpResponse(md.Http, 200, null, "application/json",
-                Encoding.UTF8.GetBytes(Common.SerializeJson(ret, true)));
-            
+            md.Http.Response.StatusCode = 200;
+            md.Http.Response.ContentType = "application/json";
+            await md.Http.Response.Send(Common.SerializeJson(ret, md.Params.Pretty));
+            return;
+
             #endregion
         }
     }

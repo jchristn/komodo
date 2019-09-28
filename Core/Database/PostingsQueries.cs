@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using Komodo.Core.Enums;
 using DatabaseWrapper;
 using SqliteWrapper;
 
@@ -207,7 +207,7 @@ namespace Komodo.Core.Database
                         "CREATE TABLE [" + Sanitize(termGuid) + "] " +
                         "(" +
                         "  [Id]            [bigint] IDENTITY(1,1) NOT NULL, " +
-                        "  [MasterDocId]   [nvarchar] (128) NULL, " +
+                        "  [DocumentId]    [nvarchar] (128) NULL, " +
                         "  [Frequency]     [bigint] NULL, " +
                         "  [Positions]     [nvarchar] (2048) NULL, " +
                         "  [Created]       [datetime2] (7) NULL, " +
@@ -232,7 +232,7 @@ namespace Komodo.Core.Database
                         "CREATE TABLE IF NOT EXISTS [" + Sanitize(termGuid) + "] " +
                         "(" +
                         "  Id                INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "  MasterDocId       VARCHAR(128)  COLLATE NOCASE, " +
+                        "  DocumentId        VARCHAR(128)  COLLATE NOCASE, " +
                         "  Frequency         BIGINT, " +
                         "  Positions         VARCHAR(2048), " +
                         "  Created           VARCHAR(32) " +
@@ -259,14 +259,14 @@ namespace Komodo.Core.Database
             string query =
                 "INSERT INTO [" + Sanitize(termGuid) + "] " +
                 "( " +
-                "  MasterDocId, " + 
+                "  DocumentId, " + 
                 "  Frequency, " +
                 "  Positions, " +
                 "  Created " +
                 ") " +
                 "VALUES " +
                 "( " +
-                "  '" + Sanitize(posting.MasterDocId) + "', " + 
+                "  '" + Sanitize(posting.DocumentId) + "', " + 
                 "  '" + posting.Frequency + "', " +
                 "  '" + positions + "', " +
                 "  '" + ts + "' " +
@@ -283,7 +283,7 @@ namespace Komodo.Core.Database
         public string RemovePosting(string documentId, string termGuid)
         {
             string query =
-                "DELETE FROM [" + Sanitize(termGuid) + "] WHERE MasterDocId = '" + Sanitize(documentId) + "'";
+                "DELETE FROM [" + Sanitize(termGuid) + "] WHERE DocumentId = '" + Sanitize(documentId) + "'";
             return query;
         }
 

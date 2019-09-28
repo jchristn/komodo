@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Komodo.Core;
+using Komodo.Core.Enums;
+using Komodo.SDK;
 
 namespace KomodoTestSdk
 {
@@ -21,10 +25,10 @@ namespace KomodoTestSdk
                 Welcome();
 
                 _Sdk = new KomodoSdk(
-                    Common.InputString("Endpoint:", "http://localhost:9090/", false),
-                    Common.InputString("API Key:", "default", false));
+                    InputString("Endpoint:", "http://localhost:9090/", false),
+                    InputString("API Key:", "default", false));
 
-                if (!_Sdk.Loopback())
+                if (!_Sdk.Loopback().Result)
                 {
                     Console.WriteLine("Unable to connect to specified endpoint using specified API key");
                     return;
@@ -36,7 +40,7 @@ namespace KomodoTestSdk
                 
                 while (_RunForever)
                 {
-                    string cmd = Common.InputString("Komodo [? for help]:", null, false);
+                    string cmd = InputString("Komodo [? for help]:", null, false);
                     switch (cmd)
                     {
                         case "?":
@@ -54,16 +58,16 @@ namespace KomodoTestSdk
                         case "list":
                             ListIndices();
                             break;
-                        case "create index":
+                        case "create":
                             CreateIndex();
                             break;
-                        case "delete index":
+                        case "delete":
                             DeleteIndex();
                             break;
-                        case "add doc":
+                        case "add":
                             AddDocument();
                             break;
-                        case "store doc":
+                        case "store":
                             StoreDocument();
                             break;
                         case "get source":
@@ -101,15 +105,13 @@ namespace KomodoTestSdk
             string ret =
                 Environment.NewLine +
                 Environment.NewLine +
-                "oooo                                                    .o8            " + Environment.NewLine +
-                "`888                                                    888            " + Environment.NewLine +
-                " 888  oooo   .ooooo.  ooo. .oo.  .oo.    .ooooo.   .oooo888   .ooooo.  " + Environment.NewLine +
-                " 888 .8P'   d88' `88b `888P'Y88bP'Y88b  d88' `88b d88' `888  d88' `88b " + Environment.NewLine +
-                " 888888.    888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
-                " 888 `88b.  888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
-                "o888o o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' `Y8bod88P  `Y8bod8P' " + Environment.NewLine +
+                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
+                "░░░█░█░█▀▀█░█▀▄▀█░█▀▀█░█▀▀▄░█▀▀█░░░" + Environment.NewLine +
+                "░░░█▀▄░█░░█░█░▀░█░█░░█░█░░█░█░░█░░░" + Environment.NewLine +
+                "░░░▀░▀░▀▀▀▀░▀░░░▀░▀▀▀▀░▀▀▀░░▀▀▀▀░░░" + Environment.NewLine +
+                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
                 Environment.NewLine;
-
+             
             Console.WriteLine(ret);
         }
 
@@ -120,10 +122,10 @@ namespace KomodoTestSdk
             Console.WriteLine(" q             quit this application");
             Console.WriteLine(" cls           clear the screen");
             Console.WriteLine(" list          list indices");
-            Console.WriteLine(" create index  create an index");
-            Console.WriteLine(" delete index  delete an index");
-            Console.WriteLine(" add doc       add a document to an index");
-            Console.WriteLine(" store doc     store a document without indexing");
+            Console.WriteLine(" create        create an index");
+            Console.WriteLine(" delete        delete an index");
+            Console.WriteLine(" add           add a document to an index and store it");
+            Console.WriteLine(" store         store a document without indexing");
             Console.WriteLine(" get source    retrieve source document from an index");
             Console.WriteLine(" get parsed    retrieve parsed document from an index");
             Console.WriteLine(" delete doc    delete a document from an index");
@@ -135,239 +137,159 @@ namespace KomodoTestSdk
 
         static void ListIndices()
         {
-            List<string> indices = null;
-            if (!_Sdk.GetIndices(out indices))
+            List<string> indices = _Sdk.GetIndices().Result;
+            if (indices != null && indices.Count > 0)
             {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (indices != null && indices.Count > 0)
+                foreach (string curr in indices)
                 {
-                    foreach (string curr in indices)
-                    {
-                        Console.WriteLine("  " + curr);
-                    }
+                    Console.WriteLine("  " + curr);
                 }
             }
         }
 
         static void CreateIndex()
         {
-            string file = Common.InputString("Filename:", "index.json", true);
+            string file = InputString("Filename:", "index.json", true);
             if (String.IsNullOrEmpty(file)) return;
 
-            Index index = Common.DeserializeJson<Index>(Common.ReadBinaryFile(file));
+            Index index = DeserializeJson<Index>(File.ReadAllBytes(file));
 
-            if (!_Sdk.CreateIndex(index.IndexName, index))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-            }
+            _Sdk.CreateIndex(index).Wait();
+            Console.WriteLine("Success");
         }
 
         static void DeleteIndex()
         {
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
-            bool cleanup = Common.InputBoolean("Cleanup", true);
+            bool cleanup = InputBoolean("Cleanup", true);
 
-            if (!_Sdk.DeleteIndex(indexName, cleanup))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-            }
+            _Sdk.DeleteIndex(indexName, cleanup).Wait();
+            Console.WriteLine("Success");
         }
 
         static void AddDocument()
         {
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string sourceUrl = Common.InputString("Source URL:", null, true);
+            string sourceUrl = InputString("Source URL:", null, true);
             DocType docType = GetDocType();
-            string title = Common.InputString("Title:", null, true);
-            string tags = Common.InputString("Tags:", null, true);
-            string sourceFile = Common.InputString("Filename:", "order1.json", true);
+            string title = InputString("Title:", null, true);
+            string tags = InputString("Tags:", null, true);
+            string sourceFile = InputString("Filename:", "order1.json", true);
             byte[] data = null;
 
-            if (!String.IsNullOrEmpty(sourceFile)) data = Common.ReadBinaryFile(sourceFile);
+            if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
 
-            IndexResponse resp = null;
-            if (!_Sdk.AddDocument(indexName, sourceUrl, title, tags, docType, data, out resp))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (resp != null) Console.WriteLine(Common.SerializeJson(resp, true));
-            }
+            IndexResult resp = _Sdk.AddDocument(indexName, sourceUrl, title, tags, docType, data).Result;
+            if (resp != null) Console.WriteLine(SerializeJson(resp, true));
         }
 
         static void StoreDocument()
         {
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string sourceUrl = Common.InputString("Source URL:", null, true);
+            string sourceUrl = InputString("Source URL:", null, true);
             DocType docType = GetDocType();
-            string title = Common.InputString("Title:", null, true);
-            string tags = Common.InputString("Tags:", null, true);
-            string sourceFile = Common.InputString("Filename:", "order1.json", true);
+            string title = InputString("Title:", null, true);
+            string tags = InputString("Tags:", null, true);
+            string sourceFile = InputString("Filename:", "order1.json", true);
             byte[] data = null;
 
-            if (!String.IsNullOrEmpty(sourceFile)) data = Common.ReadBinaryFile(sourceFile);
+            if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
 
-            IndexResponse resp = null;
-            if (!_Sdk.StoreDocument(indexName, sourceUrl, title, tags, docType, data, out resp))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (resp != null) Console.WriteLine(Common.SerializeJson(resp, true));
-            }
+            IndexResult resp = _Sdk.StoreDocument(indexName, sourceUrl, title, tags, docType, data).Result;
+            if (resp != null) Console.WriteLine(SerializeJson(resp, true));
         }
 
         static void GetSourceDocument()
         {
             // GetSourceDocument(string indexName, string docId, out byte[] data)
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string docId = Common.InputString("Document ID:", null, true);
+            string docId = InputString("Document ID:", null, true);
             if (String.IsNullOrEmpty(docId)) return;
-
-            byte[] data = null;
-            if (!_Sdk.GetSourceDocument(indexName, docId, out data))
+             
+            KomodoObject obj = _Sdk.GetSourceDocument(indexName, docId).Result;
+            if (obj != null)
             {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (data != null && data.Length > 0) Console.WriteLine(Encoding.UTF8.GetString(data));
+                Console.WriteLine("[" + obj.ContentLength + " bytes, content type " + obj.ContentType + "]:");
+                Console.WriteLine(StreamToBytes(obj.Data));
             }
         }
 
         static void GetParsedDocument()
         {
             // GetParsedDocument(string indexName, string docId, out IndexedDoc doc)
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string docId = Common.InputString("Document ID:", null, true);
+            string docId = InputString("Document ID:", null, true);
             if (String.IsNullOrEmpty(docId)) return;
 
-            IndexedDoc doc = null;
-            if (!_Sdk.GetParsedDocument(indexName, docId, out doc))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (doc != null) Console.WriteLine(Common.SerializeJson(doc, true));
-            }
+            IndexedDoc doc = _Sdk.GetParsedDocument(indexName, docId).Result;
+            if (doc != null) Console.WriteLine(SerializeJson(doc, true));
         }
 
         static void DeleteDocument()
         {
             // DeleteDocument(string indexName, string docId)
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string docId = Common.InputString("Document ID:", null, true);
+            string docId = InputString("Document ID:", null, true);
             if (String.IsNullOrEmpty(docId)) return;
 
-            if (!_Sdk.DeleteDocument(indexName, docId))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-            }
+            _Sdk.DeleteDocument(indexName, docId).Wait();
+            Console.WriteLine("Success");
         }
 
         static void Search()
         {
             // Search(string indexName, SearchQuery query, out SearchResult result)
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string filename = Common.InputString("Search filename:", "query1.json", true);
+            string filename = InputString("Search filename:", "query1.json", true);
             if (String.IsNullOrEmpty(filename)) return;
 
-            SearchQuery query = Common.DeserializeJson<SearchQuery>(Common.ReadBinaryFile(filename));
-            SearchResult result = null;
-
-            if (!_Sdk.Search(indexName, query, out result))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (result != null) Console.WriteLine(Common.SerializeJson(result, true));
-            }
+            SearchQuery query = DeserializeJson<SearchQuery>(File.ReadAllBytes(filename));
+            SearchResult result = _Sdk.Search(indexName, query).Result;
+            if (result != null) Console.WriteLine(SerializeJson(result, true));
         }
 
         static void Enumerate()
         {
             // Search(string indexName, SearchQuery query, out SearchResult result)
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string filename = Common.InputString("Enumeration filename:", "enum1.json", true);
+            string filename = InputString("Enumeration filename:", "enum1.json", true);
             if (String.IsNullOrEmpty(filename)) return;
 
-            EnumerationQuery query = Common.DeserializeJson<EnumerationQuery>(Common.ReadBinaryFile(filename));
-            EnumerationResult result = null;
-
-            if (!_Sdk.Enumerate(indexName, query, out result))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (result != null) Console.WriteLine(Common.SerializeJson(result, true));
-            }
+            EnumerationQuery query = DeserializeJson<EnumerationQuery>(File.ReadAllBytes(filename));
+            EnumerationResult result = _Sdk.Enumerate(indexName, query).Result;
+            if (result != null) Console.WriteLine(SerializeJson(result, true));
         }
 
         static void Stats()
         {
             // Search(string indexName, SearchQuery query, out SearchResult result)
-            string indexName = Common.InputString("Index name:", null, true);
+            string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            IndexStats stats = null;
-            if (!_Sdk.GetIndexStats(indexName, out stats))
-            {
-                Console.WriteLine("Failed");
-            }
-            else
-            {
-                Console.WriteLine("Success");
-                if (stats != null) Console.WriteLine(Common.SerializeJson(stats, true));
-            }
+            IndexStats stats = _Sdk.GetIndexStats(indexName).Result;
+            if (stats != null) Console.WriteLine(SerializeJson(stats, true));
         }
 
         static DocType GetDocType()
         {
             while (true)
             {
-                string docType = Common.InputString("Document type [json/html/text/xml/sql]:", "json", false);
+                string docType = InputString("Document type [json/html/text/xml/sql]:", "json", false);
                 switch (docType)
                 {
                     case "json":
@@ -381,6 +303,147 @@ namespace KomodoTestSdk
                     case "sql":
                         return DocType.Sql;
                 }
+            }
+        }
+
+        static string InputString(string question, string defaultAnswer, bool allowNull)
+        {
+            while (true)
+            {
+                Console.Write(question);
+
+                if (!String.IsNullOrEmpty(defaultAnswer))
+                {
+                    Console.Write(" [" + defaultAnswer + "]");
+                }
+
+                Console.Write(" ");
+
+                string userInput = Console.ReadLine();
+
+                if (String.IsNullOrEmpty(userInput))
+                {
+                    if (!String.IsNullOrEmpty(defaultAnswer)) return defaultAnswer;
+                    if (allowNull) return null;
+                    else continue;
+                }
+
+                return userInput;
+            }
+        }
+
+        static bool InputBoolean(string question, bool yesDefault)
+        {
+            Console.Write(question);
+
+            if (yesDefault) Console.Write(" [Y/n]? ");
+            else Console.Write(" [y/N]? ");
+
+            string userInput = Console.ReadLine();
+
+            if (String.IsNullOrEmpty(userInput))
+            {
+                if (yesDefault) return true;
+                return false;
+            }
+
+            userInput = userInput.ToLower();
+
+            if (yesDefault)
+            {
+                if (
+                    (String.Compare(userInput, "n") == 0)
+                    || (String.Compare(userInput, "no") == 0)
+                   )
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else
+            {
+                if (
+                    (String.Compare(userInput, "y") == 0)
+                    || (String.Compare(userInput, "yes") == 0)
+                   )
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        static string SerializeJson(object obj, bool pretty)
+        {
+            if (obj == null) return null;
+            string json;
+
+            if (pretty)
+            {
+                json = JsonConvert.SerializeObject(
+                  obj,
+                  Newtonsoft.Json.Formatting.Indented,
+                  new JsonSerializerSettings
+                  {
+                      NullValueHandling = NullValueHandling.Ignore,
+                      DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                  });
+            }
+            else
+            {
+                json = JsonConvert.SerializeObject(obj,
+                  new JsonSerializerSettings
+                  {
+                      NullValueHandling = NullValueHandling.Ignore,
+                      DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                  });
+            }
+
+            return json;
+        }
+
+        static T DeserializeJson<T>(string json)
+        {
+            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
+
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("");
+                Console.WriteLine("Exception while deserializing:");
+                Console.WriteLine(json);
+                Console.WriteLine("");
+                throw e;
+            }
+        }
+
+        static T DeserializeJson<T>(byte[] data)
+        {
+            if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
+            return DeserializeJson<T>(Encoding.UTF8.GetString(data));
+        }
+
+        static byte[] StreamToBytes(Stream input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
+
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+
+                return ms.ToArray();
             }
         }
     }

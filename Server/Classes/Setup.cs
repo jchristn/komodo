@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using SyslogLogging;
 using Komodo.Core;
+using Komodo.Core.Enums;
 using Komodo.Server.Classes;
+using System.IO;
 
 namespace Komodo.Server.Classes
 {
@@ -43,7 +45,7 @@ namespace Komodo.Server.Classes
             #region Variables
 
             DateTime timestamp = DateTime.Now.ToUniversalTime();
-            Config currConfig = new Config();
+            Settings settings = new Settings();
             
             ApiKey currApiKey = new ApiKey();
             List<ApiKey> apiKeys = new List<ApiKey>();
@@ -71,43 +73,41 @@ namespace Komodo.Server.Classes
             #endregion
 
             #region Initial-Settings
+              
+            settings.EnableConsole = true;
              
-            currConfig.DocumentationUrl = "https://github.com/jchristn/komodo"; 
-            currConfig.EnableConsole = true;
+            settings.Files = new Settings.FilesSettings();
+            settings.Files.ApiKey = "./ApiKey.json";
+            settings.Files.ApiKeyPermission = "./ApiKeyPermission.json";
+            settings.Files.UserMaster = "./UserMaster.json";
+            settings.Files.Indices = "./Indices.json";
+            settings.Files.TempFiles = "./Temp/";
              
-            currConfig.Files = new Config.FilesSettings();
-            currConfig.Files.ApiKey = "./ApiKey.json";
-            currConfig.Files.ApiKeyPermission = "./ApiKeyPermission.json";
-            currConfig.Files.UserMaster = "./UserMaster.json";
-            currConfig.Files.Indices = "./Indices.json";
+            settings.Debug = new Settings.DebugSettings();
+            settings.Debug.Database = false;
              
-            currConfig.Debug = new Config.DebugSettings();
-            currConfig.Debug.Database = false;
+            settings.Server = new Settings.ServerSettings();
+            settings.Server.HeaderApiKey = "x-api-key";
+            settings.Server.HeaderEmail = "x-email";
+            settings.Server.HeaderPassword = "x-password";
+            settings.Server.AdminApiKey = "komodoadmin";
+            settings.Server.ListenerPort = 9090;
+            settings.Server.ListenerHostname = "127.0.0.1";
              
-            currConfig.Server = new Config.ServerSettings();
-            currConfig.Server.HeaderApiKey = "x-api-key";
-            currConfig.Server.HeaderEmail = "x-email";
-            currConfig.Server.HeaderPassword = "x-password";
-            currConfig.Server.AdminApiKey = "komodoadmin";
-            currConfig.Server.ListenerPort = 9090;
-            currConfig.Server.ListenerHostname = "127.0.0.1";
+            settings.Logging = new Settings.LoggingSettings();
+            settings.Logging.ConsoleLogging = true;
+            settings.Logging.Header = "komodo";
+            settings.Logging.SyslogServerIp = "127.0.0.1";
+            settings.Logging.SyslogServerPort = 514; 
+            settings.Logging.MinimumLevel = 1;
              
-            currConfig.Logging = new Config.LoggingSettings();
-            currConfig.Logging.ConsoleLogging = true;
-            currConfig.Logging.Header = "komodo";
-            currConfig.Logging.SyslogServerIp = "127.0.0.1";
-            currConfig.Logging.SyslogServerPort = 514;
-            currConfig.Logging.LogHttpRequests = false;
-            currConfig.Logging.LogHttpResponses = false;
-            currConfig.Logging.MinimumLevel = 1;
-             
-            currConfig.Rest = new Config.RestSettings();
-            currConfig.Rest.AcceptInvalidCerts = true;
-            currConfig.Rest.UseWebProxy = false;
+            settings.Rest = new Settings.RestSettings();
+            settings.Rest.AcceptInvalidCerts = true;
+            settings.Rest.UseWebProxy = false;
               
             #endregion
 
-            #region Overwrite
+            #region Write-Objects
 
             if (
                 Common.FileExists("./System.json")
@@ -117,7 +117,7 @@ namespace Komodo.Server.Classes
                 if (Common.InputBoolean("Do you wish to overwrite this file", true))
                 {
                     Common.DeleteFile("./System.json");
-                    if (!Common.WriteFile("./System.json", Common.SerializeJson(currConfig, true), false))
+                    if (!Common.WriteFile("./System.json", Common.SerializeJson(settings, true), false))
                     {
                         Common.ExitApplication("Setup", "Unable to write System.json", -1);
                         return;
@@ -126,29 +126,31 @@ namespace Komodo.Server.Classes
             }
             else
             {
-                if (!Common.WriteFile("./System.json", Common.SerializeJson(currConfig, true), false))
+                if (!Common.WriteFile("./System.json", Common.SerializeJson(settings, true), false))
                 {
                     Common.ExitApplication("Setup", "Unable to write System.json", -1);
                     return;
                 }
             }
 
+            if (!Directory.Exists(settings.Files.TempFiles)) Directory.CreateDirectory(settings.Files.TempFiles);
+
             #endregion
 
             #region Authentication
 
             if (
-                Common.FileExists(currConfig.Files.ApiKey)
-                || Common.FileExists(currConfig.Files.ApiKeyPermission)
-                || Common.FileExists(currConfig.Files.UserMaster)
+                Common.FileExists(settings.Files.ApiKey)
+                || Common.FileExists(settings.Files.ApiKeyPermission)
+                || Common.FileExists(settings.Files.UserMaster)
                 )
             {
                 Console.WriteLine("Configuration files already exist for API keys, users, and/or permissions.");
                 if (Common.InputBoolean("Do you wish to overwrite these files", true))
                 {
-                    Common.DeleteFile(currConfig.Files.ApiKey);
-                    Common.DeleteFile(currConfig.Files.ApiKeyPermission);
-                    Common.DeleteFile(currConfig.Files.UserMaster);
+                    Common.DeleteFile(settings.Files.ApiKey);
+                    Common.DeleteFile(settings.Files.ApiKeyPermission);
+                    Common.DeleteFile(settings.Files.UserMaster);
 
                     Console.WriteLine("Creating new configuration files for API keys, users, and permissions.");
 
@@ -196,21 +198,21 @@ namespace Komodo.Server.Classes
                     currUser.Expiration = timestamp.AddYears(100);
                     users.Add(currUser);
 
-                    if (!Common.WriteFile(currConfig.Files.ApiKey, Common.SerializeJson(apiKeys, true), false))
+                    if (!Common.WriteFile(settings.Files.ApiKey, Common.SerializeJson(apiKeys, true), false))
                     {
-                        Common.ExitApplication("Setup", "Unable to write " + currConfig.Files.ApiKey, -1);
+                        Common.ExitApplication("Setup", "Unable to write " + settings.Files.ApiKey, -1);
                         return;
                     }
 
-                    if (!Common.WriteFile(currConfig.Files.ApiKeyPermission, Common.SerializeJson(permissions, true), false))
+                    if (!Common.WriteFile(settings.Files.ApiKeyPermission, Common.SerializeJson(permissions, true), false))
                     {
-                        Common.ExitApplication("Setup", "Unable to write " + currConfig.Files.ApiKeyPermission, -1);
+                        Common.ExitApplication("Setup", "Unable to write " + settings.Files.ApiKeyPermission, -1);
                         return;
                     }
 
-                    if (!Common.WriteFile(currConfig.Files.UserMaster, Common.SerializeJson(users, true), false))
+                    if (!Common.WriteFile(settings.Files.UserMaster, Common.SerializeJson(users, true), false))
                     {
-                        Common.ExitApplication("Setup", "Unable to write " + currConfig.Files.UserMaster, -1);
+                        Common.ExitApplication("Setup", "Unable to write " + settings.Files.UserMaster, -1);
                         return;
                     }
 
@@ -221,14 +223,14 @@ namespace Komodo.Server.Classes
                     Console.WriteLine("  API Key  : " + currApiKey.GUID);
                     Console.WriteLine("");
                     Console.WriteLine("This was done by creating the following files:");
-                    Console.WriteLine("  " + currConfig.Files.UserMaster);
-                    Console.WriteLine("  " + currConfig.Files.ApiKey);
-                    Console.WriteLine("  " + currConfig.Files.ApiKeyPermission);
+                    Console.WriteLine("  " + settings.Files.UserMaster);
+                    Console.WriteLine("  " + settings.Files.ApiKey);
+                    Console.WriteLine("  " + settings.Files.ApiKeyPermission);
                     Console.WriteLine("");
                 }
                 else
                 {
-                    Console.WriteLine("Existing files were left in tact.");
+                    Console.WriteLine("Existing authentication files were left in tact.");
                 }
             }
             else
@@ -276,21 +278,21 @@ namespace Komodo.Server.Classes
                 currUser.Expiration = timestamp.AddYears(100);
                 users.Add(currUser);
 
-                if (!Common.WriteFile(currConfig.Files.ApiKey, Common.SerializeJson(apiKeys, true), false))
+                if (!Common.WriteFile(settings.Files.ApiKey, Common.SerializeJson(apiKeys, true), false))
                 {
-                    Common.ExitApplication("Setup", "Unable to write " + currConfig.Files.ApiKey, -1);
+                    Common.ExitApplication("Setup", "Unable to write " + settings.Files.ApiKey, -1);
                     return;
                 }
 
-                if (!Common.WriteFile(currConfig.Files.ApiKeyPermission, Common.SerializeJson(permissions, true), false))
+                if (!Common.WriteFile(settings.Files.ApiKeyPermission, Common.SerializeJson(permissions, true), false))
                 {
-                    Common.ExitApplication("Setup", "Unable to write " + currConfig.Files.ApiKeyPermission, -1);
+                    Common.ExitApplication("Setup", "Unable to write " + settings.Files.ApiKeyPermission, -1);
                     return;
                 }
 
-                if (!Common.WriteFile(currConfig.Files.UserMaster, Common.SerializeJson(users, true), false))
+                if (!Common.WriteFile(settings.Files.UserMaster, Common.SerializeJson(users, true), false))
                 {
-                    Common.ExitApplication("Setup", "Unable to write " + currConfig.Files.UserMaster, -1);
+                    Common.ExitApplication("Setup", "Unable to write " + settings.Files.UserMaster, -1);
                     return;
                 }
 
@@ -301,9 +303,9 @@ namespace Komodo.Server.Classes
                 Console.WriteLine("  API Key  : " + currApiKey.GUID);
                 Console.WriteLine("");
                 Console.WriteLine("This was done by creating the following files:");
-                Console.WriteLine("  " + currConfig.Files.UserMaster);
-                Console.WriteLine("  " + currConfig.Files.ApiKey);
-                Console.WriteLine("  " + currConfig.Files.ApiKeyPermission);
+                Console.WriteLine("  " + settings.Files.UserMaster);
+                Console.WriteLine("  " + settings.Files.ApiKey);
+                Console.WriteLine("  " + settings.Files.ApiKeyPermission);
                 Console.WriteLine("");
             }
 
@@ -362,7 +364,7 @@ namespace Komodo.Server.Classes
 
             #region Wrap-Up
 
-            string baseUrl = "http://localhost:" + currConfig.Server.ListenerPort;
+            string baseUrl = "http://localhost:" + settings.Server.ListenerPort;
 
             //                          1         2         3         4         5         6         7
             //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890

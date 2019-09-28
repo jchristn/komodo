@@ -8,8 +8,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using System.Web;
-using DatabaseWrapper;
+using System.Web; 
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 { 
@@ -49,7 +49,7 @@ namespace Komodo.Core
 
         #region Private-Members
         
-        private DatabaseClient _Database { get; set; }
+        private DatabaseWrapper.DatabaseClient _Database { get; set; }
         private string _DbType { get; set; }
         private string _DbHostname { get; set; }
         private int _DbPort { get; set; }
@@ -108,11 +108,11 @@ namespace Komodo.Core
             switch (dbType)
             {
                 case "mssql":
-                    _Database = new DatabaseClient(DbTypes.MsSql, serverHostname, serverPort, user, pass, instance, databaseName);
+                    _Database = new DatabaseWrapper.DatabaseClient(DatabaseWrapper.DbTypes.MsSql, serverHostname, serverPort, user, pass, instance, databaseName);
                     break;
 
                 case "mysql":
-                    _Database = new DatabaseClient(DbTypes.MySql, serverHostname, serverPort, user, pass, instance, databaseName);
+                    _Database = new DatabaseWrapper.DatabaseClient(DatabaseWrapper.DbTypes.MySql, serverHostname, serverPort, user, pass, instance, databaseName);
                     break;
 
                 default:
@@ -234,20 +234,16 @@ namespace Komodo.Core
                 if (curr.Data == null) continue;
                 if (String.IsNullOrEmpty(curr.Data.ToString())) continue;
 
-                string token = "";
-                foreach (char c in curr.Data.ToString())
-                {
-                    if ((int)c < 32) continue;
-                    if ((int)c > 57 && (int)c < 64) continue;
-                    if ((int)c > 90 && (int)c < 97) continue;
-                    if ((int)c > 122) continue;
-                    token += c;
-                }
+                ParsedText pt = new ParsedText();
+                pt.LoadString(curr.Data.ToString(), null);
 
-                if (String.IsNullOrEmpty(token)) continue;
-                ret.Add(token.ToLower());
+                foreach (string currToken in pt.Tokens)
+                {
+                    ret.Add(currToken.ToLower());
+                }
             }
 
+            ret = ret.Distinct().ToList();
             return ret;
         }
 

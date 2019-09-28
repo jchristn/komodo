@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 
-namespace Komodo.Core
+namespace Komodo.Core.Enums
 {
     /// <summary>
     /// Supported document types and data sources.
@@ -16,17 +16,35 @@ namespace Komodo.Core
     [JsonConverter(typeof(StringEnumConverter))]
     public enum DocType
     {
+        /// <summary>
+        /// Unknown
+        /// </summary>
+        [EnumMember(Value = "Unknown")]
+        Unknown,
+        /// <summary>
+        /// SQL table
+        /// </summary>
         [EnumMember(Value = "Sql")]
         Sql,
+        /// <summary>
+        /// HTML
+        /// </summary>
         [EnumMember(Value = "Html")]
         Html,
+        /// <summary>
+        /// JSON
+        /// </summary>
         [EnumMember(Value = "Json")]
         Json,
+        /// <summary>
+        /// XML
+        /// </summary>
         [EnumMember(Value = "Xml")]
         Xml,
+        /// <summary>
+        /// Text
+        /// </summary>
         [EnumMember(Value = "Text")]
-        Text,
-        [EnumMember(Value = "Unknown")]
-        Unknown
+        Text
     }
 }

@@ -21,7 +21,7 @@ namespace Komodo.Server.Classes
         #region Private-Members
 
         private bool _Enabled;
-        private Config _Config;
+        private Settings _Settings;
         private IndexManager _Indices;
         private Func<bool> _ExitDelegate;
 
@@ -36,7 +36,7 @@ namespace Komodo.Server.Classes
         /// <param name="indices">List of indices.</param>
         /// <param name="exitApplication">Function to call when terminating the server.</param>
         public ConsoleManager(
-            Config config,
+            Settings config,
             IndexManager indices,
             Func<bool> exitApplication)
         {
@@ -44,7 +44,7 @@ namespace Komodo.Server.Classes
             if (indices == null) throw new ArgumentNullException(nameof(indices));
 
             _Enabled = true;
-            _Config = config;
+            _Settings = config;
             _Indices = indices;
             _ExitDelegate = exitApplication;
 

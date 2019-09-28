@@ -78,7 +78,8 @@ namespace Komodo.Core
         /// </summary> 
         /// <param name="index">Index object.</param> 
         /// <param name="logging">Logging instance.</param>
-        /// <param name="database">Database client.</param>
+        /// <param name="sqlDatabase">Database client (if using Microsoft SQL Server, MySQL, or PostgreSQL), otherwise, use null.</param>
+        /// <param name="sqliteDatabase">Sqlite database filename (if using Sqlite), otherwise, use null.</param>
         public PostingsManager(
             Index index,
             LoggingModule logging,
@@ -94,13 +95,13 @@ namespace Komodo.Core
             DateTime ts = DateTime.Now;
             _Logging = logging;
             _Index = index;
-            _Logging.Log(LoggingModule.Severity.Info, "PostingsManager starting for index " + _Index.IndexName);
+            _Logging.Info("PostingsManager starting for index " + _Index.IndexName);
              
             _PostingsDbSql = sqlDatabase;
             _PostingsDbSqlite = sqliteDatabase; 
             _Queries = new PostingsQueries(_Index, _PostingsDbSql, _PostingsDbSqlite);
 
-            _Logging.Log(LoggingModule.Severity.Info, "PostingsManager started for index " + _Index.IndexName + " [" + Common.TotalMsFrom(ts) + "ms]");
+            _Logging.Info("PostingsManager started for index " + _Index.IndexName + " [" + Common.TotalMsFrom(ts) + "ms]");
         }
 
         #endregion
@@ -131,7 +132,7 @@ namespace Komodo.Core
 
             while (!TermExists(posting.Term, out map))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] AddPosting creating table for term " + posting.Term);
+                _Logging.Debug("[" + _Index.IndexName + "] AddPosting creating table for term " + posting.Term);
                 query = _Queries.AddTermMap(posting.Term);
                 result = DatabaseQuery(query);
             }
@@ -159,7 +160,7 @@ namespace Komodo.Core
                 TermMap map = null;
                 if (!TermExists(currTerm, out map))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + _Index.IndexName + "] RemoveDocument unable to find term map for term " + currTerm + " while removing document ID " + documentId);
+                    _Logging.Warn("[" + _Index.IndexName + "] RemoveDocument unable to find term map for term " + currTerm + " while removing document ID " + documentId);
                     continue;
                 }
 
@@ -184,7 +185,7 @@ namespace Komodo.Core
                             if (count == 0)
                             {
                                 termEmpty = true;
-                                _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] RemoveDocument term " + currTerm + " is now empty");
+                                _Logging.Debug("[" + _Index.IndexName + "] RemoveDocument term " + currTerm + " is now empty");
                             }
                         }
                     }
@@ -280,14 +281,14 @@ namespace Komodo.Core
         /// <param name="indexEnd">The value for startIndex that should be used for a subsequent retrieval to continue the search.</param>
         /// <returns></returns>
         public void GetMatchingDocuments(
-            long startIndex,
+            int startIndex,
             int maxResults,
             List<string> requiredTerms,
             List<string> optionalTerms,
             List<string> excludeTerms,
             out List<string> termsNotFound,
             out Dictionary<string, decimal> matchingDocs,
-            out long indexEnd
+            out int indexEnd
             )
         {
             #region Check-Input-and-Initialize
@@ -378,7 +379,7 @@ namespace Komodo.Core
 
             while (true)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments index " + indexEnd + " max results " + maxResults);
+                _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments index " + startIndex + " max results " + maxResults);
 
                 #region Required-Terms
 
@@ -387,7 +388,7 @@ namespace Komodo.Core
                     string guid = GuidFromTerm(requiredTerms[i]);
                     if (String.IsNullOrEmpty(guid))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "[" + _Index.IndexName + "] GetMatchingDocuments unable to find GUID for required term " + requiredTerms[i]);
+                        _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments unable to find GUID for required term " + requiredTerms[i]);
                         termsNotFound.Add(requiredTerms[i]);
                         if ((i + 1) >= requiredTerms.Count)
                         {
@@ -397,39 +398,37 @@ namespace Komodo.Core
                         continue;
                     }
 
-                    List<Posting> matching = GetMatches(guid, indexEnd, maxResults * 2);
+                    List<Posting> matching = GetMatches(guid, startIndex, maxResults * 2);
 
                     if (matching == null || matching.Count < 1)
                     {
-                        _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments no postings for required term " + requiredTerms[i]);
+                        _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments no postings for required term " + requiredTerms[i]);
                         endOfRecords = true;
                         break;
-                    }
-                    else
+                    } 
+
+                    foreach (Posting currMatch in matching)
                     {
-                        foreach (Posting currMatch in matching)
+                        if (matchingDocsTemp.Count == 0) // first document
                         {
-                            if (matchingDocsTemp.Count < 1)
+                            _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments document ID " + currMatch.DocumentId + " matches required term " + requiredTerms[i]);
+                            matchingDocsTemp.Add(currMatch.DocumentId, 0);
+                        }
+                        else // subsequent document
+                        {
+                            if (matchingDocsTemp.ContainsKey(currMatch.DocumentId))
                             {
-                                _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments document ID " + currMatch.MasterDocId + " matches required term " + requiredTerms[i]);
-                                matchingDocsTemp.Add(currMatch.MasterDocId, 0);
+                                _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments skipping document ID " + currMatch.DocumentId + ", already matched");
                             }
                             else
                             {
-                                if (matchingDocsTemp.ContainsKey(currMatch.MasterDocId))
-                                {
-                                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments skipping document ID " + currMatch.MasterDocId + ", already matches current term " + requiredTerms[i]);
-                                }
-                                else
-                                {
-                                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments document ID " + currMatch.MasterDocId + " matches required term " + requiredTerms[i]);
-                                    matchingDocsTemp.Add(currMatch.MasterDocId, 0);
-                                }
+                                _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments document ID " + currMatch.DocumentId + " matches required term " + requiredTerms[i]);
+                                matchingDocsTemp.Add(currMatch.DocumentId, 0);
                             }
                         }
-
-                        indexEnd += maxResults;
                     }
+
+                    startIndex += maxResults; 
                 }
 
                 #endregion
@@ -444,23 +443,20 @@ namespace Komodo.Core
                         if (!String.IsNullOrEmpty(guid))
                         {
                             List<Posting> excluded = GetMatches(guid, indexEnd, maxResults * 2);
-                            if (excluded == null || excluded.Count < 1)
+                            if (excluded == null || excluded.Count == 0) break;
+
+                            foreach (Posting currMatch in excluded)
                             {
-                                break;
-                            }
-                            else
-                            {
-                                foreach (Posting currMatch in excluded)
+                                _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments removing document due to excluded term " + excludeTerms[i] + ": " + currMatch.DocumentId);
+                                if (matchingDocsTemp.ContainsKey(currMatch.DocumentId))
                                 {
-                                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments removing document due to excluded term " + excludeTerms[i] + ": " + currMatch.MasterDocId);
-                                    if (matchingDocsTemp.ContainsKey(currMatch.MasterDocId))
-                                        matchingDocsTemp.Remove(currMatch.MasterDocId);
+                                    matchingDocsTemp.Remove(currMatch.DocumentId);
                                 }
                             }
                         }
                         else
                         {
-                            _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments unable to find GUID for exclude term " + excludeTerms[i]);
+                            _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments unable to find GUID for exclude term " + excludeTerms[i]);
                             termsNotFound.Add(excludeTerms[i]);
                         }
                     }
@@ -478,29 +474,24 @@ namespace Komodo.Core
                         if (!String.IsNullOrEmpty(guid))
                         {
                             List<Posting> optional = GetMatches(guid, indexEnd, maxResults * 2);
-                            if (optional == null || optional.Count < 1)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                foreach (Posting currMatch in optional)
-                                {
-                                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments document ID " + currMatch.MasterDocId + " matches optional term " + optionalTerms[i]);
+                            if (optional == null || optional.Count == 0) break;
 
-                                    if (matchingDocsTemp.ContainsKey(currMatch.MasterDocId))
-                                    {
-                                        int count = matchingDocsTemp[currMatch.MasterDocId];
-                                        matchingDocsTemp.Remove(currMatch.MasterDocId);
-                                        count++;
-                                        matchingDocsTemp.Add(currMatch.MasterDocId, count);
-                                    }
+                            foreach (Posting currMatch in optional)
+                            {
+                                _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments document ID " + currMatch.DocumentId + " matches optional term " + optionalTerms[i]);
+
+                                if (matchingDocsTemp.ContainsKey(currMatch.DocumentId))
+                                {
+                                    int count = matchingDocsTemp[currMatch.DocumentId];
+                                    matchingDocsTemp.Remove(currMatch.DocumentId);
+                                    count++;
+                                    matchingDocsTemp.Add(currMatch.DocumentId, count);
                                 }
                             }
                         }
                         else
                         {
-                            _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments unable to find GUID for optional term " + optionalTerms[i]);
+                            _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments unable to find GUID for optional term " + optionalTerms[i]);
                             termsNotFound.Add(optionalTerms[i]);
                         }
                     }
@@ -512,19 +503,19 @@ namespace Komodo.Core
 
                 if (matchingDocsTemp.Count > maxResults)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments matching documents equal to or greater than requested count");
+                    _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments matching documents equal to or greater than requested count");
                     break;
                 }
 
                 if (endOfRecords)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments end of records reached");
+                    _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments end of records reached");
                     break;
                 }
 
                 if (endOfTerms)
                 {
-                    _Logging.Log(LoggingModule.Severity.Debug, "[" + _Index.IndexName + "] GetMatchingDocuments end of terms reached");
+                    _Logging.Debug("[" + _Index.IndexName + "] GetMatchingDocuments end of terms reached");
                     break;
                 }
 
@@ -549,7 +540,7 @@ namespace Komodo.Core
                         {
                             matchingDocs.Add(currMatch.Key, Convert.ToDecimal(currMatch.Value) / optionalTerms.Count);
 
-                            _Logging.Log(LoggingModule.Severity.Debug, 
+                            _Logging.Debug(
                                 "[" + _Index.IndexName + "] GetMatchingDocuments" +
                                 " document " + currMatch.Key +
                                 " score " + currMatch.Value +
@@ -567,6 +558,7 @@ namespace Komodo.Core
 
             #endregion
 
+            indexEnd = startIndex;
             termsNotFound = termsNotFound.Distinct().ToList();
             return;
         }
@@ -575,6 +567,10 @@ namespace Komodo.Core
 
         #region Private-Methods
 
+        /// <summary>
+        /// Tear down and dispose of resources.
+        /// </summary>
+        /// <param name="disposing">Disposing.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_Disposed)

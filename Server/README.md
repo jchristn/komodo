@@ -345,7 +345,7 @@ POST /_index?type=json
 
 Response body:
 {
-    "MasterDocId": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd",
+    "DocumentId": "c52b075d-69ff-4edb-a8f6-51e5f6b20ecd",
     "DocumentType": "Json", 
     "Schema": {
         "undefined": "Array",
@@ -517,7 +517,7 @@ Response body:
   },
   "Matches": [
     {
-      "MasterDocId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7",
+      "DocumentId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7",
       "DocumentType": "Json",
       "Score": 1,
       "Errors": [],
@@ -634,7 +634,7 @@ Response:
         {
             "Id": 1,
             "IndexName": "first",
-            "MasterDocId": "666f4364-26b1-4969-be59-a4e191bb0987",
+            "DocumentId": "666f4364-26b1-4969-be59-a4e191bb0987",
             "Name": "joel",
             "Tags": "tag1,tag2,tag3",
             "Title": "Hello!",
@@ -679,7 +679,7 @@ Response:
 GET /First/b7705bc9-789a-4a62-ba54-1b2043b6d1e7?parsed=true
 Response:
 {
-    "MasterDocId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7",
+    "DocumentId": "b7705bc9-789a-4a62-ba54-1b2043b6d1e7",
     "DocumentType": "Json", 
     "Schema": {
         "ordernumber": "Integer",

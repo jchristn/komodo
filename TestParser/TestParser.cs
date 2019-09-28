@@ -56,7 +56,7 @@ namespace KomodoTestParser
                     #region HTML
 
                     case "parse_html_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedHtml = new ParsedHtml();
                         if (!parsedHtml.LoadFile(filename))
                         {
@@ -70,8 +70,8 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_html_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedHtml = new ParsedHtml();
                         if (!parsedHtml.LoadString(data, url))
                         {
@@ -85,7 +85,7 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_html_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedHtml = new ParsedHtml();
                         if (!parsedHtml.LoadUrl(url))
                         {
@@ -103,7 +103,7 @@ namespace KomodoTestParser
                     #region JSON
 
                     case "parse_json_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedJson = new ParsedJson();
                         if (!parsedJson.LoadFile(filename))
                         {
@@ -117,8 +117,8 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_json_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedJson = new ParsedJson();
                         if (!parsedJson.LoadString(data, url))
                         {
@@ -132,7 +132,7 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_json_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedJson = new ParsedJson();
                         if (!parsedJson.LoadUrl(url))
                         {
@@ -150,7 +150,7 @@ namespace KomodoTestParser
                     #region XML
 
                     case "parse_xml_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedXml = new ParsedXml();
                         if (!parsedXml.LoadFile(filename))
                         {
@@ -164,8 +164,8 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_xml_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedXml = new ParsedXml();
                         if (!parsedXml.LoadString(data, url))
                         {
@@ -179,7 +179,7 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_xml_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedXml = new ParsedXml();
                         if (!parsedXml.LoadUrl(url))
                         {
@@ -197,7 +197,7 @@ namespace KomodoTestParser
                     #region Text
 
                     case "parse_text_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedText = new ParsedText();
                         if (!parsedText.LoadFile(filename))
                         {
@@ -211,8 +211,8 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_text_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedText = new ParsedText();
                         if (!parsedText.LoadString(data, url))
                         {
@@ -226,7 +226,7 @@ namespace KomodoTestParser
                         break;
 
                     case "parse_text_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedText = new ParsedText();
                         if (!parsedText.LoadUrl(url))
                         {
@@ -244,14 +244,14 @@ namespace KomodoTestParser
                     #region SQL
 
                     case "parse_sql_from_query":
-                        dbType = Common.InputString("Database Type", dbType, false);
-                        serverHostname = Common.InputString("Hostname", serverHostname, false);
-                        serverPort = Common.InputInteger("Port", serverPort, true, false);
-                        user = Common.InputString("User", user, false);
-                        pass = Common.InputString("Password", pass, false);
-                        instance = Common.InputString("Instance", instance, true);
-                        databaseName = Common.InputString("Database Name", databaseName, false);
-                        query = Common.InputString("Query", query, false);
+                        dbType = InputString("Database Type", dbType, false);
+                        serverHostname = InputString("Hostname", serverHostname, false);
+                        serverPort = InputInteger("Port", serverPort, true, false);
+                        user = InputString("User", user, false);
+                        pass = InputString("Password", pass, false);
+                        instance = InputString("Instance", instance, true);
+                        databaseName = InputString("Database Name", databaseName, false);
+                        query = InputString("Query", query, false);
 
                         parsedSql = new ParsedSql();
                         if (!parsedSql.LoadDatabase(dbType, serverHostname, serverPort, user, pass, instance, databaseName, query))
@@ -274,7 +274,7 @@ namespace KomodoTestParser
                     #region HTML
 
                     case "idx_html_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedHtml = new ParsedHtml();
                         if (!parsedHtml.LoadFile(filename))
                         {
@@ -295,8 +295,8 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_html_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedHtml = new ParsedHtml();
                         if (!parsedHtml.LoadString(data, url))
                         {
@@ -317,7 +317,7 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_html_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedHtml = new ParsedHtml();
                         if (!parsedHtml.LoadUrl(url))
                         {
@@ -342,7 +342,7 @@ namespace KomodoTestParser
                     #region JSON
 
                     case "idx_json_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedJson = new ParsedJson();
                         if (!parsedJson.LoadFile(filename))
                         {
@@ -363,8 +363,8 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_json_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedJson = new ParsedJson();
                         if (!parsedJson.LoadString(data, url))
                         {
@@ -385,7 +385,7 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_json_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedJson = new ParsedJson();
                         if (!parsedJson.LoadUrl(url))
                         {
@@ -410,7 +410,7 @@ namespace KomodoTestParser
                     #region XML
 
                     case "idx_xml_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedXml = new ParsedXml();
                         if (!parsedXml.LoadFile(filename))
                         {
@@ -431,8 +431,8 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_xml_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedXml = new ParsedXml();
                         if (!parsedXml.LoadString(data, url))
                         {
@@ -453,7 +453,7 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_xml_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedXml = new ParsedXml();
                         if (!parsedXml.LoadUrl(url))
                         {
@@ -478,7 +478,7 @@ namespace KomodoTestParser
                     #region Text
 
                     case "idx_text_from_file":
-                        filename = Common.InputString("Filename", null, false);
+                        filename = InputString("Filename", null, false);
                         parsedText = new ParsedText();
                         if (!parsedText.LoadFile(filename))
                         {
@@ -499,8 +499,8 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_text_from_string":
-                        data = Common.InputString("Data", null, false);
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        data = InputString("Data", null, false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedText = new ParsedText();
                         if (!parsedText.LoadString(data, url))
                         {
@@ -521,7 +521,7 @@ namespace KomodoTestParser
                         break;
 
                     case "idx_text_from_url":
-                        url = Common.InputString("URL", "http://www.cnn.com", false);
+                        url = InputString("URL", "http://www.cnn.com", false);
                         parsedText = new ParsedText();
                         if (!parsedText.LoadUrl(url))
                         {
@@ -546,14 +546,14 @@ namespace KomodoTestParser
                     #region SQL
 
                     case "idx_sql_from_query":
-                        dbType = Common.InputString("Database Type", dbType, false);
-                        serverHostname = Common.InputString("Hostname", serverHostname, false);
-                        serverPort = Common.InputInteger("Port", serverPort, true, false);
-                        user = Common.InputString("User", user, false);
-                        pass = Common.InputString("Password", pass, false);
-                        instance = Common.InputString("Instance", instance, true);
-                        databaseName = Common.InputString("Database Name", databaseName, false);
-                        query = Common.InputString("Query", query, false);
+                        dbType = InputString("Database Type", dbType, false);
+                        serverHostname = InputString("Hostname", serverHostname, false);
+                        serverPort = InputInteger("Port", serverPort, true, false);
+                        user = InputString("User", user, false);
+                        pass = InputString("Password", pass, false);
+                        instance = InputString("Instance", instance, true);
+                        databaseName = InputString("Database Name", databaseName, false);
+                        query = InputString("Query", query, false);
 
                         parsedSql = new ParsedSql();
                         if (!parsedSql.LoadDatabase(dbType, serverHostname, serverPort, user, pass, instance, databaseName, query))
@@ -608,16 +608,82 @@ namespace KomodoTestParser
             string ret =
                 Environment.NewLine +
                 Environment.NewLine +
-                "oooo                                                    .o8            " + Environment.NewLine +
-                "`888                                                    888            " + Environment.NewLine +
-                " 888  oooo   .ooooo.  ooo. .oo.  .oo.    .ooooo.   .oooo888   .ooooo.  " + Environment.NewLine +
-                " 888 .8P'   d88' `88b `888P'Y88bP'Y88b  d88' `88b d88' `888  d88' `88b " + Environment.NewLine +
-                " 888888.    888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
-                " 888 `88b.  888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
-                "o888o o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' `Y8bod88P  `Y8bod8P' " + Environment.NewLine +
+                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
+                "░░░█░█░█▀▀█░█▀▄▀█░█▀▀█░█▀▀▄░█▀▀█░░░" + Environment.NewLine +
+                "░░░█▀▄░█░░█░█░▀░█░█░░█░█░░█░█░░█░░░" + Environment.NewLine +
+                "░░░▀░▀░▀▀▀▀░▀░░░▀░▀▀▀▀░▀▀▀░░▀▀▀▀░░░" + Environment.NewLine +
+                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
                 Environment.NewLine;
 
             Console.WriteLine(ret);
+        }
+
+        static string InputString(string question, string defaultAnswer, bool allowNull)
+        {
+            while (true)
+            {
+                Console.Write(question);
+
+                if (!String.IsNullOrEmpty(defaultAnswer))
+                {
+                    Console.Write(" [" + defaultAnswer + "]");
+                }
+
+                Console.Write(": ");
+
+                string userInput = Console.ReadLine();
+
+                if (String.IsNullOrEmpty(userInput))
+                {
+                    if (!String.IsNullOrEmpty(defaultAnswer)) return defaultAnswer;
+                    if (allowNull) return null;
+                    else continue;
+                }
+
+                return userInput;
+            }
+        }
+
+        static int InputInteger(string question, int defaultAnswer, bool positiveOnly, bool allowZero)
+        {
+            while (true)
+            {
+                Console.Write(question);
+                Console.Write(" [" + defaultAnswer + "]: ");
+
+                string userInput = Console.ReadLine();
+
+                if (String.IsNullOrEmpty(userInput))
+                {
+                    return defaultAnswer;
+                }
+
+                int ret = 0;
+                if (!Int32.TryParse(userInput, out ret))
+                {
+                    Console.WriteLine("Please enter a valid integer.");
+                    continue;
+                }
+
+                if (ret == 0)
+                {
+                    if (allowZero)
+                    {
+                        return 0;
+                    }
+                }
+
+                if (ret < 0)
+                {
+                    if (positiveOnly)
+                    {
+                        Console.WriteLine("Please enter a value greater than zero.");
+                        continue;
+                    }
+                }
+
+                return ret;
+            }
         }
     }
 }

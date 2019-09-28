@@ -25,9 +25,9 @@ namespace Komodo.Core
         public string IndexName { get; set; }
 
         /// <summary>
-        /// The master document ID, assigned through indexing.
+        /// Document ID, assigned through indexing.
         /// </summary>
-        public string MasterDocId { get; set; }
+        public string DocumentId { get; set; }
 
         /// <summary>
         /// Term.
@@ -67,7 +67,7 @@ namespace Komodo.Core
             TermRecord ret = new TermRecord();
             if (row["Id"] != DBNull.Value) ret.Id = Convert.ToInt32(row["Id"]);
             if (row["IndexName"] != DBNull.Value) ret.IndexName = row["IndexName"].ToString();
-            if (row["MasterDocId"] != DBNull.Value) ret.MasterDocId = row["MasterDocId"].ToString();
+            if (row["DocumentId"] != DBNull.Value) ret.DocumentId = row["DocumentId"].ToString();
             if (row["Term"] != DBNull.Value) ret.Term = row["Term"].ToString();
             if (row["Created"] != DBNull.Value) ret.Created = Convert.ToDateTime(row["Created"].ToString()); 
 

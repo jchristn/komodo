@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {
@@ -12,67 +13,62 @@ namespace Komodo.Core
     public class IndexedDoc
     {
         #region Public-Members
-         
+
         /// <summary>
         /// The document ID.
         /// </summary>
-        public string MasterDocId { get; set; }
+        public string DocumentId = null;
 
         /// <summary>
         /// The document type.
         /// </summary>
-        public DocType DocumentType { get; set; }
-
-        /// <summary>
-        /// Document IDs for nodes.
-        /// </summary>
-        public Dictionary<string, string> aNodeDocIds { get; set; }  // i.e. xml.child.data -> a19a83e...
+        public DocType DocumentType = DocType.Unknown;
 
         /// <summary>
         /// Schema for the object.
         /// </summary>
-        public Dictionary<string, DataType> Schema { get; set; }
+        public Dictionary<string, DataType> Schema = new Dictionary<string, DataType>();
 
         /// <summary>
         /// The postings for the document.
         /// </summary>
-        public List<Posting> Postings { get; set; }       
-        
+        public List<Posting> Postings = new List<Posting>();
+
         /// <summary>
         /// The list of terms found in the document.
         /// </summary>
-        public List<string> Terms { get; set; }
+        public List<string> Terms = new List<string>();
 
         /// <summary>
         /// For HTML documents, the parsed HTML.
         /// </summary>
-        public ParsedHtml Html { get; set; }
+        public ParsedHtml Html = null;
 
         /// <summary>
         /// For JSON documents, the parsed JSON.
         /// </summary>
-        public ParsedJson Json { get; set; }
+        public ParsedJson Json = null;
 
         /// <summary>
         /// For SQL databases, the parsed database results.
         /// </summary>
-        public ParsedSql Sql { get; set; }
+        public ParsedSql Sql = null;
 
         /// <summary>
         /// For XML documents, the parsed XML.
         /// </summary>
-        public ParsedXml Xml { get; set; }
+        public ParsedXml Xml = null;
 
         /// <summary>
         /// For text documents, the parsed text.
         /// </summary>
-        public ParsedText Text { get; set; }
+        public ParsedText Text = null;
 
         #endregion
 
         #region Private-Members
-         
-        private IndexOptions _Options { get; set; }
+
+        private IndexOptions _Options = null;
 
         #endregion
 
@@ -108,7 +104,7 @@ namespace Komodo.Core
             if (options == null) options = new IndexOptions();
 
             IndexedDoc ret = new IndexedDoc();
-            ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentId = Guid.NewGuid().ToString();
             ret.DocumentType = DocType.Html; 
             ret.Html = html;
             ret._Options = options;
@@ -130,7 +126,7 @@ namespace Komodo.Core
             if (options == null) options = new IndexOptions();
 
             IndexedDoc ret = new IndexedDoc();
-            ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentId = Guid.NewGuid().ToString();
             ret.DocumentType = DocType.Json; 
             ret.Json = json;
             ret._Options = options;
@@ -152,7 +148,7 @@ namespace Komodo.Core
             if (options == null) options = new IndexOptions();
 
             IndexedDoc ret = new IndexedDoc();
-            ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentId = Guid.NewGuid().ToString();
             ret.DocumentType = DocType.Sql; 
             ret.Sql = sql;
             ret._Options = options;
@@ -174,7 +170,7 @@ namespace Komodo.Core
             if (options == null) options = new IndexOptions();
 
             IndexedDoc ret = new IndexedDoc();
-            ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentId = Guid.NewGuid().ToString();
             ret.DocumentType = DocType.Xml; 
             ret.Xml = xml;
             ret._Options = options;
@@ -196,7 +192,7 @@ namespace Komodo.Core
             if (options == null) options = new IndexOptions();
 
             IndexedDoc ret = new IndexedDoc();
-            ret.MasterDocId = Guid.NewGuid().ToString();
+            ret.DocumentId = Guid.NewGuid().ToString();
             ret.DocumentType = DocType.Text; 
             ret.Text = text;
             ret._Options = options;
@@ -218,11 +214,11 @@ namespace Komodo.Core
         {
             string ret = "";
             ret += "---" + Environment.NewLine;
-            ret += "Master Document ID  : " + MasterDocId + Environment.NewLine;
-             
+            ret += "  Document ID  : " + DocumentId + Environment.NewLine;
+            
             if (Postings != null)
             {
-                ret += "  Postings          : " + Postings.Count() + Environment.NewLine;
+                ret += "  Postings     : " + Postings.Count() + Environment.NewLine;
                 foreach (Posting curr in Postings)
                 {
                     ret += "    " + curr.ToString() + Environment.NewLine;
@@ -231,7 +227,7 @@ namespace Komodo.Core
 
             if (Terms != null)
             {
-                ret += "  Terms             : " + Terms.Count() + Environment.NewLine;
+                ret += "  Terms        : " + Terms.Count() + Environment.NewLine;
                 int added = 0;
                 foreach (string curr in Terms)
                 {
@@ -243,14 +239,7 @@ namespace Komodo.Core
             }
 
             ret += _Options.ToString();
-
-            /*
-            if (InnerHtml != null) ret += "Inner HTML:" + Environment.NewLine + InnerHtml.ToString() + Environment.NewLine;
-            if (InnerJson != null) ret += "Inner JSON:" + Environment.NewLine + InnerJson.ToString() + Environment.NewLine;
-            if (InnerSql != null) ret += "Inner SQL:" + Environment.NewLine + InnerSql.ToString() + Environment.NewLine;
-            if (InnerXml != null) ret += "Inner XML:" + Environment.NewLine + InnerXml.ToString() + Environment.NewLine;
-            */
-
+             
             return ret;
         }
          
@@ -312,7 +301,7 @@ namespace Komodo.Core
         
             foreach (Posting p in Postings)
             {
-                if (p.MasterDocId.Equals(key)) 
+                if (p.DocumentId.Equals(key)) 
                 {
                     if (String.IsNullOrEmpty(p.Term)) continue;
                     if (String.Compare(p.Term.ToString(), val.ToString()) == 0) return p;
@@ -669,7 +658,7 @@ namespace Komodo.Core
 
                 match = new Posting();
                 match.Term = term;
-                match.MasterDocId = MasterDocId;
+                match.DocumentId = DocumentId;
                 match.Frequency = 1;
                 match.Positions = new List<long>();
                 match.Positions.Add(termCount);

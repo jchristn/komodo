@@ -21,14 +21,12 @@ namespace Komodo.Core
 
         #region Private-Members
 
-        private LoggingModule _Logging;
-         
+        private LoggingModule _Logging; 
         private string _IndicesFilename;
-
-        private List<Index> _Indices;
-        private List<IndexClient> _IndexClients;
-        private readonly object _IndicesLock;
-        private readonly object _IndexClientLock;
+        private List<Index> _Indices = new List<Index>();
+        private List<IndexClient> _Clients = new List<IndexClient>();
+        private readonly object _IndicesLock = new object();
+        private readonly object _ClientsLock = new object();
         
         #endregion
 
@@ -57,23 +55,17 @@ namespace Komodo.Core
             _Logging = logging;
             _IndicesFilename = indicesFilename;
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexManager starting");
-
-            _Indices = new List<Index>();
-            _IndexClients = new List<IndexClient>();
-
-            _IndicesLock = new object();
-            _IndexClientLock = new object(); 
-
+            _Logging.Info("IndexManager starting");
+             
             LoadIndicesFile();
             InitializeIndexClients();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexManager started [" + Common.TotalMsFrom(ts) + "ms]");
+            _Logging.Info("IndexManager started [" + Common.TotalMsFrom(ts) + "ms]");
         }
 
         #endregion
 
-        #region Public-Index-Methods
+        #region Public-Methods
 
         /// <summary>
         /// Retrieve the list of indices.
@@ -100,13 +92,9 @@ namespace Komodo.Core
 
             lock (_IndicesLock)
             {
-                foreach (Index currIndex in _Indices)
-                {
-                    if (currIndex.IndexName.ToLower().Equals(indexName)) return currIndex;
-                }
-
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager GetIndexByName index " + indexName + " does not exist");
-                return null;
+                Index index = _Indices.Where(i => i.IndexName.ToLower().Equals(indexName)).FirstOrDefault();
+                if (index == null || index == default(Index)) return null;
+                return index;
             }
         }
 
@@ -122,12 +110,7 @@ namespace Komodo.Core
 
             lock (_IndicesLock)
             {
-                foreach (Index currIndex in _Indices)
-                {
-                    if (currIndex.IndexName.ToLower().Equals(indexName)) return true;
-                }
-
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager IndexExists index " + indexName + " does not exist");
+                if (_Indices.Exists(i => i.IndexName.ToLower().Equals(indexName))) return true;
                 return false;
             }
         }
@@ -135,33 +118,23 @@ namespace Komodo.Core
         /// <summary>
         /// Add a new index.
         /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="error">Human-readable error string.</param>
+        /// <param name="index">The index.</param> 
         /// <returns>True if successful.</returns>
         public bool AddIndex(Index index)
         { 
             try
-            { 
-                if (index == null)
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index cannot be null");
-                    return false;
-                }
+            {
+                if (index == null) return false;
 
                 index.IndexName = index.IndexName.ToLower();
                 Index currIndex = GetIndexByName(index.IndexName);
-                if (currIndex != null)
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + index.IndexName + " already exists, reusing");
-                    return true;
-                }
+                if (currIndex != null) return true;
 
                 lock (_IndicesLock)
                 {
                     _Indices.Add(index);
                     if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(_Indices, true))))
-                    {
-                        _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex unable to write new index to " + _IndicesFilename);
+                    { 
                         return false;
                     }
                 }
@@ -170,19 +143,15 @@ namespace Komodo.Core
 
                 IndexClient idxClient = new IndexClient(index, _Logging);
 
-                lock (_IndexClientLock)
+                lock (_ClientsLock)
                 {
-                    _IndexClients.Add(idxClient);
+                    _Clients.Add(idxClient);
                 }
-
-                _Logging.Log(LoggingModule.Severity.Info, "IndexManager AddIndex index " + index.IndexName + " added");
+                 
                 return true;
             }
-            catch (Exception e)
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager AddIndex index " + index.IndexName + " failed due to exception, cleaning up");
-                _Logging.LogException("IndexManager", "AddIndex", e);
-
+            catch (Exception)
+            { 
                 RemoveIndex(index.IndexName, true);
                 return false;
             }
@@ -197,15 +166,9 @@ namespace Komodo.Core
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             indexName = indexName.ToLower();
-
-            _Logging.Log(LoggingModule.Severity.Info, "IndexManager RemoveIndex removing index " + indexName);
-
+             
             Index currIndex = GetIndexByName(indexName);
-            if (currIndex == null)
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager RemoveIndex index " + indexName + " does not exist");
-                return;
-            }
+            if (currIndex == null) return;
 
             lock (_IndicesLock)
             {
@@ -217,17 +180,16 @@ namespace Komodo.Core
                 }
 
                 if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(updated, true))))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager RemoveIndex unable to remove index " + indexName + " from " + _IndicesFilename);
+                { 
                     return;
                 }
             }
 
             LoadIndicesFile();
 
-            lock (_IndexClientLock)
+            lock (_ClientsLock)
             {
-                IndexClient currIndexClient = _IndexClients.Where(x => x.Name.Equals(indexName)).FirstOrDefault();
+                IndexClient currIndexClient = _Clients.Where(x => x.Name.Equals(indexName)).FirstOrDefault();
 
                 if (cleanup && currIndexClient != null)
                 {
@@ -239,14 +201,14 @@ namespace Komodo.Core
                     currIndexClient.Dispose();
                 }
 
-                _IndexClients = _IndexClients.Where(x => !x.Name.Equals(indexName)).ToList();
+                _Clients = _Clients.Where(x => !x.Name.Equals(indexName)).ToList();
             }
 
             if (cleanup)
             {
                 if (!Common.DeleteDirectory(currIndex.RootDirectory, true))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "IndexManager RemoveIndex unable to remove root directory for index " + indexName);
+                    _Logging.Warn("IndexManager RemoveIndex unable to remove root directory for index " + indexName);
                 }
             }
 
@@ -264,9 +226,9 @@ namespace Komodo.Core
             indexName = indexName.ToLower();
             if (!IndexExists(indexName)) return null;
 
-            lock (_IndexClientLock)
+            lock (_ClientsLock)
             {
-                IndexClient curr = _IndexClients.Where(x => x.Name.ToLower().Equals(indexName)).FirstOrDefault();
+                IndexClient curr = _Clients.Where(x => x.Name.ToLower().Equals(indexName)).FirstOrDefault();
                 if (curr == default(IndexClient)) return null;
                 return curr;
             }
@@ -284,8 +246,7 @@ namespace Komodo.Core
 
             IndexClient currClient = GetIndexClient(indexName);
             if (currClient == null || currClient == default(IndexClient))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "IndexManager GetIndexStats index " + indexName + " does not exist");
+            { 
                 return null;
             }
 
@@ -295,7 +256,7 @@ namespace Komodo.Core
 
         #endregion
 
-        #region Private-Index-Methods
+        #region Private-Methods
 
         private void LoadIndicesFile()
         {
@@ -304,15 +265,13 @@ namespace Komodo.Core
                 if (!Common.FileExists(_IndicesFilename))
                 {
                     if (!Common.WriteFile(_IndicesFilename, Encoding.UTF8.GetBytes(Common.SerializeJson(new List<object>(), true))))
-                    {
-                        _Logging.Log(LoggingModule.Severity.Warn, "IndexManager unable to write new file " + _IndicesFilename + ", exiting");
+                    { 
                         Common.ExitApplication("IndexManager", "Unable to write indices file " + _IndicesFilename, -1);
                         return;
                     }
                 }
 
-                _Indices = Common.DeserializeJson<List<Index>>(Common.ReadBinaryFile(_IndicesFilename));
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexManager intialized with " + _Indices.Count + " indices");
+                _Indices = Common.DeserializeJson<List<Index>>(Common.ReadBinaryFile(_IndicesFilename)); 
             }
         }
 
@@ -320,12 +279,12 @@ namespace Komodo.Core
         {
             lock (_IndicesLock)
             {
-                lock (_IndexClientLock)
+                lock (_ClientsLock)
                 {
                     foreach (Index currIndex in _Indices)
                     {
                         IndexClient currClient = new IndexClient(currIndex, _Logging);
-                        _IndexClients.Add(currClient);
+                        _Clients.Add(currClient);
                     }
                 }
             } 

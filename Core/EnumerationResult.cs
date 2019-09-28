@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DatabaseWrapper;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {
@@ -15,44 +16,49 @@ namespace Komodo.Core
         #region Public-Members
 
         /// <summary>
+        /// Error code associated with the enumeration request.
+        /// </summary>
+        public ErrorCode Error = new ErrorCode(ErrorId.NONE, null);
+
+        /// <summary>
         /// The GUID of the enumeration operation.
         /// </summary>
-        public string GUID { get; set; }
+        public string GUID = null;
 
         /// <summary>
         /// The enumeration query performed.
         /// </summary>
-        public EnumerationQuery Query { get; set; }
+        public EnumerationQuery Query = null;
 
         /// <summary>
         /// True if the enumeration query had a POSTback URL.
         /// </summary>
-        public bool Async { get; set; }
+        public bool Async = false;
 
         /// <summary>
         /// The name of the index that was enumerated.
         /// </summary>
-        public string IndexName { get; set; }
+        public string IndexName = null;
 
         /// <summary>
         /// The time that the enumeration started.
         /// </summary>
-        public DateTime? StartTimeUtc { get; private set; }
+        public DateTime StartTimeUtc = DateTime.Now.ToUniversalTime();
 
         /// <summary>
         /// The time that the enumeration ended.
         /// </summary>
-        public DateTime? EndTimeUtc { get; private set; }
+        public DateTime EndTimeUtc = DateTime.Now.ToUniversalTime();
 
         /// <summary>
         /// The total number of milliseconds that elapsed while handling the enumeration.
         /// </summary>
-        public decimal? TotalTimeMs { get; private set; }
-         
+        public decimal TotalTimeMs = 0m;
+
         /// <summary>
         /// Source documents that matched the query.
         /// </summary>
-        public List<SourceDocument> Matches { get; private set; } 
+        public List<SourceDocument> Matches = new List<SourceDocument>();
 
         #endregion
 
@@ -66,14 +72,7 @@ namespace Komodo.Core
         /// Instantiates the object.
         /// </summary>
         public EnumerationResult()
-        {
-            Query = null;
-            Async = false;
-            IndexName = null;
-            StartTimeUtc = null;
-            EndTimeUtc = null;
-            TotalTimeMs = null;
-            Matches = new List<SourceDocument>(); 
+        { 
         }
 
         /// <summary>
@@ -93,18 +92,7 @@ namespace Komodo.Core
         #endregion
 
         #region Public-Methods
-
-        /// <summary>
-        /// Mark the query as having started.
-        /// </summary>
-        public void MarkStarted()
-        {
-            DateTime ts = DateTime.Now.ToUniversalTime();
-            StartTimeUtc = ts;
-            EndTimeUtc = null; 
-            TotalTimeMs = null;
-        }
-
+         
         /// <summary>
         /// Mark the query as having ended.
         /// </summary>
@@ -115,22 +103,7 @@ namespace Komodo.Core
             TimeSpan span = Convert.ToDateTime(EndTimeUtc) - Convert.ToDateTime(StartTimeUtc);
             TotalTimeMs = Convert.ToDecimal(span.TotalMilliseconds);
         }
-
-        /// <summary>
-        /// Attach matching documents to the results.
-        /// </summary>
-        /// <param name="documents">List of source documents.</param>
-        public void AttachResults(List<SourceDocument> documents)
-        {
-            if (documents != null)
-            {
-                foreach (SourceDocument curr in documents)
-                {
-                    Matches.Add(curr);
-                } 
-            }
-        }
-
+         
         #endregion
 
         #region Private-Methods

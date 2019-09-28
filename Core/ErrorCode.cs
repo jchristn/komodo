@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {
@@ -20,17 +21,12 @@ namespace Komodo.Core
         /// <summary>
         /// The ID of the error.
         /// </summary>
-        public ErrorId Id { get; set; }
-
-        /// <summary>
-        /// Human-readable description of the error.
-        /// </summary>
-        public string Description { get; private set; }
-
+        public ErrorId Id = ErrorId.NONE;
+         
         /// <summary>
         /// Data associated with the error.
         /// </summary>
-        public object Data { get; private set; } 
+        public object Data = null;
 
         #endregion
 

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Komodo.Core
 {
+    /// <summary>
+    /// Query to enumerate matching objects in Komodo.
+    /// </summary>
     public class EnumerationQuery
     {
         #region Public-Members
@@ -11,27 +14,27 @@ namespace Komodo.Core
         /// <summary>
         /// The GUID of the enumeration operation.
         /// </summary>
-        public string GUID { get; private set; }
+        public string GUID = null;
 
         /// <summary>
         /// Maximum number of results to retrieve.
         /// </summary>
-        public int? MaxResults { get; set; }
+        public int? MaxResults = 1000;
 
         /// <summary>
         /// The starting index position for the search.
         /// </summary>
-        public int? StartIndex { get; set; }
+        public int? StartIndex = 0;
 
         /// <summary>
         /// Search filters to apply to enumeration.
         /// </summary>
-        public List<SearchFilter> Filters { get; set; }
+        public List<SearchFilter> Filters = new List<SearchFilter>();
 
         /// <summary>
         /// Specify a URL to which the results should be submitted via HTTP POST.
         /// </summary>
-        public string PostbackUrl { get; set; }
+        public string PostbackUrl = null;
 
         #endregion
 

@@ -109,25 +109,7 @@ namespace Komodo.Server.Classes
                 return null;
             }
              
-            List<UserMaster> ret = null;
-
-            try
-            {
-                ret = Common.DeserializeJson<List<UserMaster>>(contents);
-                if (ret == null)
-                {
-                    Common.ExitApplication("UserMaster", "Unable to deserialize " + filename + " (null)", -1);
-                    return null;
-                }
-            }
-            catch (Exception e)
-            {
-                LoggingModule.ConsoleException("UserMaster", "Deserialization issue with " + filename, e);
-                Common.ExitApplication("UserMaster", "Unable to deserialize " + filename + " (exception)", -1);
-                return null;
-            }
-
-            return ret;
+            return Common.DeserializeJson<List<UserMaster>>(contents);
         }
 
         #endregion

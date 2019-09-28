@@ -1,148 +1,165 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
 using Komodo.Core;
+using Komodo.Core.Enums;
 using Komodo.Server.Classes;
 
 namespace Komodo.Server
 {
     public partial class KomodoServer
     {
-        static HttpResponse PostIndexDoc(RequestMetadata md)
+        private static async Task PostIndexDoc(RequestMetadata md)
         {
-            HttpResponse resp;
-             
-            #region Retrieve-DocType-from-QS
-             
-            if (String.IsNullOrEmpty(md.Params.Type))
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
+            string tempFilename = _Settings.Files.TempFiles + Guid.NewGuid().ToString();
+
+            try
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc no 'type' value found in querystring");
-                resp = new HttpResponse(md.Http, 400, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true)));
-                return resp;
-            }
+                #region Retrieve-DocType-from-QS
 
-            DocType currDocType = DocType.Json;
-            switch (md.Params.Type)
-            {
-                case "json":
-                    currDocType = DocType.Json;
-                    break;
+                if (String.IsNullOrEmpty(md.Params.Type))
+                {
+                    _Logging.Warn(header + "PostIndexDoc no 'type' value found in querystring");
+                    md.Http.Response.StatusCode = 400;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true));
+                    return;
+                }
 
-                case "xml":
-                    currDocType = DocType.Xml;
-                    break;
+                DocType currDocType = DocType.Json;
+                switch (md.Params.Type)
+                {
+                    case "json":
+                        currDocType = DocType.Json;
+                        break;
 
-                case "html":
-                    currDocType = DocType.Html;
-                    break;
+                    case "xml":
+                        currDocType = DocType.Xml;
+                        break;
 
-                case "sql":
-                    currDocType = DocType.Sql;
-                    break;
+                    case "html":
+                        currDocType = DocType.Html;
+                        break;
 
-                case "text":
-                    currDocType = DocType.Text;
-                    break;
+                    case "sql":
+                        currDocType = DocType.Sql;
+                        break;
 
-                default:
-                    _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc invalid 'type' value found in querystring: " + md.Params.Type);
-                    resp = new HttpResponse(md.Http, 400, null, "application/json",
-                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html].", null).ToJson(true)));
-                    return resp;
-            }
+                    case "text":
+                        currDocType = DocType.Text;
+                        break;
 
-            #endregion
-            
-            #region Set-Stopwatch
+                    default:
+                        _Logging.Warn(header + "PostIndexDoc invalid 'type' value found in querystring: " + md.Params.Type);
+                        md.Http.Response.StatusCode = 400;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(new ErrorResponse(400, "Supply 'type' [json/xml/html/sql/text] in querystring.", null).ToJson(true));
+                        return;
+                }
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+                #endregion
 
-            #endregion
+                #region Retrieve-Index
 
-            #region Retrieve-Index
+                string indexName = md.Http.Request.RawUrlEntries[0];
+                Index currIndex = _Index.GetIndexByName(indexName);
+                if (currIndex == null || currIndex == default(Index))
+                {
+                    _Logging.Warn(header + "PostIndexDoc unknown index " + indexName);
+                    md.Http.Response.StatusCode = 404;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null).ToJson(true));
+                    return;
+                }
+                 
+                IndexClient currClient = _Index.GetIndexClient(indexName);
+                if (currClient == null)
+                {
+                    _Logging.Warn(header + "PostIndexDoc unable to retrieve client for index " + indexName);
+                    md.Http.Response.StatusCode = 500;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true));
+                    return;
+                }
 
-            string indexName = md.Http.RawUrlEntries[0];
-            Index currIndex = _Index.GetIndexByName(indexName);
-            if (currIndex == null || currIndex == default(Index))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unknown index " + indexName);
-                return new HttpResponse(md.Http, 404, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown index '" + indexName + "'.", null).ToJson(true)));
-            }
+                #endregion
 
-            #endregion
+                #region Write-Temp-File
 
-            #region Add-or-Store
+                if (!String.IsNullOrEmpty(md.Params.Url) && !String.IsNullOrEmpty(md.Params.Type))
+                {
+                    Crawler crawler = new Crawler(md.Params.Url, (DocType)(Enum.Parse(typeof(DocType), md.Params.Type)));
 
-            IndexClient currClient = _Index.GetIndexClient(indexName);
-            if (currClient == null)
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to retrieve client for index " + indexName);
-                return new HttpResponse(md.Http, 500, null, "application/json",
-                    Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to retrieve client for index '" + indexName + "'.", null).ToJson(true)));
-            }
+                    using (FileStream fs = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        byte[] crawledData = crawler.RetrieveBytes();
+                        await fs.WriteAsync(crawledData, 0, crawledData.Length);
+                    }
+                }
+                else
+                {
+                    long bytesRemaining = md.Http.Request.ContentLength;
+                    byte[] buffer = new byte[65536];
 
-            ErrorCode error = null;
-            string masterDocId = null;
+                    using (FileStream fs = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        while (bytesRemaining > 0)
+                        {
+                            int bytesRead = await md.Http.Request.Data.ReadAsync(buffer, 0, buffer.Length);
+                            if (bytesRead > 0)
+                            {
+                                bytesRemaining -= bytesRead;
+                                fs.Write(buffer, 0, bytesRead);
+                            }
+                        }
+                    }
+                }
 
-            if (md.Params.Bypass)
-            {
-                if (!currClient.StoreDocument(
+                #endregion
+
+                #region Index-or-Store
+
+                IndexResult result = null;
+                 
+                result = currClient.AddDocument(
                     currDocType,
-                    md.Http.Data,
+                    tempFilename,
                     md.Params.Url,
                     md.Params.Name,
                     md.Params.Tags,
-                    md.Http.ContentType,
+                    md.Http.Request.ContentType,
                     md.Params.Title,
-                    out error, 
-                    out masterDocId))
+                    md.Params.Bypass);
+
+                if (result.Error.Id != ErrorId.NONE)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to store document in index " + indexName);
-                    return new HttpResponse(md.Http, 500, null, "application/json",
-                        Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to store document in index '" + indexName + "'.", error).ToJson(true)));
-                }
+                    _Logging.Warn(header + "PostIndexDoc unable to store document in index " + indexName);
+                    md.Http.Response.StatusCode = 500;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(500, "Unable to store document in index '" + indexName + "'.", result).ToJson(true));
+                    return;
+                } 
+
+                #endregion
+
+                md.Http.Response.StatusCode = 200;
+                md.Http.Response.ContentType = "application/json";
+                await md.Http.Response.Send(Common.SerializeJson(result, md.Params.Pretty));
+                return;
             }
-            else
+            finally
             {
-                if (!currClient.AddDocument(
-                    currDocType,
-                    md.Http.Data,
-                    md.Params.Url,
-                    md.Params.Name,
-                    md.Params.Tags,
-                    md.Http.ContentType,
-                    md.Params.Title,
-                    out error,
-                    out masterDocId))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "PostIndexDoc unable to add document to index " + indexName);
-                    return new HttpResponse(md.Http, 500, null, "application/json",
-                        Encoding.UTF8.GetBytes(new ErrorResponse(500, "Unable to add document to index '" + indexName + "'.", error).ToJson(true)));
-                }
+                if (File.Exists(tempFilename)) File.Delete(tempFilename);
             }
-
-            #endregion
-
-            #region Respond
-
-            sw.Stop();
-
-            IndexResponse ret = new IndexResponse(masterDocId, sw.ElapsedMilliseconds);
-            resp = new HttpResponse(md.Http, 200, null, "application/json",
-                Encoding.UTF8.GetBytes(Common.SerializeJson(ret, true)));
-
-            return resp;
-
-            #endregion
         }
     }
 }

@@ -12,7 +12,7 @@ using SyslogLogging;
 using RestWrapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using Komodo.Core.Enums;
 using Komodo.Core.Database;
 
 namespace Komodo.Core
@@ -50,10 +50,8 @@ namespace Komodo.Core
 
         #region Private-Members
 
-        private bool _Disposed = false;
         private bool _Destroying = false;
-        public int _MaxResults = 1000;
-
+        private int _MaxResults = 1000; 
         private Index _Index;
         private LoggingModule _Logging;
 
@@ -110,19 +108,19 @@ namespace Komodo.Core
             _Logging = logging;
             _RootDirectory = index.RootDirectory;
              
-            _Logging.Log(LoggingModule.Severity.Info, "IndexClient creating directories for index " + Name);
+            _Logging.Info("IndexClient creating directories for index " + Name);
             CreateDirectories();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexClient initializing database clients for index " + Name);
+            _Logging.Info("IndexClient initializing database clients for index " + Name);
             InitializeDatabases();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexClient initializing storage client for index " + Name);
+            _Logging.Info("IndexClient initializing storage client for index " + Name);
             InitializeBlobManager();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexClient initializing postings manager for index " + Name);
+            _Logging.Info("IndexClient initializing postings manager for index " + Name);
             InitializePostingsManager();
 
-            _Logging.Log(LoggingModule.Severity.Info, "IndexClient started for index " + Name + " [" + Common.TotalMsFrom(ts) + "ms]");
+            _Logging.Info("IndexClient started for index " + Name + " [" + Common.TotalMsFrom(ts) + "ms]");
         }
 
         #endregion
@@ -134,7 +132,45 @@ namespace Komodo.Core
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
+            if (_Postings != null)
+            {
+                _Postings.Dispose();
+                _Postings = null;
+            }
+
+            if (_DocsDbSqlite != null)
+            {
+                _DocsDbSqlite.Dispose();
+                _DocsDbSqlite = null;
+            }
+
+            if (_DocsDbSql != null)
+            {
+                _DocsDbSql.Dispose();
+                _DocsDbSql = null;
+            } 
+
+            if (_PostingsDbSqlite != null)
+            {
+                _PostingsDbSqlite.Dispose();
+                _PostingsDbSqlite = null;
+            }
+
+            if (_PostingsDbSql != null)
+            {
+                _PostingsDbSql.Dispose();
+                _PostingsDbSql = null;
+            }
+
+            if (_BlobSource != null)
+            {
+                _BlobSource = null;
+            }
+
+            if (_BlobParsed != null)
+            {
+                _BlobParsed = null;
+            }
         }
 
         /// <summary>
@@ -143,39 +179,26 @@ namespace Komodo.Core
         public void Destroy()
         {
             _Destroying = true;
-             
+
+            #region Gather-Records
+
+            DataTable sourceResult = null;
+            DataTable parsedResult = null;
+
             if (_DocsDbSql != null)
             {
-                #region Not-Sqlite
+                #region Sql
 
                 DatabaseWrapper.Expression e = new DatabaseWrapper.Expression(
                     new DatabaseWrapper.Expression("Id", DatabaseWrapper.Operators.GreaterThan, 0),
                     DatabaseWrapper.Operators.And,
                     new DatabaseWrapper.Expression("IndexName", DatabaseWrapper.Operators.Equals, _Index.IndexName));
 
-                DataTable sourceResult = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
-                _DocsDbSql.Delete("SourceDocuments", e);
+                sourceResult = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
+                _DocsDbSql.Delete("SourceDocuments", e); 
 
-                if (sourceResult != null && sourceResult.Rows.Count > 0)
-                {
-                    foreach (DataRow currRow in sourceResult.Rows)
-                    {
-                        string masterDocId = currRow["MasterDocId"].ToString();
-                        DeleteSourceDocument(masterDocId);
-                    }
-                }
-
-                DataTable parsedResult = _DocsDbSql.Select("ParsedDocuments", null, null, null, e, null);
+                parsedResult = _DocsDbSql.Select("ParsedDocuments", null, null, null, e, null);
                 _DocsDbSql.Delete("ParsedDocuments", e);
-
-                if (parsedResult != null && parsedResult.Rows.Count > 0)
-                {
-                    foreach (DataRow currRow in parsedResult.Rows)
-                    {
-                        string masterDocId = currRow["MasterDocId"].ToString();
-                        DeleteParsedDocument(masterDocId);
-                    }
-                }
 
                 _DocsDbSql.Delete("Terms", e);
 
@@ -190,348 +213,249 @@ namespace Komodo.Core
                     SqliteWrapper.Operators.And,
                     new SqliteWrapper.Expression("IndexName", SqliteWrapper.Operators.Equals, _Index.IndexName));
 
-                DataTable sourceResult = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
+                sourceResult = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
                 _DocsDbSqlite.Delete("SourceDocuments", e);
-
-                if (sourceResult != null && sourceResult.Rows.Count > 0)
-                {
-                    foreach (DataRow currRow in sourceResult.Rows)
-                    {
-                        string masterDocId = currRow["MasterDocId"].ToString();
-                        DeleteSourceDocument(masterDocId);
-                    }
-                }
-
-                DataTable parsedResult = _DocsDbSqlite.Select("ParsedDocuments", null, null, null, e, null);
+                 
+                parsedResult = _DocsDbSqlite.Select("ParsedDocuments", null, null, null, e, null);
                 _DocsDbSqlite.Delete("ParsedDocuments", e);
-
-                if (parsedResult != null && parsedResult.Rows.Count > 0)
-                {
-                    foreach (DataRow currRow in parsedResult.Rows)
-                    {
-                        string masterDocId = currRow["MasterDocId"].ToString();
-                        DeleteParsedDocument(masterDocId);
-                    }
-                }
-
+                 
                 _DocsDbSqlite.Delete("Terms", e);
 
                 #endregion
+            }
+
+            #endregion
+
+            #region Delete-Records
+
+            if (sourceResult != null && sourceResult.Rows.Count > 0)
+            {
+                foreach (DataRow currRow in sourceResult.Rows)
+                {
+                    string documentId = currRow["DocumentId"].ToString();
+                    DeleteSourceDocument(documentId).Wait();
+                }
+            }
+
+            if (parsedResult != null && parsedResult.Rows.Count > 0)
+            {
+                foreach (DataRow currRow in parsedResult.Rows)
+                {
+                    string documentId = currRow["DocumentId"].ToString();
+                    DeleteParsedDocument(documentId).Wait();
+                }
             } 
+
+            #endregion
         }
 
         /// <summary>
         /// Parse a document and add to the index.
         /// </summary>
         /// <param name="docType">The type of document.</param>
-        /// <param name="sourceData">The source data from the document.</param>
+        /// <param name="filename">The file to add to the index and store.</param>
         /// <param name="sourceUrl">The URL from which the content should be retrieved.</param>
-        /// <param name="error">Error code associated with the operation.</param>
-        /// <param name="masterDocId">Document ID of the added document.</param>
-        /// <returns>True if successful.</returns>
-        public bool AddDocument(
+        /// <param name="name">The name of the document.</param>
+        /// <param name="tags">Document tags in a comma-separated list.</param>
+        /// <param name="contentType">Content type of the document.</param>
+        /// <param name="title">Document title.</param>
+        /// <param name="storeOnly">Indicate if the document should be indexed and stored (false) or only stored (true).</param>
+        /// <returns>Index result.</returns>
+        public IndexResult AddDocument(
             DocType docType, 
-            byte[] sourceData, 
+            string filename,
             string sourceUrl, 
             string name,
             string tags,
             string contentType,
             string title,
-            out ErrorCode error, 
-            out string masterDocId)
+            bool storeOnly)
         {
-            error = null;
-            masterDocId = null;
-            bool cleanupRequired = false;
-            IndexedDoc doc = null;
+            IndexResult result = new IndexResult();
+            bool cleanupRequired = false; 
 
             try
             {
+                #region Check-Input
+
                 if (_Destroying)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument index is being destroyed");
-                    error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
-                    return false;
+                    _Logging.Warn("[" + Name + "] AddDocument index is being destroyed");
+                    result.Error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
+                    return result;
                 }
 
-                if ((sourceData == null || sourceData.Length < 1) && String.IsNullOrEmpty(sourceUrl))
+                if (String.IsNullOrEmpty(filename))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument source URL not supplied");
-                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "SourceUrl");
-                    return false;
+                    _Logging.Warn("[" + Name + "] AddDocument source filename not supplied");
+                    result.Error = new ErrorCode(ErrorId.MISSING_PARAMS, "Source filename not supplied.");
+                    return result;
                 }
-
-                #region Retrieve
-
-                if (!String.IsNullOrEmpty(sourceUrl))
+                  
+                if (!File.Exists(filename))
                 {
-                    Crawler crawler = new Crawler(sourceUrl, docType);
-                    byte[] data = crawler.RetrieveBytes();
-                    if (data == null || data.Length < 1)
-                    {
-                        _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to retrieve data from source " + sourceUrl);
-                        error = new ErrorCode(ErrorId.RETRIEVE_FAILED, sourceUrl);
-                        return false;
-                    }
-                    sourceData = new byte[data.Length];
-                    Buffer.BlockCopy(data, 0, sourceData, 0, data.Length);
+                    _Logging.Warn("[" + Name + "] AddDocument source filename " + filename + " does not exist");
+                    result.Error = new ErrorCode(ErrorId.READ_ERROR, "Source file does not exist.");
+                    return result;
                 }
 
                 #endregion
 
                 #region Parse-and-Create-IndexedDoc
 
-                doc = GenerateIndexedDoc(docType, sourceData, sourceUrl);
-                if (doc == null)
+                if (!storeOnly)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to parse source data");
-                    error = new ErrorCode(ErrorId.PARSE_ERROR, sourceUrl);
-                    return false;
+                    result.Document = GenerateIndexedDoc(docType, filename, sourceUrl);
+                    if (result.Document == null)
+                    {
+                        _Logging.Warn("[" + Name + "] AddDocument unable to parse source data");
+                        result.Error = new ErrorCode(ErrorId.PARSE_ERROR, sourceUrl);
+                        return result;
+                    }
+                    result.DocumentId = result.Document.DocumentId;
+                }
+                else
+                {
+                    result.Document = null;
+                    result.DocumentId = Guid.NewGuid().ToString();
                 }
 
-                masterDocId = doc.MasterDocId;
+                #endregion
+
+                #region Calculate-MD5-and-Length
+
+                string md5 = null;
+                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                {
+                    md5 = Common.Md5(fs);
+                }
+
+                long contentLength = new FileInfo(filename).Length;
 
                 #endregion
 
                 #region Add-to-Database 
 
-                string ts = null;
-                if (_DocsDbSql != null) ts = _DocsDbSql.Timestamp(DateTime.Now.ToUniversalTime());
-                else ts = _DocsDbSqlite.Timestamp(DateTime.Now.ToUniversalTime());
+                SourceDocument sourceDoc = new SourceDocument();
+                sourceDoc.IndexName = _Index.IndexName;
+                sourceDoc.DocumentId = result.DocumentId;
+                sourceDoc.Name = name;
+                sourceDoc.Title = title;
+                sourceDoc.Tags = tags;
+                sourceDoc.SourceUrl = sourceUrl;
+                sourceDoc.ContentType = contentType;
+                sourceDoc.ContentLength = contentLength;
+                sourceDoc.Md5 = md5;
+                sourceDoc.DocumentType = docType;
+                sourceDoc.Created = DateTime.Now.ToUniversalTime();
+                sourceDoc.Indexed = sourceDoc.Created;
 
-                // Source documents table
-                Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
-                sourceDocVals.Add("IndexName", _Index.IndexName);
-                sourceDocVals.Add("Name", name);
-                sourceDocVals.Add("Tags", tags);
-                sourceDocVals.Add("MasterDocId", doc.MasterDocId);
-                sourceDocVals.Add("SourceUrl", sourceUrl);
-                sourceDocVals.Add("ContentType", contentType);
-                sourceDocVals.Add("Title", title);
-                sourceDocVals.Add("ContentLength", sourceData.Length);
-                sourceDocVals.Add("DocType", docType.ToString());
-                sourceDocVals.Add("Created", ts);
-                sourceDocVals.Add("Indexed", ts);
-
+                Dictionary<string, object> sourceDocVals = sourceDoc.ToInsertDictionary();
                 if (_DocsDbSql != null) _DocsDbSql.Insert("SourceDocuments", sourceDocVals);
                 else _DocsDbSqlite.Insert("SourceDocuments", sourceDocVals);
 
-                // Parsed documents table
-                Dictionary<string, object> parsedDocVals = new Dictionary<string, object>();
-                parsedDocVals.Add("IndexName", _Index.IndexName);
-                parsedDocVals.Add("MasterDocId", doc.MasterDocId);
-                parsedDocVals.Add("DocType", docType.ToString());
-                parsedDocVals.Add("SourceContentLength", sourceData.Length);
-                parsedDocVals.Add("ContentLength", Common.SerializeJson(doc, false).Length);
-                parsedDocVals.Add("Created", ts);
-
-                if (_DocsDbSql != null) _DocsDbSql.Insert("ParsedDocuments", parsedDocVals);
-                else _DocsDbSqlite.Insert("ParsedDocuments", parsedDocVals);
-
-                if (doc.Terms != null && doc.Terms.Count > 0)
+                if (!storeOnly)
                 {
-                    foreach (Posting p in doc.Postings)
+                    DateTime parseStart = DateTime.Now;
+
+                    ParsedDocument parsedDoc = new ParsedDocument();
+                    parsedDoc.IndexName = _Index.IndexName;
+                    parsedDoc.DocumentId = result.DocumentId;
+                    parsedDoc.DocumentType = docType;
+                    parsedDoc.SourceContentLength = contentLength;
+                    parsedDoc.ContentLength = Common.SerializeJson(result.Document, false).Length;
+                    parsedDoc.Created = DateTime.Now.ToUniversalTime();
+
+                    Dictionary<string, object> parsedDocVals = parsedDoc.ToInsertDictionary();
+                    if (_DocsDbSql != null) _DocsDbSql.Insert("ParsedDocuments", parsedDocVals);
+                    else _DocsDbSqlite.Insert("ParsedDocuments", parsedDocVals);
+
+                    result.ParseTimeMs = (DateTime.Now - parseStart).TotalMilliseconds;
+
+                    DateTime postingsStart = DateTime.Now;
+
+                    if (result.Document.Terms != null && result.Document.Terms.Count > 0)
                     {
-                        if (!_Postings.AddPosting(p))
+                        _Logging.Debug("[" + Name + "] document ID " + result.Document.DocumentId + " contains " + result.Document.Postings.Count + " postings");
+
+                        foreach (Posting p in result.Document.Postings)
                         {
-                            _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to add posting for term " + p.Term + " in document ID " + doc.MasterDocId);
+                            if (!_Postings.AddPosting(p))
+                            {
+                                _Logging.Warn(
+                                    "[" + Name + "] " +
+                                    "AddDocument unable to add posting for term " +
+                                    p.Term + " in document ID " + result.Document.DocumentId);
+                            }
                         }
-                    } 
+                    }
+
+                    result.PostingsTimeMs = (DateTime.Now - postingsStart).TotalMilliseconds;
                 }
 
                 #endregion
 
                 #region Add-to-Filesystem
 
-                if (!WriteSourceDocument(sourceData, doc))
+                DateTime storageStart = DateTime.Now;
+
+                WriteSourceDocument(filename, result.Document).Wait();
+
+                if (!storeOnly)
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to write source document");
-                    error = new ErrorCode(ErrorId.WRITE_ERROR);
-                    cleanupRequired = true;
-                    return false;
+                    WriteParsedDocument(result.Document).Wait();
                 }
 
-                if (!WriteParsedDocument(doc))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] AddDocument unable to write parsed document");
-                    error = new ErrorCode(ErrorId.WRITE_ERROR);
-                    cleanupRequired = true;
-                    return false;
-                }
+                result.StorageTimeMs = (DateTime.Now - storageStart).TotalMilliseconds;
 
                 #endregion
 
-                return true;
+                result.MarkFinished();
+                return result;
             }
             finally
             {
                 #region Cleanup
 
-                if (cleanupRequired && doc != null)
+                if (cleanupRequired && !String.IsNullOrEmpty(result.DocumentId)) 
                 {
-                    _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] AddDocument starting cleanup due to failed add operation");
+                    _Logging.Info("[" + Name + "] AddDocument starting cleanup due to failed add operation");
 
                     if (_DocsDbSql != null)
                     {
-                        DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, doc.MasterDocId);
+                        DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("DocumentId", DatabaseWrapper.Operators.Equals, result.DocumentId);
                         _DocsDbSql.Delete("SourceDocuments", e);
                         _DocsDbSql.Delete("ParsedDocuments", e); 
                     }
                     else
                     {
-                        SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, doc.MasterDocId);
+                        SqliteWrapper.Expression e = new SqliteWrapper.Expression("DocumentId", SqliteWrapper.Operators.Equals, result.DocumentId);
                         _DocsDbSqlite.Delete("SourceDocuments", e);
                         _DocsDbSqlite.Delete("ParsedDocuments", e); 
                     }
 
-                    if (doc.Terms != null && doc.Terms.Count > 0)
+                    if (result.Document.Terms != null && result.Document.Terms.Count > 0)
                     {
-                        _Postings.RemoveDocument(doc.MasterDocId, doc.Terms);
+                        _Postings.RemoveDocument(result.DocumentId, result.Document.Terms);
                     }
                 }
 
                 #endregion
             }
         }
-
-        /// <summary>
-        /// Store a document in the index without parsing.
-        /// </summary>
-        /// <returns></returns>
-        public bool StoreDocument(
-            DocType docType,
-            byte[] sourceData,
-            string sourceUrl,
-            string name,
-            string tags,
-            string contentType,
-            string title,
-            out ErrorCode error,
-            out string masterDocId)
-        {
-            error = null;
-            masterDocId = null;
-            bool cleanupRequired = false; 
-
-            try
-            {
-                if (_Destroying)
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument index is being destroyed");
-                    error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
-                    return false;
-                }
-
-                if ((sourceData == null || sourceData.Length < 1) && String.IsNullOrEmpty(sourceUrl))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument source URL not supplied");
-                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "SourceUrl");
-                    return false;
-                }
-
-                #region Retrieve
-
-                if (!String.IsNullOrEmpty(sourceUrl))
-                {
-                    Crawler crawler = new Crawler(sourceUrl, docType);
-                    byte[] data = crawler.RetrieveBytes();
-                    if (data == null || data.Length < 1)
-                    {
-                        _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument unable to retrieve data from source " + sourceUrl);
-                        error = new ErrorCode(ErrorId.RETRIEVE_FAILED, sourceUrl);
-                        return false;
-                    }
-                    sourceData = new byte[data.Length];
-                    Buffer.BlockCopy(data, 0, sourceData, 0, data.Length);
-                }
-
-                #endregion
-                 
-                #region Add-to-Database 
-
-                masterDocId = Guid.NewGuid().ToString();
-
-                string ts = null;
-                if (_DocsDbSql != null) ts = _DocsDbSql.Timestamp(DateTime.Now.ToUniversalTime());
-                else ts = _DocsDbSqlite.Timestamp(DateTime.Now.ToUniversalTime());
-
-                // Source documents table
-                Dictionary<string, object> sourceDocVals = new Dictionary<string, object>();
-                sourceDocVals.Add("IndexName", _Index.IndexName);
-                sourceDocVals.Add("Name", name);
-                sourceDocVals.Add("Tags", tags);
-                sourceDocVals.Add("MasterDocId", masterDocId);
-                sourceDocVals.Add("SourceUrl", sourceUrl);
-                sourceDocVals.Add("Title", title);
-                sourceDocVals.Add("ContentType", contentType);
-                sourceDocVals.Add("ContentLength", sourceData.Length);
-                sourceDocVals.Add("DocType", docType.ToString());
-                sourceDocVals.Add("Created", ts);
-
-                if (_DocsDbSql != null) _DocsDbSql.Insert("SourceDocuments", sourceDocVals);
-                else _DocsDbSqlite.Insert("SourceDocuments", sourceDocVals);
-                 
-                #endregion
-
-                #region Add-to-Filesystem
-
-                if (!WriteSourceDocument(sourceData, contentType, masterDocId))
-                {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] StoreDocument unable to write source document");
-                    error = new ErrorCode(ErrorId.WRITE_ERROR);
-                    cleanupRequired = true;
-                    return false;
-                }
-
-                #endregion
-
-                return true;
-            }
-            finally
-            {
-                #region Cleanup
-
-                if (cleanupRequired)
-                {
-                    _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] StoreDocument starting cleanup due to failed add operation");
-
-                    if (_DocsDbSql != null)
-                    {
-                        DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
-                        _DocsDbSql.Delete("SourceDocuments", e); 
-                    }
-                    else
-                    {
-                        SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
-                        _DocsDbSqlite.Delete("SourceDocuments", e); 
-                    } 
-                }
-
-                #endregion
-            }
-        }
-
+         
         /// <summary>
         /// Check if a document exists in the index.
         /// </summary>
-        /// <param name="masterDocId">The ID of the document.</param>
-        /// <param name="error">Error code associated with the operation.</param>
+        /// <param name="documentId">The ID of the document.</param>
         /// <returns>True if the document exists.</returns>
-        public bool DocumentExists(string masterDocId, out ErrorCode error)
+        public bool DocumentExists(string documentId)
         {
-            error = null;
+            if (String.IsNullOrEmpty(documentId)) throw new ArgumentNullException(nameof(documentId));
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DocumentExists index is being destroyed");
-                error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
-                return false;
-            }
-
-            if (String.IsNullOrEmpty(masterDocId))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DocumentExists document ID not supplied");
-                error = new ErrorCode(ErrorId.MISSING_PARAMS, "MasterDocId");
+                _Logging.Warn("[" + Name + "] DocumentExists index is being destroyed");
                 return false;
             }
 
@@ -539,12 +463,12 @@ namespace Komodo.Core
 
             if (_DocsDbSql != null)
             {
-                DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
+                DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("DocumentId", DatabaseWrapper.Operators.Equals, documentId);
                 result = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
             }
             else
             {
-                SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
+                SqliteWrapper.Expression e = new SqliteWrapper.Expression("DocumentId", SqliteWrapper.Operators.Equals, documentId);
                 result = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
             }
 
@@ -555,129 +479,172 @@ namespace Komodo.Core
         /// <summary>
         /// Delete a document from the index.
         /// </summary>
-        /// <param name="masterDocId">The ID of the document.</param>
-        /// <param name="error">Error code associated with the operation.</param>
+        /// <param name="documentId">The ID of the document.</param> 
         /// <returns>True if successful.</returns>
-        public bool DeleteDocument(string masterDocId, out ErrorCode error)
+        public bool DeleteDocument(string documentId)
         {
-            error = null;
+            if (String.IsNullOrEmpty(documentId)) throw new ArgumentNullException(nameof(documentId));
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DeleteDocument index is being destroyed");
-                error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
+                _Logging.Warn("[" + Name + "] DeleteDocument index is being destroyed");
                 return false;
             }
 
-            if (String.IsNullOrEmpty(masterDocId))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DeleteDocument document ID not supplied");
-                error = new ErrorCode(ErrorId.MISSING_PARAMS, "MasterDocId");
-                return false;
-            }
+            _Logging.Info("[" + Name + "] DeleteDocument starting deletion of doc ID " + documentId);
 
-            _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] DeleteDocument starting deletion of doc ID " + masterDocId);
-             
-            IndexedDoc doc = null;
-            if (!GetParsedDocument(masterDocId, out doc))
-            {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] DeleteDocument unable to read parsed document ID " + masterDocId);
-                error = new ErrorCode(ErrorId.RETRIEVE_FAILED, null);
-                return false;
-            }
+            IndexedDoc doc = GetParsedDocument(documentId).Result;
 
             if (_DocsDbSql != null)
             {
-                DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("MasterDocId", DatabaseWrapper.Operators.Equals, masterDocId);
+                DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("DocumentId", DatabaseWrapper.Operators.Equals, documentId);
                 _DocsDbSql.Delete("SourceDocuments", e);
                 _DocsDbSql.Delete("ParsedDocuments", e); 
             }
             else
             {
-                SqliteWrapper.Expression e = new SqliteWrapper.Expression("MasterDocId", SqliteWrapper.Operators.Equals, masterDocId);
+                SqliteWrapper.Expression e = new SqliteWrapper.Expression("DocumentId", SqliteWrapper.Operators.Equals, documentId);
                 _DocsDbSqlite.Delete("SourceDocuments", e);
                 _DocsDbSqlite.Delete("ParsedDocuments", e); 
             }
 
-            bool deleteSource = DeleteSourceDocument(masterDocId);
-            bool deleteParsed = DeleteParsedDocument(masterDocId);
-            bool deletePostings = _Postings.RemoveDocument(doc.MasterDocId, doc.Terms);
+            bool deleteSource = DeleteSourceDocument(documentId).Result;
+            bool deleteParsed = DeleteParsedDocument(documentId).Result;
+            bool deletePostings = _Postings.RemoveDocument(doc.DocumentId, doc.Terms);
 
-            if (!deleteSource || !deleteParsed || !deletePostings)
+            if (!deleteSource || !deleteParsed || !deletePostings) return false;
+            _Logging.Info("[" + Name + "] DeleteDocument successfully deleted doc ID " + documentId);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieve the source document entry from the database.
+        /// </summary>
+        /// <param name="documentId">The ID of the document.</param> 
+        /// <returns>Source document.</returns>
+        public SourceDocument GetSourceDocument(string documentId)
+        {
+            if (String.IsNullOrEmpty(documentId)) throw new ArgumentNullException(nameof(documentId));
+
+            DataTable result = null;
+
+            if (_DocsDbSql != null)
             {
-                error = new ErrorCode(ErrorId.DELETE_ERROR, masterDocId);
-                return false;
+                DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("DocumentId", DatabaseWrapper.Operators.Equals, documentId);
+                result = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
+            }
+            else
+            {
+                SqliteWrapper.Expression e = new SqliteWrapper.Expression("DocumentId", SqliteWrapper.Operators.Equals, documentId);
+                result = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
             }
 
-            _Logging.Log(LoggingModule.Severity.Info, "[" + Name + "] DeleteDocument successfully deleted doc ID " + masterDocId);
-            return true;
+            if (result != null && result.Rows.Count > 0)
+            {
+                return SourceDocument.FromDataRow(result.Rows[0]);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Retrieve a series of source documents using a list of document IDs.
+        /// </summary>
+        /// <param name="documentIds">List of document IDs.</param>
+        /// <returns>List of source documents.</returns>
+        public List<SourceDocument> GetSourceDocuments(List<string> documentIds)
+        {
+            // Implement and then update the end of SearchInternal to use this rather
+            // than retrieving each source document individually to update doctype
+
+            if (documentIds == null || documentIds.Count < 1) return new List<SourceDocument>();
+
+            DataTable result = null;
+
+            if (_DocsDbSql != null)
+            {
+                DatabaseWrapper.Expression e = new DatabaseWrapper.Expression("DocumentId", DatabaseWrapper.Operators.In, documentIds);
+                result = _DocsDbSql.Select("SourceDocuments", null, null, null, e, null);
+            }
+            else
+            {
+                SqliteWrapper.Expression e = new SqliteWrapper.Expression("DocumentId", SqliteWrapper.Operators.In, documentIds);
+                result = _DocsDbSqlite.Select("SourceDocuments", null, null, null, e, null);
+            }
+
+            List<SourceDocument> ret = new List<SourceDocument>();
+
+            if (result != null && result.Rows.Count > 0)
+            {
+                foreach (DataRow curr in result.Rows)
+                {
+                    ret.Add(SourceDocument.FromDataRow(curr));
+                }
+            } 
+
+            return ret;
         }
 
         /// <summary>
         /// Retrieve a source document by ID from storage.
         /// </summary>
-        /// <param name="masterDocId">The ID of the document.</param>
-        /// <param name="sourceData">The source data from the document.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetSourceDocument(string masterDocId, out byte[] sourceData)
+        /// <param name="documentId">The ID of the document.</param>
+        /// <returns>Komodo object.</returns>
+        public async Task<KomodoObject> GetSourceDocumentData(string documentId)
         {
-            sourceData = null;
-            return ReadSourceDocument(masterDocId, out sourceData);
+            if (String.IsNullOrEmpty(documentId)) throw new ArgumentNullException(nameof(documentId));
+            return await ReadSourceDocument(documentId);
         }
 
         /// <summary>
         /// Retrieve a parsed document by ID from storage.
         /// </summary>
-        /// <param name="masterDocId">The ID of the document.</param>
-        /// <param name="doc">The parsed document.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetParsedDocument(string masterDocId, out IndexedDoc doc)
+        /// <param name="documentId">The ID of the document.</param>
+        /// <returns>Indexed document.</returns>
+        public async Task<IndexedDoc> GetParsedDocument(string documentId)
         {
-            doc = null;
-            return ReadParsedDocument(masterDocId, out doc);
+            if (String.IsNullOrEmpty(documentId)) throw new ArgumentNullException(nameof(documentId));
+            return await ReadParsedDocument(documentId);
         }
          
         /// <summary>
         /// Search the index.
         /// </summary>
         /// <param name="query">The query to execute.</param>
-        /// <param name="result">The result of the search.</param>
-        /// <param name="error">Error code associated with the operation.</param>
-        /// <returns>True if successful.</returns>
-        public bool Search(SearchQuery query, out SearchResult result, out ErrorCode error)
+        /// <returns>Search result.</returns>
+        public SearchResult Search(SearchQuery query)
         {
-            error = null;
-            result = new SearchResult(query);
-            result.MarkStarted();
+            SearchResult result = new SearchResult(query); 
 
             #region Setup
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search index is being destroyed");
-                error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
-                return false;
+                _Logging.Warn("[" + Name + "] Search index is being destroyed");
+                result.Error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
+                return result;
             }
 
             if (query == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search query not supplied");
-                error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
-                return false;
+                _Logging.Warn("[" + Name + "] Search query not supplied");
+                result.Error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
+                return result;
             }
 
             if (query.Required == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search required filter not supplied");
-                error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Filter");
-                return false;
+                _Logging.Warn("[" + Name + "] Search required filter not supplied");
+                result.Error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Filter");
+                return result;
             }
 
             if (query.Required.Terms == null || query.Required.Terms.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Search required terms not supplied");
-                error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Terms");
-                return false;
+                _Logging.Warn("[" + Name + "] Search required terms not supplied");
+                result.Error = new ErrorCode(ErrorId.MISSING_PARAMS, "Required Terms");
+                return result;
             }
               
             if (query.Optional == null || query.Optional.Terms == null)
@@ -703,20 +670,17 @@ namespace Komodo.Core
 
             if (!String.IsNullOrEmpty(query.PostbackUrl))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] Search starting async search with POSTback to " + query.PostbackUrl);
+                _Logging.Debug("[" + Name + "] Search starting async search with POSTback to " + query.PostbackUrl);
                 Task.Run(() => SearchTaskWrapper(query));
 
                 result = new SearchResult(query);
                 result.Async = true;
-                result.IndexName = Name;
-                result.MarkStarted();
-
-                return true;
+                result.IndexName = Name; 
+                return result;
             }
             else
-            {
-                long indexEnd = 0;
-                return SearchInternal(query, out result, out error, out indexEnd);
+            { 
+                return SearchInternal(query);
             }
 
             #endregion
@@ -800,51 +764,45 @@ namespace Komodo.Core
         /// <summary>
         /// Enumerate source documents held by the index.
         /// </summary>
-        /// <param name="query">The query to execute.</param>
-        /// <param name="result">The result of the enumeration.</param>
-        /// <param name="error">Error code associated with the operation.</param>
-        /// <returns>True if successful.</returns>
-        public bool Enumerate(EnumerationQuery query, out EnumerationResult result, out ErrorCode error)
+        /// <param name="query">The query to execute.</param> 
+        /// <returns>Enumeration result.</returns>
+        public EnumerationResult Enumerate(EnumerationQuery query)
         {
-            error = null;
-            result = new EnumerationResult(query);
-            result.MarkStarted();
+            EnumerationResult result = new EnumerationResult(query);
 
-            #region Check-for-Null-Values
+            #region Check-Input
 
             if (_Destroying)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Enumerate index is being destroyed");
-                error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
-                return false;
+                _Logging.Warn("[" + Name + "] Enumerate index is being destroyed");
+                result.Error = new ErrorCode(ErrorId.DESTROY_IN_PROGRESS);
+                return result;
             }
 
             if (query == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] Enumerate query not supplied");
-                error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
-                return false;
+                _Logging.Warn("[" + Name + "] Enumerate query not supplied");
+                result.Error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
+                return result;
             }
-             
+
+            if (query.MaxResults == null || query.MaxResults > 5000) query.MaxResults = 5000;
+
             #endregion
 
             #region Process
 
             if (!String.IsNullOrEmpty(query.PostbackUrl))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] Enumeration starting async search with POSTback to " + query.PostbackUrl);
-                Task.Run(() => EnumerationTaskWrapper(query));
-
-                result = new EnumerationResult(query);
-                result.Async = true;
-                result.IndexName = Name;
-                result.MarkStarted();
-
-                return true;
+                _Logging.Debug("[" + Name + "] Enumeration starting async search with POSTback to " + query.PostbackUrl);
+                Task.Run(() => EnumerationTask(query, result));
+                 
+                result.Async = true; 
+                return result;
             }
             else
             {
-                return EnumerationInternal(query, out result, out error);
+                return EnumerationInternal(query, result);
             }
 
             #endregion
@@ -853,23 +811,7 @@ namespace Komodo.Core
         #endregion
 
         #region Private-Methods
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_Disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                if (_DocsDbSqlite != null) _DocsDbSqlite.Dispose();
-                if (_Postings != null) _Postings.Dispose();
-            }
-
-            _Disposed = true;
-        }
-
+         
         #region Initialization
 
         private void CreateDirectories()
@@ -1093,9 +1035,11 @@ namespace Komodo.Core
             else return SqliteWrapper.DatabaseClient.SanitizeString(str);
         }
          
-        private IndexedDoc GenerateIndexedDoc(DocType docType, byte[] sourceData, string sourceUrl)
+        private IndexedDoc GenerateIndexedDoc(DocType docType, string filename, string sourceUrl)
         {
             IndexedDoc doc = null;
+
+            byte[] sourceData = File.ReadAllBytes(filename);
 
             switch (docType)
             {
@@ -1121,7 +1065,7 @@ namespace Komodo.Core
                     break;
                 default:
                     throw new ArgumentException("Unknown DocType");
-            }
+            } 
 
             return doc;
         }
@@ -1130,72 +1074,59 @@ namespace Komodo.Core
 
         #region Source-Documents
 
-        private bool WriteSourceDocument(byte[] data, IndexedDoc doc)
+        private async Task WriteSourceDocument(string filename, IndexedDoc doc)
         {
-            string filename = doc.MasterDocId + ".source";
-            return _BlobSource.Write(filename, "application/json", data).Result;
-        }
-
-        private bool WriteSourceDocument(byte[] data, string masterDocId, string contentType)
-        {
-            string filename = masterDocId + ".source";
-            return _BlobSource.Write(filename, contentType, data).Result;
-        }
-
-        private bool DeleteSourceDocument(string masterDocId)
-        {
-            string filename = masterDocId + ".source";
-            return _BlobSource.Delete(filename).Result;
-        }
-
-        private bool ReadSourceDocument(string masterDocId, out byte[] data)
-        {
-            string filename = masterDocId + ".source";
-            data = null;
-
-            try
+            string targetFilename = doc.DocumentId + ".source"; 
+            long contentLength = new FileInfo(filename).Length; 
+            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
-                data = _BlobSource.Get(filename).Result;
-                return true;
+                await _BlobSource.Write(targetFilename, null, contentLength, fs);
             }
-            catch (Exception)
-            {
-                return false;
-            }
+        }
+         
+        private async Task<bool> DeleteSourceDocument(string documentId)
+        {
+            string filename = documentId + ".source";
+            return await _BlobSource.Delete(filename);
+        }
+
+        private async Task<KomodoObject> ReadSourceDocument(string documentId)
+        {
+            string filename = documentId + ".source";
+
+            SourceDocument sourceDoc = GetSourceDocument(documentId);
+            if (sourceDoc == null) return null;
+
+            BlobData blob = await _BlobSource.GetStream(filename);
+            if (blob == null) return null;
+
+            KomodoObject ret = new KomodoObject(_Index.IndexName, documentId, sourceDoc.ContentType, blob.ContentLength, blob.Data);
+            return ret;
         }
 
         #endregion
 
         #region Parsed-Documents
 
-        private bool WriteParsedDocument(IndexedDoc doc)
+        private async Task WriteParsedDocument(IndexedDoc doc)
         {
-            string filename = doc.MasterDocId + ".parsed.json";
-            return _BlobParsed.Write(filename, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(doc, false))).Result;
+            string filename = doc.DocumentId + ".parsed.json";
+            await _BlobParsed.Write(filename, "application/json", Encoding.UTF8.GetBytes(Common.SerializeJson(doc, false)));
         }
         
-        private bool DeleteParsedDocument(string masterDocId)
+        private async Task<bool> DeleteParsedDocument(string documentId)
         {
-            string filename = masterDocId + ".parsed.json";
-            return _BlobParsed.Delete(filename).Result;
+            string filename = documentId + ".parsed.json";
+            return await _BlobParsed.Delete(filename);
         }
 
-        private bool ReadParsedDocument(string masterDocId, out IndexedDoc doc)
+        private async Task<IndexedDoc> ReadParsedDocument(string documentId)
         {
-            byte[] data;
-            doc = null;
-            string filename = masterDocId + ".parsed.json";
+            byte[] data; 
+            string filename = documentId + ".parsed.json";
 
-            try
-            {
-                data = _BlobParsed.Get(filename).Result;
-                doc = Common.DeserializeJson<IndexedDoc>(data);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            data = await _BlobParsed.Get(filename);
+            return Common.DeserializeJson<IndexedDoc>(data);
         }
 
         #endregion
@@ -1210,33 +1141,33 @@ namespace Komodo.Core
              
             if (!RequiredFiltersMatch(doc, query))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " does not match required filters");
+                _Logging.Debug("IndexClient " + Name + " DocMatchesFilters document ID " + doc.DocumentId + " does not match required filters");
                 return false;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches required filters");
+                _Logging.Debug("IndexClient " + Name + " DocMatchesFilters document ID " + doc.DocumentId + " matches required filters");
             }
 
             if (!ExcludeFiltersMatch(doc, query))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " one or more exclude filters matched");
+                _Logging.Debug("IndexClient " + Name + " DocMatchesFilters document ID " + doc.DocumentId + " one or more exclude filters matched");
                 return false;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches exclude filters");
+                _Logging.Debug("IndexClient " + Name + " DocMatchesFilters document ID " + doc.DocumentId + " matches exclude filters");
             }
 
             if (!OptionalFiltersMatch(doc, query, out filterScore))
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " does not match optional filters");
+                _Logging.Debug("IndexClient " + Name + " DocMatchesFilters document ID " + doc.DocumentId + " does not match optional filters");
                 return false;
             }
             else
             {
                 filterScore = Convert.ToDecimal(filterScore.ToString("N4"));
-                _Logging.Log(LoggingModule.Severity.Debug, "IndexClient " + Name + " DocMatchesFilters document ID " + doc.MasterDocId + " matches optional filters [score " + filterScore + "]");
+                _Logging.Debug("IndexClient " + Name + " DocMatchesFilters document ID " + doc.DocumentId + " matches optional filters [score " + filterScore + "]");
             }
 
             return true;
@@ -1253,7 +1184,7 @@ namespace Komodo.Core
             List<DataNode> nodes = DataNodesFromIndexedDoc(doc);
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
+                _Logging.Warn("[" + Name + "] RequiredFiltersMatch document ID " + doc.DocumentId + " has no data nodes");
                 return false;
             }
 
@@ -1263,7 +1194,7 @@ namespace Komodo.Core
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch null key supplied in filter");
+                    _Logging.Warn("[" + Name + "] RequiredFiltersMatch null key supplied in filter");
                     continue;
                 }
 
@@ -1285,13 +1216,13 @@ namespace Komodo.Core
             filterScore = 1m;
             if (query.Optional == null || query.Optional.Filter == null || query.Optional.Filter.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] OptionalFiltersMatch no optional filters found");
+                _Logging.Debug("[" + Name + "] OptionalFiltersMatch no optional filters found");
                 return true;
             }
 
             if (doc.Text != null || doc.Html != null)
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] OptionalFiltersMatch document type is text or HTML, skipping");
+                _Logging.Debug("[" + Name + "] OptionalFiltersMatch document type is text or HTML, skipping");
                 return true;  // not appropriate searches
             }
 
@@ -1301,7 +1232,7 @@ namespace Komodo.Core
             List<DataNode> nodes = DataNodesFromIndexedDoc(doc);
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] OptionalFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
+                _Logging.Warn("[" + Name + "] OptionalFiltersMatch document ID " + doc.DocumentId + " has no data nodes");
                 return false;
             }
              
@@ -1324,7 +1255,7 @@ namespace Komodo.Core
                 }
             }
 
-            _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] OptionalFiltersMatch document ID " + doc.MasterDocId + " [" + filterCount + " filters, " + matchCount + " matches: " + filterScore + " score]");
+            _Logging.Debug("[" + Name + "] OptionalFiltersMatch document ID " + doc.DocumentId + " [" + filterCount + " filters, " + matchCount + " matches: " + filterScore + " score]");
             if (matchCount > 0 && filterCount > 0) filterScore = (decimal)matchCount / filterCount;
             return true;
         }
@@ -1338,7 +1269,7 @@ namespace Komodo.Core
             List<DataNode> nodes = DataNodesFromIndexedDoc(doc);
             if (nodes == null || nodes.Count < 1)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch document ID " + doc.MasterDocId + " has no data nodes");
+                _Logging.Warn("[" + Name + "] RequiredFiltersMatch document ID " + doc.DocumentId + " has no data nodes");
                 return false;
             }
 
@@ -1346,7 +1277,7 @@ namespace Komodo.Core
             {
                 if (String.IsNullOrEmpty(currFilter.Field))
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] RequiredFiltersMatch null key supplied in filter");
+                    _Logging.Warn("[" + Name + "] RequiredFiltersMatch null key supplied in filter");
                     continue;
                 }
 
@@ -1471,7 +1402,7 @@ namespace Komodo.Core
                     return false;
 
                 default:
-                    _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] FilterMatch unknown condition: " + filter.Condition.ToString());
+                    _Logging.Warn("[" + Name + "] FilterMatch unknown condition: " + filter.Condition.ToString());
                     return false;
             } 
         }
@@ -1482,45 +1413,33 @@ namespace Komodo.Core
 
         private void SearchTaskWrapper(SearchQuery query)
         {
-            SearchResult result = null;
-            ErrorCode error = null;
-
-            long indexEnd = 0;
-            bool success = SearchInternal(query, out result, out error, out indexEnd);
-            byte[] data = null;
-
-            if (success) data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
-            else data = Encoding.UTF8.GetBytes(Common.SerializeJson(error, true));
+            SearchResult result = SearchInternal(query);
+            byte[] data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
 
             RestRequest req = new RestRequest(
                 query.PostbackUrl,
                 HttpMethod.POST,
                 null,
-                "application/json",
-                true);
+                "application/json");
              
             RestResponse resp = req.Send(data); 
             if (resp == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchTaskWrapper no response from POSTback URL " + query.PostbackUrl);
+                _Logging.Warn("[" + Name + "] SearchTaskWrapper no response from POSTback URL " + query.PostbackUrl);
                 return;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
+                _Logging.Debug("[" + Name + "] SearchTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
                 return;
             } 
         }
 
-        private bool SearchInternal(SearchQuery query, out SearchResult result, out ErrorCode error, out long indexEnd)
-        {
-            error = null;
-            result = new SearchResult(query);
+        private SearchResult SearchInternal(SearchQuery query)
+        { 
+            SearchResult result = new SearchResult(query);
             result.IndexName = _Index.IndexName;
             result.MatchCount = new MatchCounts();
-            result.MarkStarted();
-
-            indexEnd = query.StartIndex;
 
             try
             {
@@ -1534,6 +1453,9 @@ namespace Komodo.Core
 
                 #region Process
 
+                int startIndex = query.StartIndex;
+                if (startIndex < 0) startIndex = 0;
+
                 while (docsMatching.Count < query.MaxResults)
                 {
                     bool endOfSearch = false;
@@ -1542,19 +1464,24 @@ namespace Komodo.Core
 
                     while (true)
                     {
-                        _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal retrieving documents matching terms, index " + indexEnd + " max results " + query.MaxResults);
+                        DateTime startTime = DateTime.Now;
+                        _Logging.Debug("[" + Name + "] SearchInternal calling GetMatchingDocuments [index " + query.StartIndex + " max " + query.MaxResults + "]");
 
                         List<string> currTermsNotFound = new List<string>();
 
                         _Postings.GetMatchingDocuments(
-                            indexEnd,
+                            startIndex,
                             query.MaxResults,
                             query.Required.Terms,
                             query.Optional.Terms,
                             query.Exclude.Terms,
                             out currTermsNotFound,
                             out currDocsMatching,
-                            out indexEnd);
+                            out result.NextStartIndex);
+
+                        _Logging.Debug("[" + Name + "] SearchInternal returned from GetMatchingDocuments after " + Common.TotalMsFrom(startTime) + "ms [index " + query.StartIndex + " max results " + query.MaxResults + " next " + result.NextStartIndex + "]");
+
+                        startIndex = result.NextStartIndex;
 
                         if (currTermsNotFound != null && currTermsNotFound.Count > 0)
                         {
@@ -1578,12 +1505,12 @@ namespace Komodo.Core
                         foreach (KeyValuePair<string, decimal> curr in currDocsMatching)
                         {
                             if (!docsMatching.ContainsKey(curr.Key)) docsMatching.Add(curr.Key, curr.Value);
-                            _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal adding document " + curr.Key);
+                            _Logging.Debug("[" + Name + "] SearchInternal adding document " + curr.Key);
                         }
 
                         if (currDocsMatching.Count >= query.MaxResults)
                         {
-                            _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal potential results " + currDocsMatching.Count + " exceeds max results " + query.MaxResults);
+                            _Logging.Debug("[" + Name + "] SearchInternal potential results " + currDocsMatching.Count + " exceeds max results " + query.MaxResults);
                             break;
                         }
                     }
@@ -1591,13 +1518,13 @@ namespace Komodo.Core
                     if (endOfSearch)
                     {
                         // no more documents
-                        _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal reached end of search results");
+                        _Logging.Debug("[" + Name + "] SearchInternal reached end of search results");
                         break;
                     }
                     else
                     {
                         // increment limit and offset
-                        indexEnd += query.MaxResults;
+                        result.NextStartIndex += query.MaxResults;
                     }
 
                     #endregion
@@ -1610,17 +1537,11 @@ namespace Komodo.Core
                     {
                         foreach (KeyValuePair<string, decimal> curr in currDocsMatching)
                         {
-                            IndexedDoc currParsedDoc = null;
-                            if (!ReadParsedDocument(curr.Key, out currParsedDoc))
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchInternal unable to read parsed document ID " + curr.Key);
-                                continue;
-                            }
-
+                            IndexedDoc currParsedDoc = ReadParsedDocument(curr.Key).Result;
                             decimal filterScore = 1m;
                             if (!DocMatchesFilters(currParsedDoc, query, out filterScore))
                             {
-                                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal document ID " + curr.Key + " does not match filters, removing");
+                                _Logging.Debug("[" + Name + "] SearchInternal document ID " + curr.Key + " does not match filters, removing");
                                 if (docsMatching.ContainsKey(curr.Key)) docsMatching.Remove(curr.Key);
                                 currDocsMatching.Remove(curr.Key);
                                 continue;
@@ -1647,59 +1568,20 @@ namespace Komodo.Core
 
                 if (docsMatching != null && docsMatching.Count > 0)
                 {
-                    List<Document> documents = new List<Document>();
+                    List<SourceDocument> sourceDocs = GetSourceDocuments(new List<string>(docsMatching.Keys));
 
                     foreach (KeyValuePair<string, decimal> curr in docsMatching)
                     {
-                        Document currDoc = new Document();
-                        currDoc.MasterDocId = curr.Key;
+                        MatchingDocument currDoc = new MatchingDocument();
+                        currDoc.DocumentId = curr.Key;
                         currDoc.Score = Convert.ToDecimal(curr.Value.ToString("N4"));
-                        currDoc.DocumentType = null;
-                        currDoc.Errors = new List<string>();
 
-                        byte[] data = null; 
-                        IndexedDoc currIndexedDoc = null;
-
-                        if (query.IncludeParsedDoc || query.IncludeContent)
+                        if (sourceDocs.Exists(d => d.DocumentId.Equals(curr.Key)))
                         {
-                            if (!ReadParsedDocument(curr.Key, out currIndexedDoc))
-                            {
-                                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchInternal document ID " + curr.Key + " cannot retrieve parsed doc");
-                                currDoc.Errors.Add("Unable to retrieve parsed document");
-                            }
-                            else
-                            {
-                                currDoc.DocumentType = currIndexedDoc.DocumentType;
-
-                                if (query.IncludeParsedDoc)
-                                {
-                                    currDoc.Parsed = currIndexedDoc;
-                                }
-
-                                if (query.IncludeContent)
-                                {
-                                    if (!ReadSourceDocument(curr.Key, out data))
-                                    {
-                                        _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] SearchInternal document ID " + curr + " cannot retrieve source doc");
-                                        currDoc.Errors.Add("Unable to retrieve source document");
-                                    }
-                                    else
-                                    {
-                                        if (currIndexedDoc != null && currIndexedDoc.DocumentType == DocType.Json)
-                                        {
-                                            JToken jsonData = JToken.Parse(Encoding.UTF8.GetString(data));
-                                            currDoc.Data = jsonData;
-                                        }
-                                        else
-                                        {
-                                            currDoc.Data = Encoding.UTF8.GetString(data);
-                                        }
-                                    }
-                                }
-                            }
+                            currDoc.DocumentType = sourceDocs.Where(d => d.DocumentId.Equals(curr.Key)).FirstOrDefault().DocumentType;
                         }
-
-                        _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal appended doc ID " + curr.Key + " to result");
+                        
+                        _Logging.Debug("[" + Name + "] SearchInternal appended doc ID " + curr.Key + " to result");
                         result.Documents.Add(currDoc);
                     } 
                 }
@@ -1708,12 +1590,12 @@ namespace Komodo.Core
 
                 result.TermsNotFound = termsNotFound.Distinct().ToList();
                 result.SortMatchesByScore();
-                return true;
+                result.MarkFinished();
+                return result;
             }
             finally
-            {
-                result.MarkEnded();
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal finished (" + result.TotalTimeMs + "ms)");
+            { 
+                _Logging.Debug("[" + Name + "] SearchInternal finished (" + result.TotalTimeMs + "ms)");
             }
         }
 
@@ -1721,82 +1603,55 @@ namespace Komodo.Core
 
         #region Enumeration
 
-        private void EnumerationTaskWrapper(EnumerationQuery query)
+        private async Task EnumerationTask(EnumerationQuery query, EnumerationResult result)
         {
-            EnumerationResult result = null;
-            ErrorCode error = null;
-
-            bool success = EnumerationInternal(query, out result, out error);
-            byte[] data = null;
-
-            if (success) data = Encoding.UTF8.GetBytes(Common.SerializeJson(result, true));
-            else data = Encoding.UTF8.GetBytes(Common.SerializeJson(error, true));
-
+            EnumerationResult final = EnumerationInternal(query, result);
+            
             RestRequest req = new RestRequest(
                 query.PostbackUrl,
                 HttpMethod.POST,
                 null,
-                "application/json",
-                true);
+                "application/json");
 
-            RestResponse resp = req.Send(data);
+            RestResponse resp = await req.SendAsync(Common.SerializeJson(result, true));
             if (resp == null)
             {
-                _Logging.Log(LoggingModule.Severity.Warn, "[" + Name + "] EnumerationTaskWrapper no response from POSTback URL " + query.PostbackUrl);
+                _Logging.Warn("[" + Name + "] EnumerationTask no response from POSTback URL " + query.PostbackUrl);
                 return;
             }
             else
             {
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] EnumerationTaskWrapper " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
+                _Logging.Debug("[" + Name + "] EnumerationTask " + resp.StatusCode + " response from POSTback URL " + query.PostbackUrl);
                 return;
             }
         }
 
-        private bool EnumerationInternal(EnumerationQuery query, out EnumerationResult result, out ErrorCode error)
+        private EnumerationResult EnumerationInternal(EnumerationQuery query, EnumerationResult result)
         {
-            error = null;
-            result = new EnumerationResult(query);
             result.GUID = query.GUID;
-            result.IndexName = _Index.IndexName;
-            result.MarkStarted();
 
             try
-            {
-                #region Check-for-Null-Values
-
-                if (query == null)
-                {
-                    error = new ErrorCode(ErrorId.MISSING_PARAMS, "Query");
-                    return false;
-                }
-
-                if (query.MaxResults == null || query.MaxResults > 5000) query.MaxResults = 5000;
-
-                #endregion
-
+            { 
                 #region Execute-Query
 
                 string dbQuery = _IndexQueries.SelectSourceDocumentsByEnumerationQuery(query);
                 DataTable dbResult = null;
                 if (_DocsDbSql != null) dbResult = _DocsDbSql.Query(dbQuery);
                 else dbResult = _DocsDbSqlite.Query(dbQuery);
-
-                List<SourceDocument> sourceDocs = new List<SourceDocument>();
+                 
                 foreach (DataRow row in dbResult.Rows)
                 {
-                    sourceDocs.Add(SourceDocument.FromDataRow(row));
+                    result.Matches.Add(SourceDocument.FromDataRow(row));
                 }
-                
-                result.AttachResults(sourceDocs);
-                
+
                 #endregion
-                 
-                return true;
+
+                return result;
             }
             finally
             {
                 result.MarkEnded();
-                _Logging.Log(LoggingModule.Severity.Debug, "[" + Name + "] SearchInternal finished (" + result.TotalTimeMs + "ms)");
+                _Logging.Debug("[" + Name + "] SearchInternal finished (" + result.TotalTimeMs + "ms)");
             }
         }
 

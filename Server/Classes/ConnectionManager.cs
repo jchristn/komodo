@@ -10,7 +10,7 @@ namespace Komodo.Server.Classes
     /// <summary>
     /// Connection manager.
     /// </summary>
-    public class ConnectionManager
+    internal class ConnectionManager
     {
         #region Public-Members
 
@@ -25,10 +25,7 @@ namespace Komodo.Server.Classes
 
         #region Constructors-and-Factories
 
-        /// <summary>
-        /// Instantiate the object.
-        /// </summary>
-        public ConnectionManager()
+        internal ConnectionManager()
         {
             _Connections = new List<Connection>();
             _Lock = new object();
@@ -36,24 +33,20 @@ namespace Komodo.Server.Classes
 
         #endregion
 
-        #region Public-Methods
-
-        /// <summary>
-        /// Add a connection.
-        /// </summary>
-        /// <param name="threadId">Thread ID.</param>
-        /// <param name="req">HttpRequest object.</param>
-        public void Add(int threadId, HttpRequest req)
+        #region Internal-Methods
+         
+        internal void Add(int threadId, HttpContext ctx)
         {
             if (threadId <= 0) return;
-            if (req == null) return;
+            if (ctx == null) return;
+            if (ctx.Request == null) return;
 
             Connection conn = new Connection();
             conn.ThreadId = threadId;
-            conn.SourceIp = req.SourceIp;
-            conn.SourcePort = req.SourcePort;
-            conn.Method = req.Method;
-            conn.RawUrl = req.RawUrlWithoutQuery;
+            conn.SourceIp = ctx.Request.SourceIp;
+            conn.SourcePort = ctx.Request.SourcePort;
+            conn.Method = ctx.Request.Method;
+            conn.RawUrl = ctx.Request.RawUrlWithoutQuery;
             conn.StartTime = DateTime.Now.ToUniversalTime();
             conn.EndTime = DateTime.Now.ToUniversalTime();
 
@@ -62,12 +55,8 @@ namespace Komodo.Server.Classes
                 _Connections.Add(conn);
             }
         }
-
-        /// <summary>
-        /// Close a connection.
-        /// </summary>
-        /// <param name="threadId">Thread ID.</param>
-        public void Close(int threadId)
+         
+        internal void Close(int threadId)
         {
             if (threadId <= 0) return;
 
@@ -76,12 +65,8 @@ namespace Komodo.Server.Classes
                 _Connections = _Connections.Where(x => x.ThreadId != threadId).ToList();
             }
         }
-        
-        /// <summary>
-        /// Retrieve a list of active connections.
-        /// </summary>
-        /// <returns>List of Connection objects.</returns>
-        public List<Connection> GetActiveConnections()
+         
+        internal List<Connection> GetActiveConnections()
         {
             List<Connection> curr = new List<Connection>();
 

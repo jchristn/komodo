@@ -123,25 +123,7 @@ namespace Komodo.Server.Classes
                 return null;
             }
              
-            List<ApiKeyPermission> ret = null;
-
-            try
-            {
-                ret = Common.DeserializeJson<List<ApiKeyPermission>>(contents);
-                if (ret == null)
-                {
-                    Common.ExitApplication("ApiKeyPermission", "Unable to deserialize " + filename + " (null)", -1);
-                    return null;
-                }
-            }
-            catch (Exception e)
-            {
-                LoggingModule.ConsoleException("ApiKeyPermission", "Deserialization issue with " + filename, e);
-                Common.ExitApplication("ApiKeyPermission", "Unable to deserialize " + filename + " (exception)", -1);
-                return null;
-            }
-
-            return ret;
+            return Common.DeserializeJson<List<ApiKeyPermission>>(contents);
         }
 
         /// <summary>

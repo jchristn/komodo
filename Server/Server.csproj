@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,18 +6,23 @@
     <AssemblyName>Komodo.Server</AssemblyName>
     <RootNamespace>Komodo.Server</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.5</Version>
+    <Version>1.3.0</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>RESTful API server for Komodo Search</Description>
     <Copyright>(c)2019 Joel Christner</Copyright>
-    <PackageLicenseUrl>https://github.com/jchristn/komodo/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageTags>restful api server find index komodo search</PackageTags>
-    <PackageReleaseNotes>Major code cleanup.  Purpose-built postings manager for improved scale on indexing, search, and storage.  Removed terms table.  Searches now continue until exhaustion or until max results count is met.  Fix for match counts on search results.  Index bypass now available, a way to store a document in an Index without indexing it (simple object storage).</PackageReleaseNotes>
+    <PackageTags>komodo search index retrieval rest api server find elastic lucene solr</PackageTags>
+    <PackageReleaseNotes>Breaking changes, async APIs, class changes to SearchResult and EnumerationResult including error codes, parsers for JSON/XML/SQL now use text parser</PackageReleaseNotes>
     <PackageId>Komodo.Server</PackageId>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>C:\Code\Komodo\Core\Server\Komodo.Server.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +30,14 @@
     <None Remove="Assets\ascii-logo.png" />
     <None Remove="Assets\favicon.ico" />
     <None Remove="SearchApp\index.html" />
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -43,17 +56,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DatabaseWrapper" Version="1.3.2" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="DatabaseWrapper" Version="1.4.5" />
+    <PackageReference Include="Komodo.Core" Version="1.3.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="RestWrapper" Version="2.0.4" />
-    <PackageReference Include="SyslogLogging" Version="1.0.11" />
+    <PackageReference Include="RestWrapper" Version="2.1.2" />
+    <PackageReference Include="SyslogLogging" Version="1.2.1" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.111" />
-    <PackageReference Include="Watson" Version="2.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
+    <PackageReference Include="Watson" Version="3.0.3" />
   </ItemGroup>
 
   <ItemGroup>

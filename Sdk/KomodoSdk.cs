@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -9,9 +10,14 @@ using System.Web;
 using RestWrapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Komodo.Core;
+using Komodo.Core.Enums;
 
-namespace Komodo.Core
+namespace Komodo.SDK
 {
+    /// <summary>
+    /// SDK for Komodo information storage, search, and retrieval platform.
+    /// </summary>
     public class KomodoSdk
     {
         #region Public-Members
@@ -62,91 +68,57 @@ namespace Komodo.Core
         /// Test authenticated connectivity to Komodo.
         /// </summary>
         /// <returns>True if successful.</returns>
-        public bool Loopback()
+        public async Task<bool> Loopback()
         {
             RestRequest req = new RestRequest(
                 _Endpoint + "loopback",
                 HttpMethod.GET,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send(); 
+            RestResponse resp = await req.SendAsync();
 
-            if (resp != null && resp.StatusCode == 200)
-            {
-                Debug.WriteLine("KomodoSdk Loopback success");
-                return true;
-            }
-            else
-            {
-                Debug.WriteLine("KomodoSdk Loopback failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+            if (resp != null && resp.StatusCode == 200) return true;
+            else return false; 
         }
 
         /// <summary>
         /// Return the list of indices available on the server.
-        /// </summary>
-        /// <param name="indices">List of string index names.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetIndices(out List<string> indices)
+        /// </summary> 
+        /// <returns>List of index names.</returns>
+        public async Task<List<string>> GetIndices()
         {
-            indices = new List<string>();
-
             RestRequest req = new RestRequest(
                 _Endpoint + "indices",
                 HttpMethod.GET,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync();
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                indices = Common.DeserializeJson<List<string>>(resp.Data);
-                Debug.WriteLine("KomodoSdk GetIndices returning " + indices.Count + " entries");
-                return true;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<List<string>>(respData);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk GetIndices failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return new List<string>(); 
         }
 
         /// <summary>
         /// Retrieve index details.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="index">Index details.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetIndex(string indexName, out Index index)
-        {
-            index = null;
+        /// <returns>Index.</returns>
+        public async Task<Index> GetIndex(string indexName)
+        { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
             string url = indexName;
@@ -155,44 +127,31 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.GET,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
-            { 
-                index = Common.DeserializeJson<Index>(resp.Data);
-                Debug.WriteLine("KomodoSdk GetIndex returning success");
-                return true;
-            }
-            else
+            RestResponse resp = await req.SendAsync();
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                Debug.WriteLine("KomodoSdk GetIndex failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<Index>(respData);
             }
+
+            return null;
         }
 
         /// <summary>
         /// Retrieve statistics related to an index.
         /// </summary>
-        /// <param name="indexName">Name of the index.</param>
-        /// <param name="stats">Index statistics.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetIndexStats(string indexName, out IndexStats stats)
+        /// <param name="indexName">Name of the index.</param> 
+        /// <returns>Index statistics.</returns>
+        public async Task<IndexStats> GetIndexStats(string indexName)
         {
-            stats = null;
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
             string url = indexName + "/stats";
@@ -201,87 +160,55 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.GET,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
-            { 
-                stats = Common.DeserializeJson<IndexStats>(resp.Data);
-                Debug.WriteLine("KomodoSdk GetIndexStats returning success");
-                return true;
-            }
-            else
+            RestResponse resp = await req.SendAsync();
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                Debug.WriteLine("KomodoSdk GetIndexStats failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<IndexStats>(respData);
             }
+
+            return null;
         }
 
         /// <summary>
         /// Creates an index.
-        /// </summary>
-        /// <param name="indexName">Name of the index.</param>
-        /// <param name="options">Index options.</param>
-        /// <returns>True if successful.</returns>
-        public bool CreateIndex(string indexName, Index index)
-        { 
-            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+        /// </summary> 
+        /// <param name="index">Index.</param> 
+        public async Task CreateIndex(Index index)
+        {
             if (index == null) throw new ArgumentNullException(nameof(index));
-
+            if (String.IsNullOrEmpty(index.IndexName)) throw new ArgumentNullException(nameof(Index.IndexName));
+          
             string url = "indices";
 
             RestRequest req = new RestRequest(
                 _Endpoint + url,
                 HttpMethod.POST,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(index, true)));
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
-            { 
-                Debug.WriteLine("KomodoSdk CreateIndex returning success");
-                return true;
-            }
-            else
-            {
-                Debug.WriteLine("KomodoSdk CreateIndex failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+            RestResponse resp = await req.SendAsync(SerializeJson(index, true));
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
         }
 
         /// <summary>
         /// Deletes an index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="cleanup">True to delete files associated with the index.</param>
-        /// <returns>True if successful.</returns>
-        public bool DeleteIndex(string indexName, bool cleanup)
+        /// <param name="cleanup">True to delete files associated with the index.</param> 
+        public async Task DeleteIndex(string indexName, bool cleanup)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName)); 
 
@@ -292,34 +219,16 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.DELETE,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
-            {
-                Debug.WriteLine("KomodoSdk DeleteIndex returning success");
-                return true;
-            }
-            else
-            {
-                Debug.WriteLine("KomodoSdk DeleteIndex failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
-        }
+            RestResponse resp = await req.SendAsync();
 
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e; 
+        }
+         
         /// <summary>
         /// Add a document to the specified index.
         /// </summary>
@@ -328,28 +237,10 @@ namespace Komodo.Core
         /// <param name="title">Title for the document.</param>
         /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
-        /// <param name="data">Data from the document.</param>
-        /// <returns>True if successful.</returns>
-        public bool AddDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data)
-        {
-            IndexResponse resp = null;
-            return AddDocument(indexName, sourceUrl, title, tags, docType, data, out resp);
-        }
-
-        /// <summary>
-        /// Add a document to the specified index.
-        /// </summary>
-        /// <param name="indexName">Name of the index.</param>
-        /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
-        /// <param name="title">Title for the document.</param>
-        /// <param name="tags">Document tags.</param>
-        /// <param name="docType">Type of document.</param>
-        /// <param name="data">Data from the document.</param>
-        /// <param name="response">Response data from the server.</param>
-        /// <returns>True if successful.</returns>
-        public bool AddDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data, out IndexResponse response)
-        {
-            response = null;
+        /// <param name="data">Data from the document.</param> 
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> AddDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data)
+        { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(sourceUrl)
                 && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
@@ -365,33 +256,22 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.POST,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send(data);
-             
-            if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync(data);
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                response = Common.DeserializeJson<IndexResponse>(resp.Data);
-                Debug.WriteLine("KomodoSdk AddDocument returning success");
-                return true;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<IndexResult>(respData);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk AddDocument failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -402,12 +282,10 @@ namespace Komodo.Core
         /// <param name="title">Title for the document.</param>
         /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
-        /// <param name="data">Data from the document.</param>
-        /// <param name="response">Response data from the server.</param>
-        /// <returns>True if successful.</returns>
-        public bool StoreDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data, out IndexResponse response)
-        {
-            response = null;
+        /// <param name="data">Data from the document.</param> 
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> StoreDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data)
+        { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(sourceUrl)
                 && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
@@ -423,33 +301,22 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.POST,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send(data);
-             
-            if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync(data);
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                response = Common.DeserializeJson<IndexResponse>(resp.Data);
-                Debug.WriteLine("KomodoSdk StoreDocument returning success");
-                return true;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<IndexResult>(respData);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk StoreDocument failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -457,11 +324,9 @@ namespace Komodo.Core
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
         /// <param name="docId">Document ID.</param>
-        /// <param name="data">Data from the document.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetSourceDocument(string indexName, string docId, out byte[] data)
-        {
-            data = null;
+        /// <returns>Komodo object.</returns>
+        public async Task<KomodoObject> GetSourceDocument(string indexName, string docId)
+        { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
 
@@ -471,46 +336,31 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.GET,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync();
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                data = new byte[resp.Data.Length];
-                Buffer.BlockCopy(resp.Data, 0, data, 0, resp.Data.Length);
-                Debug.WriteLine("KomodoSdk GetSourceDocument returning " + resp.Data.Length + " bytes");
-                return true;
+                return new KomodoObject(indexName, docId, resp.ContentType, resp.ContentLength, resp.Data);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk GetSourceDocument failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return null;
         }
 
         /// <summary>
         /// Retrieve a parsed, indexed document from the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="docId">Document ID.</param>
-        /// <param name="doc">Indexed and parsed document.</param>
-        /// <returns>True if successful.</returns>
-        public bool GetParsedDocument(string indexName, string docId, out IndexedDoc doc)
+        /// <param name="docId">Document ID.</param> 
+        /// <returns>Indexed document.</returns>
+        public async Task<IndexedDoc> GetParsedDocument(string indexName, string docId)
         {
-            doc = null;
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
 
@@ -520,42 +370,30 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.GET,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode == 200 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync();
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                doc = Common.DeserializeJson<IndexedDoc>(resp.Data);
-                Debug.WriteLine("KomodoSdk GetParsedDocument returning success");
-                return true;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<IndexedDoc>(respData);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk GetParsedDocument failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return null; 
         }
 
         /// <summary>
         /// Deletes a document from the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="docId">Document ID.</param>
-        /// <returns>True if successful.</returns>
-        public bool DeleteDocument(string indexName, string docId)
+        /// <param name="docId">Document ID.</param> 
+        public async Task DeleteDocument(string indexName, string docId)
         { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
@@ -566,44 +404,24 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.DELETE,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send();
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299)
-            { 
-                Debug.WriteLine("KomodoSdk DeleteDocument returning success");
-                return true;
-            }
-            else
-            {
-                Debug.WriteLine("KomodoSdk DeleteDocument failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+            RestResponse resp = await req.SendAsync();
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e; 
         }
 
         /// <summary>
         /// Search the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="query">Search query.</param>
-        /// <param name="result">Search result.</param>
-        /// <returns>True if successful.</returns>
-        public bool Search(string indexName, SearchQuery query, out SearchResult result)
-        {
-            result = null;
+        /// <param name="query">Search query.</param> 
+        /// <returns>Search result.</returns>
+        public async Task<SearchResult> Search(string indexName, SearchQuery query)
+        { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (query == null) throw new ArgumentNullException(nameof(query));
               
@@ -613,45 +431,32 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.PUT,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync(SerializeJson(query, true));
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                result = Common.DeserializeJson<SearchResult>(resp.Data);
-                Debug.WriteLine("KomodoSdk Search returning success");
-                return true;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<SearchResult>(respData);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk Search failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return null; 
         }
 
         /// <summary>
         /// Enumerate source documents in the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="query">Enumeration query.</param>
-        /// <param name="result">Enumeration result.</param>
-        /// <returns>True if successful.</returns>
-        public bool Enumerate(string indexName, EnumerationQuery query, out EnumerationResult result)
-        {
-            result = null;
+        /// <param name="query">Enumeration query.</param> 
+        /// <returns>Enumeration result.</returns>
+        public async Task<EnumerationResult> Enumerate(string indexName, EnumerationQuery query)
+        { 
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (query == null) throw new ArgumentNullException(nameof(query));
 
@@ -661,33 +466,22 @@ namespace Komodo.Core
                 _Endpoint + url,
                 HttpMethod.PUT,
                 _AuthHeaders,
-                "application/json",
-                true);
+                "application/json");
 
             req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = req.Send(Encoding.UTF8.GetBytes(Common.SerializeJson(query, true)));
-             
-            if (resp != null && resp.StatusCode >= 200 && resp.StatusCode <= 299 && resp.Data != null && resp.Data.Length > 0)
+            RestResponse resp = await req.SendAsync(SerializeJson(query, true));
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
             {
-                result = Common.DeserializeJson<EnumerationResult>(resp.Data);
-                Debug.WriteLine("KomodoSdk Search returning success");
-                return true;
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<EnumerationResult>(respData);
             }
-            else
-            {
-                Debug.WriteLine("KomodoSdk Enumerate failed");
-                if (resp != null)
-                {
-                    Debug.WriteLine("Response:");
-                    Debug.WriteLine(resp.ToString());
-                }
-                else
-                {
-                    Debug.WriteLine("Response is null");
-                }
-                return false;
-            }
+
+            return null; 
         }
 
         #endregion
@@ -711,6 +505,78 @@ namespace Komodo.Core
             }
 
             throw new ArgumentException("Unknown DocType: " + docType.ToString());
+        }
+
+        private static string SerializeJson(object obj, bool pretty)
+        {
+            if (obj == null) return null;
+            string json;
+
+            if (pretty)
+            {
+                json = JsonConvert.SerializeObject(
+                  obj,
+                  Newtonsoft.Json.Formatting.Indented,
+                  new JsonSerializerSettings
+                  {
+                      NullValueHandling = NullValueHandling.Ignore,
+                      DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                  });
+            }
+            else
+            {
+                json = JsonConvert.SerializeObject(obj,
+                  new JsonSerializerSettings
+                  {
+                      NullValueHandling = NullValueHandling.Ignore,
+                      DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                  });
+            }
+
+            return json;
+        }
+
+        private static T DeserializeJson<T>(string json)
+        {
+            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
+
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("");
+                Console.WriteLine("Exception while deserializing:");
+                Console.WriteLine(json);
+                Console.WriteLine("");
+                throw e;
+            }
+        }
+
+        private static T DeserializeJson<T>(byte[] data)
+        {
+            if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
+            return DeserializeJson<T>(Encoding.UTF8.GetString(data));
+        }
+
+        private static byte[] StreamToBytes(Stream input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
+
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+
+                return ms.ToArray();
+            }
         }
 
         #endregion

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using Komodo.Core;
@@ -11,80 +12,101 @@ namespace Komodo.Server
 {
     public partial class KomodoServer
     {
-        static HttpResponse UserApiHandler(RequestMetadata md)
+        static async Task UserApiHandler(RequestMetadata md)
         {
-            #region Process
+            string header = md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " ";
 
-            switch (md.Http.Method)
+            switch (md.Http.Request.Method)
             {
                 case HttpMethod.GET: 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/indices", false))
+                    if (md.Http.Request.RawUrlWithoutQuery.Equals("/indices"))
                     {
-                        return GetIndices(md);
+                        await GetIndices(md);
+                        return;
                     }
-                    
-                    if (md.Http.RawUrlEntries.Count == 1) return GetIndex(md);
 
-                    if (md.Http.RawUrlEntries.Count == 2)
+                    if (md.Http.Request.RawUrlEntries.Count == 1)
                     {
-                        if (md.Http.RawUrlEntries[1].ToLower().Equals("stats")) return GetIndexStats(md); 
+                        await GetIndex(md);
+                        return;
+                    }
 
-                        return GetIndexDocument(md);
+                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        if (md.Http.Request.RawUrlEntries[1].ToLower().Equals("stats"))
+                        {
+                            await GetIndexStats(md);
+                            return;
+                        }
+
+                        await GetIndexDocument(md);
+                        return;
                     } 
                     break; 
 
                 case HttpMethod.PUT:
-                    if (md.Http.RawUrlEntries.Count == 1) return PutSearchIndex(md);
-                    if (md.Http.RawUrlEntries.Count == 2
-                        && md.Http.RawUrlEntries[1].Equals("enumerate"))
+                    if (md.Http.Request.RawUrlEntries.Count == 1)
                     {
-                        return PutEnumerateIndex(md);
+                        await PutSearchIndex(md);
+                        return;
+                    }
+
+                    if (md.Http.Request.RawUrlEntries.Count == 2
+                        && md.Http.Request.RawUrlEntries[1].Equals("enumerate"))
+                    {
+                        await PutEnumerateIndex(md);
+                        return;
                     } 
                     break;
 
                 case HttpMethod.POST:
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/_parse", false))
+                    if (md.Http.Request.RawUrlWithoutQuery.Equals("/_parse"))
                     {
-                        return PostParsePreview(md);
+                        await PostParsePreview(md);
+                        return;
                     }
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/_index", false))
+                    if (md.Http.Request.RawUrlWithoutQuery.Equals("/_index"))
                     {
-                        return PostIndexPreview(md);
+                        await PostIndexPreview(md);
+                        return;
                     }
 
-                    if (WatsonCommon.UrlEqual(md.Http.RawUrlWithoutQuery, "/indices", false))
+                    if (md.Http.Request.RawUrlWithoutQuery.Equals("/indices"))
                     {
-                        return PostIndices(md);
+                        await PostIndices(md);
+                        return;
                     }
 
-                    if (md.Http.RawUrlEntries.Count == 1) return PostIndexDoc(md);
+                    if (md.Http.Request.RawUrlEntries.Count == 1)
+                    {
+                        await PostIndexDoc(md);
+                        return;
+                    }
                     break;
 
-                case HttpMethod.DELETE: 
+                case HttpMethod.DELETE:
 
-                    if (md.Http.RawUrlEntries.Count == 1) return DeleteIndex(md);
-                    if (md.Http.RawUrlEntries.Count == 2) return DeleteIndexDoc(md); 
-                    break; 
+                    if (md.Http.Request.RawUrlEntries.Count == 1)
+                    {
+                        await DeleteIndex(md);
+                        return;
+                    }
 
-                case HttpMethod.HEAD: 
-                    break; 
-
-                default: 
-                    _Logging.Log(LoggingModule.Severity.Warn, "UserApiHandler unknown HTTP method '" + md.Http.Method + "'");
-                    return new HttpResponse(md.Http, 400, null, "application/json",
-                        Encoding.UTF8.GetBytes(new ErrorResponse(400, "Unsupported method.", null).ToJson(true)));
+                    if (md.Http.Request.RawUrlEntries.Count == 2)
+                    {
+                        await DeleteIndexDoc(md);
+                        return;
+                    }
+                    
+                    break;  
             }
-
-            #endregion
-
-            #region Unknown-URL
-
-            _Logging.Log(LoggingModule.Severity.Warn, "UserApiHandler unknown URL " + md.Http.Method + " " + md.Http.RawUrlWithoutQuery);
-            return new HttpResponse(md.Http, 404, null, "application/json",
-                Encoding.UTF8.GetBytes(new ErrorResponse(404, "Unknown endpoint.", null).ToJson(true)));
-
-            #endregion
+             
+            _Logging.Warn(header + "UserApiHandler unknown URL " + md.Http.Request.Method + " " + md.Http.Request.RawUrlWithoutQuery);
+            md.Http.Response.StatusCode = 404;
+            md.Http.Response.ContentType = "application/json";
+            await md.Http.Response.Send(new ErrorResponse(404, "Unknown endpoint.", null).ToJson(true));
+            return;
         }
     }
 }

@@ -18,15 +18,12 @@ using System.Xml.XPath;
 using Newtonsoft.Json;
 
 namespace Komodo.Core
-{
-    /// <summary>
-    /// Static methods used by Komodo.
-    /// </summary>
-    public static class Common
+{ 
+    internal static class Common
     {
         #region Input
 
-        public static bool InputBoolean(string question, bool yesDefault)
+        internal static bool InputBoolean(string question, bool yesDefault)
         {
             Console.Write(question);
 
@@ -69,7 +66,7 @@ namespace Komodo.Core
             }
         }
 
-        public static string InputString(string question, string defaultAnswer, bool allowNull)
+        internal static string InputString(string question, string defaultAnswer, bool allowNull)
         {
             while (true)
             {
@@ -95,7 +92,7 @@ namespace Komodo.Core
             }
         }
 
-        public static int InputInteger(string question, int defaultAnswer, bool positiveOnly, bool allowZero)
+        internal static int InputInteger(string question, int defaultAnswer, bool positiveOnly, bool allowZero)
         {
             while (true)
             {
@@ -137,7 +134,7 @@ namespace Komodo.Core
             }
         }
 
-        public static List<string> InputStringList(string question, bool allowEmpty)
+        internal static List<string> InputStringList(string question, bool allowEmpty)
         {
             List<string> ret = new List<string>();
 
@@ -163,7 +160,7 @@ namespace Komodo.Core
 
         #region Serialization
 
-        public static string SerializeJson(object obj, bool pretty)
+        internal static string SerializeJson(object obj, bool pretty)
         {
             if (obj == null) return null;
             string json;
@@ -181,7 +178,7 @@ namespace Komodo.Core
             }
             else
             {
-                json = JsonConvert.SerializeObject(obj, 
+                json = JsonConvert.SerializeObject(obj,
                   new JsonSerializerSettings
                   {
                       NullValueHandling = NullValueHandling.Ignore,
@@ -191,8 +188,8 @@ namespace Komodo.Core
 
             return json;
         }
-         
-        public static T DeserializeJson<T>(string json)
+
+        internal static T DeserializeJson<T>(string json)
         {
             if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
 
@@ -210,13 +207,13 @@ namespace Komodo.Core
             }
         }
 
-        public static T DeserializeJson<T>(byte[] data)
+        internal static T DeserializeJson<T>(byte[] data)
         {
             if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
             return DeserializeJson<T>(Encoding.UTF8.GetString(data));
         }
 
-        public static T CopyObject<T>(object o)
+        internal static T CopyObject<T>(object o)
         {
             if (o == null) return default(T);
             string json = SerializeJson(o, false);
@@ -224,7 +221,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static string XmlEscape(string val)
+        internal static string XmlEscape(string val)
         {
             if (String.IsNullOrEmpty(val)) return null;
             XmlDocument doc = new XmlDocument();
@@ -233,7 +230,7 @@ namespace Komodo.Core
             return node.InnerXml;
         }
 
-        public static string SanitizeXml(string xml)
+        internal static string SanitizeXml(string xml)
         {
             if (String.IsNullOrEmpty(xml)) return null;
 
@@ -271,7 +268,7 @@ namespace Komodo.Core
             return rgx.Replace(xe.ToString(), "");
         }
 
-        public static string QueryXml(string xml, string path)
+        internal static string QueryXml(string xml, string path)
         {
             try
             {
@@ -305,7 +302,7 @@ namespace Komodo.Core
             }
         }
 
-        public static XElement XmlRemoveNamespace(XElement xml)
+        internal static XElement XmlRemoveNamespace(XElement xml)
         {
             try
             {
@@ -328,7 +325,7 @@ namespace Komodo.Core
             }
         }
 
-        public static string QueryXmlProcessChildren(XPathNodeIterator xpni)
+        internal static string QueryXmlProcessChildren(XPathNodeIterator xpni)
         {
             try
             {
@@ -351,7 +348,7 @@ namespace Komodo.Core
 
         #region Conversion
 
-        public static List<T> GenericToSpecificList<T>(List<object> source)
+        internal static List<T> GenericToSpecificList<T>(List<object> source)
         {
             if (source == null) return null;
 
@@ -367,7 +364,7 @@ namespace Komodo.Core
             return retList;
         }
 
-        public static List<object> DataTableToListObject(DataTable dt, string objType)
+        internal static List<object> DataTableToListObject(DataTable dt, string objType)
         {
             //
             // Must pass in the fully-qualified class name including namespace
@@ -438,7 +435,7 @@ namespace Komodo.Core
             return retList;
         }
 
-        public static object DataTableToObject(DataTable dt, string objType)
+        internal static object DataTableToObject(DataTable dt, string objType)
         {
             if (dt == null) return null;
             if (dt.Rows.Count != 1) return null;
@@ -500,7 +497,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static T DataTableToObject<T>(this DataTable table) where T : new()
+        internal static T DataTableToObject<T>(this DataTable table) where T : new()
         {
             IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
             IList<T> result = new List<T>();
@@ -514,7 +511,7 @@ namespace Komodo.Core
             return default(T);
         }
 
-        public static IList<T> DataTableToList<T>(this DataTable table) where T : new()
+        internal static IList<T> DataTableToList<T>(this DataTable table) where T : new()
         {
             IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
             IList<T> result = new List<T>();
@@ -528,7 +525,7 @@ namespace Komodo.Core
             return result;
         }
 
-        public static IList<T> DataTableToList<T>(this DataTable table, Dictionary<string, string> mappings) where T : new()
+        internal static IList<T> DataTableToList<T>(this DataTable table, Dictionary<string, string> mappings) where T : new()
         {
             IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
             IList<T> result = new List<T>();
@@ -564,7 +561,7 @@ namespace Komodo.Core
             return item;
         }
 
-        public static List<dynamic> DataTableToListDynamic(DataTable dt)
+        internal static List<dynamic> DataTableToListDynamic(DataTable dt)
         {
             List<dynamic> ret = new List<dynamic>();
             if (dt == null || dt.Rows.Count < 1) return ret;
@@ -583,7 +580,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static dynamic DataTableToDynamic(DataTable dt)
+        internal static dynamic DataTableToDynamic(DataTable dt)
         {
             dynamic ret = new ExpandoObject();
             if (dt == null || dt.Rows.Count < 1) return ret;
@@ -602,7 +599,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static List<Dictionary<string, object>> DataTableToListDictionary(DataTable dt)
+        internal static List<Dictionary<string, object>> DataTableToListDictionary(DataTable dt)
         {
             List<Dictionary<string, object>> ret = new List<Dictionary<string, object>>();
             if (dt == null || dt.Rows.Count < 1) return ret;
@@ -622,7 +619,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static Dictionary<string, object> DataTableToDictionary(DataTable dt)
+        internal static Dictionary<string, object> DataTableToDictionary(DataTable dt)
         {
             Dictionary<string, object> ret = new Dictionary<string, object>();
             if (dt == null || dt.Rows.Count < 1) return ret;
@@ -640,7 +637,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static byte[] Base64ToBytes(string data)
+        internal static byte[] Base64ToBytes(string data)
         {
             try
             {
@@ -652,7 +649,7 @@ namespace Komodo.Core
             }
         }
 
-        public static string Base64ToUTF8(string data)
+        internal static string Base64ToUTF8(string data)
         {
             try
             {
@@ -666,14 +663,14 @@ namespace Komodo.Core
             }
         }
 
-        public static string BytesToBase64(byte[] data)
+        internal static string BytesToBase64(byte[] data)
         {
             if (data == null) return null;
             if (data.Length < 1) return null;
             return System.Convert.ToBase64String(data);
         }
 
-        public static string UTF8ToBase64(string data)
+        internal static string UTF8ToBase64(string data)
         {
             try
             {
@@ -687,7 +684,7 @@ namespace Komodo.Core
             }
         }
 
-        public static byte[] ObjectToBytes(object obj)
+        internal static byte[] ObjectToBytes(object obj)
         {
             try
             {
@@ -705,7 +702,7 @@ namespace Komodo.Core
             }
         }
 
-        public static byte[] StreamToBytes(Stream input)
+        internal static byte[] StreamToBytes(Stream input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
@@ -728,7 +725,7 @@ namespace Komodo.Core
 
         #region Misc
 
-        public static string StringRemove(string original, string remove)
+        internal static string StringRemove(string original, string remove)
         {
             if (String.IsNullOrEmpty(original)) return null;
             if (String.IsNullOrEmpty(remove)) return original;
@@ -741,7 +738,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static string Line(int count, string fill)
+        internal static string Line(int count, string fill)
         {
             if (count < 1) return "";
 
@@ -754,7 +751,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static string RandomString(int num_char)
+        internal static string RandomString(int num_char)
         {
             string ret = "";
             if (num_char < 1) return null;
@@ -782,7 +779,7 @@ namespace Komodo.Core
             return ret;
         }
 
-        public static double TotalMsFrom(DateTime start)
+        internal static double TotalMsFrom(DateTime start)
         {
             try
             {
@@ -796,7 +793,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool IsLaterThanNow(DateTime? dt)
+        internal static bool IsLaterThanNow(DateTime? dt)
         {
             try
             {
@@ -809,7 +806,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool IsLaterThanNow(DateTime dt)
+        internal static bool IsLaterThanNow(DateTime dt)
         {
             if (DateTime.Compare(dt, DateTime.Now) > 0)
             {
@@ -824,8 +821,8 @@ namespace Komodo.Core
         #endregion
 
         #region Environment
-         
-        public static void ExitApplication(string method, string text, int returnCode)
+
+        internal static void ExitApplication(string method, string text, int returnCode)
         {
             Console.WriteLine("---");
             Console.WriteLine("");
@@ -839,7 +836,7 @@ namespace Komodo.Core
             return;
         }
 
-        public static string GetPathSeparator(string environment)
+        internal static string GetPathSeparator(string environment)
         {
             if (String.IsNullOrEmpty(environment)) throw new ArgumentNullException(nameof(environment));
 
@@ -861,7 +858,7 @@ namespace Komodo.Core
 
         #region Dictionary
 
-        public static Dictionary<string, string> AddToDictionary(string key, string val, Dictionary<string, string> existing)
+        internal static Dictionary<string, string> AddToDictionary(string key, string val, Dictionary<string, string> existing)
         {
             Dictionary<string, string> ret = new Dictionary<string, string>();
 
@@ -881,31 +878,31 @@ namespace Komodo.Core
 
         #region IsTrue
 
-        public static bool IsTrue(int? val)
+        internal static bool IsTrue(int? val)
         {
             if (val == null) return false;
             if (Convert.ToInt32(val) == 1) return true;
             return false;
         }
 
-        public static bool IsTrue(int val)
+        internal static bool IsTrue(int val)
         {
             if (val == 1) return true;
             return false;
         }
 
-        public static bool IsTrue(bool val)
+        internal static bool IsTrue(bool val)
         {
             return val;
         }
 
-        public static bool IsTrue(bool? val)
+        internal static bool IsTrue(bool? val)
         {
             if (val == null) return false;
             return Convert.ToBoolean(val);
         }
 
-        public static bool IsTrue(string val)
+        internal static bool IsTrue(string val)
         {
             if (String.IsNullOrEmpty(val)) return false;
             val = val.ToLower().Trim();
@@ -917,15 +914,56 @@ namespace Komodo.Core
 
         #endregion
 
+        #region Crypto
+
+        internal static string Md5(byte[] data)
+        {
+            if (data == null) return null;
+
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(data);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++) sb.Append(hash[i].ToString("X2"));
+            string ret = sb.ToString();
+            return ret;
+        }
+
+        internal static string Md5(string data)
+        {
+            if (String.IsNullOrEmpty(data)) return null;
+
+            MD5 md5 = MD5.Create();
+            byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] hash = md5.ComputeHash(dataBytes);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++) sb.Append(hash[i].ToString("X2"));
+            string ret = sb.ToString();
+            return ret;
+        }
+
+        internal static string Md5(Stream stream)
+        {
+            if (stream == null || !stream.CanRead) return null;
+
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(stream);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++) sb.Append(hash[i].ToString("X2"));
+            string ret = sb.ToString();
+            return ret;
+        }
+
+        #endregion
+
         #region Directory
-        
-        public static bool CreateDirectory(string dir)
+
+        internal static bool CreateDirectory(string dir)
         {
             Directory.CreateDirectory(dir);
             return true;
         }
 
-        public static bool DirectoryExists(string dir)
+        internal static bool DirectoryExists(string dir)
         {
             try
             {
@@ -937,7 +975,7 @@ namespace Komodo.Core
             }
         }
 
-        public static List<string> GetSubdirectoryList(string directory, bool recursive)
+        internal static List<string> GetSubdirectoryList(string directory, bool recursive)
         {
             try
             {
@@ -982,12 +1020,12 @@ namespace Komodo.Core
             }
         }
 
-        public static bool DeleteDirectory(string dir, bool recursive)
+        internal static bool DeleteDirectory(string dir, bool recursive)
         {
             if (!Directory.Exists(dir)) return true;
 
             if (!recursive)
-            { 
+            {
                 Directory.Delete(dir);
                 return true;
             }
@@ -1010,7 +1048,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool RenameDirectory(string from, string to)
+        internal static bool RenameDirectory(string from, string to)
         {
             try
             {
@@ -1026,7 +1064,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool MoveDirectory(string from, string to)
+        internal static bool MoveDirectory(string from, string to)
         {
             try
             {
@@ -1042,7 +1080,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool WalkDirectory(
+        internal static bool WalkDirectory(
             string environment,
             int depth,
             string directory,
@@ -1124,7 +1162,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool DirectoryStatistics(
+        internal static bool DirectoryStatistics(
             DirectoryInfo dirinfo,
             bool recursive,
             out long bytes,
@@ -1182,7 +1220,7 @@ namespace Komodo.Core
 
         #region File
 
-        public static bool DeleteFile(string filename)
+        internal static bool DeleteFile(string filename)
         {
             try
             {
@@ -1195,12 +1233,12 @@ namespace Komodo.Core
             }
         }
 
-        public static bool FileExists(string filename)
+        internal static bool FileExists(string filename)
         {
             return File.Exists(filename);
         }
 
-        public static List<string> GetFileList(string environment, string directory, bool prependFilename)
+        internal static List<string> GetFileList(string environment, string directory, bool prependFilename)
         {
             try
             {
@@ -1230,7 +1268,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool WriteFile(string filename, string content, bool append)
+        internal static bool WriteFile(string filename, string content, bool append)
         {
             using (StreamWriter writer = new StreamWriter(filename, append))
             {
@@ -1239,12 +1277,12 @@ namespace Komodo.Core
             return true;
         }
 
-        public static bool WriteFile(string filename, byte[] content)
+        internal static bool WriteFile(string filename, byte[] content)
         {
             File.WriteAllBytes(filename, content); return true;
         }
 
-        public static bool WriteFile(string filename, byte[] content, int pos)
+        internal static bool WriteFile(string filename, byte[] content, int pos)
         {
             using (Stream stream = new FileStream(filename, System.IO.FileMode.OpenOrCreate))
             {
@@ -1254,7 +1292,7 @@ namespace Komodo.Core
             return true;
         }
 
-        public static string ReadTextFile(string filename)
+        internal static string ReadTextFile(string filename)
         {
             try
             {
@@ -1266,7 +1304,7 @@ namespace Komodo.Core
             }
         }
 
-        public static byte[] ReadBinaryFile(string filename, int from, int len)
+        internal static byte[] ReadBinaryFile(string filename, int from, int len)
         {
             try
             {
@@ -1288,7 +1326,7 @@ namespace Komodo.Core
             }
         }
 
-        public static byte[] ReadBinaryFile(string filename)
+        internal static byte[] ReadBinaryFile(string filename)
         {
             try
             {
@@ -1300,7 +1338,7 @@ namespace Komodo.Core
             }
         }
 
-        public static string GetFileExtension(string filename)
+        internal static string GetFileExtension(string filename)
         {
             try
             {
@@ -1313,7 +1351,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool RenameFile(string from, string to)
+        internal static bool RenameFile(string from, string to)
         {
             try
             {
@@ -1330,7 +1368,7 @@ namespace Komodo.Core
             }
         }
 
-        public static bool MoveFile(string from, string to)
+        internal static bool MoveFile(string from, string to)
         {
             try
             {
@@ -1347,13 +1385,13 @@ namespace Komodo.Core
             }
         }
 
-        public static bool VerifyFileReadAccess(string filename)
+        internal static bool VerifyFileReadAccess(string filename)
         {
             try
             {
                 using (FileStream stream = File.Open(filename, System.IO.FileMode.Open, FileAccess.Read))
                 {
-                    return true; 
+                    return true;
                 }
             }
             catch (IOException)

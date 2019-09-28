@@ -15,9 +15,9 @@ namespace Komodo.Server.Classes
         #region Public-Members
 
         /// <summary>
-        /// The received HTTP request.
+        /// The received HTTP context.
         /// </summary>
-        public HttpRequest Http { get; set; }
+        public HttpContext Http { get; set; }
 
         /// <summary>
         /// Request parameters extracted from the headers and querystring.

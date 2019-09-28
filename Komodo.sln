@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserCli", "ParserCli\ParserCli.csproj", "{4C274A87-16C7-48B1-A1EE-004EF1D79DCF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KParse", "KParse\KParse.csproj", "{4C274A87-16C7-48B1-A1EE-004EF1D79DCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestParser", "TestParser\TestParser.csproj", "{C7E83CA9-5C42-4BC7-AA03-863F0F93FB72}"
 EndProject

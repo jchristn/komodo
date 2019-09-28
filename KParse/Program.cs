@@ -4,14 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Komodo.Core;
+using Komodo.Core.Enums;
 using RestWrapper;
 
-namespace KomodoCli
+namespace KParse
 {
-    class KomodoCli
+    class Program
     {
-        static string _ContentType = null;
+        static DocType _ContentType = DocType.Unknown;
         static string _InFile = null;
         static string _OutFile = null;
 
@@ -30,7 +32,7 @@ namespace KomodoCli
                 {
                     if (currArg.StartsWith("-type="))
                     {
-                        _ContentType = currArg.Substring(6);
+                        _ContentType = (DocType)(Enum.Parse(typeof(DocType), currArg.Substring(6)));
                     }
                     
                     if (currArg.StartsWith("-infile="))
@@ -60,18 +62,11 @@ namespace KomodoCli
                 Usage();
                 return;
             }
-            
-            if (String.IsNullOrEmpty(_ContentType))
-            {
-                Console.WriteLine("Content type must be specified.");
-                Usage();
-                return;
-            }
-
-            if (!_ContentType.Equals("json")
-                && !_ContentType.Equals("html")
-                && !_ContentType.Equals("xml")
-                && !_ContentType.Equals("text"))
+             
+            if (_ContentType != DocType.Json
+                && _ContentType != DocType.Html
+                && _ContentType != DocType.Xml
+                && _ContentType != DocType.Text)
             {
                 Console.WriteLine("Invalid content type.");
                 Usage();
@@ -81,7 +76,7 @@ namespace KomodoCli
             #endregion
 
             #region Load-Content
-            
+
             _Crawler = new Crawler(_InFile, _ContentType);
             _InContent = Encoding.UTF8.GetString(_Crawler.RetrieveBytes());
             if (String.IsNullOrEmpty(_InContent))
@@ -96,28 +91,28 @@ namespace KomodoCli
 
             switch (_ContentType)
             {
-                case "html":
+                case DocType.Html:
                     ParsedHtml html = new ParsedHtml();
                     html.LoadString(_InContent, _InFile);
-                    _OutContent = Common.SerializeJson(html, true);
+                    _OutContent = SerializeJson(html, true);
                     break;
 
-                case "json":
+                case DocType.Json:
                     ParsedJson json = new ParsedJson();
                     json.LoadString(_InContent, _InFile);
-                    _OutContent = Common.SerializeJson(json, true);
+                    _OutContent = SerializeJson(json, true);
                     break;
 
-                case "xml":
+                case DocType.Xml:
                     ParsedXml xml = new ParsedXml();
                     xml.LoadString(_InContent, _InFile);
-                    _OutContent = Common.SerializeJson(xml, true);
+                    _OutContent = SerializeJson(xml, true);
                     break;
 
-                case "text":
+                case DocType.Text:
                     ParsedText text = new ParsedText();
                     text.LoadString(_InContent, _InFile);
-                    _OutContent = Common.SerializeJson(text, true);
+                    _OutContent = SerializeJson(text, true);
                     break;
 
                 default:
@@ -136,8 +131,15 @@ namespace KomodoCli
                 return;
             }
 
-            File.WriteAllBytes(_OutFile, Encoding.UTF8.GetBytes(_OutContent));
-            Console.WriteLine("Success.");
+            if (!String.IsNullOrEmpty(_OutFile))
+            {
+                File.WriteAllBytes(_OutFile, Encoding.UTF8.GetBytes(_OutContent));
+            }
+            else
+            {
+                Console.WriteLine(_OutContent);
+            }
+
             return;
 
             #endregion
@@ -164,17 +166,47 @@ namespace KomodoCli
         {
             // Console.WriteLine("34567890123456789012345678901234567890123456789012345678901234567890123456789");
             Console.WriteLine("");
-            Console.WriteLine("ParserCli - crawl and retrieve, then flatten and parse");
+            Console.WriteLine("KParse - crawl and retrieve, then flatten and parse");
             Console.WriteLine("");
             Console.WriteLine("Usage:");
-            Console.WriteLine("  C:\\> ParserCli [arguments]");
+            Console.WriteLine("  C:\\> KParse [arguments]");
             Console.WriteLine("");
             Console.WriteLine("Where [arguments] includes:");
             Console.WriteLine("  -type=[type]     Specify the incoming data type");
-            Console.WriteLine("                   Valid values: json xml html text");
+            Console.WriteLine("                   Valid values: Json Xml Html Text");
             Console.WriteLine("  -infile=[file]   Specify the URL or file where data can be retrieved");
             Console.WriteLine("  -outfile=[file]  Specify the file where results should be written");
+            Console.WriteLine("                   If outfile is not specified, output is sent to console");
             Console.WriteLine("");
+        }
+
+        static string SerializeJson(object obj, bool pretty)
+        {
+            if (obj == null) return null;
+            string json;
+
+            if (pretty)
+            {
+                json = JsonConvert.SerializeObject(
+                  obj,
+                  Newtonsoft.Json.Formatting.Indented,
+                  new JsonSerializerSettings
+                  {
+                      NullValueHandling = NullValueHandling.Ignore,
+                      DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                  });
+            }
+            else
+            {
+                json = JsonConvert.SerializeObject(obj,
+                  new JsonSerializerSettings
+                  {
+                      NullValueHandling = NullValueHandling.Ignore,
+                      DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                  });
+            }
+
+            return json;
         }
     }
 }

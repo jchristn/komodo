@@ -16,20 +16,22 @@ using Komodo.Server.Classes;
 
 namespace Komodo.Server
 {
+    /// <summary>
+    /// Komodo information storage, search, and retrieval server.
+    /// </summary>
     public partial class KomodoServer
     {
-        public static string _Version;
+        private static string _Version; 
+        private static Settings _Settings;
+        private static LoggingModule _Logging;
+        private static ConnectionManager _Conn;
+        private static UserManager _User;
+        private static ApiKeyManager _ApiKey;
+        private static IndexManager _Index;
+        private static ConsoleManager _Console;
+        private static WatsonWebserver.Server _Server;
 
-        public static Config _Config;
-        public static LoggingModule _Logging;
-        public static ConnectionManager _Conn;
-        public static UserManager _User;
-        public static ApiKeyManager _ApiKey;
-        public static IndexManager _Index;
-        public static ConsoleManager _Console;
-        public static WatsonWebserver.Server _Server;
-        
-        public static void Main(string[] args)
+        private static void Main(string[] args)
         {
             try
             {
@@ -59,13 +61,13 @@ namespace Komodo.Server
                 
                 #region Initialize-Globals
 
-                _Config = Config.FromFile("System.json");
+                _Settings = Settings.FromFile("System.json");
 
                 _Logging = new LoggingModule(
-                    _Config.Logging.SyslogServerIp,
-                    _Config.Logging.SyslogServerPort,
-                    _Config.Logging.ConsoleLogging,
-                    (LoggingModule.Severity)_Config.Logging.MinimumLevel,
+                    _Settings.Logging.SyslogServerIp,
+                    _Settings.Logging.SyslogServerPort,
+                    _Settings.Logging.ConsoleLogging,
+                    (LoggingModule.Severity)_Settings.Logging.MinimumLevel,
                     false,
                     true,
                     true,
@@ -74,21 +76,21 @@ namespace Komodo.Server
                     false);
 
                 _Conn = new ConnectionManager();
-                _User = new UserManager(_Logging, UserMaster.FromFile(_Config.Files.UserMaster));
-                _ApiKey = new ApiKeyManager(_Logging, ApiKey.FromFile(_Config.Files.ApiKey), ApiKeyPermission.FromFile(_Config.Files.ApiKeyPermission));
-                _Index = new IndexManager(_Config.Files.Indices, _Logging);
+                _User = new UserManager(_Logging, UserMaster.FromFile(_Settings.Files.UserMaster));
+                _ApiKey = new ApiKeyManager(_Logging, ApiKey.FromFile(_Settings.Files.ApiKey), ApiKeyPermission.FromFile(_Settings.Files.ApiKeyPermission));
+                _Index = new IndexManager(_Settings.Files.Indices, _Logging);
 
                 _Server = new WatsonWebserver.Server(
-                    _Config.Server.ListenerHostname, 
-                    _Config.Server.ListenerPort, 
-                    _Config.Server.Ssl, 
+                    _Settings.Server.ListenerHostname, 
+                    _Settings.Server.ListenerPort, 
+                    _Settings.Server.Ssl, 
                     RequestReceived);
 
                 _Server.ContentRoutes.Add("/SearchApp/", true);
                 _Server.ContentRoutes.Add("/Assets/", true);
                 _Server.AccessControl.Mode = AccessControlMode.DefaultPermit;
                  
-                if (_Config.EnableConsole) _Console = new ConsoleManager(_Config, _Index, ExitApplication); 
+                if (_Settings.EnableConsole) _Console = new ConsoleManager(_Settings, _Index, ExitApplication); 
 
                 #endregion
 
@@ -101,18 +103,31 @@ namespace Komodo.Server
                     waitHandleSignal = waitHandle.WaitOne(1000);
                 } while (!waitHandleSignal);
 
-                _Logging.Log(LoggingModule.Severity.Debug, "KomodoServer exiting");
+                _Logging.Debug("KomodoServer exiting");
 
                 #endregion 
             }
             catch (Exception e)
             {
-                LoggingModule.ConsoleException("KomodoServer", "Main", e);
+                _Logging.Exception("KomodoServer", "Main", e);
             }
         }
 
-        public static string Welcome()
+        private static string Welcome()
         {
+            // thank you https://psfonttk.com/big-text-generator/
+
+            string ret = 
+                Environment.NewLine +
+                Environment.NewLine +
+                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
+                "░░░█░█░█▀▀█░█▀▄▀█░█▀▀█░█▀▀▄░█▀▀█░░░" + Environment.NewLine +
+                "░░░█▀▄░█░░█░█░▀░█░█░░█░█░░█░█░░█░░░" + Environment.NewLine +
+                "░░░▀░▀░▀▀▀▀░▀░░░▀░▀▀▀▀░▀▀▀░░▀▀▀▀░░░" + Environment.NewLine +
+                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
+                Environment.NewLine;
+
+            /*
             string ret =
                 Environment.NewLine +
                 Environment.NewLine +
@@ -124,16 +139,15 @@ namespace Komodo.Server
                 " 888 `88b.  888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
                 "o888o o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' `Y8bod88P  `Y8bod8P' " + Environment.NewLine +
                 Environment.NewLine;
+              */
 
             return ret;
         }
-        
-        public static HttpResponse RequestReceived(HttpRequest req)
-        {
-            HttpResponse resp = new HttpResponse(req, 500, null, "application/json",
-                Encoding.UTF8.GetBytes(new ErrorResponse(500, "Outer exception.", null).ToJson(true)));
 
-            DateTime startTime = DateTime.Now.ToUniversalTime();
+        private static async Task RequestReceived(HttpContext ctx)
+        {
+            string header = ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
+            DateTime startTime = DateTime.Now;
 
             try
             {
@@ -147,114 +161,113 @@ namespace Komodo.Server
                 ApiKey currApiKey = null;
                 ApiKeyPermission currApiKeyPermission = null;
                 RequestMetadata md = new RequestMetadata();
-
-                if (_Config.Logging.LogHttpRequests)
-                {
-                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived request received: " + Environment.NewLine + req.ToString());
-                }
-
+                 
                 #endregion
 
                 #region Options-Handler
 
-                if (req.Method == HttpMethod.OPTIONS)
+                if (ctx.Request.Method == HttpMethod.OPTIONS)
                 { 
-                    resp = OptionsHandler(req);
-                    return resp;
+                    await OptionsHandler(ctx);
+                    return;
                 }
 
                 #endregion
 
                 #region Favicon-Robots-Root
 
-                if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
+                if (ctx.Request.RawUrlEntries == null || ctx.Request.RawUrlEntries.Count == 0)
                 {
-                    if (String.Compare(req.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
-                    {
-                        resp = new HttpResponse(req, 200, null, null, null);
-                        return resp;
-                    }
+                    ctx.Response.StatusCode = 200;
+                    ctx.Response.ContentType = "text/html; charset=utf-8";
+                    await ctx.Response.Send(RootHtml());
+                    return;
                 }
 
-                if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
+                if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
                 {
-                    if (String.Compare(req.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
+                    if (String.Compare(ctx.Request.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
                     {
-                        resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("User-Agent: *\r\nDisallow:\r\n"));
-                        return resp;
-                    }
-                }
+                        ctx.Response.StatusCode = 200;
+                        await ctx.Response.Send();
+                        return;
+                    } 
 
-                if (req.RawUrlEntries == null || req.RawUrlEntries.Count == 0)
-                { 
-                    resp = new HttpResponse(req, 200, null, "text/html", Encoding.UTF8.GetBytes(RootHtml()));
-                    return resp;
+                    if (String.Compare(ctx.Request.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
+                    {
+                        ctx.Response.StatusCode = 200;
+                        ctx.Response.ContentType = "text/plain";
+                        await ctx.Response.Send("User-Agent: *\r\nDisallow:\r\n");
+                        return;
+                    }
                 }
 
                 #endregion
 
                 #region Add-Connection
 
-                _Conn.Add(Thread.CurrentThread.ManagedThreadId, req);
+                _Conn.Add(Thread.CurrentThread.ManagedThreadId, ctx);
 
                 #endregion
 
                 #region Unauthenticated-API
 
-                switch (req.Method)
+                switch (ctx.Request.Method)
                 {
                     case HttpMethod.GET: 
-                        if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/loopback", false))
+                        if (ctx.Request.RawUrlWithoutQuery.Equals("/loopback")) 
                         {
-                            resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes("Hello from Komodo!"));
-                            return resp;
+                            ctx.Response.StatusCode = 200;
+                            await ctx.Response.Send();
+                            return;
                         } 
 
-                        if (WatsonCommon.UrlEqual(req.RawUrlWithoutQuery, "/version", false))
+                        if (ctx.Request.RawUrlWithoutQuery.Equals("/version"))
                         {
-                            resp = new HttpResponse(req, 200, null, "text/plain", Encoding.UTF8.GetBytes(_Version));
-                            return resp;
+                            ctx.Response.StatusCode = 200;
+                            ctx.Response.ContentType = "text/plain";
+                            await ctx.Response.Send(_Version);
+                            return;
                         } 
-                        break; 
-
-                    default:
-                        break;
+                        break;  
                 }
 
                 #endregion
 
                 #region Retrieve-Authentication
 
-                apiKey = req.RetrieveHeaderValue(_Config.Server.HeaderApiKey);
-                email = req.RetrieveHeaderValue(_Config.Server.HeaderEmail);
-                password = req.RetrieveHeaderValue(_Config.Server.HeaderPassword);
+                apiKey = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderApiKey);
+                email = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderEmail);
+                password = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderPassword);
                 
                 #endregion
 
                 #region Admin-API
 
-                if (req.RawUrlEntries != null && req.RawUrlEntries.Count > 0)
+                if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
                 {
-                    if (String.Compare(req.RawUrlEntries[0], "admin") == 0)
+                    if (ctx.Request.RawUrlEntries[0].Equals("admin"))
                     {
                         if (String.IsNullOrEmpty(apiKey))
                         {
-                            _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but no API key specified");
-                            resp = new HttpResponse(req, 401, null, "application/json",
-                                Encoding.UTF8.GetBytes(new ErrorResponse(401, "No API key specified.", null).ToJson(true)));
-                            return resp;
+                            _Logging.Warn(header + "RequestReceived admin API requested but no API key specified");
+                            ctx.Response.StatusCode = 401;
+                            ctx.Response.ContentType = "application/json";
+                            await ctx.Response.Send(new ErrorResponse(401, "No API key specified.", null).ToJson(true));
+                            return;
                         }
 
-                        if (String.Compare(_Config.Server.AdminApiKey, apiKey) != 0)
+                        if (String.Compare(_Settings.Server.AdminApiKey, apiKey) != 0)
                         {
-                            _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived admin API requested but invalid API key specified");
-                            resp = new HttpResponse(req, 401, null, "application/json",
-                                Encoding.UTF8.GetBytes(new ErrorResponse(401, null, null).ToJson(true)));
-                            return resp;
+                            _Logging.Warn(header + "RequestReceived admin API requested with invalid API key");
+                            ctx.Response.StatusCode = 401;
+                            ctx.Response.ContentType = "application/json";
+                            await ctx.Response.Send(new ErrorResponse(401, null, null).ToJson(true));
+                            return;
                         }
 
-                        resp = AdminApiHandler(req);
-                        return resp;
+                        await AdminApiHandler(ctx);
+                        return;
                     }
                 }
 
@@ -266,44 +279,47 @@ namespace Komodo.Server
                 {
                     if (!_ApiKey.VerifyApiKey(apiKey, _User, out currUserMaster, out currApiKey, out currApiKeyPermission))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify API key " + apiKey);
-                        resp = new HttpResponse(req, 401, null, "application/json",
-                           Encoding.UTF8.GetBytes(new ErrorResponse(401, null, null).ToJson(true)));
-                        return resp;
+                        _Logging.Warn(header + "RequestReceived unable to verify API key " + apiKey);
+                        ctx.Response.StatusCode = 401;
+                        ctx.Response.ContentType = "application/json";
+                        await ctx.Response.Send(new ErrorResponse(401, null, null).ToJson(true));
+                        return;
                     }
                 }
                 else if ((!String.IsNullOrEmpty(email)) && (!String.IsNullOrEmpty(password)))
                 {
                     if (!_User.AuthenticateCredentials(email, password, out currUserMaster))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived unable to verify credentials for email " + email);
-                        resp = new HttpResponse(req, 401, null, "application/json",
-                            Encoding.UTF8.GetBytes(new ErrorResponse(401, null, null).ToJson(true)));
-                        return resp;
+                        _Logging.Warn(header + "RequestReceived unable to verify credentials for email " + email);
+                        ctx.Response.StatusCode = 401;
+                        ctx.Response.ContentType = "application/json";
+                        await ctx.Response.Send(new ErrorResponse(401, null, null).ToJson(true));
+                        return; 
                     }
 
                     currApiKeyPermission = ApiKeyPermission.DefaultPermit(currUserMaster);
                 }
                 else
                 {
-                    _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived user API requested but no authentication material supplied");
-                    resp = new HttpResponse(req, 401, null, "application/json",
-                        Encoding.UTF8.GetBytes(new ErrorResponse(401, "No authentication material.", null).ToJson(true)));
-                    return resp;
+                    _Logging.Warn(header + "RequestReceived user API requested but no authentication material supplied");
+                    ctx.Response.StatusCode = 401;
+                    ctx.Response.ContentType = "application/json";
+                    await ctx.Response.Send(new ErrorResponse(401, "No authentication material.", null).ToJson(true));
+                    return;
                 }
 
                 #endregion
 
                 #region Build-and-Validate-Metadata
 
-                md.Http = req;
+                md.Http = ctx;
                 md.User = currUserMaster;
                 md.ApiKey = currApiKey;
                 md.Permission = currApiKeyPermission;
 
-                if (md.Http.QuerystringEntries != null && md.Http.QuerystringEntries.Count > 0)
+                if (ctx.Request.QuerystringEntries != null && ctx.Request.QuerystringEntries.Count > 0)
                 {
-                    md.Params = RequestParameters.FromDictionary(md.Http.QuerystringEntries);
+                    md.Params = RequestParameters.FromDictionary(ctx.Request.QuerystringEntries);
                 }
                 else
                 {
@@ -315,10 +331,11 @@ namespace Komodo.Server
                     List<string> matchVals = new List<string> { "json", "xml", "html", "sql", "text" };
                     if (!matchVals.Contains(md.Params.Type))
                     {
-                        _Logging.Log(LoggingModule.Severity.Warn, "RequestReceived invalid 'type' value found in querystring: " + md.Params.Type);
-                        resp = new HttpResponse(md.Http, 400, null, "application/json",
-                            Encoding.UTF8.GetBytes(new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html/sql/text].", null).ToJson(true)));
-                        return resp;
+                        _Logging.Warn(header + "RequestReceived invalid 'type' value found in querystring: " + md.Params.Type);
+                        ctx.Response.StatusCode = 400;
+                        ctx.Response.ContentType = "application/json";
+                        await ctx.Response.Send(new ErrorResponse(400, "Invalid 'type' in querystring, use [json/xml/html/sql/text].", null).ToJson(true));
+                        return; 
                     }
                 }
 
@@ -326,39 +343,35 @@ namespace Komodo.Server
 
                 #region Call-User-API
 
-                resp = UserApiHandler(md);
-                return resp;
+                await UserApiHandler(md);
+                return;
 
                 #endregion
             }
             catch (Exception e)
             {
-                _Logging.LogException("RequestReceived", "Outer exception", e);
-                return resp;
+                _Logging.Exception("RequestReceived", "Outer exception", e);
+                ctx.Response.StatusCode = 500;
+                ctx.Response.ContentType = "application/json";
+                await ctx.Response.Send(new ErrorResponse(500, "Outer exception.", null).ToJson(true));
+                return;
             }
             finally
             {
                 _Conn.Close(Thread.CurrentThread.ManagedThreadId);
 
-                _Logging.Log(LoggingModule.Severity.Debug, req.Method + " " + req.RawUrlWithoutQuery + " " + resp.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]");
-
-                if (_Config.Logging.LogHttpRequests)
-                {
-                    _Logging.Log(LoggingModule.Severity.Debug, "RequestReceived sending response: " + Environment.NewLine + resp.ToString());
-                } 
+                _Logging.Debug(header + ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " + ctx.Response.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]"); 
             }
         }
 
-        public static HttpResponse OptionsHandler(HttpRequest req)
-        {
-            _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": processing options request");
-
+        private static async Task OptionsHandler(HttpContext ctx)
+        { 
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
 
             string[] requestedHeaders = null;
-            if (req.Headers != null)
+            if (ctx.Request.Headers != null)
             {
-                foreach (KeyValuePair<string, string> curr in req.Headers)
+                foreach (KeyValuePair<string, string> curr in ctx.Request.Headers)
                 {
                     if (String.IsNullOrEmpty(curr.Key)) continue;
                     if (String.IsNullOrEmpty(curr.Value)) continue;
@@ -371,9 +384,9 @@ namespace Komodo.Server
             }
 
             string headers =
-                _Config.Server.HeaderApiKey + ", " +
-                _Config.Server.HeaderEmail + ", " +
-                _Config.Server.HeaderPassword;
+                _Settings.Server.HeaderApiKey + ", " +
+                _Settings.Server.HeaderEmail + ", " +
+                _Settings.Server.HeaderPassword;
 
             if (requestedHeaders != null)
             {
@@ -392,27 +405,29 @@ namespace Komodo.Server
             responseHeaders.Add("Accept-Charset", "ISO-8859-1, utf-8");
             responseHeaders.Add("Connection", "keep-alive");
 
-            if (_Config.Server.Ssl)
+            if (_Settings.Server.Ssl)
             {
-                responseHeaders.Add("Host", "https://" + _Config.Server.ListenerHostname + ":" + _Config.Server.ListenerPort);
+                responseHeaders.Add("Host", "https://" + _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort);
             }
             else
             {
-                responseHeaders.Add("Host", "http://" + _Config.Server.ListenerHostname + ":" + _Config.Server.ListenerPort);
+                responseHeaders.Add("Host", "http://" + _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort);
             }
 
-            _Logging.Log(LoggingModule.Severity.Debug, "OptionsHandler " + Thread.CurrentThread.ManagedThreadId + ": exiting successfully from OptionsHandler");
-            return new HttpResponse(req, 200, responseHeaders, null, null);
+            ctx.Response.StatusCode = 200;
+            ctx.Response.Headers = responseHeaders;
+            await ctx.Response.Send();
+            return;
         }
 
-        public static bool ExitApplication()
+        private static bool ExitApplication()
         {
-            _Logging.Log(LoggingModule.Severity.Info, "KomodoServer exiting due to console request");
+            _Logging.Info("KomodoServer exiting due to console request");
             Environment.Exit(0);
             return true;
         }
 
-        public static string RootHtml()
+        private static string RootHtml()
         {
             string ret =
                 "<html>" +

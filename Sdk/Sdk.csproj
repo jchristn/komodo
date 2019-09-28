@@ -1,33 +1,48 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
     <PackageId>Komodo.Sdk</PackageId>
-    <Version>1.1.6</Version>
+    <Version>1.3.0</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo</Product>
     <Description>C# SDK for Komodo search platform (clone at https://github.com/jchristn/komodo)</Description>
     <Copyright>(c)2019 Joel Christner</Copyright>
-    <PackageLicenseUrl>https://github.com/jchristn/komodo/blob/master/LICENSE.TXT</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/jchristn/komodo/tree/master/Sdk</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo/tree/master/Sdk</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageTags>information info search retrieval storage</PackageTags>
+    <PackageTags>komodo search index retrieval rest api server find elastic lucene solr</PackageTags>
     <PackageReleaseNotes>For use with the Komodo search platform server (clone at https://github.com/jchristn/komodo)</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/Assets/komodo-icon.ico</PackageIconUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RootNamespace>Komodo.SDK</RootNamespace>
+    <AssemblyName>Komodo.SDK</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DocumentationFile>C:\Code\Komodo\Core\Sdk\Sdk.xml</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="RestWrapper" Version="2.0.4" />
+    <PackageReference Include="RestWrapper" Version="2.1.2" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

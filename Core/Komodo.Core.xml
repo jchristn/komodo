@@ -1,0 +1,2365 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Komodo.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Komodo.Core.Crawler">
+            <summary>
+            Crawler for retrieving data from a file, web URL, or database.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Crawler.#ctor(System.String,Komodo.Core.Enums.DocType)">
+            <summary>
+            Instantiates the Crawler.
+            </summary>
+            <param name="sourceUrl">The source URL for the content.</param>
+            <param name="docType">The DocType of the content.</param>
+        </member>
+        <member name="M:Komodo.Core.Crawler.#ctor(Komodo.Core.Enums.DatabaseType,System.String,System.Int32,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Instantiates the Crawler.
+            </summary>
+            <param name="dbType">The database type, one of: mssql, mysql, pgsql.</param>
+            <param name="serverHostname">The database server hostname.</param>
+            <param name="serverPort">The port on which to connect to the database.</param>
+            <param name="user">The database username.</param>
+            <param name="pass">The database password.</param>
+            <param name="instance">The database instance, useful only for mssql databases.</param>
+            <param name="databaseName">The name of the database.</param>
+            <param name="query">The query to execute against the database.</param>
+        </member>
+        <member name="M:Komodo.Core.Crawler.RetrieveBytes">
+            <summary>
+            Retrieve data from the specified source.
+            </summary>
+            <returns>Byte array of data from the specified source.</returns>
+        </member>
+        <member name="M:Komodo.Core.Crawler.RerieveDataTable">
+            <summary>
+            Retrieve data from the database.
+            </summary>
+            <returns>DataTable containing rows from the database.</returns>
+        </member>
+        <member name="T:Komodo.Core.Database.IndexQueries">
+            <summary>
+            Query builders needed to interact with index database tables.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Database.IndexQueries.#ctor(Komodo.Core.Index,DatabaseWrapper.DatabaseClient,SqliteWrapper.DatabaseClient)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="sqlDatabase">The database client for non-Sqlite databases.</param>
+            <param name="sqliteDatabase">The database client for Sqlite databases.</param>
+        </member>
+        <member name="M:Komodo.Core.Database.IndexQueries.CreateSourceDocsTable">
+            <summary>
+            Generate the query to create the source documents table.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.IndexQueries.CreateParsedDocsTable">
+            <summary>
+            Generate the query to create the parsed documents table.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.IndexQueries.SelectSourceDocumentsByEnumerationQuery(Komodo.Core.EnumerationQuery)">
+            <summary>
+            Generate the query to retrieve source documents based on supplied enumeration query.
+            </summary>
+            <param name="query">Enumeration query.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.Database.PostingsQueries">
+            <summary>
+            Query builders needed to interact with postings database tables.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.#ctor(Komodo.Core.Index,DatabaseWrapper.DatabaseClient,SqliteWrapper.DatabaseClient)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="sqlDatabase">The database client for non-Sqlite databases.</param>
+            <param name="sqliteDatabase">The database client for Sqlite databases.</param>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.CreateTermsMapTable">
+            <summary>
+            Generate the query to create the terms map table.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.GetTermMap(System.String)">
+            <summary>
+            Generate the query to retrieve a term map.
+            </summary>
+            <param name="term">Term.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.AddTermMap(System.String)">
+            <summary>
+            Generate the query to add a term map.
+            </summary>
+            <param name="term">Term.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.RemoveTermMap(System.String)">
+            <summary>
+            Generate the query to remove a term map.
+            </summary>
+            <param name="term">Term.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.GetTerms">
+            <summary>
+            Generate the query to retrieve the list of terms.
+            </summary> 
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.GetTermsCount">
+            <summary>
+            Generate the query to retrieve a counting of the term maps.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.CreatePostingsTable(System.String)">
+            <summary>
+            Generate the query to create a postings table.
+            </summary>
+            <param name="termGuid">Term GUID.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.AddPosting(Komodo.Core.Posting,System.String)">
+            <summary>
+            Generate the query to add a posting.
+            </summary>
+            <param name="posting">Posting.</param>
+            <param name="termGuid">Term GUID.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.RemovePosting(System.String,System.String)">
+            <summary>
+            Generate the query to remove a posting.
+            </summary>
+            <param name="documentId">Document ID.</param>
+            <param name="termGuid">Term GUID.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.GetPostingsCount(System.String)">
+            <summary>
+            Generate the query to retrieve the number of postings for a given term.
+            </summary>
+            <param name="termGuid">Term GUID.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.GetPostings(System.Int32,System.Int64,System.String)">
+            <summary>
+            Generate the query to retrieve postings.
+            </summary>
+            <param name="maxResults">Maximum number of results to retrieve.</param>
+            <param name="startIndex">The index position with which to start.</param>
+            <param name="termGuid">Term GUID.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.Database.PostingsQueries.DeletePostingsTable(System.String)">
+            <summary>
+            Generate the query to delete a postings table.
+            </summary>
+            <param name="termGuid">Term GUID.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.DataNode">
+            <summary>
+            A node of data from a parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.DataNode.Key">
+            <summary>
+            The key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.DataNode.Data">
+            <summary>
+            The data associated with the key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.DataNode.Type">
+            <summary>
+            The DataType associated with the key-value pair.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.DataNode.#ctor">
+            <summary>
+            Instantiates the DataNode.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.DataNode.#ctor(System.String,System.Object,Komodo.Core.Enums.DataType)">
+            <summary>
+            Instantiates the DataNode.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="data">The data associated with the key.</param>
+            <param name="type">The DataType associated with the key-value pair.</param>
+        </member>
+        <member name="M:Komodo.Core.DataNode.TypeFromValue(System.Object)">
+            <summary>
+            Retrieve the DataType of the supplied value.
+            </summary>
+            <param name="val">The object to evaluate.</param>
+            <returns>DataType.</returns>
+        </member>
+        <member name="T:Komodo.Core.EnumerationQuery">
+            <summary>
+            Query to enumerate matching objects in Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationQuery.GUID">
+            <summary>
+            The GUID of the enumeration operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationQuery.MaxResults">
+            <summary>
+            Maximum number of results to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationQuery.StartIndex">
+            <summary>
+            The starting index position for the search.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationQuery.Filters">
+            <summary>
+            Search filters to apply to enumeration.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationQuery.PostbackUrl">
+            <summary>
+            Specify a URL to which the results should be submitted via HTTP POST.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.EnumerationQuery.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.EnumerationResult">
+            <summary>
+            Object returned as the result of an enumeration against an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.Error">
+            <summary>
+            Error code associated with the enumeration request.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.GUID">
+            <summary>
+            The GUID of the enumeration operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.Query">
+            <summary>
+            The enumeration query performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.Async">
+            <summary>
+            True if the enumeration query had a POSTback URL.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.IndexName">
+            <summary>
+            The name of the index that was enumerated.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.StartTimeUtc">
+            <summary>
+            The time that the enumeration started.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.EndTimeUtc">
+            <summary>
+            The time that the enumeration ended.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.TotalTimeMs">
+            <summary>
+            The total number of milliseconds that elapsed while handling the enumeration.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.EnumerationResult.Matches">
+            <summary>
+            Source documents that matched the query.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.EnumerationResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.EnumerationResult.#ctor(Komodo.Core.EnumerationQuery)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="query">Enumeration query.</param>
+        </member>
+        <member name="M:Komodo.Core.EnumerationResult.MarkEnded">
+            <summary>
+            Mark the query as having ended.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.Enums.DatabaseType">
+            <summary>
+            Types of databases supported.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DatabaseType.MsSql">
+            <summary>
+            Microsoft SQL Server
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DatabaseType.MySql">
+            <summary>
+            MySQL
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DatabaseType.PgSql">
+            <summary>
+            PostgreSQL
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DatabaseType.SQLite">
+            <summary>
+            Sqlite
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.Enums.DataType">
+            <summary>
+            Types of data supported.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Object">
+            <summary>
+            Object
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Array">
+            <summary>
+            Array
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Timestamp">
+            <summary>
+            Timestamp
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Integer">
+            <summary>
+            Integer
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Long">
+            <summary>
+            Long
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Decimal">
+            <summary>
+            Decimal
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.String">
+            <summary>
+            String
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Boolean">
+            <summary>
+            Boolean
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DataType.Null">
+            <summary>
+            Null
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.Enums.DocType">
+            <summary>
+            Supported document types and data sources.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DocType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DocType.Sql">
+            <summary>
+            SQL table
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DocType.Html">
+            <summary>
+            HTML
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DocType.Json">
+            <summary>
+            JSON
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DocType.Xml">
+            <summary>
+            XML
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.DocType.Text">
+            <summary>
+            Text
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.Enums.ErrorId">
+            <summary>
+            Error identification.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.NONE">
+            <summary>
+            No error.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.DESTROY_IN_PROGRESS">
+            <summary>
+            The resource is being destroyed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.MISSING_PARAMS">
+            <summary>
+            Missing parameters.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.RETRIEVE_FAILED">
+            <summary>
+            Failed to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.PARSE_ERROR">
+            <summary>
+            Parsing error.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.WRITE_ERROR">
+            <summary>
+            Error writing data to underlying storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.READ_ERROR">
+            <summary>
+            Error reading from the underlying storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.Enums.ErrorId.DELETE_ERROR">
+            <summary>
+            Error deleting requested resource.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.ErrorCode">
+            <summary>
+            Error-related data.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.ErrorCode.Id">
+            <summary>
+            The ID of the error.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.ErrorCode.Data">
+            <summary>
+            Data associated with the error.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ErrorCode.#ctor">
+            <summary>
+            Instantiates the ErrorCode.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ErrorCode.#ctor(Komodo.Core.Enums.ErrorId)">
+            <summary>
+            Instantiates the ErrorCode.
+            </summary>
+            <param name="id">The ID of the error.</param>
+        </member>
+        <member name="M:Komodo.Core.ErrorCode.#ctor(Komodo.Core.Enums.ErrorId,System.Object)">
+            <summary>
+            Instantiates the ErrorCode.
+            </summary>
+            <param name="id">The ID of the error.</param>
+            <param name="data">Data associated with the error.</param>
+        </member>
+        <member name="T:Komodo.Core.Index">
+            <summary>
+            Index metadata.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.IndexName">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.RootDirectory">
+            <summary>
+            The root directory of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.Options">
+            <summary>
+            Index options for the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DocumentsDatabase">
+            <summary>
+            Database settings for the documents database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.PostingsDatabase">
+            <summary>
+            Database settings for the postings database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageSource">
+            <summary>
+            Storage settings for the index source documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageParsed">
+            <summary>
+            Storage settings for the index parsed documents.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Index.#ctor">
+            <summary>
+            Instantiate the Index.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Index.FromFile(System.String)">
+            <summary>
+            Instantiate the Index.
+            </summary>
+            <param name="filename">The file containing JSON from which the index should be instantiated.</param>
+            <returns>Index.</returns>
+        </member>
+        <member name="T:Komodo.Core.Index.DatabaseSettings">
+            <summary>
+            Database settings for the index.  Do not use the same database across multiple indices!
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Type">
+            <summary>
+            The type of database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Filename">
+            <summary>
+            Specify the filename when using the Sqlite database type.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Hostname">
+            <summary>
+            Specify the hostname of the database server.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Port">
+            <summary>
+            Specify the port number for the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.DatabaseName">
+            <summary>
+            Specify the name of the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.InstanceName">
+            <summary>
+            For Mssql SQL Express, specify the instance name.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Username">
+            <summary>
+            The username to use when accessing the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Password">
+            <summary>
+            The password to use when accessing the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.DatabaseSettings.Debug">
+            <summary>
+            Enable or disable query logging.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.Index.StorageSettings">
+            <summary>
+            Storage settings for the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageSettings.Type">
+            <summary>
+            The type of external storage.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageSettings.AwsS3">
+            <summary>
+            AWS S3 storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageSettings.Azure">
+            <summary>
+            Microsoft Azure storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageSettings.Disk">
+            <summary>
+            Disk storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Index.StorageSettings.Kvpbase">
+            <summary>
+            Kvpbase storage settings.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.IndexClient">
+            <summary>
+            The client for interacting with the Index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexClient.Name">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexClient.MaxResults">
+            <summary>
+            Maximum results to be returned by a search.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.#ctor">
+            <summary>
+            Instantiate the Index.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.#ctor(Komodo.Core.Index,SyslogLogging.LoggingModule)">
+            <summary>
+            Instantiate the Index.
+            </summary>
+            <param name="index">Index object.</param> 
+            <param name="logging">Logging module.</param>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.Dispose">
+            <summary>
+            Tear down the index client and release resources.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.Destroy">
+            <summary>
+            Delete all data associated with the index.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.AddDocument(Komodo.Core.Enums.DocType,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Parse a document and add to the index.
+            </summary>
+            <param name="docType">The type of document.</param>
+            <param name="filename">The file to add to the index and store.</param>
+            <param name="sourceUrl">The URL from which the content should be retrieved.</param>
+            <param name="name">The name of the document.</param>
+            <param name="tags">Document tags in a comma-separated list.</param>
+            <param name="contentType">Content type of the document.</param>
+            <param name="title">Document title.</param>
+            <param name="storeOnly">Indicate if the document should be indexed and stored (false) or only stored (true).</param>
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.DocumentExists(System.String)">
+            <summary>
+            Check if a document exists in the index.
+            </summary>
+            <param name="documentId">The ID of the document.</param>
+            <returns>True if the document exists.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.DeleteDocument(System.String)">
+            <summary>
+            Delete a document from the index.
+            </summary>
+            <param name="documentId">The ID of the document.</param> 
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.GetSourceDocument(System.String)">
+            <summary>
+            Retrieve the source document entry from the database.
+            </summary>
+            <param name="documentId">The ID of the document.</param> 
+            <returns>Source document.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.GetSourceDocuments(System.Collections.Generic.List{System.String})">
+            <summary>
+            Retrieve a series of source documents using a list of document IDs.
+            </summary>
+            <param name="documentIds">List of document IDs.</param>
+            <returns>List of source documents.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.GetSourceDocumentData(System.String)">
+            <summary>
+            Retrieve a source document by ID from storage.
+            </summary>
+            <param name="documentId">The ID of the document.</param>
+            <returns>Komodo object.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.GetParsedDocument(System.String)">
+            <summary>
+            Retrieve a parsed document by ID from storage.
+            </summary>
+            <param name="documentId">The ID of the document.</param>
+            <returns>Indexed document.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.Search(Komodo.Core.SearchQuery)">
+            <summary>
+            Search the index.
+            </summary>
+            <param name="query">The query to execute.</param>
+            <returns>Search result.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.GetIndexStats">
+            <summary>
+            Retrieve statistics for the index.
+            </summary>
+            <returns>Index statistics.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexClient.Enumerate(Komodo.Core.EnumerationQuery)">
+            <summary>
+            Enumerate source documents held by the index.
+            </summary>
+            <param name="query">The query to execute.</param> 
+            <returns>Enumeration result.</returns>
+        </member>
+        <member name="T:Komodo.Core.IndexedDoc">
+            <summary>
+            A document that has been parsed and prepared for inclusion in the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.DocumentId">
+            <summary>
+            The document ID.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.DocumentType">
+            <summary>
+            The document type.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Schema">
+            <summary>
+            Schema for the object.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Postings">
+            <summary>
+            The postings for the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Terms">
+            <summary>
+            The list of terms found in the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Html">
+            <summary>
+            For HTML documents, the parsed HTML.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Json">
+            <summary>
+            For JSON documents, the parsed JSON.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Sql">
+            <summary>
+            For SQL databases, the parsed database results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Xml">
+            <summary>
+            For XML documents, the parsed XML.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexedDoc.Text">
+            <summary>
+            For text documents, the parsed text.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.#ctor">
+            <summary>
+            Instantiates the IndexedDoc.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.ToJson(System.Boolean)">
+            <summary>
+            Create a JSON string from the indexed document.
+            </summary>
+            <param name="pretty">True for pretty formatting.</param>
+            <returns>String containing JSON.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.FromHtml(Komodo.Core.ParsedHtml,Komodo.Core.IndexOptions)">
+            <summary>
+            Create an indexed document from parsed HTML.
+            </summary>
+            <param name="html">Parsed HTML object.</param>
+            <param name="options">Options for the index.</param>
+            <returns>IndexedDoc.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.FromJson(Komodo.Core.ParsedJson,Komodo.Core.IndexOptions)">
+            <summary>
+            Create an indexed document from parsed JSON.
+            </summary>
+            <param name="json">Parsed JSON object.</param>
+            <param name="options">Options for the index.</param>
+            <returns>IndexedDoc.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.FromSql(Komodo.Core.ParsedSql,Komodo.Core.IndexOptions)">
+            <summary>
+            Create an indexed document from parsed SQL.
+            </summary>
+            <param name="sql">Parsed SQL object.</param>
+            <param name="options">Options for the index.</param>
+            <returns>IndexedDoc.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.FromXml(Komodo.Core.ParsedXml,Komodo.Core.IndexOptions)">
+            <summary>
+            Create an indexed document from parsed XML.
+            </summary>
+            <param name="xml">Parsed XML object.</param>
+            <param name="options">Options for the index.</param>
+            <returns>IndexedDoc.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.FromText(Komodo.Core.ParsedText,Komodo.Core.IndexOptions)">
+            <summary>
+            Create an indexed document from parsed text.
+            </summary>
+            <param name="text">Parsed text object.</param>
+            <param name="options">Options for the index.</param>
+            <returns>IndexedDoc.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexedDoc.ToString">
+            <summary>
+            Create a human-readable string from the indexed document.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.IndexManager">
+            <summary>
+            Class that manages indices.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.#ctor">
+            <summary>
+            Instantiates the IndexManager.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.#ctor(System.String,SyslogLogging.LoggingModule)">
+            <summary>
+            Instantiates the IndexManager.
+            </summary>
+            <param name="indicesFilename">The file containing the list of indices.</param> 
+            <param name="logging">Logging module.</param>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.GetIndices">
+            <summary>
+            Retrieve the list of indices.
+            </summary>
+            <returns>List of Index objects.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.GetIndexByName(System.String)">
+            <summary>
+            Retrieve an index by name.
+            </summary>
+            <param name="indexName">The name of the index.</param>
+            <returns>Index.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.IndexExists(System.String)">
+            <summary>
+            Check if an index exists.
+            </summary>
+            <param name="indexName">The name of the index.</param>
+            <returns>True if exists.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.AddIndex(Komodo.Core.Index)">
+            <summary>
+            Add a new index.
+            </summary>
+            <param name="index">The index.</param> 
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.RemoveIndex(System.String,System.Boolean)">
+            <summary>
+            Remove an index.
+            </summary>
+            <param name="indexName">The name of the index.</param>
+            <param name="cleanup">True if you wish to delete the index directory and files.</param>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.GetIndexClient(System.String)">
+            <summary>
+            Retrieve the index client for an index.
+            </summary>
+            <param name="indexName">The name of the index.</param>
+            <returns>IndexClient.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexManager.GetIndexStats(System.String)">
+            <summary>
+            Retrieve statistics for the specified index.
+            </summary>
+            <param name="indexName">The name of the index.</param>
+            <returns>Index statistics.</returns>
+        </member>
+        <member name="T:Komodo.Core.IndexOptions">
+            <summary>
+            Configuration and options for an index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.NormalizeCase">
+            <summary>
+            True to set text to lowercase.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.RemovePunctuation">
+            <summary>
+            True to remove punctuation characters.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.RemoveStopWords">
+            <summary>
+            True to remove stopwords.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.PerformStemming">
+            <summary>
+            True to perform stemming on tokens.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.MinTokenLength">
+            <summary>
+            Minimum length of a token.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.MaxTokenLength">
+            <summary>
+            Maximum length of a token.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexOptions.StopWords">
+            <summary>
+            List of stop words.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexOptions.SplitCharacters">
+            <summary>
+            Characters on which to split terms.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexOptions.#ctor">
+            <summary>
+            Instantiate the IndexOptions
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexOptions.ToString">
+            <summary>
+            Create a human readable string of the index options.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Core.IndexOptions.SetStopWordsFromFile">
+            <summary>
+            Set the stop words for the index using StopWords.txt in the working directory or in the Docs directory, if either exists.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.IndexResult">
+            <summary>
+            Response from a request to index a document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.DocumentId">
+            <summary>
+            Document ID.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.Document">
+            <summary>
+            Indexed document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.Error">
+            <summary>
+            Error code associated with the operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.StartTimeUtc">
+            <summary>
+            Timestamp in UTC from the start of the operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.EndTimeUtc">
+            <summary>
+            Timestamp in UTC from the end of the operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.TotalTimeMs">
+            <summary>
+            Time in milliseconds elapsed adding the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.ParseTimeMs">
+            <summary>
+            Time in milliseconds spent parsing the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.PostingsTimeMs">
+            <summary>
+            Time in milliseconds spent adding postings from the parsed document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.IndexResult.StorageTimeMs">
+            <summary>
+            Time in milliseconds spent storing the document (i.e. writing to disk).
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexResult.#ctor">
+            <summary>
+            Instantiates the IndexResponse.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.IndexStats">
+            <summary>
+            Statistics object for a given index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.IndexName">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.SourceDocuments">
+            <summary>
+            Statistics for source documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.ParsedDocuments">
+            <summary>
+            Statistics for parsed documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.TermsCount">
+            <summary>
+            The number of terms stored in the index.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexStats.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.IndexStats.SourceDocumentStats">
+            <summary>
+            Statistics for source documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.SourceDocumentStats.Count">
+            <summary>
+            The number of source documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.SourceDocumentStats.SizeBytes">
+            <summary>
+            The total size of all source documents in bytes.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexStats.SourceDocumentStats.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.IndexStats.ParsedDocumentStats">
+            <summary>
+            Statistics for parsed documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.ParsedDocumentStats.Count">
+            <summary>
+            The number of parsed documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.ParsedDocumentStats.SizeBytesParsed">
+            <summary>
+            The total size of all parsed documents in bytes.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.IndexStats.ParsedDocumentStats.SizeBytesSource">
+            <summary>
+            The total size of all source documents associated with parsed documents in bytes.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.IndexStats.ParsedDocumentStats.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.KomodoObject">
+            <summary>
+            Object stored in Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.KomodoObject.IndexName">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.KomodoObject.DocumentId">
+            <summary>
+            The document ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.KomodoObject.ContentType">
+            <summary>
+            The content type of the document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.KomodoObject.ContentLength">
+            <summary>
+            The length of the document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.KomodoObject.Data">
+            <summary>
+            The stream containing the document's data.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.KomodoObject.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.KomodoObject.#ctor(System.String,System.String,System.String,System.Int64,System.IO.Stream)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="indexName">The name of the index.</param>
+            <param name="documentId">The document ID.</param>
+            <param name="contentType">The content type of the document.</param>
+            <param name="contentLength">The length of the document.</param>
+            <param name="data">The stream containing the document's data.</param>
+        </member>
+        <member name="T:Komodo.Core.MatchCounts">
+            <summary>
+            Provides details about how many documents matched the supplied search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.MatchCounts.TermsMatch">
+            <summary>
+            The number of documents that matched the specified terms.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.MatchCounts.FilterMatch">
+            <summary>
+            The number of documents that matchd the specified terms and the specified filters.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.MatchCounts.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.MatchingDocument">
+            <summary>
+            A document matching a search query.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.MatchingDocument.DocumentId">
+            <summary>
+            Document ID.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.MatchingDocument.DocumentType">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.MatchingDocument.Score">
+            <summary>
+            The score of the document, between 0 and 1.  Only relevant when optional filters are supplied in the search.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.MatchingDocument.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.MimeTypes">
+            <summary>
+            MIME types.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.MimeTypes.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.MimeTypes.GetFromExtension(System.String)">
+            <summary>
+            Retrieve MIME type from file extension.
+            </summary>
+            <param name="extension">File extension.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.Normalizer">
+            <summary>
+            Static class for normalizing content.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeHtml(Komodo.Core.IndexOptions,Komodo.Core.ParsedHtml)">
+            <summary>
+            Normalize parsed HTML.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">Parsed HTML.</param>
+            <returns>Normalized parsed HTML.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeJson(Komodo.Core.IndexOptions,Komodo.Core.ParsedJson)">
+            <summary>
+            Normalize parsed JSON.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">Parsed JSON.</param>
+            <returns>Normalized parsed JSON.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeSql(Komodo.Core.IndexOptions,Komodo.Core.ParsedSql)">
+            <summary>
+            Normalize parsed SQL.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">Parsed SQL.</param>
+            <returns>Normalized parsed SQL.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeXml(Komodo.Core.IndexOptions,Komodo.Core.ParsedXml)">
+            <summary>
+            Normalize parsed XML.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">Parsed XML.</param>
+            <returns>Normalized parsed XML.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeText(Komodo.Core.IndexOptions,Komodo.Core.ParsedText)">
+            <summary>
+            Normalize parsed text.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">Parsed text.</param>
+            <returns>Normalized parsed text.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeStringCase(System.String)">
+            <summary>
+            Normalize string case.
+            </summary>
+            <param name="token">Token.</param>
+            <returns>Token with normalized case.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeStringListCase(System.Collections.Generic.List{System.String})">
+            <summary>
+            Normalize string case for a list of strings.
+            </summary>
+            <param name="tokenList">List of tokens.</param>
+            <returns>List of tokens with normalized case.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeObjectCase(System.Object,Komodo.Core.Enums.DataType)">
+            <summary>
+            Normalize case for an object.
+            </summary>
+            <param name="val">Object.</param>
+            <param name="valType">The data type of the object.</param>
+            <returns>Object with normalized case.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeSchemaCase(System.Collections.Generic.Dictionary{System.String,Komodo.Core.Enums.DataType})">
+            <summary>
+            Normalize the case for a dictionary.
+            </summary>
+            <param name="dict">Dictionary.</param>
+            <returns>Dictionary with normalized case.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeDictionaryCase(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Normalize the case for a dictionary.
+            </summary>
+            <param name="dict">Dictionary.</param>
+            <returns>Dictionary with normalized case.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.NormalizeDataNodeCase(System.Collections.Generic.List{Komodo.Core.DataNode})">
+            <summary>
+            Normalize case for a list of data nodes.
+            </summary>
+            <param name="nodes">List of data nodes.</param>
+            <returns>List of data nodes with normalized case.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveStringPunctuation(System.String)">
+            <summary>
+            Remove punctuation from a string token.
+            </summary>
+            <param name="token">String.</param>
+            <returns>String without punctuation.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveStringListPunctuation(System.Collections.Generic.List{System.String})">
+            <summary>
+            Remove punctuation from a list of string tokens.
+            </summary>
+            <param name="tokenList">List of string tokens.</param>
+            <returns>List of string tokens without punctuation.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveObjectPunctuation(System.Object,Komodo.Core.Enums.DataType)">
+            <summary>
+            Remove punctuation from an object.
+            </summary>
+            <param name="val">Object.</param>
+            <param name="valType">The data type of the object.</param>
+            <returns>Object without punctuation.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveDictionaryPunctuation(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Remove punctuation from a dictionary.
+            </summary>
+            <param name="dict">Dictionary.</param>
+            <returns>Dictionary without punctuation.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveDataNodePunctuation(System.Collections.Generic.List{Komodo.Core.DataNode})">
+            <summary>
+            Remove punctuation from a list of data nodes.
+            </summary>
+            <param name="nodes">List of data nodes.</param>
+            <returns>List of data nodes without punctuation.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveStringStopWords(Komodo.Core.IndexOptions,System.String)">
+            <summary>
+            Remove stop words from a string.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="token">String.</param>
+            <returns>String without stop words.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveStringListStopWords(Komodo.Core.IndexOptions,System.Collections.Generic.List{System.String})">
+            <summary>
+            Remove stop words from a list of strings.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="tokenList">List of strings.</param>
+            <returns>List of strings without stop words.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveObjectStopWords(Komodo.Core.IndexOptions,System.Object,Komodo.Core.Enums.DataType)">
+            <summary>
+            Remove stop words from an object.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="token">Object.</param>
+            <param name="tokenType">Data type of the object.</param>
+            <returns>Object without stop words.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveDictionaryStopWords(Komodo.Core.IndexOptions,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Remove stop words from a dictionary.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">Dictionary.</param>
+            <returns>Dictionary without stop words.</returns>
+        </member>
+        <member name="M:Komodo.Core.Normalizer.RemoveDataNodeStopWords(Komodo.Core.IndexOptions,System.Collections.Generic.List{Komodo.Core.DataNode})">
+            <summary>
+            Remove stop words from a list of data nodes.
+            </summary>
+            <param name="options">Index options.</param>
+            <param name="data">List of data nodes.</param>
+            <returns>List of data nodes without stop words.</returns>
+        </member>
+        <member name="T:Komodo.Core.ParsedDocument">
+            <summary>
+            Metadata about documents parsed and processed by an index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.Id">
+            <summary>
+            ID value for the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.IndexName">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.DocumentId">
+            <summary>
+            Document ID, assigned through indexing.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.DocumentType">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.SourceContentLength">
+            <summary>
+            The content length of the source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.ContentLength">
+            <summary>
+            The content length of the parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.Created">
+            <summary>
+            The time at which the record was created.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedDocument.Indexed">
+            <summary>
+            The time at which the document was indexed.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedDocument.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>ParsedDocument.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedDocument.ToInsertDictionary">
+            <summary>
+            Create a dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="T:Komodo.Core.ParsedHtml">
+            <summary>
+            Parsed HTML document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.PageTitle">
+            <summary>
+            The title of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.MetaDescription">
+            <summary>
+            The meta description of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.MetaDescriptionOpengraph">
+            <summary>
+            The opengraph meta description of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.MetaKeywords">
+            <summary>
+            The meta keywords of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.MetaImageOpengraph">
+            <summary>
+            The opengraph meta image of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.MetaVideoTagsOpengraph">
+            <summary>
+            List of opengraph meta video tags of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.ImageUrls">
+            <summary>
+            Image URLs from the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.Links">
+            <summary>
+            Links from the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.Head">
+            <summary>
+            Full HTML head content.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.Body">
+            <summary>
+            Full HTML body content.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.BodyStripped">
+            <summary>
+            Full HTML body content with tags stripped.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.Tokens">
+            <summary>
+            List of tokens found in the HTML body.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedHtml.Schema">
+            <summary>
+            Schema of the HTML document.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedHtml.#ctor">
+            <summary>
+            Instantiate the ParsedHtml object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedHtml.LoadFile(System.String)">
+            <summary>
+            Load content from a file.
+            </summary>
+            <param name="filename">Path and filename.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedHtml.LoadUrl(System.String)">
+            <summary>
+            Load content from a URL.
+            </summary>
+            <param name="url">URL to retrieve.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedHtml.LoadBytes(System.Byte[],System.String)">
+            <summary>
+            Load content from a byte array.
+            </summary>
+            <param name="data">Byte array.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedHtml.LoadString(System.String,System.String)">
+            <summary>
+            Load content from a string.
+            </summary>
+            <param name="data">String.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedHtml.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.ParsedJson">
+            <summary>
+            Parsed JSON document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedJson.Schema">
+            <summary>
+            Schema for the object.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Core.ParsedJson.MaxDepth">
+            <summary>
+            Maximum node depth.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedJson.ArrayCount">
+            <summary>
+            Number of arrays within the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedJson.NodeCount">
+            <summary>
+            Number of nodes within the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedJson.Flattened">
+            <summary>
+            Flattened representation of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedJson.Tokens">
+            <summary>
+            List of tokens found within the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedJson.#ctor">
+            <summary>
+            Instantiate the ParsedJson object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedJson.LoadFile(System.String)">
+            <summary>
+            Load content from a file.
+            </summary>
+            <param name="filename">Path and filename.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedJson.LoadUrl(System.String)">
+            <summary>
+            Load content from a URL.
+            </summary>
+            <param name="url">URL to retrieve.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedJson.LoadBytes(System.Byte[],System.String)">
+            <summary>
+            Load content from a byte array.
+            </summary>
+            <param name="data">Byte array.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedJson.LoadString(System.String,System.String)">
+            <summary>
+            Load content from a string.
+            </summary>
+            <param name="data">String.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedJson.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.ParsedSql">
+            <summary>
+            Parsed SQL data.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedSql.Schema">
+            <summary>
+            Schema for the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedSql.Rows">
+            <summary>
+            Number of rows.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedSql.Columns">
+            <summary>
+            Number of columns.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedSql.Flattened">
+            <summary>
+            Flattened representation of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedSql.Tokens">
+            <summary>
+            List of tokens found within the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedSql.#ctor">
+            <summary>
+            Instantiate the ParsedJson object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedSql.LoadDatabase(System.String,System.String,System.Int32,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Load data from a SQL query.
+            </summary>
+            <param name="dbType">The database type, one of: mssql, mysql, pgsql.</param>
+            <param name="serverHostname">The server hostname.</param>
+            <param name="serverPort">The TCP port on which to connect.</param>
+            <param name="user">The database username.</param>
+            <param name="pass">The database password.</param>
+            <param name="instance">The database instance, only relevant to mssql databases.</param>
+            <param name="databaseName">The database name.</param>
+            <param name="query">The query to execute.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedSql.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.ParsedText">
+            <summary>
+            Parsed text document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedText.Tokens">
+            <summary>
+            List of tokens found within the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedText.#ctor">
+            <summary>
+            Instantiate the ParsedText object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedText.LoadFile(System.String)">
+            <summary>
+            Load content from a file.
+            </summary>
+            <param name="filename">Path and filename.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedText.LoadUrl(System.String)">
+            <summary>
+            Load content from a URL.
+            </summary>
+            <param name="url">URL to retrieve.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedText.LoadBytes(System.Byte[],System.String)">
+            <summary>
+            Load content from a byte array.
+            </summary>
+            <param name="data">Byte array.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedText.LoadString(System.String,System.String)">
+            <summary>
+            Load content from a string.
+            </summary>
+            <param name="data">String.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedText.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.ParsedXml">
+            <summary>
+            Parsed XML document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedXml.Schema">
+            <summary>
+            Schema for the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedXml.MaxDepth">
+            <summary>
+            Maximum node depth.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedXml.NodeCount">
+            <summary>
+            Number of nodes within the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedXml.ContainerCount">
+            <summary>
+            Number of containers within the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedXml.Flattened">
+            <summary>
+            Flattened representation of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.ParsedXml.Tokens">
+            <summary>
+            List of tokens found within the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedXml.#ctor">
+            <summary>
+            Instantiate the ParsedXml object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.ParsedXml.LoadFile(System.String)">
+            <summary>
+            Load content from a file.
+            </summary>
+            <param name="filename">Path and filename.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedXml.LoadUrl(System.String)">
+            <summary>
+            Load content from a URL.
+            </summary>
+            <param name="url">URL to retrieve.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedXml.LoadBytes(System.Byte[],System.String)">
+            <summary>
+            Load content from a byte array.
+            </summary>
+            <param name="data">Byte array.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedXml.LoadString(System.String,System.String)">
+            <summary>
+            Load content from a string.
+            </summary>
+            <param name="data">String.</param>
+            <param name="sourceUrl">Source URL for the content.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.ParsedXml.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.Posting">
+            <summary>
+            Inverted index entry.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Posting.Id">
+            <summary>
+            Database ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Posting.Term">
+            <summary>
+            Term.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Posting.DocumentId">
+            <summary>
+            Document ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Posting.Frequency">
+            <summary>
+            The frequency with which the term was found.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Posting.Positions">
+            <summary>
+            The character positions where the term was found.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.Posting.Created">
+            <summary>
+            Time at which the posting was created in the database.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Posting.#ctor">
+            <summary>
+            Instantiate the Posting object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.Posting.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Convert a DataRow to a Posting.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Posting.</returns>
+        </member>
+        <member name="M:Komodo.Core.Posting.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Core.PostingsManager">
+            <summary>
+            Postings manager for an index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.PostingsManager.MaxResults">
+            <summary>
+            Set the default number of maximum results.  Must be between 1 and 1000.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.PostingsManager.MaxTerms">
+            <summary>
+            Set the maximum number of terms supported.  Must be between 1 and 32.  
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.#ctor(Komodo.Core.Index,SyslogLogging.LoggingModule,DatabaseWrapper.DatabaseClient,SqliteWrapper.DatabaseClient)">
+            <summary>
+            Instantiate the postings manager.
+            </summary> 
+            <param name="index">Index object.</param> 
+            <param name="logging">Logging instance.</param>
+            <param name="sqlDatabase">Database client (if using Microsoft SQL Server, MySQL, or PostgreSQL), otherwise, use null.</param>
+            <param name="sqliteDatabase">Sqlite database filename (if using Sqlite), otherwise, use null.</param>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.Dispose">
+            <summary>
+            Tear down and dispose of resources.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.AddPosting(Komodo.Core.Posting)">
+            <summary>
+            Add a posting.
+            </summary>
+            <param name="posting">Posting.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.RemoveDocument(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Remove a document from a series of terms.
+            </summary>
+            <param name="documentId">Document ID.</param>
+            <param name="terms">List of terms.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.TermExists(System.String,Komodo.Core.TermMap@)">
+            <summary>
+            Determine whether or not a term map exists for a specific term.
+            </summary>
+            <param name="term">Term.</param>
+            <param name="map">TermMap.</param>
+            <returns>True if exists.</returns>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.GetTerms">
+            <summary>
+            Get the list of terms stored.
+            </summary>
+            <returns>List of terms.</returns>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.GetTermsCount">
+            <summary>
+            Get the count of the number of terms stored.
+            </summary>
+            <returns>Long.</returns>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.GetMatchingDocuments(System.Int32,System.Int32,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String}@,System.Collections.Generic.Dictionary{System.String,System.Decimal}@,System.Int32@)">
+            <summary>
+            Retrieve document IDs that match a series of required, optional, and excluded terms.
+            </summary>
+            <param name="startIndex">Start index for each database query.</param>
+            <param name="maxResults">Maximum number of results to retrieve from each database query.</param>
+            <param name="requiredTerms">List of required terms.</param>
+            <param name="optionalTerms">List of optional terms.</param>
+            <param name="excludeTerms">List of exclude terms.</param>
+            <param name="termsNotFound">List of terms not found.</param>
+            <param name="matchingDocs">Dictionary containing matching document IDs and their respective scores.</param>
+            <param name="indexEnd">The value for startIndex that should be used for a subsequent retrieval to continue the search.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Core.PostingsManager.Dispose(System.Boolean)">
+            <summary>
+            Tear down and dispose of resources.
+            </summary>
+            <param name="disposing">Disposing.</param>
+        </member>
+        <member name="T:Komodo.Core.QueryFilter">
+            <summary>
+            A filter for the query.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.QueryFilter.Terms">
+            <summary>
+            List of terms upon which to match.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.QueryFilter.Filter">
+            <summary>
+            List of filters upon which to match.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.QueryFilter.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.SearchCondition">
+            <summary>
+            Available conditions for search filters.
+            </summary> 
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.Equals">
+            <summary>
+            The left and right terms are equal to one another.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.NotEquals">
+            <summary>
+            The left and right terms are not equal to one another.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.GreaterThan">
+            <summary>
+            The left term is greater than the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.GreaterThanOrEqualTo">
+            <summary>
+            The left term is greater than or equal to the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.LessThan">
+            <summary>
+            The left term is less than the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.LessThanOrEqualTo">
+            <summary>
+            The left term is less than or equal to the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.IsNull">
+            <summary>
+            The left term is null.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.IsNotNull">
+            <summary>
+            The left term is not null.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.Contains">
+            <summary>
+            The left term is contained within the right term (list).
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.ContainsNot">
+            <summary>
+            The left term is not contained within the right term (list).
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.StartsWith">
+            <summary>
+            The left term starts with the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchCondition.EndsWith">
+            <summary>
+            The left term ends with the right term.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.SearchFilter">
+            <summary>
+            A search filter.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SearchFilter.Field">
+            <summary>
+            The field upon which to match.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SearchFilter.Condition">
+            <summary>
+            The condition by which the parsed document's content is evaluated against the supplied value.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SearchFilter.Value">
+            <summary>
+            The value to be evaluated using the specified condition against the parsed document's content.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SearchFilter.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SearchFilter.#ctor(System.String,Komodo.Core.SearchCondition,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="field">Field.</param>
+            <param name="condition">SearchCondition.</param>
+            <param name="value">Value.</param>
+        </member>
+        <member name="T:Komodo.Core.SearchQuery">
+            <summary>
+            Object used to search an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.GUID">
+            <summary>
+            The GUID of the search operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.MaxResults">
+            <summary>
+            Maximum number of results to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.StartIndex">
+            <summary>
+            The starting index position for the search.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.Required">
+            <summary>
+            Required terms and search filter that must be satisfied to include a document in the results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.Optional">
+            <summary>
+            Optional terms and search filter that may match on documents but are not required.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.Exclude">
+            <summary>
+            Terms and search filter that must be excluded from the results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchQuery.PostbackUrl">
+            <summary>
+            Specify a URL to which the results should be submitted via HTTP POST.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SearchQuery.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Core.SearchResult">
+            <summary>
+            Object returned as the result of a search against an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.Error">
+            <summary>
+            Error code associated with the operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.Query">
+            <summary>
+            The search query performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.Async">
+            <summary>
+            True if the search query had a POSTback URL.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.IndexName">
+            <summary>
+            The name of the index that was queried.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.StartTimeUtc">
+            <summary>
+            Timestamp in UTC from the start of the operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.EndTimeUtc">
+            <summary>
+            Timestamp in UTC from the end of the operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.TotalTimeMs">
+            <summary>
+            Time in milliseconds elapsed while searching the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.NextStartIndex">
+            <summary>
+            The next start index to supply to continue the search.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.MatchCount">
+            <summary>
+            Counts of documents that matched the query.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.TermsNotFound">
+            <summary>
+            List of terms that were not part of the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Core.SearchResult.Documents">
+            <summary>
+            Documents that matched the query.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SearchResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SearchResult.#ctor(Komodo.Core.SearchQuery)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="query">Search query.</param>
+        </member>
+        <member name="T:Komodo.Core.SourceDocument">
+            <summary>
+            Metadata about documents added to an index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Id">
+            <summary>
+            ID value for the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.IndexName">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.DocumentId">
+            <summary>
+            The master document ID, assigned through indexing.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Name">
+            <summary>
+            The name of the document (may not be unique).
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Tags">
+            <summary>
+            Document tags.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.DocumentType">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.SourceUrl">
+            <summary>
+            The source URL of the document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Title">
+            <summary>
+            The title of the document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.ContentType">
+            <summary>
+            Content type of the document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.ContentLength">
+            <summary>
+            The content length of the source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Md5">
+            <summary>
+            The MD5 hash of the document's data.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Created">
+            <summary>
+            The time at which the record was created.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.SourceDocument.Indexed">
+            <summary>
+            The time at which the document was indexed.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SourceDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.SourceDocument.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>SourceDocument.</returns>
+        </member>
+        <member name="M:Komodo.Core.SourceDocument.ToInsertDictionary">
+            <summary>
+            Create a dictionary from the object.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="T:Komodo.Core.TermMap">
+            <summary>
+            Maps a term to a set of identifiers.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermMap.Id">
+            <summary>
+            ID (database row).
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermMap.Term">
+            <summary>
+            Term.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermMap.GUID">
+            <summary>
+            GUID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermMap.Created">
+            <summary>
+            Creation timestamp.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermMap.LastUpdate">
+            <summary>
+            Timestamp from last update.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.TermMap.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.TermMap.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>TermMap.</returns>
+        </member>
+        <member name="T:Komodo.Core.TermRecord">
+            <summary>
+            Database record pertaining to a term and document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermRecord.Id">
+            <summary>
+            ID value for the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermRecord.IndexName">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermRecord.DocumentId">
+            <summary>
+            Document ID, assigned through indexing.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermRecord.Term">
+            <summary>
+            Term.
+            </summary>
+        </member>
+        <member name="P:Komodo.Core.TermRecord.Created">
+            <summary>
+            The time at which the record was created.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.TermRecord.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Core.TermRecord.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Instantiate the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>TermRecord.</returns>
+        </member>
+    </members>
+</doc>

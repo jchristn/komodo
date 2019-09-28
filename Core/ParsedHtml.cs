@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using NUglify;
 using RestWrapper;
+using Komodo.Core.Enums;
 
 namespace Komodo.Core
 {
@@ -135,14 +136,12 @@ namespace Komodo.Core
                 url,
                 HttpMethod.GET,
                 null,
-                null,
-                true);
+                null);
+             
             RestResponse resp = req.Send();
 
-            if (resp == null) return false;
-            if (resp.StatusCode != 200) return false;
-            if (resp.Data == null || resp.Data.Length < 1) return false;
-            _SourceContent = Encoding.UTF8.GetString(resp.Data);
+            if (resp == null || resp.StatusCode != 200 || resp.Data == null || resp.ContentLength < 1) return false;
+            _SourceContent = Encoding.UTF8.GetString(Common.StreamToBytes(resp.Data));
             _SourceUrl = url;
             _HtmlDoc.LoadHtml(_SourceContent);
             return ProcessSourceContent();
