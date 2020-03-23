@@ -1,0 +1,18 @@
+{
+	"GUID": "guid",
+	"MaxResults": 1,
+	"StartIndex": 0,
+	"Required": {
+		"Terms": [ "khaleesi" ],
+		"Filter": []
+	},
+	"Exclude": {
+		"Terms": [],
+		"Filter": []
+	},
+	"Optional": {
+		"Terms": [],
+		"Filter": []
+	},
+	"PostbackUrl": null
+}

@@ -1,0 +1,24 @@
+{
+	"GUID": "guid",
+	"MaxResults": 1,
+	"StartIndex": 0,
+	"Required": {
+		"Terms": [ "joel" ],
+		"Filter": [ 
+			{
+				"Field": "quantity",
+				"Condition": "GreaterThan",
+				"Value": "10"
+			}
+		]
+	},
+	"Exclude": {
+		"Terms": [],
+		"Filter": []
+	},
+	"Optional": {
+		"Terms": [],
+		"Filter": []
+	},
+	"PostbackUrl": null
+}

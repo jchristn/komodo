@@ -2,6 +2,16 @@
 
 ## Current Version
 
+v1.4.0
+
+- Breaking changes
+- Major refactor for traceability and performance
+- Update dependencies and added support for SQL Server, MySQL, PostgreSQL, and Sqlite
+- Separated projects for crawling, parsing, generating postings, database interface, index, index management, and API server
+- Database for configuration instead of discrete configuration files
+
+## Previous Versions
+
 v1.3.0
 
 - Breaking changes
@@ -10,8 +20,6 @@ v1.3.0
 - Async SDK APIs with KomodoException objects
 - Improvements to SearchResult and EnumerationResult objects
 - JSON/XML/SQL parsers now rely on text parser to identify terms
-
-## Previous Versions
 
 v1.2.x
 

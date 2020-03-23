@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.4.0.0</Version>
+    <Authors>Joel Christner</Authors>
+    <Product>Komodo Index Client: Information search, storage, and retrieval</Product>
+    <Description>Komodo is an information search, storage, and retrieval platform.</Description>
+    <Copyright>(c)2020 Joel Christner</Copyright>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/Assets/komodo-icon.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>komodo information search storage retrieval rest restful api blob object</PackageTags>
+    <PackageReleaseNotes>Major refactor with breaking changes.  Refer to CHANGELOG.md for details.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlobHelper" Version="2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Komodo.Database\Komodo.Database.csproj" />
+    <ProjectReference Include="..\Komodo.Parser\Komodo.Parser.csproj" />
+    <ProjectReference Include="..\Komodo.Postings\Komodo.Postings.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,1820 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Komodo.Classes</name>
+    </assembly>
+    <members>
+        <member name="T:Komodo.Classes.ApiKey">
+            <summary>
+            Identifies credentials that can be used by API requestors.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ApiKey.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ApiKey.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ApiKey.UserGUID">
+            <summary>
+            Globally-unique identifier of the user.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ApiKey.Active">
+            <summary>
+            Indicates whether or not the API key is able to be used.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ApiKey.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ApiKey.#ctor(System.String,System.Boolean)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="userGuid">Globally-unique identifier of the user.</param>
+            <param name="active">Indicates whether or not the API key is able to be used.</param>
+        </member>
+        <member name="M:Komodo.Classes.ApiKey.#ctor(System.String,System.String,System.Boolean)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="userGuid">Globally-unique identifier of the user.</param>
+            <param name="active">Indicates whether or not the API key is able to be used.</param>
+        </member>
+        <member name="M:Komodo.Classes.ApiKey.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.ApiKey.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.ApiKey.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.Common">
+            <summary>
+            Commonly-used methods in Komodo and supporting applications.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.DatabaseSettings">
+            <summary>
+            Database settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Filename">
+            <summary>
+            Filename, if using Sqlite.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Type">
+            <summary>
+            The type of database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Hostname">
+            <summary>
+            The hostname of the database server.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Port">
+            <summary>
+            The TCP port number on which the server is listening.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Username">
+            <summary>
+            The username to use when accessing the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Password">
+            <summary>
+            The password to use when accessing the database.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.Instance">
+            <summary>
+            For SQL Server Express, the instance name.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DatabaseSettings.DatabaseName">
+            <summary>
+            The name of the database.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.DatabaseSettings.#ctor(System.String)">
+            <summary>
+            Instantiate the object using Sqlite.
+            </summary>
+            <param name="filename">The Sqlite database filename.</param>
+        </member>
+        <member name="M:Komodo.Classes.DatabaseSettings.#ctor(System.String,System.String,System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object using SQL Server, MySQL, or PostgreSQL.
+            </summary>
+            <param name="dbType">The type of database.</param>
+            <param name="hostname">The hostname of the database server.</param>
+            <param name="port">The TCP port number on which the server is listening.</param>
+            <param name="username">The username to use when accessing the database.</param>
+            <param name="password">The password to use when accessing the database.</param>
+            <param name="instance">For SQL Server Express, the instance name.</param>
+            <param name="dbName">The name of the database.</param>
+        </member>
+        <member name="T:Komodo.Classes.DataNode">
+            <summary>
+            A node of data from a parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DataNode.Key">
+            <summary>
+            The key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DataNode.Data">
+            <summary>
+            The data associated with the key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DataNode.Type">
+            <summary>
+            The DataType associated with the key-value pair.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.DataNode.#ctor">
+            <summary>
+            Instantiates the DataNode.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.DataNode.#ctor(System.String,System.Object,Komodo.Classes.DataType)">
+            <summary>
+            Instantiates the DataNode.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="data">The data associated with the key.</param>
+            <param name="type">The DataType associated with the key-value pair.</param>
+        </member>
+        <member name="M:Komodo.Classes.DataNode.TypeFromValue(System.Object)">
+            <summary>
+            Retrieve the DataType of the supplied value.
+            </summary>
+            <param name="val">The object to evaluate.</param>
+            <returns>DataType.</returns>
+        </member>
+        <member name="T:Komodo.Classes.DataType">
+            <summary>
+            Types of data supported.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Object">
+            <summary>
+            Object
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Array">
+            <summary>
+            Array
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Timestamp">
+            <summary>
+            Timestamp
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Integer">
+            <summary>
+            Integer
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Long">
+            <summary>
+            Long
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Decimal">
+            <summary>
+            Decimal
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.String">
+            <summary>
+            String
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Boolean">
+            <summary>
+            Boolean
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DataType.Null">
+            <summary>
+            Null
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.DocType">
+            <summary>
+            Supported document types and data sources.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocType.Sql">
+            <summary>
+            SQL table
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocType.Html">
+            <summary>
+            HTML
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocType.Json">
+            <summary>
+            JSON
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocType.Xml">
+            <summary>
+            XML
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocType.Text">
+            <summary>
+            Text
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.DocumentData">
+            <summary>
+            Data from a document stored in Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentData.ContentType">
+            <summary>
+            The content type of the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentData.ContentLength">
+            <summary>
+            The content length of the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentData.DataStream">
+            <summary>
+            The stream containing the source document's data.  Important: accessing the 'Data' parameter will fully read 'DataStream'.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.DocumentData.Data">
+            <summary>
+            Byte array containing the data from the source DataStream.  Important: accessing the 'Data' will fully read 'DataStream'.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.DocumentData.#ctor(System.String,System.Int64,System.IO.Stream)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="contentType">Content type.</param>
+            <param name="contentLength">Content length.</param>
+            <param name="stream">Stream containing the data.</param>
+        </member>
+        <member name="T:Komodo.Classes.DocumentMetadata">
+            <summary>
+            Metadata about a document stored in Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentMetadata.SourceRecord">
+            <summary>
+            SourceDocument record.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentMetadata.ParsedRecord">
+            <summary>
+            ParsedDocument record.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentMetadata.Parsed">
+            <summary>
+            Parse result.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.DocumentMetadata.Postings">
+            <summary>
+            Postings result.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.DocumentMetadata.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.DocumentMetadata.#ctor(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object,Komodo.Classes.PostingsResult)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="sourceRecord">SourceDocument.</param>
+            <param name="parsedRecord">ParsedDocument.</param>
+            <param name="parsed">ParseResult from parser.</param>
+            <param name="postings">PostingsResult.</param>
+        </member>
+        <member name="T:Komodo.Classes.EnumerationQuery">
+            <summary>
+            Object used to enumerate an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationQuery.GUID">
+            <summary>
+            The GUID of the enumeration operation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.EnumerationQuery.MaxResults">
+            <summary>
+            Maximum number of results to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationQuery.StartIndex">
+            <summary>
+            The starting index position for the enumeration.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationQuery.Filters">
+            <summary>
+            Search filters to apply to enumeration.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.EnumerationQuery.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.EnumerationResult">
+            <summary>
+            Object returned as the result of an enumeration against an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationResult.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationResult.IndexName">
+            <summary>
+            The name of the index that was queried.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationResult.Query">
+            <summary>
+            The enumeration query performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.EnumerationResult.Matches">
+            <summary>
+            Source documents that matched the query.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.EnumerationResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.EnumerationResult.#ctor(Komodo.Classes.EnumerationQuery)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="query">Enumeration query.</param>
+        </member>
+        <member name="T:Komodo.Classes.Index">
+            <summary>
+            Repository where source and parsed documents are stored.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Index.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Index.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Index.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns this index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Index.Name">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Index.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Index.#ctor(System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="ownerGuid">Globally-unique identifier of the user that owns this index.</param>
+            <param name="name">The name of the index.</param> 
+        </member>
+        <member name="M:Komodo.Classes.Index.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="ownerGuid">Globally-unique identifier of the user that owns this index.</param>
+            <param name="name">The name of the index.</param> 
+        </member>
+        <member name="M:Komodo.Classes.Index.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.Index.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.Index.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.IndexResult">
+            <summary>
+            Result from an indexing operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.Success">
+            <summary>
+            Indicates if the indexing operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.GUID">
+            <summary>
+            The source document GUID.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.Type">
+            <summary>
+            The document type.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.Time">
+            <summary>
+            Timestamps for the index operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.ParseResult">
+            <summary>
+            The result of parsing, if enabled.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.Postings">
+            <summary>
+            The result of generating postings, if enabled.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.IndexResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.IndexResult.IndexResultTimestamps">
+            <summary>
+            Timestamps for the index operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.Overall">
+            <summary>
+            Start and end timestamps for the overall indexing operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.PersistSourceDocument">
+            <summary>
+            Start and end timestamps for persisting the source document to storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.PersistParsedDocument">
+            <summary>
+            Start and end timestamps for persisting the parsed document to storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.PersistPostingsDocument">
+            <summary>
+            Start and end timestamps for persisting the postings object to storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.Parse">
+            <summary>
+            Start and end timestamps for parsing the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.Postings">
+            <summary>
+            Start and end timestamps for generating postings from the parsed document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexResult.IndexResultTimestamps.Terms">
+            <summary>
+            Start and end timestamps for processing document terms and storing them in the database.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.IndexStats">
+            <summary>
+            Statistics for an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.Name">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.GUID">
+            <summary>
+            The globally-unique identifier for the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.SourceDocuments">
+            <summary>
+            Source document statistics.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.ParsedDocuments">
+            <summary>
+            Parsed document statistics.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.Terms">
+            <summary>
+            The number of terms in the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.Postings">
+            <summary>
+            The number of postings in the index.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.IndexStats.DocumentsStats">
+            <summary>
+            Document statistics.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.DocumentsStats.Count">
+            <summary>
+            The number of documents.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndexStats.DocumentsStats.Bytes">
+            <summary>
+            The total size of the documents.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.IndicesStats">
+            <summary>
+            Statistics for all indices.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndicesStats.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndicesStats.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.IndicesStats.Stats">
+            <summary>
+            List of index statistics.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.MatchCounts">
+            <summary>
+            Provides details about how many documents matched the supplied search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.MatchCounts.TermsMatch">
+            <summary>
+            The number of documents that matched the specified terms.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.MatchCounts.FilterMatch">
+            <summary>
+            The number of documents that matchd the specified terms and the specified filters.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.MatchCounts.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.MatchedDocument">
+            <summary>
+            A document matching a search query.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.MatchedDocument.GUID">
+            <summary>
+            Globally-unique identifier for the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.MatchedDocument.DocumentType">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.MatchedDocument.Score">
+            <summary>
+            The score of the document, between 0 and 1, over both terms and filters.  Only relevant when optional terms or filters are supplied in the search.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.MatchedDocument.TermsScore">
+            <summary>
+            The terms score of the document, between 0 and 1, when optional terms are supplied.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.MatchedDocument.FiltersScore">
+            <summary>
+            The filters score of the document, between 0 and 1, when optional filters are supplied.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.MatchedDocument.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.Metadata">
+            <summary>
+            Key-value pair configuration-related data.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Metadata.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Metadata.Key">
+            <summary>
+            Key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Metadata.Value">
+            <summary>
+            Value associated with the specified key.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Metadata.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Metadata.#ctor(System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="key">Key.</param>
+            <param name="val">Value associated with the specified key.</param>
+        </member>
+        <member name="M:Komodo.Classes.Metadata.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.Metadata.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.Metadata.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.Node">
+            <summary>
+            System participating in Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Node.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Node.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Node.Hostname">
+            <summary>
+            The hostname of the node.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Node.Port">
+            <summary>
+            The port on which the node is listening for incoming HTTP or HTTPS requests.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Node.Ssl">
+            <summary>
+            Specifies whether or not SSL is required.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Node.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Node.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="hostname">The hostname of the node.</param>
+            <param name="port">The port on which the node is listening for incoming HTTP or HTTPS requests.</param>
+            <param name="ssl">Specifies whether or not SSL is required.</param>
+        </member>
+        <member name="M:Komodo.Classes.Node.#ctor(System.String,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="hostname">The hostname of the node.</param>
+            <param name="port">The port on which the node is listening for incoming HTTP or HTTPS requests.</param>
+            <param name="ssl">Specifies whether or not SSL is required.</param>
+        </member>
+        <member name="M:Komodo.Classes.Node.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.Node.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.Node.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.ParsedDocument">
+            <summary>
+            Object that has been parsed by Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.SourceDocumentGUID">
+            <summary>
+            Globally-unique identifier of the source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns the document record.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.IndexGUID">
+            <summary>
+            Globally-unique identifier of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.Type">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.ContentLength">
+            <summary>
+            The content length of the parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.Terms">
+            <summary>
+            The number of terms in the parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.Postings">
+            <summary>
+            The number of postings in the parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.Created">
+            <summary>
+            The timestamp from when the entry was created.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParsedDocument.Indexed">
+            <summary>
+            The timestamp from when the document was indexed.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParsedDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParsedDocument.#ctor(System.String,System.String,System.String,Komodo.Classes.DocType,System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="sourceDocGuid">Globally-unique identifier of the source document.</param>
+            <param name="ownerGuid">Globally-unique identifier of the user that owns the document record.</param>
+            <param name="indexGuid">Globally-unique identifier of the index.</param>
+            <param name="docType">The type of document.</param>
+            <param name="contentLength">The content length of the parsed document.</param>
+            <param name="terms">The number of terms in the parsed document.</param>
+            <param name="postings">The number of postings in the parsed document.</param>
+        </member>
+        <member name="M:Komodo.Classes.ParsedDocument.#ctor(System.String,System.String,System.String,System.String,Komodo.Classes.DocType,System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="sourceDocGuid">Globally-unique identifier of the source document.</param>
+            <param name="ownerGuid">Globally-unique identifier of the user that owns the document record.</param>
+            <param name="indexGuid">Globally-unique identifier of the index.</param>
+            <param name="docType">The type of document.</param>
+            <param name="terms">The number of terms in the parsed document.</param>
+            <param name="postings">The number of postings in the parsed document.</param>
+            <param name="contentLength">The content length of the parsed document.</param>
+        </member>
+        <member name="M:Komodo.Classes.ParsedDocument.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.ParsedDocument.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.ParsedDocument.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.Permission">
+            <summary>
+            Specifies API permissions associated with API keys. 
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.IndexGUID">
+            <summary>
+            Globally-unique identifier of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.UserGUID">
+            <summary>
+            Globally-unique identifier of the user.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.ApiKeyGUID">
+            <summary>
+            Globally-unique identifier of the API key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.AllowSearch">
+            <summary>
+            Allow or disallow search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.AllowCreateDocument">
+            <summary>
+            Allow or disallow document creation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.AllowDeleteDocument">
+            <summary>
+            Allow or disallow document deletion.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.AllowCreateIndex">
+            <summary>
+            Allow or disallow index creation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Permission.AllowDeleteIndex">
+            <summary>
+            Allow or disallow index deletion.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Permission.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Permission.#ctor(System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="indexGuid">Index GUID.</param>
+            <param name="userGuid">User GUID.</param>
+            <param name="apiKeyGuid">API key GUID.</param>
+            <param name="allowSearch">Allow search.</param>
+            <param name="allowCreateDoc">Allow document creation.</param>
+            <param name="allowDeleteDoc">Allow document deletion.</param>
+            <param name="allowCreateIndex">Allow index creation.</param>
+            <param name="allowDeleteIndex">Allow index deletion.</param>
+        </member>
+        <member name="M:Komodo.Classes.Permission.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.Permission.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.Permission.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="P:Komodo.Classes.Posting.Term">
+            <summary>
+            Term.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Posting.Frequency">
+            <summary>
+            The frequency with which the term was found.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Posting.Positions">
+            <summary>
+            The character positions where the term was found.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Posting.#ctor">
+            <summary>
+            Instantiate the Posting object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Posting.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Classes.PostingsOptions">
+            <summary>
+            Configuration and options for postings processing and terms extraction.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.NormalizeCase">
+            <summary>
+            True to set text to lowercase.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.RemovePunctuation">
+            <summary>
+            True to remove punctuation characters.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.RemoveStopWords">
+            <summary>
+            True to remove stopwords.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.PerformStemming">
+            <summary>
+            True to perform stemming on tokens.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.MinTokenLength">
+            <summary>
+            Minimum length of a token.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.MaxTokenLength">
+            <summary>
+            Maximum length of a token.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.StopWords">
+            <summary>
+            List of stop words.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.SplitCharacters">
+            <summary>
+            Characters on which to split terms.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.PostingsOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.PostingsOptions.ToString">
+            <summary>
+            Create a human readable string of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="M:Komodo.Classes.PostingsOptions.SetStopWordsFromFile">
+            <summary>
+            Set the stop words using StopWords.txt in the working directory or in the Docs directory, if either exists.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.PostingsResult">
+            <summary>
+            Results from generating postings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsResult.Success">
+            <summary>
+            Indicates if the postings generator was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsResult.Postings">
+            <summary>
+            Postings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsResult.Terms">
+            <summary>
+            Terms.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.PostingsResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.QueryFilter">
+            <summary>
+            A filter for the query.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.QueryFilter.Terms">
+            <summary>
+            List of terms upon which to match.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.QueryFilter.Filter">
+            <summary>
+            List of filters upon which to match.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.QueryFilter.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.SearchCondition">
+            <summary>
+            Available conditions for search filters.
+            </summary> 
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.Equals">
+            <summary>
+            The left and right terms are equal to one another.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.NotEquals">
+            <summary>
+            The left and right terms are not equal to one another.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.GreaterThan">
+            <summary>
+            The left term is greater than the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.GreaterThanOrEqualTo">
+            <summary>
+            The left term is greater than or equal to the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.LessThan">
+            <summary>
+            The left term is less than the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.LessThanOrEqualTo">
+            <summary>
+            The left term is less than or equal to the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.IsNull">
+            <summary>
+            The left term is null.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.IsNotNull">
+            <summary>
+            The left term is not null.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.Contains">
+            <summary>
+            The left term is contained within the right term (list).
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.ContainsNot">
+            <summary>
+            The left term is not contained within the right term (list).
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.StartsWith">
+            <summary>
+            The left term starts with the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchCondition.EndsWith">
+            <summary>
+            The left term ends with the right term.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.SearchFilter">
+            <summary>
+            A search filter.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchFilter.Field">
+            <summary>
+            The field upon which to match.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchFilter.Condition">
+            <summary>
+            The condition by which the parsed document's content is evaluated against the supplied value.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchFilter.Value">
+            <summary>
+            The value to be evaluated using the specified condition against the parsed document's content.
+            When using GreaterThan, GreaterThanOrEqualTo, LessThan, or LessThanOrEqualTo, the value supplied must be convertible to decimal.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SearchFilter.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SearchFilter.#ctor(System.String,Komodo.Classes.SearchCondition,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="field">Field.</param>
+            <param name="condition">SearchCondition.</param>
+            <param name="value">Value.</param>
+        </member>
+        <member name="T:Komodo.Classes.SearchQuery">
+            <summary>
+            Object used to search an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchQuery.GUID">
+            <summary>
+            The GUID of the search operation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchQuery.MaxResults">
+            <summary>
+            Maximum number of results to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchQuery.StartIndex">
+            <summary>
+            The starting index position for the search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchQuery.Required">
+            <summary>
+            Required terms and search filter that must be satisfied to include a document in the results.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchQuery.Optional">
+            <summary>
+            Optional terms and search filter that may match on documents but are not required.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchQuery.Exclude">
+            <summary>
+            Terms and search filter that must be excluded from the results.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SearchQuery.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.SearchResult">
+            <summary>
+            Object returned as the result of a search against an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.IndexName">
+            <summary>
+            The name of the index that was queried.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.Query">
+            <summary>
+            The search query performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.TermsNotFound">
+            <summary>
+            List of terms not found.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.Documents">
+            <summary>
+            Documents that matched the query.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SearchResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SearchResult.#ctor(Komodo.Classes.SearchQuery)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="query">Search query.</param>
+        </member>
+        <member name="M:Komodo.Classes.SearchResult.SortMatchesByScore">
+            <summary>
+            Sort matches by score.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.SearchResult.SearchResultTimeComponents">
+            <summary>
+            Amount of time spent in various aspects of search.
+            Time elements may not add up to the 'Overall' time as not every element is measured.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchResult.SearchResultTimeComponents.Overall">
+            <summary>
+            Overall time spent processing the search query.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchResult.SearchResultTimeComponents.PreparationMs">
+            <summary>
+            Time spent, in milliseconds, preparing internal data structures for the search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchResult.SearchResultTimeComponents.RequiredExcludedTermsMs">
+            <summary>
+            Time spent, in milliseconds, evaluating required and excluded terms.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchResult.SearchResultTimeComponents.ReadParseResultsMs">
+            <summary>
+            Time spent, in milliseconds, reading parse results from documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchResult.SearchResultTimeComponents.OptionalTermsMs">
+            <summary>
+            Time spent, in milliseconds, evaluating optional terms.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchResult.SearchResultTimeComponents.RequiredExcludedFiltersMs">
+            <summary>
+            Time spent, in milliseconds, evaluating required and excluded filters.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SearchResult.SearchResultTimeComponents.OptionalFiltersMs">
+            <summary>
+            Time spent, in milliseconds, evaluating optional filters.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SearchResult.SearchResultTimeComponents.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.SourceDocument">
+            <summary>
+            Object that has been uploaded to Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns the document record.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.IndexGUID">
+            <summary>
+            The globally-unique identifier of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Name">
+            <summary>
+            The name of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Title">
+            <summary>
+            The title of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Tags">
+            <summary>
+            The tags associated with the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Type">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.SourceURL">
+            <summary>
+            The URL from which the content was retrieved.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.ContentType">
+            <summary>
+            The content type of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.ContentLength">
+            <summary>
+            The content length of the source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Md5">
+            <summary>
+            The MD5 hash of the source content.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Created">
+            <summary>
+            The timestamp from when the entry was created.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.SourceDocument.Indexed">
+            <summary>
+            The timestamp from when the document was indexed.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SourceDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.SourceDocument.#ctor(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Classes.DocType,System.String,System.String,System.Int64,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="ownerGuid">Globally-unique identifier of the user that owns the document record.</param>
+            <param name="indexGuid">The globally-unique identifier of the index.</param>
+            <param name="name">The name of the object.</param>
+            <param name="title">The title of the object.</param>
+            <param name="tags">The tags associated with the object.</param>
+            <param name="docType">The type of document.</param>
+            <param name="sourceUrl">The URL from which the content was retrieved.</param>
+            <param name="contentType">The content type of the object.</param>
+            <param name="contentLength">The content length of the source document.</param>
+            <param name="md5">The MD5 hash of the source content.</param>
+        </member>
+        <member name="M:Komodo.Classes.SourceDocument.#ctor(System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Classes.DocType,System.String,System.String,System.Int64,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="ownerGuid">Globally-unique identifier of the user that owns the document record.</param>
+            <param name="indexGuid">The globally-unique identifier of the index.</param>
+            <param name="name">The name of the object.</param>
+            <param name="title">The title of the object.</param>
+            <param name="tags">The tags associated with the object.</param>
+            <param name="docType">The type of document.</param>
+            <param name="sourceUrl">The URL from which the content was retrieved.</param>
+            <param name="contentType">The content type of the object.</param>
+            <param name="contentLength">The content length of the source document.</param>
+            <param name="md5">The MD5 hash of the source content.</param>
+        </member>
+        <member name="M:Komodo.Classes.SourceDocument.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.SourceDocument.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.SourceDocument.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.StorageSettings">
+            <summary>
+            Storage settings for storing objects.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.StorageSettings.Aws">
+            <summary>
+            Amazon S3 settings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.StorageSettings.Azure">
+            <summary>
+            Microsoft Azure BLOB storage settings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.StorageSettings.Disk">
+            <summary>
+            Local filesystem storage settings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.StorageSettings.Kvpbase">
+            <summary>
+            Kvpbase storage server settings.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.StorageSettings.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.StorageSettings.#ctor(BlobHelper.AwsSettings)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="aws">AWS settings.</param>
+        </member>
+        <member name="M:Komodo.Classes.StorageSettings.#ctor(BlobHelper.AzureSettings)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="azure">Azure settings.</param>
+        </member>
+        <member name="M:Komodo.Classes.StorageSettings.#ctor(BlobHelper.DiskSettings)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="disk">Disk settings.</param>
+        </member>
+        <member name="M:Komodo.Classes.StorageSettings.#ctor(BlobHelper.KvpbaseSettings)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="kvpbase">Kvpbase settings.</param>
+        </member>
+        <member name="T:Komodo.Classes.TermDoc">
+            <summary>
+            Maps a term to a given document within a given index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermDoc.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermDoc.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermDoc.IndexGUID">
+            <summary>
+            Globally-unique identifier of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermDoc.TermGUID">
+            <summary>
+            Globally-unique identifier of the term.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermDoc.SourceDocumentGUID">
+            <summary>
+            Globally-unique identifier of the source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermDoc.ParsedDocumentGUID">
+            <summary>
+            Globally-unique identifier of the parsed document.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.TermDoc.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.TermDoc.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="indexGuid">Globally-unique identifier of the index.</param>
+            <param name="termGuid">Globally-unique identifier of the term.</param>
+            <param name="sourceDocGuid">Globally-unique identifier of the source document.</param>
+            <param name="parsedDocGuid">Globally-unique identifier of the parsed document.</param>
+        </member>
+        <member name="M:Komodo.Classes.TermDoc.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="indexGuid">Globally-unique identifier of the index.</param>
+            <param name="termGuid">Globally-unique identifier of the term.</param>
+            <param name="sourceDocGuid">Globally-unique identifier of the source document.</param>
+            <param name="parsedDocGuid">Globally-unique identifier of the parsed document.</param>
+        </member>
+        <member name="M:Komodo.Classes.TermDoc.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.TermDoc.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.TermDoc.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.TermGuid">
+            <summary>
+            Associates a term with a specific GUID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermGuid.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermGuid.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermGuid.IndexGUID">
+            <summary>
+            Globally-unique identifier of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.TermGuid.Term">
+            <summary>
+            The term.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.TermGuid.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.TermGuid.#ctor(System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="indexGuid">Globally-unique identifier of the index.</param>
+            <param name="term">The term.</param>
+        </member>
+        <member name="M:Komodo.Classes.TermGuid.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="indexGuid">Globally-unique identifier of the index.</param>
+            <param name="term">The term.</param>
+        </member>
+        <member name="M:Komodo.Classes.TermGuid.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.TermGuid.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.TermGuid.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+        <member name="T:Komodo.Classes.Timestamps">
+            <summary>
+            Object used to measure start, end, and total time associated with an operation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Timestamps.Start">
+            <summary>
+            The time at which the operation started.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Timestamps.End">
+            <summary>
+            The time at which the operation ended.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.Timestamps.TotalMs">
+            <summary>
+            The total number of milliseconds that transpired between Start and End.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.Timestamps.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.User">
+            <summary>
+            Accounts which, through API keys, have access to Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.User.Id">
+            <summary>
+            Database row ID.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.User.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.User.Name">
+            <summary>
+            Name of the user.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.User.Email">
+            <summary>
+            Email address of the user.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.User.PasswordMd5">
+            <summary>
+            MD5 hash of the user's password.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.User.Active">
+            <summary>
+            Indicates whether or not the account is able to be used.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.User.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.User.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="name">Name of the user.</param>
+            <param name="email">Email address of the user.</param>
+            <param name="passwordMd5">MD5 hash of the user's password.</param>
+        </member>
+        <member name="M:Komodo.Classes.User.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="guid">Globally-unique identifier.</param>
+            <param name="name">Name of the user.</param>
+            <param name="email">Email address of the user.</param>
+            <param name="passwordMd5">MD5 hash of the user's password.</param>
+        </member>
+        <member name="M:Komodo.Classes.User.ToInsertDictionary">
+            <summary>
+            Create a database insertable dictionary from the object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.Classes.User.FromDataRow(System.Data.DataRow)">
+            <summary>
+            Create the object from a DataRow.
+            </summary>
+            <param name="row">DataRow.</param>
+            <returns>Instance.</returns>
+        </member>
+        <member name="M:Komodo.Classes.User.FromDataTable(System.Data.DataTable)">
+            <summary>
+            Create a list from a DataTable.
+            </summary>
+            <param name="table">DataTable.</param>
+            <returns>List of instances.</returns>
+        </member>
+    </members>
+</doc>
