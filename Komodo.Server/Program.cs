@@ -452,7 +452,11 @@ namespace Komodo.Server
                 "    <title>Komodo Server</title>" +
                 "  </head>" +
                 "  <body>" +
-                "    <pre>";
+                "    <div>" +
+                "      <img src='Assets/favicon.ico' height='128' width='128'/>" +
+                "    </div>" +
+                "    <div>" +
+                "      <pre>";
 
             ret += Welcome();
             ret += "Komodo Server version " + _Version + Environment.NewLine;
@@ -460,7 +464,8 @@ namespace Komodo.Server
             ret += Environment.NewLine;
             ret += "Documentation and source code: <a href='https://github.com/jchristn/komodo' target='_blank'>https://github.com/jchristn/komodo</a>" + Environment.NewLine;
             ret +=
-                "    </pre>" +
+                "      </pre>" +
+                "    </div>" +
                 "  </body>" +
                 "</html>";
             return ret;
