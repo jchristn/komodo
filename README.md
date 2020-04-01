@@ -1,3 +1,5 @@
+![alt tag](https://github.com/jchristn/komodo/blob/master/Assets/komodo-icon.ico)
+
 # Komodo Search
 
 Information storage, search, and retrieval platform.  Komodo was written in C# and includes a RESTful server with robust APIs.
