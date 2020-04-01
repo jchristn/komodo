@@ -289,6 +289,7 @@ namespace Komodo.Postings
                 #endregion
             }
 
+            if (ret.Postings != null && ret.Postings.Count > 0) ret.Postings = ret.Postings.OrderByDescending(p => p.Positions.Count).ToList();
             ret.Terms = ret.Terms.Distinct().ToList(); 
             ret.Success = true;
             ret.Time.End = DateTime.Now; 
@@ -323,6 +324,7 @@ namespace Komodo.Postings
                 }
             }
 
+            if (ret.Postings != null && ret.Postings.Count > 0) ret.Postings = ret.Postings.OrderByDescending(p => p.Positions.Count).ToList();
             ret.Terms = ret.Terms.Distinct().ToList();
             ret.Success = true;
             ret.Time.End = DateTime.Now;
@@ -357,6 +359,7 @@ namespace Komodo.Postings
                 }
             }
 
+            if (ret.Postings != null && ret.Postings.Count > 0) ret.Postings = ret.Postings.OrderByDescending(p => p.Positions.Count).ToList();
             ret.Terms = ret.Terms.Distinct().ToList();
             ret.Success = true;
             ret.Time.End = DateTime.Now;
@@ -383,6 +386,7 @@ namespace Komodo.Postings
                 }
             }
 
+            if (ret.Postings != null && ret.Postings.Count > 0) ret.Postings = ret.Postings.OrderByDescending(p => p.Positions.Count).ToList();
             ret.Terms = ret.Terms.Distinct().ToList();
             ret.Success = true;
             ret.Time.End = DateTime.Now;
@@ -417,6 +421,7 @@ namespace Komodo.Postings
                 }
             }
 
+            if (ret.Postings != null && ret.Postings.Count > 0) ret.Postings = ret.Postings.OrderByDescending(p => p.Positions.Count).ToList();
             ret.Terms = ret.Terms.Distinct().ToList();
             ret.Success = true;
             ret.Time.End = DateTime.Now;
