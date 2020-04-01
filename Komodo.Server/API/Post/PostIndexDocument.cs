@@ -61,7 +61,7 @@ namespace Komodo.Server
                     await md.Http.Response.Send(new ErrorResponse(409, "Requested GUID already exists.", null, null).ToJson(true));
                     return;
                 }
-            }
+            } 
 
             #endregion
 
@@ -182,7 +182,7 @@ namespace Komodo.Server
 
                 #endregion
 
-                #region Index-or-Store
+                #region Build-Source-Document
 
                 string sourceUrl = null;
                 if (!String.IsNullOrEmpty(md.Params.Url)) sourceUrl = md.Params.Url;
@@ -203,32 +203,64 @@ namespace Komodo.Server
                     contentLength,
                     md5);
 
-                IndexResult result = await idx.Add(
-                    src,
-                    Common.ReadBinaryFile(tempFile),
-                    !md.Params.Bypass,
-                    new PostingsOptions());
-
-                if (!result.Success)
-                {
-                    _Logging.Warn(header + "unable to store document in index " + name);
-                    md.Http.Response.StatusCode = 500;
-                    md.Http.Response.ContentType = "application/json";
-                    await md.Http.Response.Send(new ErrorResponse(500, "Unable to store document in index '" + name + "'.", null, result).ToJson(true));
-                    return;
-                } 
-
                 #endregion
 
-                md.Http.Response.StatusCode = 200;
-                md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(Common.SerializeJson(result, md.Params.Pretty));
-                return;
+                if (!md.Params.Async)
+                {
+                    #region Sync
+
+                    IndexResult result = await idx.Add(
+                        src,
+                        Common.ReadBinaryFile(tempFile),
+                        !md.Params.Bypass,
+                        new PostingsOptions());
+
+                    if (!result.Success)
+                    {
+                        _Logging.Warn(header + "unable to store document in index " + name);
+                        md.Http.Response.StatusCode = 500;
+                        md.Http.Response.ContentType = "application/json";
+                        await md.Http.Response.Send(new ErrorResponse(500, "Unable to store document in index '" + name + "'.", null, result).ToJson(true));
+                        return;
+                    }
+
+                    md.Http.Response.StatusCode = 200;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(result, md.Params.Pretty));
+                    return;
+
+                    #endregion
+                }
+                else
+                {
+                    #region Async
+
+                    IndexResult result = new IndexResult();
+                    result.Success = true;
+                    result.GUID = src.GUID;
+                    result.Type = docType;
+                    result.ParseResult = null;
+                    result.Postings = null;
+                    result.Time = null;
+
+                    Task unawaited = idx.Add(
+                        src,
+                        Common.ReadBinaryFile(tempFile),
+                        !md.Params.Bypass,
+                        new PostingsOptions());
+
+                    md.Http.Response.StatusCode = 200;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(Common.SerializeJson(result, md.Params.Pretty));
+                    return;
+
+                    #endregion
+                }
             }
             finally
             {
                 if (File.Exists(tempFile)) File.Delete(tempFile);
             }
-        }
+        } 
     }
 }

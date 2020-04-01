@@ -239,7 +239,23 @@ namespace Komodo.Sdk
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data)
+        public async Task<IndexResult> AddDocument(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        {
+            return await AddDocument(indexName, null, sourceUrl, title, tags, docType, data);
+        }
+
+        /// <summary>
+        /// Add a document to the specified index.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="docGuid">Document GUID.</param>
+        /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
+        /// <param name="docType">Type of document.</param>
+        /// <param name="data">Data from the document.</param> 
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> AddDocument(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(sourceUrl)
@@ -247,10 +263,89 @@ namespace Komodo.Sdk
 
             string docTypeStr = DocTypeString(docType);
 
-            string url = indexName + "?type=" + docTypeStr;
+            string url = indexName;
+            if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
+            url += "?type=" + docTypeStr;
+
             if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
             if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
-            if (!String.IsNullOrEmpty(tags)) url += "&tags=" + WebUtility.UrlEncode(tags);
+            
+            if (tags != null && tags.Count > 0)
+            {
+                url += "&tags=" + WebUtility.UrlEncode(Common.StringListToCsv(tags));
+            }
+
+            RestRequest req = new RestRequest(
+                _Endpoint + url,
+                HttpMethod.POST,
+                _AuthHeaders,
+                "application/json");
+
+            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+            RestResponse resp = await req.SendAsync(data);
+
+            KomodoException e = KomodoException.FromRestResponse(resp);
+            if (e != null) throw e;
+
+            if (resp.Data != null && resp.ContentLength > 0)
+            {
+                byte[] respData = StreamToBytes(resp.Data);
+                return DeserializeJson<IndexResult>(respData);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Add a document to the specified index asynchronously and expect a postback with the results.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param> 
+        /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
+        /// <param name="docType">Type of document.</param>
+        /// <param name="data">Data from the document.</param>
+        /// <param name="postbackUrl">URL to which results should be POSTed back.</param>
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> AddDocumentAsync(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, string postbackUrl)
+        {
+            return await AddDocumentAsync(indexName, null, sourceUrl, title, tags, docType, data, postbackUrl);
+        }
+
+        /// <summary>
+        /// Add a document to the specified index asynchronously and expect a postback with the results.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="docGuid">Document GUID.</param>
+        /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
+        /// <param name="docType">Type of document.</param>
+        /// <param name="data">Data from the document.</param>
+        /// <param name="postbackUrl">URL to which results should be POSTed back.</param>
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> AddDocumentAsync(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, string postbackUrl)
+        {
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            if (String.IsNullOrEmpty(sourceUrl)
+                && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
+
+            string docTypeStr = DocTypeString(docType);
+
+            string url = indexName;
+            if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
+            url += "?type=" + docTypeStr;
+            url += "&async";
+
+            if (!String.IsNullOrEmpty(postbackUrl)) url += "&postback=" + WebUtility.UrlEncode(postbackUrl);
+            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+            if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
+
+            if (tags != null && tags.Count > 0)
+            {
+                url += "&tags=" + WebUtility.UrlEncode(Common.StringListToCsv(tags));
+            }
 
             RestRequest req = new RestRequest(
                 _Endpoint + url,
@@ -284,7 +379,23 @@ namespace Komodo.Sdk
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> StoreDocument(string indexName, string sourceUrl, string title, string tags, DocType docType, byte[] data)
+        public async Task<IndexResult> StoreDocument(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        {
+            return await StoreDocument(indexName, null, sourceUrl, title, tags, docType, data);
+        }
+
+        /// <summary>
+        /// Store a document in the specified index without parsing and indexing.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="docGuid">Document GUID.</param>
+        /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+        /// <param name="title">Title for the document.</param>
+        /// <param name="tags">Document tags.</param>
+        /// <param name="docType">Type of document.</param>
+        /// <param name="data">Data from the document.</param> 
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> StoreDocument(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(sourceUrl)
@@ -293,10 +404,15 @@ namespace Komodo.Sdk
             string docTypeStr = DocTypeString(docType);
 
             string url = indexName + "?type=" + docTypeStr + "&bypass=true";
+            if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
             if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
             if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
-            if (!String.IsNullOrEmpty(tags)) url += "&tags=" + WebUtility.UrlEncode(tags);
 
+            if (tags != null && tags.Count > 0)
+            {
+                url += "&tags=" + WebUtility.UrlEncode(Common.StringListToCsv(tags));
+            }
+             
             RestRequest req = new RestRequest(
                 _Endpoint + url,
                 HttpMethod.POST,

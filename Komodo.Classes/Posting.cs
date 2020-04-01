@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Komodo.Classes
 {
+    /// <summary>
+    /// A postings entry for a document, i.e. a term, its frequency, and its positions.
+    /// </summary>
     public class Posting
     {
         #region Public-Members

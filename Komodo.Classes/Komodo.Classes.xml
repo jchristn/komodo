@@ -1012,6 +1012,11 @@
             <param name="table">DataTable.</param>
             <returns>List of instances.</returns>
         </member>
+        <member name="T:Komodo.Classes.Posting">
+            <summary>
+            A postings entry for a document, i.e. a term, its frequency, and its positions.
+            </summary>
+        </member>
         <member name="P:Komodo.Classes.Posting.Term">
             <summary>
             Term.

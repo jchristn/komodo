@@ -176,12 +176,14 @@ namespace Test.Sdk
             string sourceUrl = InputString("Source URL:", null, true);
             DocType docType = GetDocType();
             string title = InputString("Title:", null, true);
-            string tags = InputString("Tags:", null, true);
+            string tagsStr = InputString("Tags CSV:", null, true);
             string sourceFile = InputString("Filename:", "order1.json", true);
             byte[] data = null;
 
             if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
 
+            List<string> tags = new List<string>();
+            if (!String.IsNullOrEmpty(tagsStr)) tags = Common.CsvToStringList(tagsStr);
             IndexResult resp = _Sdk.AddDocument(indexName, sourceUrl, title, tags, docType, data).Result;
             if (resp != null) Console.WriteLine(SerializeJson(resp, true));
         }
@@ -194,11 +196,14 @@ namespace Test.Sdk
             string sourceUrl = InputString("Source URL:", null, true);
             DocType docType = GetDocType();
             string title = InputString("Title:", null, true);
-            string tags = InputString("Tags:", null, true);
+            string tagsStr = InputString("Tags CSV:", null, true);
             string sourceFile = InputString("Filename:", "order1.json", true);
             byte[] data = null;
 
             if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
+
+            List<string> tags = new List<string>();
+            if (!String.IsNullOrEmpty(tagsStr)) tags = Common.CsvToStringList(tagsStr);
 
             IndexResult resp = _Sdk.StoreDocument(indexName, sourceUrl, title, tags, docType, data).Result;
             if (resp != null) Console.WriteLine(SerializeJson(resp, true));

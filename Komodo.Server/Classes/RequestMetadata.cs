@@ -163,9 +163,19 @@ namespace Komodo.Server.Classes
             public string Url = null;
 
             /// <summary>
+            /// Indicates the URL to which results should be POSTed after an indexing operation.
+            /// </summary>
+            public string Postback = null;
+
+            /// <summary>
             /// Indicates that an enumeration operation is desired, where appropriate.
             /// </summary>
             public bool Enumerate = false;
+
+            /// <summary>
+            /// Indicates that an indexing operation should be handled asynchronously.
+            /// </summary>
+            public bool Async = false;
 
             #endregion
 
@@ -195,6 +205,8 @@ namespace Komodo.Server.Classes
                 if (qs.ContainsKey("metadata")) ret.Metadata = true;
                 if (qs.ContainsKey("bypass")) ret.Bypass = true;
                 if (qs.ContainsKey("cleanup")) ret.Cleanup = true;
+                if (qs.ContainsKey("async")) ret.Async = true;
+                if (qs.ContainsKey("enumerate")) ret.Enumerate = true;
 
                 if (qs.ContainsKey("dbtype")) ret.DbType = WebUtility.UrlDecode(qs["dbtype"]);
                 if (qs.ContainsKey("dbserver")) ret.DbServer = WebUtility.UrlDecode(qs["dbserver"]);
@@ -212,9 +224,8 @@ namespace Komodo.Server.Classes
                 if (qs.ContainsKey("title")) ret.Title = WebUtility.UrlDecode(qs["title"]);
                 if (qs.ContainsKey("type")) ret.Type = WebUtility.UrlDecode(qs["type"]);
                 if (qs.ContainsKey("url")) ret.Url = WebUtility.UrlDecode(qs["url"]);
-                
-                if (qs.ContainsKey("enumerate")) ret.Enumerate = true;
-
+                if (qs.ContainsKey("postback")) ret.Postback = WebUtility.UrlDecode(qs["postback"]);
+                 
                 return ret;
             }
 

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlobHelper;
 using DatabaseWrapper;
+using RestWrapper;
 using Komodo.Classes;
 using Komodo.Database; 
 using Komodo.Parser;
@@ -282,9 +283,23 @@ namespace Komodo.IndexClient
         /// <param name="sourceDoc">Source document.</param>
         /// <param name="data">Byte data.</param>
         /// <param name="parse">True if the document should be parsed and indexed.</param>
-        /// <param name="options">Postings options.</param>
+        /// <param name="options">Postings options.</param> 
         /// <returns>Index result.</returns>
         public async Task<IndexResult> Add(SourceDocument sourceDoc, byte[] data, bool parse, PostingsOptions options)
+        {
+            return await Add(sourceDoc, data, parse, options, null);
+        }
+
+        /// <summary>
+        /// Store or store-and-index a document.
+        /// </summary>
+        /// <param name="sourceDoc">Source document.</param>
+        /// <param name="data">Byte data.</param>
+        /// <param name="parse">True if the document should be parsed and indexed.</param>
+        /// <param name="options">Postings options.</param>
+        /// <param name="postbackUrl">URL to which results should be POSTed.</param>
+        /// <returns>Index result.</returns>
+        public async Task<IndexResult> Add(SourceDocument sourceDoc, byte[] data, bool parse, PostingsOptions options, string postbackUrl)
         {
             if (sourceDoc == null) throw new ArgumentNullException(nameof(sourceDoc));
             if (String.IsNullOrEmpty(sourceDoc.OwnerGUID)) throw new ArgumentNullException(nameof(sourceDoc.OwnerGUID));
@@ -434,6 +449,17 @@ namespace Komodo.IndexClient
             ret.Success = true;
             ret.GUID = sourceDoc.GUID;
             ret.Time.Overall.End = DateTime.Now.ToUniversalTime();
+
+            if (!String.IsNullOrEmpty(postbackUrl))
+            {
+                RestRequest restReq = new RestRequest(
+                    postbackUrl,
+                    HttpMethod.POST,
+                    null,
+                    "application/json");
+
+                RestResponse restResp = await restReq.SendAsync(Common.SerializeJson(ret, true));
+            }
 
             return ret;
         }

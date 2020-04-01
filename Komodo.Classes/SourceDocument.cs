@@ -138,8 +138,7 @@ namespace Komodo.Classes
         /// <param name="contentLength">The content length of the source document.</param>
         /// <param name="md5">The MD5 hash of the source content.</param>
         public SourceDocument(string guid, string ownerGuid, string indexGuid, string name, string title, List<string> tags, DocType docType, string sourceUrl, string contentType, long contentLength, string md5)
-        {
-            if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
+        { 
             if (String.IsNullOrEmpty(ownerGuid)) throw new ArgumentNullException(nameof(ownerGuid));
             if (String.IsNullOrEmpty(indexGuid)) throw new ArgumentNullException(nameof(indexGuid));
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
