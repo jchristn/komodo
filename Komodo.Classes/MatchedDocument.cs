@@ -39,6 +39,11 @@ namespace Komodo.Classes
         /// </summary>
         public decimal? FiltersScore = null;
 
+        /// <summary>
+        /// Source document metadata, if requested.
+        /// </summary>
+        public SourceDocument Metadata = null;
+
         #endregion
 
         #region Private-Members

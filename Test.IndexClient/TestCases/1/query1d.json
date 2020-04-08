@@ -31,5 +31,5 @@
 			}
 		]
 	},
-	"PostbackUrl": null
+	"IncludeMetadata": true
 }

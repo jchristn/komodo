@@ -26,5 +26,5 @@
 			}
 		]
 	},
-	"PostbackUrl": null
+	"IncludeMetadata": true
 }

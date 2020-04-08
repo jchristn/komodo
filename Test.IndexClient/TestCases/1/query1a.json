@@ -20,5 +20,5 @@
 		"Terms": [],
 		"Filter": []
 	},
-	"PostbackUrl": null
+	"IncludeMetadata": true
 }

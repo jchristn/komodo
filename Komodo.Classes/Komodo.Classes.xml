@@ -680,6 +680,11 @@
             The filters score of the document, between 0 and 1, when optional filters are supplied.
             </summary>
         </member>
+        <member name="F:Komodo.Classes.MatchedDocument.Metadata">
+            <summary>
+            Source document metadata, if requested.
+            </summary>
+        </member>
         <member name="M:Komodo.Classes.MatchedDocument.#ctor">
             <summary>
             Instantiates the object.
@@ -1286,6 +1291,11 @@
         <member name="P:Komodo.Classes.SearchQuery.Exclude">
             <summary>
             Terms and search filter that must be excluded from the results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.SearchQuery.IncludeMetadata">
+            <summary>
+            Indicate whether document metadata should be included in the search result.
             </summary>
         </member>
         <member name="M:Komodo.Classes.SearchQuery.#ctor">

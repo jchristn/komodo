@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.4.0.0</Version>
+    <Version>1.4.0.1</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Index Client: Information search, storage, and retrieval</Product>
     <Description>Komodo is an information search, storage, and retrieval platform.</Description>
@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object</PackageTags>
-    <PackageReleaseNotes>Major refactor with breaking changes.  Refer to CHANGELOG.md for details.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added IncludeMetadata in SearchQuery.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

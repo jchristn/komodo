@@ -853,6 +853,16 @@ namespace Komodo.IndexClient
 
                         #endregion
 
+                        #region Retrieve-Source-Document
+
+                        SourceDocument sourceDoc = null; 
+                        if (query.IncludeMetadata)
+                        {
+                            sourceDoc = _Database.SelectByGUID<SourceDocument>(currDoc.SourceDocumentGUID);
+                        }
+
+                        #endregion
+
                         #region Add-to-List
 
                         MatchedDocument matchDoc = new MatchedDocument();
@@ -861,6 +871,7 @@ namespace Komodo.IndexClient
                         matchDoc.GUID = currDoc.SourceDocumentGUID;
                         matchDoc.Score = aggregateScore;
                         matchDoc.TermsScore = termsScore;
+                        matchDoc.Metadata = sourceDoc;
                         matchDocuments.Add(matchDoc);
 
                         if (matchDocuments.Count >= query.MaxResults) break; // exit foreach

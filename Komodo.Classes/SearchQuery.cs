@@ -92,7 +92,12 @@ namespace Komodo.Classes
                 else _Exclude = value;
             }
         }
-         
+
+        /// <summary>
+        /// Indicate whether document metadata should be included in the search result.
+        /// </summary>
+        public bool IncludeMetadata = false;
+
         #endregion
 
         #region Private-Members
