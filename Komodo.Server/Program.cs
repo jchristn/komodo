@@ -32,14 +32,8 @@ namespace Komodo.Server
             string header = "[Komodo.Server] ";
 
             try
-            {
-                #region Welcome
-
-                _Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
-                Console.WriteLine(Welcome());
-
-                #endregion
+            { 
+                _Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();  
 
                 #region Initial-Setup
 
@@ -60,6 +54,8 @@ namespace Komodo.Server
                 #region Initialize-Globals
 
                 _Settings = Settings.FromFile("System.json");
+
+                Welcome();
 
                 _Logging = new LoggingModule(
                     _Settings.Logging.SyslogServerIp,
@@ -113,7 +109,46 @@ namespace Komodo.Server
             }
         }
 
-        private static string Welcome()
+        private static void Welcome()
+        {
+            ConsoleColor prior = Console.ForegroundColor; 
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(Logo());
+            Console.WriteLine("Komodo | Information search, storage, and retrieval | v" + _Version);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("");
+
+            if (_Settings.Server.ListenerHostname.Equals("localhost") || _Settings.Server.ListenerHostname.Equals("127.0.0.1"))
+            {
+                //                          1         2         3         4         5         6         7         8
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("WARNING: Komodo started on '" + _Settings.Server.ListenerHostname + "'");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Komodo can only service requests from the local machine.  If you wish to serve");
+                Console.WriteLine("external requests, edit the System.json file and specify a DNS-resolvable");
+                Console.WriteLine("hostname in the Server.ListenerHostname field.");
+                Console.WriteLine("");
+            }
+
+            List<string> adminListeners = new List<string> { "*", "+", "0.0.0.0" };
+
+            if (adminListeners.Contains(_Settings.Server.ListenerHostname))
+            {
+                //                          1         2         3         4         5         6         7         8
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("NOTICE: Komodo listening on a wildcard hostname: '" + _Settings.Server.ListenerHostname + "'");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine("Komodo must be run with administrative privileges, otherwise it will not be");
+                Console.WriteLine("able to respond to incoming requests.");
+                Console.WriteLine("");
+            }
+
+            Console.ForegroundColor = prior;
+        }
+
+        private static string Logo()
         {
             // thank you https://psfonttk.com/big-text-generator/
 
@@ -129,7 +164,6 @@ namespace Komodo.Server
                 "o888o o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' `Y8bod88P  `Y8bod8P' " + Environment.NewLine +
                 Environment.NewLine +
                 Environment.NewLine;
-
             return ret;
         }
 
@@ -458,7 +492,7 @@ namespace Komodo.Server
                 "    <div>" +
                 "      <pre>";
 
-            ret += Welcome();
+            ret += Logo();
             ret += "Komodo Server version " + _Version + Environment.NewLine;
             ret += "Information storage, search, and retrieval platform" + Environment.NewLine;
             ret += Environment.NewLine;

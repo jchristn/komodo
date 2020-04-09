@@ -16,6 +16,8 @@ If you have any issues or feedback, please file an issue here in Github.  We'd l
 - Separated projects for crawling, parsing, generating postings, database interface, index, index management, and API server
 - Database for configuration instead of discrete configuration files  
 - Async indexing API support with POSTbacks
+- IncludeMetadata parameter in SearchQuery
+- Amended welcome message on server start
 
 ## API Documentation
 

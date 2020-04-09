@@ -2,9 +2,11 @@
 
 ## Current Version
 
-v1.4.1
+v1.4.1.x
 
 - Async indexing API support with POSTbacks
+- IncludeMetadata parameter in SearchQuery
+- Amended welcome message on server start
 
 ## Previous Versions
 
