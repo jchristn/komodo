@@ -50,7 +50,7 @@ namespace Komodo.Server.Classes
                 foreach (KeyValuePair<int, HttpContext> curr in _Connections)
                 {
                     string key = curr.Value.Request.SourceIp + ":" + curr.Value.Request.SourcePort;
-                    ret.Add(key, curr.Value.Request);
+                    if (!ret.ContainsKey(key)) ret.Add(key, curr.Value.Request);
                 }
             }
 
