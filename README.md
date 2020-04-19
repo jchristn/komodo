@@ -1,5 +1,10 @@
 ![alt tag](https://github.com/jchristn/komodo/blob/master/Assets/komodo-icon.ico)
 
+|   | Version | Downloads |
+|---|---|---|
+| Komodo.Core | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.Core.svg?style=flat)](https://www.nuget.org/packages/Komodo.Core/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.Core.svg)](https://www.nuget.org/packages/Komodo.Core) |
+| Komodo.Sdk | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.Sdk.svg?style=flat)](https://www.nuget.org/packages/Komodo.Sdk/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.Sdk.svg)](https://www.nuget.org/packages/Komodo.Sdk) |  
+
 # Komodo Search
 
 Information storage, search, and retrieval platform.  Komodo was written in C# and includes a RESTful server with robust APIs.
