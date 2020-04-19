@@ -52,6 +52,19 @@ namespace Komodo.Server.Classes
 
             #region Welcome
 
+            Console.WriteLine(
+                Environment.NewLine +
+                Environment.NewLine +
+                "oooo                                                    .o8            " + Environment.NewLine +
+                "`888                                                    888            " + Environment.NewLine +
+                " 888  oooo   .ooooo.  ooo. .oo.  .oo.    .ooooo.   .oooo888   .ooooo.  " + Environment.NewLine +
+                " 888 .8P'   d88' `88b `888P'Y88bP'Y88b  d88' `88b d88' `888  d88' `88b " + Environment.NewLine +
+                " 888888.    888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
+                " 888 `88b.  888   888  888   888   888  888   888 888   888  888   888 " + Environment.NewLine +
+                "o888o o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' `Y8bod88P  `Y8bod8P' " + Environment.NewLine +
+                Environment.NewLine +
+                Environment.NewLine);
+
             // ________________         1         2         3         4         5         6         7
             // ________________12345678901234567890123456789012345678901234567890123456789012345678901234567890
             Console.WriteLine("Thank you for using Komodo!  We'll put together a basic system configuration");

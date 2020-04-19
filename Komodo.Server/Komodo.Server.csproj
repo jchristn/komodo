@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Version>1.4.1.1</Version>
+    <Version>1.4.1.2</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Server: Information search, storage, and retrieval</Product>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object</PackageTags>
-    <PackageReleaseNotes>Amended welcome message on server start</PackageReleaseNotes>
+    <PackageReleaseNotes>Logo in setup</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
