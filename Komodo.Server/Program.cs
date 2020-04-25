@@ -92,7 +92,7 @@ namespace Komodo.Server
 
                 #region Wait-for-Server-Thread
 
-                EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, Guid.NewGuid().ToString());
+                EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
                 bool waitHandleSignal = false;
                 do
                 {

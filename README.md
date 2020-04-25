@@ -23,6 +23,7 @@ If you have any issues or feedback, please file an issue here in Github.  We'd l
 - Async indexing API support with POSTbacks
 - IncludeMetadata parameter in SearchQuery
 - Amended welcome message on server start
+- Fix for multi-platform
 
 ## API Documentation
 
