@@ -2,14 +2,19 @@
 
 ## Current Version
 
+v1.4.2
+
+- Changes to support multi-platform and containerization
+- Dependency update
+
+## Previous Versions
+
 v1.4.1.x
 
 - Async indexing API support with POSTbacks
 - IncludeMetadata parameter in SearchQuery
 - Amended welcome message on server start
 - Fix for multi-platform
-
-## Previous Versions
 
 v1.4.0
 

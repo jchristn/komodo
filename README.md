@@ -13,17 +13,10 @@ Information storage, search, and retrieval platform.  Komodo was written in C# a
 
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.4.x
+## New in v1.4.2
 
-- Breaking changes
-- Major refactor for traceability and performance
-- Update dependencies and added support for SQL Server, MySQL, PostgreSQL, and Sqlite
-- Separated projects for crawling, parsing, generating postings, database interface, index, index management, and API server
-- Database for configuration instead of discrete configuration files  
-- Async indexing API support with POSTbacks
-- IncludeMetadata parameter in SearchQuery
-- Amended welcome message on server start
-- Fix for multi-platform
+- Changes for multi-platform and containerization
+- Dependency updates
 
 ## API Documentation
 
