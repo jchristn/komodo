@@ -32,6 +32,10 @@ cd bin\release\netcoreapp3.0\publish
 dotnet Komodo.Server.dll
 ```
 
+## Deploying with Docker
+
+Refer to ```Docker.md``` for details.  The ```System.json``` and ```Komodo.db``` files in the solution root directory are present specifically for Docker deployments.
+
 ## Version History
 
 Please refer to CHANGELOG.md for details.
