@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 using DatabaseWrapper;
 using SyslogLogging;
-using Komodo.Classes;
-using Komodo.Database;
+using Watson.ORM;
+using Watson.ORM.Core;
+using Komodo.Classes; 
 
 namespace Komodo.Server.Classes
 {
     internal class AuthManager
     { 
-        private KomodoDatabase _Database = null;
+        private WatsonORM _ORM = null;
 
-        internal AuthManager(KomodoDatabase db)
+        internal AuthManager(WatsonORM orm)
         {
-            if (db == null) throw new ArgumentNullException(nameof(db)); 
-            _Database = db;
+            if (orm == null) throw new ArgumentNullException(nameof(orm)); 
+            _ORM = orm;
         }
 
         internal bool Authenticate(string apiKey, out User user)
@@ -50,30 +51,33 @@ namespace Komodo.Server.Classes
             key = GetApiKey(apiKey, out user);
             if (key == null || user == null) return null;
 
-            Expression e = new Expression("id", Operators.GreaterThan, 0);
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Permission>(nameof(Permission.Id)), 
+                DbOperators.GreaterThan, 
+                0);
 
             switch (permType)
             {
                 case PermissionType.Search:
-                    e.PrependAnd(new Expression("allowsearch", Operators.Equals, 1));
+                    e.PrependAnd(new DbExpression(_ORM.GetColumnName<Permission>(nameof(Permission.AllowSearch)), DbOperators.Equals, 1));
                     break;
                 case PermissionType.CreateDocument:
-                    e.PrependAnd(new Expression("allowcreatedoc", Operators.Equals, 1));
+                    e.PrependAnd(new DbExpression(_ORM.GetColumnName<Permission>(nameof(Permission.AllowCreateDocument)), DbOperators.Equals, 1));
                     break;
                 case PermissionType.DeleteDocument:
-                    e.PrependAnd(new Expression("allowdeletedoc", Operators.Equals, 1));
+                    e.PrependAnd(new DbExpression(_ORM.GetColumnName<Permission>(nameof(Permission.AllowDeleteDocument)), DbOperators.Equals, 1));
                     break;
                 case PermissionType.CreateIndex:
-                    e.PrependAnd(new Expression("allowcreateindex", Operators.Equals, 1));
+                    e.PrependAnd(new DbExpression(_ORM.GetColumnName<Permission>(nameof(Permission.AllowCreateIndex)), DbOperators.Equals, 1));
                     break;
                 case PermissionType.DeleteIndex:
-                    e.PrependAnd(new Expression("allowdeleteindex", Operators.Equals, 1));
+                    e.PrependAnd(new DbExpression(_ORM.GetColumnName<Permission>(nameof(Permission.AllowDeleteIndex)), DbOperators.Equals, 1));
                     break;
                 default:
                     throw new ArgumentException("Unknown permission type: " + permType.ToString());
             }
 
-            Permission p = _Database.SelectByFilter<Permission>(e, "ORDER BY id DESC");
+            Permission p = _ORM.SelectFirst<Permission>(e);
             if (p != null && p != default(Permission)) return p;
             return null;
         }
@@ -82,13 +86,22 @@ namespace Komodo.Server.Classes
         {
             if (String.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
             user = null;
-            Expression e = new Expression("guid", Operators.Equals, apiKey);
-            e.PrependAnd("active", Operators.Equals, 1);
-            ApiKey key = _Database.SelectByFilter<ApiKey>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ApiKey>(nameof(ApiKey.GUID)), 
+                DbOperators.Equals, 
+                apiKey);
+
+            e.PrependAnd("active", DbOperators.Equals, 1);
+            ApiKey key = _ORM.SelectFirst<ApiKey>(e);
             if (key == null || key == default(ApiKey)) return null;
 
-            e = new Expression("guid", Operators.Equals, key.UserGUID);
-            user = _Database.SelectByFilter<User>(e, "ORDER BY id DESC");
+            e = new DbExpression(
+                _ORM.GetColumnName<User>(nameof(User.GUID)), 
+                DbOperators.Equals, 
+                key.UserGUID);
+
+            user = _ORM.SelectFirst<User>(e);
             if (user == null || user == default(User)) return null;
             return key;
         }
@@ -97,10 +110,15 @@ namespace Komodo.Server.Classes
         {
             if (String.IsNullOrEmpty(email)) throw new ArgumentNullException(nameof(email));
             if (String.IsNullOrEmpty(passwordMd5)) throw new ArgumentNullException(nameof(passwordMd5));
-            Expression e = new Expression("id", Operators.GreaterThan, 0);
-            e.PrependAnd("email", Operators.Equals, email);
-            e.PrependAnd("passwordmd5", Operators.Equals, passwordMd5); 
-            User user = _Database.SelectByFilter<User>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<User>(nameof(User.Id)), 
+                DbOperators.GreaterThan, 
+                0);
+
+            e.PrependAnd("email", DbOperators.Equals, email);
+            e.PrependAnd("passwordmd5", DbOperators.Equals, passwordMd5); 
+            User user = _ORM.SelectFirst<User>(e);
             if (user != null && user != default(User)) return user;
             return null;
         }

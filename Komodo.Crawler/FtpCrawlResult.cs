@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 using Komodo.Classes;
 
 namespace Komodo.Crawler
@@ -35,6 +38,7 @@ namespace Komodo.Crawler
         /// <summary>
         /// File stream of the retrieved file.
         /// </summary>
+        [JsonIgnore]
         public Stream DataStream = null;
 
         /// <summary>

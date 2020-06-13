@@ -1,69 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
-using Komodo.Classes;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Object that has been parsed by Komodo.
     /// </summary>
+    [Table("parseddocs")]
     public class ParsedDocument
     {
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the source document.
         /// </summary>
+        [Column("sourcedocguid", false, DataTypes.Nvarchar, 64, false)]
         public string SourceDocumentGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the user that owns the document record.
         /// </summary>
+        [Column("ownerguid", false, DataTypes.Nvarchar, 64, false)]
         public string OwnerGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the index.
         /// </summary>
+        [Column("indexguid", false, DataTypes.Nvarchar, 64, false)]
         public string IndexGUID { get; set; }
 
         /// <summary>
         /// The type of document.
         /// </summary>
+        [Column("doctype", false, DataTypes.Enum, 16, false)]
         public DocType Type { get; set; }
-
+         
         /// <summary>
         /// The content length of the parsed document.
         /// </summary>
+        [Column("contentlength", false, DataTypes.Long, false)]
         public long ContentLength { get; set; }
 
         /// <summary>
         /// The number of terms in the parsed document.
         /// </summary>
+        [Column("terms", false, DataTypes.Long, false)]
         public long Terms { get; set; }
 
         /// <summary>
         /// The number of postings in the parsed document.
         /// </summary>
+        [Column("postings", false, DataTypes.Long, false)]
         public long Postings { get; set; }
 
         /// <summary>
         /// The timestamp from when the entry was created.
         /// </summary>
+        [Column("created", false, DataTypes.DateTime, false)]
         public DateTime Created { get; set; }
 
         /// <summary>
         /// The timestamp from when the document was indexed.
         /// </summary>
+        [Column("indexed", false, DataTypes.DateTime, true)]
         public DateTime? Indexed { get; set; }
 
         /// <summary>
@@ -134,93 +145,6 @@ namespace Komodo.Classes
             Terms = terms;
             Postings = postings;
             Created = DateTime.Now.ToUniversalTime();
-        }
-
-        /// <summary>
-        /// Create a database insertable dictionary from the object.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("sourcedocguid", SourceDocumentGUID);
-            ret.Add("ownerguid", OwnerGUID);
-            ret.Add("indexguid", IndexGUID);
-            ret.Add("doctype", Type.ToString());
-            ret.Add("contentlength", ContentLength);
-            ret.Add("terms", Terms);
-            ret.Add("postings", Postings);
-            ret.Add("created", Created);
-            ret.Add("indexed", Indexed);
-            return ret;
-        }
-
-        /// <summary>
-        /// Create the object from a DataRow.
-        /// </summary>
-        /// <param name="row">DataRow.</param>
-        /// <returns>Instance.</returns>
-        public static ParsedDocument FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-
-            ParsedDocument ret = new ParsedDocument();
-
-            if (row.Table.Columns.Contains("id") && row["id"] != null && row["id"] != DBNull.Value)
-                ret.Id = Convert.ToInt32(row["id"]);
-
-            if (row.Table.Columns.Contains("guid") && row["guid"] != null && row["guid"] != DBNull.Value)
-                ret.GUID = row["guid"].ToString();
-
-            if (row.Table.Columns.Contains("sourcedocguid") && row["sourcedocguid"] != null && row["sourcedocguid"] != DBNull.Value)
-                ret.SourceDocumentGUID = row["sourcedocguid"].ToString();
-
-            if (row.Table.Columns.Contains("ownerguid") && row["ownerguid"] != null && row["ownerguid"] != DBNull.Value)
-                ret.OwnerGUID = row["ownerguid"].ToString();
-
-            if (row.Table.Columns.Contains("indexguid") && row["indexguid"] != null && row["indexguid"] != DBNull.Value)
-                ret.IndexGUID = row["indexguid"].ToString();
-
-            if (row.Table.Columns.Contains("doctype") && row["doctype"] != null && row["doctype"] != DBNull.Value)
-                ret.Type = (DocType)(Enum.Parse(typeof(DocType), row["doctype"].ToString()));
-
-            if (row.Table.Columns.Contains("contentlength") && row["contentlength"] != null && row["contentlength"] != DBNull.Value)
-                ret.ContentLength = Convert.ToInt64(row["contentlength"].ToString());
-
-            if (row.Table.Columns.Contains("terms") && row["terms"] != null && row["terms"] != DBNull.Value)
-                ret.Terms = Convert.ToInt64(row["terms"].ToString());
-
-            if (row.Table.Columns.Contains("postings") && row["postings"] != null && row["postings"] != DBNull.Value)
-                ret.Postings = Convert.ToInt64(row["postings"].ToString());
-
-            if (row.Table.Columns.Contains("created") && row["created"] != null && row["created"] != DBNull.Value)
-                ret.Created = Convert.ToDateTime(row["created"].ToString());
-
-            if (row.Table.Columns.Contains("indexed") && row["indexed"] != null && row["indexed"] != DBNull.Value)
-                ret.Indexed = Convert.ToDateTime(row["indexed"].ToString());
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Create a list from a DataTable.
-        /// </summary>
-        /// <param name="table">DataTable.</param>
-        /// <returns>List of instances.</returns>
-        public static List<ParsedDocument> FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-
-            List<ParsedDocument> ret = new List<ParsedDocument>();
-            if (table.Rows != null && table.Rows.Count > 0)
-            {
-                foreach (DataRow row in table.Rows)
-                {
-                    ret.Add(ParsedDocument.FromDataRow(row));
-                }
-            }
-            return ret;
-        }
+        } 
     }
 }

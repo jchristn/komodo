@@ -7,6 +7,7 @@ using Komodo.Classes;
 using Komodo.IndexClient;
 using Komodo.Postings;
 using EnumerationResult = Komodo.Classes.EnumerationResult;
+using Index = Komodo.Classes.Index;
 
 namespace Test.IndexClient
 {
@@ -15,19 +16,19 @@ namespace Test.IndexClient
         static StorageSettings _SourceDocs = null;
         static StorageSettings _ParsedDocs = null;
         static StorageSettings _Postings = null;
-        static DatabaseSettings _DatabaseSettings = null;
-        static Komodo.Classes.Index _Index = null;
+        static DbSettings _DatabaseSettings = null;
+        static Index _Index = null;
         static KomodoIndex _IndexClient = null;
 
         static void Main(string[] args)
         {
             try
             {
-                _DatabaseSettings = new DatabaseSettings("test.db");
+                _DatabaseSettings = new DbSettings("test.db");
                 _SourceDocs = new StorageSettings(new DiskSettings("./SourceDocs/"));
                 _ParsedDocs = new StorageSettings(new DiskSettings("./ParsedDocs/"));
                 _Postings = new StorageSettings(new DiskSettings("./Postings/"));
-                _Index = new Komodo.Classes.Index("test", "test", "test");
+                _Index = new Index("test", "test", "test");
                 _IndexClient = new KomodoIndex(_DatabaseSettings, _SourceDocs, _ParsedDocs, _Postings, _Index);
 
                 Console.WriteLine("Test cases");

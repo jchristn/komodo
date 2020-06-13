@@ -1,63 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Specifies API permissions associated with API keys. 
     /// </summary>
+    [Table("permissions")]
     public class Permission
-    {
+    { 
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the index.
         /// </summary>
+        [Column("indexguid", false, DataTypes.Nvarchar, 64, false)]
         public string IndexGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the user.
         /// </summary>
+        [Column("userguid", false, DataTypes.Nvarchar, 64, false)]
         public string UserGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the API key.
         /// </summary>
+        [Column("apikeyguid", false, DataTypes.Nvarchar, 64, false)]
         public string ApiKeyGUID { get; set; }
-         
+
         /// <summary>
         /// Allow or disallow search.
         /// </summary>
+        [Column("allowsearch", false, DataTypes.Boolean, false)]
         public bool AllowSearch { get; set; }
 
         /// <summary>
         /// Allow or disallow document creation.
         /// </summary>
+        [Column("allowcreatedoc", false, DataTypes.Boolean, false)]
         public bool AllowCreateDocument { get; set; }
 
         /// <summary>
         /// Allow or disallow document deletion.
         /// </summary>
+        [Column("allowdeletedoc", false, DataTypes.Boolean, false)]
         public bool AllowDeleteDocument { get; set; }
 
         /// <summary>
         /// Allow or disallow index creation.
         /// </summary>
+        [Column("allowcreateindex", false, DataTypes.Boolean, false)]
         public bool AllowCreateIndex { get; set; }
 
         /// <summary>
         /// Allow or disallow index deletion.
         /// </summary>
+        [Column("allowdeleteindex", false, DataTypes.Boolean, false)]
         public bool AllowDeleteIndex { get; set; }
          
         /// <summary>
@@ -95,89 +106,6 @@ namespace Komodo.Classes
             AllowDeleteDocument = allowDeleteDoc;
             AllowCreateIndex = allowCreateIndex;
             AllowDeleteIndex = allowDeleteIndex; 
-        }
-
-        /// <summary>
-        /// Create a database insertable dictionary from the object.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("indexguid", IndexGUID);
-            ret.Add("userguid", UserGUID);
-            ret.Add("apikeyguid", ApiKeyGUID);
-            ret.Add("allowsearch", Convert.ToInt32(AllowSearch));
-            ret.Add("allowcreatedoc", Convert.ToInt32(AllowCreateDocument));
-            ret.Add("allowdeletedoc", Convert.ToInt32(AllowDeleteDocument));
-            ret.Add("allowcreateindex", Convert.ToInt32(AllowCreateIndex));
-            ret.Add("allowdeleteindex", Convert.ToInt32(AllowDeleteIndex)); 
-            return ret; 
-        }
-
-        /// <summary>
-        /// Create the object from a DataRow.
-        /// </summary>
-        /// <param name="row">DataRow.</param>
-        /// <returns>Instance.</returns>
-        public static Permission FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-
-            Permission ret = new Permission();
-
-            if (row.Table.Columns.Contains("id") && row["id"] != null && row["id"] != DBNull.Value)
-                ret.Id = Convert.ToInt32(row["id"]);
-
-            if (row.Table.Columns.Contains("guid") && row["guid"] != null && row["guid"] != DBNull.Value)
-                ret.GUID = row["guid"].ToString();
-
-            if (row.Table.Columns.Contains("indexguid") && row["indexguid"] != null && row["indexguid"] != DBNull.Value)
-                ret.IndexGUID = row["indexguid"].ToString();
-
-            if (row.Table.Columns.Contains("userguid") && row["userguid"] != null && row["userguid"] != DBNull.Value)
-                ret.UserGUID = row["userguid"].ToString();
-
-            if (row.Table.Columns.Contains("apikeyguid") && row["apikeyguid"] != null && row["apikeyguid"] != DBNull.Value)
-                ret.ApiKeyGUID = row["apikeyguid"].ToString();
-
-            if (row.Table.Columns.Contains("allowsearch") && row["allowsearch"] != null && row["allowsearch"] != DBNull.Value)
-                ret.AllowSearch = Convert.ToBoolean(row["allowsearch"]);
-
-            if (row.Table.Columns.Contains("allowcreatedoc") && row["allowcreatedoc"] != null && row["allowcreatedoc"] != DBNull.Value)
-                ret.AllowCreateDocument = Convert.ToBoolean(row["allowcreatedoc"]);
-
-            if (row.Table.Columns.Contains("allowdeletedoc") && row["allowdeletedoc"] != null && row["allowdeletedoc"] != DBNull.Value)
-                ret.AllowDeleteDocument = Convert.ToBoolean(row["allowdeletedoc"]);
-
-            if (row.Table.Columns.Contains("allowcreateindex") && row["allowcreateindex"] != null && row["allowcreateindex"] != DBNull.Value)
-                ret.AllowCreateIndex = Convert.ToBoolean(row["allowcreateindex"]);
-
-            if (row.Table.Columns.Contains("allowdeleteindex") && row["allowdeleteindex"] != null && row["allowdeleteindex"] != DBNull.Value)
-                ret.AllowDeleteIndex = Convert.ToBoolean(row["allowdeleteindex"]); 
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Create a list from a DataTable.
-        /// </summary>
-        /// <param name="table">DataTable.</param>
-        /// <returns>List of instances.</returns>
-        public static List<Permission> FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-
-            List<Permission> ret = new List<Permission>();
-            if (table.Rows != null && table.Rows.Count > 0)
-            {
-                foreach (DataRow row in table.Rows)
-                {
-                    ret.Add(Permission.FromDataRow(row));
-                }
-            }
-            return ret;
-        }
+        } 
     }
 }

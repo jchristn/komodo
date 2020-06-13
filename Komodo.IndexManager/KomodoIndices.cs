@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Komodo.Classes;
-using Komodo.Database; 
+using Watson.ORM;
+using Watson.ORM.Core;
+using Komodo.Classes; 
 using Komodo.IndexClient;
 using Komodo.Postings;
+using Index = Komodo.Classes.Index;
 
 namespace Komodo.IndexManager
 {
@@ -39,8 +41,8 @@ namespace Komodo.IndexManager
         private StorageSettings _ParsedDocsStorageSettings = null;
         private StorageSettings _PostingsStorageSettings = null;
 
-        private DatabaseSettings _DatabaseSettings = null;
-        private KomodoDatabase _Database = null;
+        private DbSettings _DbSettings = null;
+        private WatsonORM _ORM = null;
 
         private int _RefreshIntervalSeconds = 10;
         private readonly object _IndicesLock = new object();
@@ -56,7 +58,7 @@ namespace Komodo.IndexManager
         /// <param name="dbSettings">Database settings.</param>
         /// <param name="sourceDocs">Storage settings for source documents.</param>
         /// <param name="parsedDocs">Storage settings for parsed documents.</param>
-        public KomodoIndices(DatabaseSettings dbSettings, StorageSettings sourceDocs, StorageSettings parsedDocs, StorageSettings postings)
+        public KomodoIndices(DbSettings dbSettings, StorageSettings sourceDocs, StorageSettings parsedDocs, StorageSettings postings)
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));
             if (sourceDocs == null) throw new ArgumentNullException(nameof(sourceDocs));
@@ -68,8 +70,20 @@ namespace Komodo.IndexManager
             _PostingsStorageSettings = postings;
 
             _Token = _TokenSource.Token;
-            _DatabaseSettings = dbSettings;
-            _Database = new KomodoDatabase(_DatabaseSettings);
+            _DbSettings = dbSettings;
+            _ORM = new WatsonORM(_DbSettings.ToDatabaseSettings());
+
+            _ORM.InitializeDatabase();
+            _ORM.InitializeTable(typeof(ApiKey));
+            _ORM.InitializeTable(typeof(Index));
+            _ORM.InitializeTable(typeof(Metadata));
+            _ORM.InitializeTable(typeof(Node));
+            _ORM.InitializeTable(typeof(ParsedDocument));
+            _ORM.InitializeTable(typeof(Permission));
+            _ORM.InitializeTable(typeof(SourceDocument));
+            _ORM.InitializeTable(typeof(TermDoc));
+            _ORM.InitializeTable(typeof(TermGuid));
+            _ORM.InitializeTable(typeof(User));
 
             Task.Run(() => MonitorTask(), _Token);
         }
@@ -99,8 +113,8 @@ namespace Komodo.IndexManager
             lock (_IndicesLock)
             {
                 if (_Indices.Exists(i => i.Name.Equals(idx.Name))) return _Indices.First(i => i.Name.Equals(idx.Name));
-                KomodoIndex ki = new KomodoIndex(_DatabaseSettings, _SourceDocsStorageSettings, _ParsedDocsStorageSettings, _PostingsStorageSettings, idx);
-                _Database.Insert<Index>(idx);
+                KomodoIndex ki = new KomodoIndex(_DbSettings, _SourceDocsStorageSettings, _ParsedDocsStorageSettings, _PostingsStorageSettings, idx);
+                _ORM.Insert<Index>(idx);
                 _Indices.Add(ki);
                 return ki;
             }
@@ -138,7 +152,13 @@ namespace Komodo.IndexManager
                 {
                     idx = _Indices.First(i => i.Name.Equals(name));
                     _Indices.Remove(idx);
-                    _Database.DeleteByGUID<Index>(idx.GUID);
+
+                    DbExpression e = new DbExpression(
+                        _ORM.GetColumnName<Index>(nameof(Index.GUID)),
+                        DbOperators.Equals,
+                        idx.GUID);
+
+                    _ORM.DeleteMany<Index>(e);
                 }
             }
 
@@ -239,10 +259,15 @@ namespace Komodo.IndexManager
 
                 lock (_IndicesLock)
                 {
-                    foreach (KomodoIndex curr in _Indices)
+                    if (_Indices != null)
                     {
-                        curr.Dispose();
+                        foreach (KomodoIndex curr in _Indices)
+                        {
+                            curr.Dispose();
+                        }
                     }
+
+                    _Indices = null;
                 }
             }
         }
@@ -280,7 +305,12 @@ namespace Komodo.IndexManager
 
                 lock (_IndicesLock)
                 {
-                    indicesInDb = _Database.SelectMany<Index>(null, null, null, "ORDER BY id DESC");
+                    DbExpression eId = new DbExpression(
+                        _ORM.GetColumnName<Index>(nameof(Index.Id)),
+                        DbOperators.GreaterThan,
+                        0);
+
+                    indicesInDb = _ORM.SelectMany<Index>(eId);
 
                     #region Check-for-Removed-Indices
 

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text; 
+using System.Runtime.Serialization;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 
 namespace Komodo.Classes
 {
@@ -23,6 +27,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The stream containing the source document's data.  Important: accessing the 'Data' parameter will fully read 'DataStream'.
         /// </summary>
+        [JsonIgnore]
         public Stream DataStream = null;
 
         /// <summary>

@@ -8,9 +8,11 @@ using DatabaseWrapper;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes;
-using Komodo.Database; 
+using Watson.ORM;
+using Watson.ORM.Core;
+using Komodo.Classes;  
 using Komodo.Server.Classes;
+using Common = Komodo.Classes.Common;
 using Index = Komodo.Classes.Index;
 
 namespace Komodo.Server
@@ -22,8 +24,13 @@ namespace Komodo.Server
             string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndex ";
 
             string name = md.Http.Request.RawUrlEntries[0];
-            Expression e = new Expression("name", Operators.Equals, name);
-            Index idx = _Database.SelectByFilter<Index>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Index>(nameof(Index.Name)), 
+                DbOperators.Equals, 
+                name);
+
+            Index idx = _ORM.SelectFirst<Index>(e);
             
             if (idx == null)
             {

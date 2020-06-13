@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Identifies credentials that can be used by API requestors.
     /// </summary>
+    [Table("apikeys")]
     public class ApiKey
-    {
+    { 
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set;  }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the user.
         /// </summary>
+        [Column("userguid", false, DataTypes.Nvarchar, 64, false)]
         public string UserGUID { get; set; }
 
         /// <summary>
         /// Indicates whether or not the API key is able to be used.
         /// </summary>
+        [Column("active", false, DataTypes.Boolean, false)]
         public bool Active { get; set; }
         
         /// <summary>
@@ -66,65 +71,6 @@ namespace Komodo.Classes
             GUID = guid;
             UserGUID = userGuid;
             Active = active;
-        }
-
-        /// <summary>
-        /// Create a database insertable dictionary from the object.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("userguid", UserGUID);
-            ret.Add("active", Convert.ToInt32(Active));
-            return ret;
-        }
-
-        /// <summary>
-        /// Create the object from a DataRow.
-        /// </summary>
-        /// <param name="row">DataRow.</param>
-        /// <returns>Instance.</returns>
-        public static ApiKey FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-
-            ApiKey ret = new ApiKey();
-
-            if (row.Table.Columns.Contains("id") && row["id"] != null && row["id"] != DBNull.Value)
-                ret.Id = Convert.ToInt32(row["id"]);
-
-            if (row.Table.Columns.Contains("guid") && row["guid"] != null && row["guid"] != DBNull.Value)
-                ret.GUID = row["guid"].ToString();
-
-            if (row.Table.Columns.Contains("userguid") && row["userguid"] != null && row["userguid"] != DBNull.Value)
-                ret.UserGUID = row["userguid"].ToString();
-             
-            if (row.Table.Columns.Contains("active") && row["active"] != null && row["active"] != DBNull.Value)
-                ret.Active = Convert.ToBoolean(row["active"]);
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Create a list from a DataTable.
-        /// </summary>
-        /// <param name="table">DataTable.</param>
-        /// <returns>List of instances.</returns>
-        public static List<ApiKey> FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-
-            List<ApiKey> ret = new List<ApiKey>();
-            if (table.Rows != null && table.Rows.Count > 0)
-            {
-                foreach (DataRow row in table.Rows)
-                {
-                    ret.Add(ApiKey.FromDataRow(row));
-                }
-            }
-            return ret;
-        }
+        } 
     }
 }

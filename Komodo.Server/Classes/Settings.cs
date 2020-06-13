@@ -26,7 +26,7 @@ namespace Komodo.Server.Classes
         /// <summary>
         /// Database settings.
         /// </summary>
-        public DatabaseSettings Database { get; set; }
+        public DbSettings Database { get; set; }
 
         /// <summary>
         /// Temporary storage settings.

@@ -1,38 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// System participating in Komodo.
     /// </summary>
+    [Table("nodes")]
     public class Node
-    {
+    { 
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// The hostname of the node.
         /// </summary>
+        [Column("hostname", false, DataTypes.Nvarchar, 128, false)]
         public string Hostname { get; set; }
 
         /// <summary>
         /// The port on which the node is listening for incoming HTTP or HTTPS requests.
         /// </summary>
+        [Column("port", false, DataTypes.Int, false)]
         public int Port { get; set; }
 
         /// <summary>
         /// Specifies whether or not SSL is required.
         /// </summary>
+        [Column("ssl", false, DataTypes.Boolean, false)]
         public bool Ssl { get; set; }
 
         /// <summary>
@@ -77,69 +83,6 @@ namespace Komodo.Classes
             Hostname = hostname;
             Port = port;
             Ssl = ssl;
-        }
-
-        /// <summary>
-        /// Create a database insertable dictionary from the object.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("hostname", Hostname);
-            ret.Add("port", Port);
-            ret.Add("ssl", Convert.ToInt32(Ssl));
-            return ret;
-        }
-
-        /// <summary>
-        /// Create the object from a DataRow.
-        /// </summary>
-        /// <param name="row">DataRow.</param>
-        /// <returns>Instance.</returns>
-        public static Node FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-
-            Node ret = new Node();
-
-            if (row.Table.Columns.Contains("id") && row["id"] != null && row["id"] != DBNull.Value)
-                ret.Id = Convert.ToInt32(row["id"]);
-
-            if (row.Table.Columns.Contains("guid") && row["guid"] != null && row["guid"] != DBNull.Value)
-                ret.GUID = row["guid"].ToString();
-
-            if (row.Table.Columns.Contains("hostname") && row["hostname"] != null && row["hostname"] != DBNull.Value)
-                ret.Hostname = row["hostname"].ToString();
-
-            if (row.Table.Columns.Contains("port") && row["port"] != null && row["port"] != DBNull.Value)
-                ret.Port = Convert.ToInt32(row["port"]);
-
-            if (row.Table.Columns.Contains("ssl") && row["ssl"] != null && row["ssl"] != DBNull.Value)
-                ret.Ssl = Convert.ToBoolean(row["ssl"]);
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Create a list from a DataTable.
-        /// </summary>
-        /// <param name="table">DataTable.</param>
-        /// <returns>List of instances.</returns>
-        public static List<Node> FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-
-            List<Node> ret = new List<Node>();
-            if (table.Rows != null && table.Rows.Count > 0)
-            {
-                foreach (DataRow row in table.Rows)
-                {
-                    ret.Add(Node.FromDataRow(row));
-                }
-            }
-            return ret;
-        }
+        } 
     }
 }

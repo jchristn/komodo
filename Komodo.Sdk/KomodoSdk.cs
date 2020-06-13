@@ -10,8 +10,8 @@ using System.Web;
 using RestWrapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Komodo.Classes; 
-using Komodo.IndexClient;
+using Komodo.Classes;  
+using Index = Komodo.Classes.Index;
 
 namespace Komodo.Sdk
 {

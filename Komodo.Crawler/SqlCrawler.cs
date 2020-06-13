@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
-using DatabaseWrapper; 
+using Watson.ORM;
+using Watson.ORM.Core;
 using Komodo.Classes;
 
 namespace Komodo.Crawler
@@ -16,8 +17,8 @@ namespace Komodo.Crawler
 
         #region Private-Members
 
-        private DatabaseSettings _DatabaseSettings = null;
-        private DatabaseClient _Database = null; 
+        private DbSettings _DbSettings = null;
+        private WatsonORM _ORM = null; 
         private string _Query = null;
 
         #endregion
@@ -27,15 +28,15 @@ namespace Komodo.Crawler
         /// <summary>
         /// Instantiate the object.
         /// </summary>
-        /// <param name="database">Database settings.</param>
+        /// <param name="settings">Database settings.</param>
         /// <param name="query">Query to use for crawling.</param>
-        public SqlCrawler(DatabaseSettings database, string query)
+        public SqlCrawler(DbSettings settings, string query)
         { 
-            if (database == null) throw new ArgumentNullException(nameof(database)); 
+            if (settings == null) throw new ArgumentNullException(nameof(settings)); 
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
 
-            _DatabaseSettings = database;
-            _Database = InitializeDatabase(_DatabaseSettings);
+            _DbSettings = settings;
+            _ORM = new WatsonORM(_DbSettings.ToDatabaseSettings());
             _Query = query; 
         }
 
@@ -54,7 +55,7 @@ namespace Komodo.Crawler
 
             try
             {
-                result = _Database.Query(_Query);
+                result = _ORM.Query(_Query);
                 success = true;
             }
             catch (Exception)
@@ -72,18 +73,6 @@ namespace Komodo.Crawler
         #endregion
 
         #region Private-Methods
-
-        private DatabaseClient InitializeDatabase(DatabaseSettings settings)
-        {
-            return new DatabaseClient(
-               settings.Type,
-               settings.Hostname,
-               settings.Port,
-               settings.Username,
-               settings.Password,
-               settings.Instance,
-               settings.DatabaseName);
-        }
          
         #endregion
     }

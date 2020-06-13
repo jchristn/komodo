@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
-using DatabaseWrapper; 
+using Watson.ORM;
+using Watson.ORM.Core;
 using Komodo.Classes;
 
 namespace Komodo.Crawler
@@ -16,8 +17,8 @@ namespace Komodo.Crawler
 
         #region Private-Members
 
-        private DatabaseSettings _DatabaseSettings = null;
-        private DatabaseClient _Database = null; 
+        private DbSettings _DbSettings = null;
+        private WatsonORM _ORM = null; 
         private string _Query = null;
 
         #endregion
@@ -34,8 +35,8 @@ namespace Komodo.Crawler
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
 
-            _DatabaseSettings = new DatabaseSettings(filename);
-            _Database = new DatabaseClient(filename);
+            _DbSettings = new DbSettings(filename);
+            _ORM = new WatsonORM(_DbSettings.ToDatabaseSettings());
             _Query = query; 
         }
 
@@ -54,7 +55,7 @@ namespace Komodo.Crawler
 
             try
             {
-                result = _Database.Query(_Query);
+                result = _ORM.Query(_Query);
                 success = true;
             }
             catch (Exception)

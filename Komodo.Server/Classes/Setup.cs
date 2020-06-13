@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using BlobHelper;
-using DatabaseWrapper;
+using Watson.ORM;
+using Watson.ORM.Core;
 using Komodo.Classes;
-using Komodo.Database; 
+using Common = Komodo.Classes.Common;
+using DbSettings = Komodo.Classes.DbSettings;
 using Index = Komodo.Classes.Index;
 
 namespace Komodo.Server.Classes
@@ -96,7 +98,7 @@ namespace Komodo.Server.Classes
 
             if (!Directory.Exists("./Data/")) Directory.CreateDirectory("./Data/");
 
-            settings.Database = new Komodo.Classes.DatabaseSettings("./Data/Komodo.db");
+            settings.Database = new DbSettings("./Data/Komodo.db");
 
             string tempDirectory = "./Data/Temp/";
             settings.TempStorage = new StorageSettings(new DiskSettings(tempDirectory));
@@ -118,27 +120,36 @@ namespace Komodo.Server.Classes
 
             #region Initialize-Database-and-Create-Records
 
-            KomodoDatabase db = new KomodoDatabase(settings.Database);
-            Expression e = new Expression("id", Operators.GreaterThan, 0);
+            WatsonORM orm = new WatsonORM(settings.Database.ToDatabaseSettings());
+            DbExpression e = new DbExpression("id", DbOperators.GreaterThan, 0);
 
             User user = null;
             ApiKey apiKey = null;
             Permission perm = null;
             Index idx = null;
 
-            if (db.SelectByFilter<User>(e, "ORDER BY id DESC") == null)
+            if (orm.SelectMany<User>(e) == null)
             {
                 user = new User("default", "Default", "default@default.com", "default");
-                user = db.Insert<User>(user);
+                user = orm.Insert<User>(user);
+            }
 
+            if (orm.SelectMany<Index>(e) == null)
+            {
                 idx = new Index(user.GUID, "default");
-                idx = db.Insert<Index>(idx);
+                idx = orm.Insert<Index>(idx);
+            }
 
+            if (orm.SelectMany<ApiKey>(e) == null)
+            {
                 apiKey = new ApiKey("default", user.GUID, true);
-                apiKey = db.Insert<ApiKey>(apiKey);
+                apiKey = orm.Insert<ApiKey>(apiKey);
+            }
 
+            if (orm.SelectMany<Permission>(e) == null)
+            { 
                 perm = new Permission(idx.GUID, user.GUID, apiKey.GUID, true, true, true, true, true);
-                perm = db.Insert<Permission>(perm);
+                perm = orm.Insert<Permission>(perm);
             }
              
             #endregion

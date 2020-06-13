@@ -1,43 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Maps a term to a given document within a given index.
     /// </summary>
+    [Table("termdocs")]
     public class TermDoc
     {
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the index.
         /// </summary>
+        [Column("indexguid", false, DataTypes.Nvarchar, 64, false)]
         public string IndexGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the term.
         /// </summary>
+        [Column("termguid", false, DataTypes.Nvarchar, 64, false)]
         public string TermGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the source document.
         /// </summary>
+        [Column("sourcedocguid", false, DataTypes.Nvarchar, 64, false)]
         public string SourceDocumentGUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the parsed document.
         /// </summary>
+        [Column("parseddocguid", false, DataTypes.Nvarchar, 64, false)]
         public string ParsedDocumentGUID { get; set; }
 
         /// <summary>
@@ -90,73 +97,6 @@ namespace Komodo.Classes
             TermGUID = termGuid;
             SourceDocumentGUID = sourceDocGuid;
             ParsedDocumentGUID = parsedDocGuid;
-        }
-
-        /// <summary>
-        /// Create a database insertable dictionary from the object.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("indexguid", IndexGUID);
-            ret.Add("termguid", TermGUID);
-            ret.Add("sourcedocguid", SourceDocumentGUID);
-            ret.Add("parseddocguid", ParsedDocumentGUID);
-            return ret;
-        }
-
-        /// <summary>
-        /// Create the object from a DataRow.
-        /// </summary>
-        /// <param name="row">DataRow.</param>
-        /// <returns>Instance.</returns>
-        public static TermDoc FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-
-            TermDoc ret = new TermDoc();
-
-            if (row.Table.Columns.Contains("id") && row["id"] != null && row["id"] != DBNull.Value)
-                ret.Id = Convert.ToInt32(row["id"]);
-
-            if (row.Table.Columns.Contains("guid") && row["guid"] != null && row["guid"] != DBNull.Value)
-                ret.GUID = row["guid"].ToString();
-
-            if (row.Table.Columns.Contains("indexguid") && row["indexguid"] != null && row["indexguid"] != DBNull.Value)
-                ret.IndexGUID = row["indexguid"].ToString();
-
-            if (row.Table.Columns.Contains("termguid") && row["termguid"] != null && row["termguid"] != DBNull.Value)
-                ret.TermGUID = row["termguid"].ToString();
-
-            if (row.Table.Columns.Contains("sourcedocguid") && row["sourcedocguid"] != null && row["sourcedocguid"] != DBNull.Value)
-                ret.SourceDocumentGUID = row["sourcedocguid"].ToString();
-
-            if (row.Table.Columns.Contains("parseddocguid") && row["parseddocguid"] != null && row["parseddocguid"] != DBNull.Value)
-                ret.ParsedDocumentGUID = row["parseddocguid"].ToString();
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Create a list from a DataTable.
-        /// </summary>
-        /// <param name="table">DataTable.</param>
-        /// <returns>List of instances.</returns>
-        public static List<TermDoc> FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-
-            List<TermDoc> ret = new List<TermDoc>();
-            if (table.Rows != null && table.Rows.Count > 0)
-            {
-                foreach (DataRow row in table.Rows)
-                {
-                    ret.Add(TermDoc.FromDataRow(row));
-                }
-            }
-            return ret;
-        }
+        } 
     }
 }

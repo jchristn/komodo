@@ -7,12 +7,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BlobHelper;
-using DatabaseWrapper;
+using Watson.ORM;
+using Watson.ORM.Core; 
 using RestWrapper;
-using Komodo.Classes;
-using Komodo.Database; 
+using Komodo.Classes; 
 using Komodo.Parser;
 using Komodo.Postings;
+using Common = Komodo.Classes.Common;
+using DbType = Komodo.Classes.DbType;
+using EnumerationResult = Komodo.Classes.EnumerationResult;
+using Index = Komodo.Classes.Index;
 
 namespace Komodo.IndexClient
 {
@@ -57,8 +61,8 @@ namespace Komodo.IndexClient
         private string _Name = null;
         private string _GUID = null; 
 
-        private DatabaseSettings _DatabaseSettings = null;
-        private KomodoDatabase _Database = null;
+        private DbSettings _DbSettings = null;
+        private WatsonORM _ORM = null;
 
         private StorageSettings _SourceDocsStorageSettings = null;
         private StorageSettings _ParsedDocsStorageSettings = null;
@@ -79,7 +83,7 @@ namespace Komodo.IndexClient
         /// <param name="parsedDocs">Storage settings for parsed documents.</param>
         /// <param name="postings">Storage settings fpr postings.</param>
         /// <param name="idx">Index configuration.</param>
-        public KomodoIndex(DatabaseSettings dbSettings, StorageSettings sourceDocs, StorageSettings parsedDocs, StorageSettings postings, Index idx)
+        public KomodoIndex(DbSettings dbSettings, StorageSettings sourceDocs, StorageSettings parsedDocs, StorageSettings postings, Index idx)
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));
             if (idx == null) throw new ArgumentNullException(nameof(idx));
@@ -89,8 +93,21 @@ namespace Komodo.IndexClient
             if (parsedDocs == null) throw new ArgumentNullException(nameof(parsedDocs));
             if (postings == null) throw new ArgumentNullException(nameof(postings));
 
-            _DatabaseSettings = dbSettings;
-            _Database = new KomodoDatabase(_DatabaseSettings);
+            _DbSettings = dbSettings;
+            _ORM = new WatsonORM(_DbSettings.ToDatabaseSettings());
+
+            _ORM.InitializeDatabase();
+            _ORM.InitializeTable(typeof(ApiKey));
+            _ORM.InitializeTable(typeof(Index));
+            _ORM.InitializeTable(typeof(Metadata));
+            _ORM.InitializeTable(typeof(Node));
+            _ORM.InitializeTable(typeof(ParsedDocument));
+            _ORM.InitializeTable(typeof(Permission));
+            _ORM.InitializeTable(typeof(SourceDocument));
+            _ORM.InitializeTable(typeof(TermDoc));
+            _ORM.InitializeTable(typeof(TermGuid));
+            _ORM.InitializeTable(typeof(User));
+
             _Name = idx.Name;
             _GUID = idx.GUID; 
 
@@ -119,19 +136,27 @@ namespace Komodo.IndexClient
         /// This is a destructive operation.
         /// </summary> 
         public async Task Destroy()
-        { 
+        {
             #region Source-Documents
 
-            Expression e = new Expression("guid", Operators.Equals, _GUID);
+            DbExpression eIndex = new DbExpression(
+                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.IndexGUID)),
+                DbOperators.Equals,
+                _GUID);
 
             while (true)
             {
-                List<SourceDocument> sourceDocs = _Database.SelectMany<SourceDocument>(0, 100, e, "ORDER BY id DESC");
+                List<SourceDocument> sourceDocs = _ORM.SelectMany<SourceDocument>(0, 100, eIndex);
                 if (sourceDocs == null || sourceDocs.Count < 1) break;
 
                 foreach (SourceDocument sourceDoc in sourceDocs)
                 {
-                    _Database.DeleteByGUID<SourceDocument>(sourceDoc.GUID);
+                    DbExpression eSourceDoc = new DbExpression(
+                        _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.GUID)),
+                        DbOperators.Equals,
+                        sourceDoc.GUID);
+
+                    _ORM.DeleteMany<SourceDocument>(eSourceDoc);
                     await _SourceDocsStorage.Delete(sourceDoc.GUID);
                 }
             }
@@ -139,17 +164,20 @@ namespace Komodo.IndexClient
             #endregion
 
             #region Parsed-Documents
-
-            e = new Expression("sourcedocguid", Operators.Equals, _GUID);
-
+             
             while (true)
             {
-                List<ParsedDocument> parsedDocs = _Database.SelectMany<ParsedDocument>(0, 100, e, "ORDER BY id DESC");
+                List<ParsedDocument> parsedDocs = _ORM.SelectMany<ParsedDocument>(0, 100, eIndex);
                 if (parsedDocs == null || parsedDocs.Count < 1) break;
 
                 foreach (ParsedDocument parsedDoc in parsedDocs)
-                {
-                    _Database.DeleteByGUID<ParsedDocument>(parsedDoc.GUID);
+                { 
+                    DbExpression eParsedDoc = new DbExpression(
+                        _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.GUID)),
+                        DbOperators.Equals,
+                        parsedDoc.GUID);
+
+                    _ORM.DeleteMany<ParsedDocument>(eParsedDoc);
                     await _ParsedDocsStorage.Delete(parsedDoc.GUID);
                 }
             }
@@ -187,7 +215,13 @@ namespace Komodo.IndexClient
         public SourceDocument GetSourceDocumentMetadata(string sourceGuid)
         {
             if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
-            return _Database.SelectByGUID<SourceDocument>(sourceGuid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.GUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            return _ORM.SelectFirst<SourceDocument>(e);
         }
 
         /// <summary>
@@ -197,11 +231,14 @@ namespace Komodo.IndexClient
         /// <returns>ParsedDocument.</returns>
         public ParsedDocument GetParsedDocument(string sourceGuid)
         {
-            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
-            string parsedGuid = ParsedDocGuidFromSourceDocGuid(sourceGuid);
-            if (String.IsNullOrEmpty(parsedGuid)) return null;
-            ParsedDocument ret = _Database.SelectByGUID<ParsedDocument>(parsedGuid);
-            return ret;
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid)); 
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            return _ORM.SelectFirst<ParsedDocument>(e); 
         }
 
         /// <summary>
@@ -211,23 +248,28 @@ namespace Komodo.IndexClient
         /// <returns>Parse result.</returns>
         public object GetParseResult(string sourceGuid)
         {
-            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
-            string parsedGuid = ParsedDocGuidFromSourceDocGuid(sourceGuid);
-            if (String.IsNullOrEmpty(parsedGuid)) return null;
-            ParsedDocument parsed = _Database.SelectByGUID<ParsedDocument>(parsedGuid);
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid)); 
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            ParsedDocument parsed = _ORM.SelectFirst<ParsedDocument>(e);
             if (parsed == null) return null;
+
             switch (parsed.Type)
             {
                 case DocType.Html:
-                    return Common.DeserializeJson<HtmlParseResult>(_ParsedDocsStorage.Get(parsedGuid).Result);
+                    return Common.DeserializeJson<HtmlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
                 case DocType.Json:
-                    return Common.DeserializeJson<JsonParseResult>(_ParsedDocsStorage.Get(parsedGuid).Result);
+                    return Common.DeserializeJson<JsonParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
                 case DocType.Sql:
-                    return Common.DeserializeJson<SqlParseResult>(_ParsedDocsStorage.Get(parsedGuid).Result);
+                    return Common.DeserializeJson<SqlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
                 case DocType.Text:
-                    return Common.DeserializeJson<TextParseResult>(_ParsedDocsStorage.Get(parsedGuid).Result);
+                    return Common.DeserializeJson<TextParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
                 case DocType.Xml:
-                    return Common.DeserializeJson<XmlParseResult>(_ParsedDocsStorage.Get(parsedGuid).Result);
+                    return Common.DeserializeJson<XmlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
                 default:
                     throw new Exception("Unsupported document type: " + parsed.Type.ToString());
             }
@@ -240,12 +282,11 @@ namespace Komodo.IndexClient
         /// <returns>Postings.</returns>
         public PostingsResult GetPostings(string sourceGuid)
         {
-            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
-            string parsedGuid = ParsedDocGuidFromSourceDocGuid(sourceGuid);
-            ParsedDocument parsed = GetParsedDocument(parsedGuid);
-            if (parsed == null) return null;
-            byte[] data = _ParsedDocsStorage.Get(parsedGuid).Result;
-            if (data == null) return null;
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid)); 
+            ParsedDocument parsed = GetParsedDocument(sourceGuid);
+            if (parsed == null) return null; 
+            byte[] data = _PostingsStorage.Get(parsed.GUID).Result; 
+            if (data == null) return null; 
             return Common.DeserializeJson<PostingsResult>(data);
         }
 
@@ -257,7 +298,13 @@ namespace Komodo.IndexClient
         public bool ExistsSource(string sourceGuid)
         {
             if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
-            SourceDocument ret = _Database.SelectByGUID<SourceDocument>(sourceGuid);
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.GUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            SourceDocument ret = _ORM.SelectFirst<SourceDocument>(e);
             if (ret != null && ret != default(SourceDocument)) return true;
             return false;
         }
@@ -269,10 +316,14 @@ namespace Komodo.IndexClient
         /// <returns>True if exists.</returns>
         public bool ExistsParsed(string sourceGuid)
         {
-            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
-            string parsedGuid = ParsedDocGuidFromSourceDocGuid(sourceGuid);
-            if (String.IsNullOrEmpty(parsedGuid)) return false;
-            ParsedDocument ret = _Database.SelectByGUID<ParsedDocument>(parsedGuid);
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid)); 
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            ParsedDocument ret = _ORM.SelectFirst<ParsedDocument>(e);
             if (ret != null && ret != default(ParsedDocument)) return true;
             return false;
         }
@@ -323,7 +374,7 @@ namespace Komodo.IndexClient
 
             await _SourceDocsStorage.Write(sourceDoc.GUID, sourceDoc.ContentType, data);
 
-            _Database.Insert<SourceDocument>(sourceDoc);
+            _ORM.Insert<SourceDocument>(sourceDoc);
 
             ret.Time.PersistSourceDocument.End = DateTime.Now.ToUniversalTime();
 
@@ -391,7 +442,7 @@ namespace Komodo.IndexClient
                     ret.Postings.Terms.Count,
                     ret.Postings.Postings.Count);
 
-                parsedDoc = _Database.Insert<ParsedDocument>(parsedDoc);
+                parsedDoc = _ORM.Insert<ParsedDocument>(parsedDoc);
                 await _ParsedDocsStorage.Write(parsedDoc.GUID, "application/json", Common.SerializeJson(ret.ParseResult, true));
                 ret.Time.PersistParsedDocument.End = DateTime.Now.ToUniversalTime();
 
@@ -399,7 +450,7 @@ namespace Komodo.IndexClient
 
                 #region Persist-Postings 
 
-                ret.Time.PersistPostingsDocument.Start = DateTime.Now.ToUniversalTime();
+                ret.Time.PersistPostingsDocument.Start = DateTime.Now.ToUniversalTime(); 
                 await _PostingsStorage.Write(parsedDoc.GUID, "application/json", Common.SerializeJson(ret.Postings, true));
                 ret.Time.PersistPostingsDocument.End = DateTime.Now.ToUniversalTime();
 
@@ -418,15 +469,19 @@ namespace Komodo.IndexClient
 
                 foreach (string term in terms)
                 {
-                    Expression e = new Expression("term", Operators.Equals, term);
-                    TermGuid tg = _Database.SelectByFilter<TermGuid>(e, "ORDER BY id DESC");
+                    DbExpression e = new DbExpression(
+                        _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
+                        DbOperators.Equals,
+                        term);
+
+                    TermGuid tg = _ORM.SelectFirst<TermGuid>(e);
                     if (tg == null || tg == default(TermGuid))
                     {
                         tg = new TermGuid();
                         tg.GUID = Guid.NewGuid().ToString();
                         tg.IndexGUID = _GUID;
                         tg.Term = term;
-                        tg = _Database.Insert<TermGuid>(tg);
+                        tg = _ORM.Insert<TermGuid>(tg);
                     }
 
                     termGuids.Add(term, tg.GUID);
@@ -436,7 +491,7 @@ namespace Komodo.IndexClient
                 foreach (string term in terms)
                 {
                     TermDoc td = new TermDoc(_GUID, termGuids[term], sourceDoc.GUID, parsedDoc.GUID);
-                    td = _Database.Insert<TermDoc>(td);
+                    td = _ORM.Insert<TermDoc>(td);
                 }
 
                 ret.Time.Terms.End = DateTime.Now.ToUniversalTime();
@@ -472,18 +527,27 @@ namespace Komodo.IndexClient
         {
             if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
 
-            SourceDocument sourceDoc = _Database.SelectByGUID<SourceDocument>(sourceGuid);
+            DbExpression eSourceDoc = new DbExpression(
+                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.GUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            SourceDocument sourceDoc = _ORM.SelectFirst<SourceDocument>(eSourceDoc);
             if (sourceDoc != null && sourceDoc != default(SourceDocument))
             {
-                _Database.Delete(sourceDoc);
+                _ORM.Delete<SourceDocument>(sourceDoc);
                 _SourceDocsStorage.Delete(sourceDoc.GUID);
             }
 
-            Expression e = new Expression("sourcedocguid", Operators.Equals, sourceGuid);
-            ParsedDocument parsedDoc = _Database.SelectByFilter<ParsedDocument>(e, "ORDER BY id DESC");
+            DbExpression eParsedDoc = new DbExpression(
+                _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+             
+            ParsedDocument parsedDoc = _ORM.SelectFirst<ParsedDocument>(eParsedDoc);
             if (parsedDoc != null && parsedDoc != default(ParsedDocument))
             {
-                _Database.Delete(parsedDoc);
+                _ORM.Delete<ParsedDocument>(parsedDoc);
                 _ParsedDocsStorage.Delete(parsedDoc.GUID);
             }
         }
@@ -504,7 +568,7 @@ namespace Komodo.IndexClient
         /// </summary>
         /// <param name="query">Enumeration query.</param>
         /// <returns>Enumeraiton result.</returns>
-        public Komodo.Classes.EnumerationResult Enumerate(EnumerationQuery query)
+        public EnumerationResult Enumerate(EnumerationQuery query)
         {
             if (query == null) throw new ArgumentNullException(nameof(query));
             return EnumerateInternal(query);
@@ -527,9 +591,9 @@ namespace Komodo.IndexClient
                 "  SUM(terms) AS termscount, " +
                 "  SUM(postings) AS postingscount " +
                 "FROM parseddocs " +
-                "WHERE indexguid = '" + _Database.Sanitize(_GUID) + "'";
+                "WHERE indexguid = '" + Sanitize(_GUID) + "'";
 
-            DataTable result = _Database.Query(query);
+            DataTable result = _ORM.Query(query);
             if (result != null && result.Rows.Count > 0)
             {
                 foreach (DataRow row in result.Rows)
@@ -555,9 +619,9 @@ namespace Komodo.IndexClient
                 "  COUNT(*) AS docscount, " +
                 "  SUM(contentlength) AS bytestotal " +
                 "FROM sourcedocs " +
-                "WHERE indexguid = '" + _Database.Sanitize(_GUID) + "'";
+                "WHERE indexguid = '" + Sanitize(_GUID) + "'";
 
-            result = _Database.Query(query);
+            result = _ORM.Query(query);
             if (result != null && result.Rows.Count > 0)
             {
                 foreach (DataRow row in result.Rows)
@@ -583,9 +647,9 @@ namespace Komodo.IndexClient
                 "  COUNT(*) AS docscount, " +
                 "  SUM(contentlength) AS bytestotal " +
                 "FROM parseddocs " +
-                "WHERE indexguid = '" + _Database.Sanitize(_GUID) + "'";
+                "WHERE indexguid = '" + Sanitize(_GUID) + "'";
 
-            result = _Database.Query(query);
+            result = _ORM.Query(query);
             if (result != null && result.Rows.Count > 0)
             {
                 foreach (DataRow row in result.Rows)
@@ -625,7 +689,7 @@ namespace Komodo.IndexClient
         {
             if (disposing)
             {
-                _Database.Dispose();
+                _ORM.Dispose();
             }
         }
 
@@ -665,10 +729,91 @@ namespace Komodo.IndexClient
         private string ParsedDocGuidFromSourceDocGuid(string guid)
         {
             if (String.IsNullOrEmpty(guid)) throw new ArgumentNullException(nameof(guid));
-            Expression e = new Expression("sourcedocguid", Operators.Equals, guid);
-            ParsedDocument ret = _Database.SelectByFilter<ParsedDocument>(e, "ORDER BY id DESC");
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                guid);
+
+            ParsedDocument ret = _ORM.SelectFirst<ParsedDocument>(e);
             if (ret != null) return ret.GUID;
             return null;
+        }
+        
+        private string Sanitize(string val)
+        {
+            string ret = "";
+
+            //
+            // null, below ASCII range, above ASCII range
+            //
+            for (int i = 0; i < val.Length; i++)
+            {
+                if (((int)(val[i]) == 10) ||      // Preserve carriage return
+                    ((int)(val[i]) == 13))        // and line feed
+                {
+                    ret += val[i];
+                }
+                else if ((int)(val[i]) < 32)
+                {
+                    continue;
+                }
+                else
+                {
+                    ret += val[i];
+                }
+            }
+
+            //
+            // double dash
+            //
+            int doubleDash = 0;
+            while (true)
+            {
+                doubleDash = ret.IndexOf("--");
+                if (doubleDash < 0)
+                {
+                    break;
+                }
+                else
+                {
+                    ret = ret.Remove(doubleDash, 2);
+                }
+            }
+
+            //
+            // open comment
+            // 
+            int openComment = 0;
+            while (true)
+            {
+                openComment = ret.IndexOf("/*");
+                if (openComment < 0) break;
+                else
+                {
+                    ret = ret.Remove(openComment, 2);
+                }
+            }
+
+            //
+            // close comment
+            //
+            int closeComment = 0;
+            while (true)
+            {
+                closeComment = ret.IndexOf("*/");
+                if (closeComment < 0) break;
+                else
+                {
+                    ret = ret.Remove(closeComment, 2);
+                }
+            }
+
+            //
+            // in-string replacement
+            //
+            ret = ret.Replace("'", "''");
+            return ret;
         }
 
         #endregion
@@ -703,8 +848,12 @@ namespace Komodo.IndexClient
 
             masterTerms = masterTerms.Distinct().ToList();
 
-            Expression e = new Expression("term", Operators.In, masterTerms);
-            List<TermGuid> masterTermsGuids = _Database.SelectMany<TermGuid>(null, null, e, "ORDER BY id DESC");
+            DbExpression eTerm = new DbExpression(
+                _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
+                DbOperators.In, 
+                masterTerms);
+
+            List<TermGuid> masterTermsGuids = _ORM.SelectMany<TermGuid>(null, null, eTerm);
 
             Dictionary<string, string> masterTermsDict = new Dictionary<string, string>();
             foreach (TermGuid curr in masterTermsGuids)
@@ -856,9 +1005,15 @@ namespace Komodo.IndexClient
                         #region Retrieve-Source-Document
 
                         SourceDocument sourceDoc = null; 
+
                         if (query.IncludeMetadata)
                         {
-                            sourceDoc = _Database.SelectByGUID<SourceDocument>(currDoc.SourceDocumentGUID);
+                            DbExpression eSource = new DbExpression(
+                                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.GUID)),
+                                DbOperators.Equals,
+                                currDoc.SourceDocumentGUID);
+
+                            sourceDoc = _ORM.SelectFirst<SourceDocument>(eSource);
                         }
 
                         #endregion
@@ -919,9 +1074,9 @@ namespace Komodo.IndexClient
                 "  COUNT(*) AS entrycount, " +
                 "  COUNT(DISTINCT(parseddocguid)) AS docscount " +
                 "FROM termdocs " +
-                "WHERE indexguid = '" + _Database.Sanitize(_GUID) + "'";
+                "WHERE indexguid = '" + Sanitize(_GUID) + "'";
 
-            result = _Database.Query(query);
+            result = _ORM.Query(query);
             entryCount = Convert.ToInt32(result.Rows[0]["entrycount"]);
             docsCount = Convert.ToInt32(result.Rows[0]["docscount"]);
             if (indexStart + maxResults > entryCount) endReached = true;
@@ -937,8 +1092,8 @@ namespace Komodo.IndexClient
                 foreach (KeyValuePair<string, string> curr in requiredTerms)
                 {
                     if (String.IsNullOrEmpty(curr.Key) || String.IsNullOrEmpty(curr.Value)) continue;
-                    if (requiredAdded == 0) required += "'" + _Database.Sanitize(curr.Value) + "'";
-                    else required += ",'" + _Database.Sanitize(curr.Value) + "'";
+                    if (requiredAdded == 0) required += "'" + Sanitize(curr.Value) + "'";
+                    else required += ",'" + Sanitize(curr.Value) + "'";
                     requiredAdded++;
                 }
             }
@@ -950,8 +1105,8 @@ namespace Komodo.IndexClient
                 foreach (KeyValuePair<string, string> curr in excludeTerms)
                 {
                     if (String.IsNullOrEmpty(curr.Key) || String.IsNullOrEmpty(curr.Value)) continue;
-                    if (excludedAdded == 0) excluded += "'" + _Database.Sanitize(curr.Value) + "'";
-                    else excluded += ",'" + _Database.Sanitize(curr.Value) + "'";
+                    if (excludedAdded == 0) excluded += "'" + Sanitize(curr.Value) + "'";
+                    else excluded += ",'" + Sanitize(curr.Value) + "'";
                     excludedAdded++;
                 }
             }
@@ -961,7 +1116,7 @@ namespace Komodo.IndexClient
             #region Get-Matches
 
             query = DocumentsMatchingTermsQuery(indexStart, maxResults, required, excluded);
-            result = _Database.Query(query);
+            result = _ORM.Query(query);
 
             List<ParsedDocument> ret = new List<ParsedDocument>();
             if (result != null && result.Rows != null && result.Rows.Count > 0)
@@ -969,7 +1124,13 @@ namespace Komodo.IndexClient
                 foreach (DataRow curr in result.Rows)
                 {
                     string guid = curr["parseddocguid"].ToString();
-                    ParsedDocument parsedDoc = _Database.SelectByGUID<ParsedDocument>(guid);
+
+                    DbExpression eParsed = new DbExpression(
+                        _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.GUID)),
+                        DbOperators.Equals,
+                        guid);
+
+                    ParsedDocument parsedDoc = _ORM.SelectFirst<ParsedDocument>(eParsed);
                     if (parsedDoc != null && parsedDoc != default(ParsedDocument)) ret.Add(parsedDoc);
                 }
             }
@@ -985,7 +1146,7 @@ namespace Komodo.IndexClient
                 "SELECT DISTINCT a.parseddocguid " +
                 "FROM termdocs a " +
                 "WHERE " +
-                "  indexguid = '" + _Database.Sanitize(_GUID) + "' " +
+                "  indexguid = '" + Sanitize(_GUID) + "' " +
                 "  AND termguid in (" + required + ") ";
 
             if (!String.IsNullOrEmpty(excluded)) query +=
@@ -997,18 +1158,18 @@ namespace Komodo.IndexClient
                 "        AND b.termguid in (" + excluded + ") " +
                 "    ) ";
 
-            switch (_DatabaseSettings.Type)
+            switch (_DbSettings.Type)
             {
-                case DbTypes.MsSql:
+                case DbType.SqlServer:
                     query += "OFFSET " + indexStart + " ROWS FETCH NEXT " + maxResults + " ROWS ONLY ";
                     break;
-                case DbTypes.MySql:
+                case DbType.Mysql:
                     query += "LIMIT " + indexStart + ", " + maxResults + " ";
                     break;
-                case DbTypes.PgSql:
+                case DbType.Postgresql:
                     query += "OFFSET " + indexStart + " LIMIT " + maxResults + " ";
                     break;
-                case DbTypes.Sqlite:
+                case DbType.Sqlite:
                     query += "LIMIT " + maxResults + " OFFSET " + indexStart + " ";
                     break;
             }
@@ -1032,14 +1193,14 @@ namespace Komodo.IndexClient
 
             query =
                 "SELECT " +
-                "  COUNT(*) AS entryCount, " +
-                "  COUNT(DISTINCT(parseddocguid)) AS docsCount " +
+                "  COUNT(*) AS entrycount, " +
+                "  COUNT(DISTINCT(parseddocguid)) AS docscount " +
                 "FROM termdocs " +
-                "WHERE indexguid = '" + _Database.Sanitize(_GUID) + "'";
+                "WHERE indexguid = '" + Sanitize(_GUID) + "'";
 
-            result = _Database.Query(query);
-            entryCount = Convert.ToInt32(result.Rows[0]["entryCount"]);
-            docsCount = Convert.ToInt32(result.Rows[0]["docsCount"]);
+            result = _ORM.Query(query);
+            entryCount = Convert.ToInt32(result.Rows[0]["entrycount"]);
+            docsCount = Convert.ToInt32(result.Rows[0]["docscount"]);
             if (Convert.ToInt32(indexStart) + Convert.ToInt32(maxResults) > entryCount) endReached = true;
 
             #endregion
@@ -1053,8 +1214,8 @@ namespace Komodo.IndexClient
                 foreach (KeyValuePair<string, string> curr in terms)
                 {
                     if (String.IsNullOrEmpty(curr.Key) || String.IsNullOrEmpty(curr.Value)) continue;
-                    if (added == 0) termsStr += "'" + _Database.Sanitize(curr.Value) + "'";
-                    else termsStr += ",'" + _Database.Sanitize(curr.Value) + "'";
+                    if (added == 0) termsStr += "'" + Sanitize(curr.Value) + "'";
+                    else termsStr += ",'" + Sanitize(curr.Value) + "'";
                     added++;
                 }
             }
@@ -1067,10 +1228,10 @@ namespace Komodo.IndexClient
                 "SELECT DISTINCT a.parseddocguid " +
                 "FROM termdocs a " +
                 "WHERE " +
-                "  indexguid = '" + _Database.Sanitize(_GUID) + " " +
+                "  indexguid = '" + Sanitize(_GUID) + " " +
                 "  AND termguid in (" + termsStr + ") ";
 
-            result = _Database.Query(query);
+            result = _ORM.Query(query);
 
             #endregion
 
@@ -1085,8 +1246,12 @@ namespace Komodo.IndexClient
                 }
             }
 
-            Expression e = new Expression("guid", Operators.In, parsedDocGuids);
-            List<ParsedDocument> ret = _Database.SelectMany<ParsedDocument>(null, null, e, "ORDER BY id DESC");
+            DbExpression eParsed = new DbExpression(
+                _ORM.GetColumnName<ParsedDocument>(nameof(ParsedDocument.GUID)),
+                DbOperators.In,
+                parsedDocGuids);
+
+            List<ParsedDocument> ret = _ORM.SelectMany<ParsedDocument>(null, null, eParsed);
 
             #endregion
 
@@ -1354,12 +1519,19 @@ namespace Komodo.IndexClient
 
         #region Private-Enumeration-Methods
 
-        private Komodo.Classes.EnumerationResult EnumerateInternal(EnumerationQuery query)
+        private EnumerationResult EnumerateInternal(EnumerationQuery query)
         {
-            Komodo.Classes.EnumerationResult result = new Komodo.Classes.EnumerationResult(query);
+            EnumerationResult result = new EnumerationResult(query);
 
-            Expression e = new Expression("id", Operators.GreaterThan, 0);
-            e.PrependAnd("indexguid", Operators.Equals, _GUID);
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.Id)),
+                DbOperators.GreaterThan,
+                0);
+
+            e.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<SourceDocument>(nameof(SourceDocument.IndexGUID)),
+                DbOperators.Equals,
+                _GUID));
 
             if (query.Filters != null)
             {
@@ -1372,7 +1544,7 @@ namespace Komodo.IndexClient
                 }
             }
 
-            List<SourceDocument> matches = _Database.SelectMany<SourceDocument>(query.StartIndex, query.MaxResults, e, "ORDER BY id DESC");
+            List<SourceDocument> matches = _ORM.SelectMany<SourceDocument>(query.StartIndex, query.MaxResults, e);
 
             result.Matches = matches;
             result.Success = true;
@@ -1380,34 +1552,34 @@ namespace Komodo.IndexClient
             return result;
         }
 
-        private Expression FilterToExpression(SearchFilter filter)
+        private DbExpression FilterToExpression(SearchFilter filter)
         {
             switch (filter.Condition)
             {
                 case SearchCondition.Contains:
-                    return new Expression(filter.Field, Operators.Contains, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.Contains, filter.Value);
                 case SearchCondition.ContainsNot:
-                    return new Expression(filter.Field, Operators.ContainsNot, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.ContainsNot, filter.Value);
                 case SearchCondition.EndsWith:
-                    return new Expression(filter.Field, Operators.EndsWith, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.EndsWith, filter.Value);
                 case SearchCondition.Equals:
-                    return new Expression(filter.Field, Operators.Equals, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.Equals, filter.Value);
                 case SearchCondition.GreaterThan:
-                    return new Expression(filter.Field, Operators.GreaterThan, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.GreaterThan, filter.Value);
                 case SearchCondition.GreaterThanOrEqualTo:
-                    return new Expression(filter.Field, Operators.GreaterThanOrEqualTo, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.GreaterThanOrEqualTo, filter.Value);
                 case SearchCondition.IsNotNull:
-                    return new Expression(filter.Field, Operators.IsNotNull, null);
+                    return new DbExpression(filter.Field, DbOperators.IsNotNull, null);
                 case SearchCondition.IsNull:
-                    return new Expression(filter.Field, Operators.IsNull, null);
+                    return new DbExpression(filter.Field, DbOperators.IsNull, null);
                 case SearchCondition.LessThan:
-                    return new Expression(filter.Field, Operators.LessThan, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.LessThan, filter.Value);
                 case SearchCondition.LessThanOrEqualTo:
-                    return new Expression(filter.Field, Operators.LessThanOrEqualTo, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.LessThanOrEqualTo, filter.Value);
                 case SearchCondition.NotEquals:
-                    return new Expression(filter.Field, Operators.NotEquals, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.NotEquals, filter.Value);
                 case SearchCondition.StartsWith:
-                    return new Expression(filter.Field, Operators.StartsWith, filter.Value);
+                    return new DbExpression(filter.Field, DbOperators.StartsWith, filter.Value);
                 default:
                     throw new ArgumentException("Unknown filter condition: " + filter.Condition.ToString());
             }

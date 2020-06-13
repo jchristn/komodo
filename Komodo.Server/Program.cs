@@ -5,13 +5,15 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
+using Watson.ORM;
+using Watson.ORM.Core;
 using WatsonWebserver;
 using Webserver = WatsonWebserver.Server;
 
-using Komodo.Classes;
-using Komodo.Database; 
+using Komodo.Classes; 
 using Komodo.IndexManager;
 using Komodo.Server.Classes;
+using Common = Komodo.Classes.Common;
 
 namespace Komodo.Server
 {
@@ -20,7 +22,7 @@ namespace Komodo.Server
         private static string _Version;
         private static Settings _Settings;
         private static LoggingModule _Logging;
-        private static KomodoDatabase _Database;
+        private static WatsonORM _ORM;
         private static AuthManager _Auth;
         private static ConnManager _Conn; 
         private static KomodoIndices _Indices;
@@ -69,11 +71,11 @@ namespace Komodo.Server
                     false,
                     false);
 
-                _Database = new KomodoDatabase(_Settings.Database);
+                _ORM = new WatsonORM(_Settings.Database.ToDatabaseSettings());
 
                 _Indices = new KomodoIndices(_Settings.Database, _Settings.SourceDocuments, _Settings.ParsedDocuments, _Settings.Postings);
 
-                _Auth = new AuthManager(_Database);
+                _Auth = new AuthManager(_ORM);
 
                 _Conn = new ConnManager();
 

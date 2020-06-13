@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Repository where source and parsed documents are stored.
     /// </summary>
+    [Table("indices")]
     public class Index
     {
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the user that owns this index.
         /// </summary>
+        [Column("ownerguid", false, DataTypes.Nvarchar, 64, false)]
         public string OwnerGUID { get; set; }
 
         /// <summary>
         /// The name of the index.
         /// </summary>
+        [Column("name", false, DataTypes.Nvarchar, 64, false)]
         public string Name { get; set; }
 
         /// <summary>

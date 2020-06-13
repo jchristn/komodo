@@ -5,6 +5,7 @@ using System.Text;
 using Komodo.Classes;
 using Komodo.Crawler;
 using Komodo.Parser;
+using DbType = Komodo.Classes.DbType;
 
 namespace Test.Crawler
 {
@@ -181,8 +182,8 @@ namespace Test.Crawler
             string query = Common.InputString("Query:", null, true);
             if (String.IsNullOrEmpty(query)) return;
 
-            DatabaseSettings db = new DatabaseSettings(
-                Common.InputString("DB type:", "MySql", false),
+            DbSettings db = new DbSettings(
+                (DbType)(Enum.Parse(typeof(DbType), Common.InputString("DB type:", "MySql", false))),
                 Common.InputString("Hostname:", "localhost", false),
                 Common.InputInteger("Port:", 3306, true, false),
                 Common.InputString("Username:", "root", false),

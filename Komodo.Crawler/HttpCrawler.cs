@@ -107,7 +107,8 @@ namespace Komodo.Crawler
                 ret.DataStream = _RestResponse.Data;
                 ret.Headers = _RestResponse.Headers;
             }
-             
+
+            ret.StatusCode = _RestResponse.StatusCode;
             ret.Time.End = DateTime.Now;
             return ret;
         }

@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Associates a term with a specific GUID.
     /// </summary>
+    [Table("termguids")]
     public class TermGuid
     {
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the index.
         /// </summary>
+        [Column("indexguid", false, DataTypes.Nvarchar, 64, false)]
         public string IndexGUID { get; set; }
 
         /// <summary>
         /// The term.
         /// </summary>
+        [Column("term", false, DataTypes.Nvarchar, 64, false)]
         public string Term { get; set; }
 
         /// <summary>
@@ -68,65 +73,6 @@ namespace Komodo.Classes
             GUID = guid;
             IndexGUID = indexGuid;
             Term = term;
-        }
-
-        /// <summary>
-        /// Create a database insertable dictionary from the object.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToInsertDictionary()
-        {
-            Dictionary<string, object> ret = new Dictionary<string, object>();
-            ret.Add("guid", GUID);
-            ret.Add("indexguid", IndexGUID);
-            ret.Add("term", Term);
-            return ret;
-        }
-
-        /// <summary>
-        /// Create the object from a DataRow.
-        /// </summary>
-        /// <param name="row">DataRow.</param>
-        /// <returns>Instance.</returns>
-        public static TermGuid FromDataRow(DataRow row)
-        {
-            if (row == null) throw new ArgumentNullException(nameof(row));
-
-            TermGuid ret = new TermGuid();
-
-            if (row.Table.Columns.Contains("id") && row["id"] != null && row["id"] != DBNull.Value)
-                ret.Id = Convert.ToInt32(row["id"]);
-
-            if (row.Table.Columns.Contains("guid") && row["guid"] != null && row["guid"] != DBNull.Value)
-                ret.GUID = row["guid"].ToString();
-
-            if (row.Table.Columns.Contains("indexguid") && row["indexguid"] != null && row["indexguid"] != DBNull.Value)
-                ret.IndexGUID = row["indexguid"].ToString();
-
-            if (row.Table.Columns.Contains("term") && row["term"] != null && row["term"] != DBNull.Value)
-                ret.Term = row["term"].ToString(); 
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Create a list from a DataTable.
-        /// </summary>
-        /// <param name="table">DataTable.</param>
-        /// <returns>List of instances.</returns>
-        public static List<TermGuid> FromDataTable(DataTable table)
-        {
-            if (table == null) throw new ArgumentNullException(nameof(table));
-
-            List<TermGuid> ret = new List<TermGuid>();
-            if (table.Rows != null && table.Rows.Count > 0)
-            {
-                foreach (DataRow row in table.Rows)
-                {
-                    ret.Add(TermGuid.FromDataRow(row));
-                }
-            }
-            return ret;
-        }
+        } 
     }
 }

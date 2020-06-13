@@ -9,8 +9,7 @@ using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
 using Komodo.Classes;
-using Komodo.Crawler;
-using Komodo.Database; 
+using Komodo.Crawler;  
 using Komodo.IndexClient;
 using Komodo.Parser;
 using Komodo.Postings;
@@ -415,7 +414,7 @@ namespace Komodo.Server
                     return;
                 }
 
-                DatabaseSettings dbSettings = new DatabaseSettings(md.Params.DbType, md.Params.DbServer, md.Params.DbPort, md.Params.DbUser, md.Params.DbPass, md.Params.DbInstance, md.Params.DbName);
+                DbSettings dbSettings = new DbSettings(md.Params.DbType, md.Params.DbServer, md.Params.DbPort, md.Params.DbUser, md.Params.DbPass, md.Params.DbInstance, md.Params.DbName);
                 SqlCrawler sqlCrawler = new SqlCrawler(dbSettings, Encoding.UTF8.GetString(Common.StreamToBytes(md.Http.Request.Data)));
                 SqlCrawlResult sqlCrawlResult = sqlCrawler.Get();
                 crawlResult = sqlCrawlResult;

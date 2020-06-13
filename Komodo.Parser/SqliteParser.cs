@@ -8,10 +8,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using System.Web;
-using DatabaseWrapper;
+using System.Web; 
 using Komodo.Classes;
 using Komodo.Crawler;
+using DataType = Komodo.Classes.DataType;
 
 namespace Komodo.Parser
 {
@@ -82,7 +82,7 @@ namespace Komodo.Parser
         /// <param name="dbSettings">Database settings.</param>
         /// <param name="query">Query to execute.</param>
         /// <returns>Parse result.</returns>
-        public SqliteParseResult ParseFromQuery(DatabaseSettings dbSettings, string query)
+        public SqliteParseResult ParseFromQuery(DbSettings dbSettings, string query)
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
@@ -127,15 +127,15 @@ namespace Komodo.Parser
             return ret;
         }
 
-        private Dictionary<string, Komodo.Classes.DataType> BuildSchema(List<DataNode> nodes)
+        private Dictionary<string, DataType> BuildSchema(List<DataNode> nodes)
         {
-            Dictionary<string, Komodo.Classes.DataType> ret = new Dictionary<string, Komodo.Classes.DataType>();
+            Dictionary<string, DataType> ret = new Dictionary<string, Komodo.Classes.DataType>();
 
             foreach (DataNode curr in nodes)
             {
                 if (ret.ContainsKey(curr.Key))
                 {
-                    if (ret[curr.Key].Equals("null") && !curr.Type.Equals(Komodo.Classes.DataType.Null))
+                    if (ret[curr.Key].Equals("null") && !curr.Type.Equals(DataType.Null))
                     {
                         // replace null with more specific type
                         ret.Remove(curr.Key);

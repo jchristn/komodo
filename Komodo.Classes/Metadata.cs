@@ -1,28 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Watson.ORM.Core;
 
 namespace Komodo.Classes
 {
     /// <summary>
     /// Key-value pair configuration-related data.
     /// </summary>
+    [Table("metadata")]
     public class Metadata
     {
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
-         
+
         /// <summary>
         /// Key.
         /// </summary>
+        [Column("configkey", false, DataTypes.Nvarchar, 64, false)]
         public string Key { get; set; }
 
         /// <summary>
         /// Value associated with the specified key.
         /// </summary>
+        [Column("configval", false, DataTypes.Nvarchar, 2048, true)]
         public string Value { get; set; }
 
         /// <summary>

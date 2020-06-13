@@ -90,7 +90,7 @@ namespace Komodo.Server.Classes
             /// <summary>
             /// Querystring 'dbtype', indicating the type of database.
             /// </summary>
-            public string DbType = null;
+            public DbType DbType;
 
             /// <summary>
             /// Querystring 'dbserver', indicating the database server IP address or hostname.
@@ -208,7 +208,7 @@ namespace Komodo.Server.Classes
                 if (qs.ContainsKey("async")) ret.Async = true;
                 if (qs.ContainsKey("enumerate")) ret.Enumerate = true;
 
-                if (qs.ContainsKey("dbtype")) ret.DbType = WebUtility.UrlDecode(qs["dbtype"]);
+                if (qs.ContainsKey("dbtype")) ret.DbType = (DbType)(Enum.Parse(typeof(DbType), WebUtility.UrlDecode(qs["dbtype"])));
                 if (qs.ContainsKey("dbserver")) ret.DbServer = WebUtility.UrlDecode(qs["dbserver"]);
                 if (qs.ContainsKey("dbport")) ret.DbPort = Convert.ToInt32(qs["dbport"]);
                 if (qs.ContainsKey("dbuser")) ret.DbUser = WebUtility.UrlDecode(qs["dbuser"]);

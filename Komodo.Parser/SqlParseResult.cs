@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
-using System.Web;
+using System.Collections.Generic; 
 using Komodo.Classes;
 
 namespace Komodo.Parser
@@ -58,18 +49,7 @@ namespace Komodo.Parser
         #endregion
 
         #region Private-Members
-
-        private DatabaseWrapper.DatabaseClient _Database { get; set; }
-        private string _DbType { get; set; }
-        private string _DbHostname { get; set; }
-        private int _DbPort { get; set; }
-        private string _DbUser { get; set; }
-        private string _DbPass { get; set; }
-        private string _DbInstance { get; set; }
-        private string _DbName { get; set; }
-        private string _Query { get; set; }
-        private DataTable _SourceContent { get; set; }
-
+          
         #endregion
 
         #region Constructors-and-Factories
@@ -93,9 +73,7 @@ namespace Komodo.Parser
         {
             string ret = "";
             ret += "---" + Environment.NewLine;
-            ret += "  Success     : " + Success + Environment.NewLine;
-            ret += "  Database    : " + _DbHostname + ":" + _DbPort + " db " + _DbName + (String.IsNullOrEmpty(_DbInstance) ? "" : " instance " + _DbInstance) + Environment.NewLine;
-            ret += "  Query       : " + _Query + Environment.NewLine;
+            ret += "  Success     : " + Success + Environment.NewLine;  
             ret += "  Rows        : " + Rows + Environment.NewLine;
             ret += "  Columns     : " + Columns + Environment.NewLine;
             ret += "  Nodes       : " + (Rows * Columns) + Environment.NewLine;
