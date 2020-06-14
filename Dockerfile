@@ -17,11 +17,16 @@ COPY --from=build /app/Komodo.Server/out .
 # Copy in the System.json file containing the appropriate external
 # database and storage settings.  Refer to Docker.md for details.
 #
+# The Komodo.db file is only present to demonstrate operation and
+# should not be used in a production containerized environment.  
+# External databases should be used instead.
+#
 RUN mkdir Data
 RUN mkdir Data/ParsedDocuments
 RUN mkdir Data/SourceDocuments
 RUN mkdir Data/Postings
 RUN mkdir Data/Temp
+RUN mkdir Logs
 COPY ./Komodo.db ./Data
 COPY ./System.json .
 

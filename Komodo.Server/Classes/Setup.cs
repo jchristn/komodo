@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using BlobHelper;
+using SyslogLogging;
 using Watson.ORM;
 using Watson.ORM.Core;
 using Komodo.Classes;
@@ -94,9 +95,13 @@ namespace Komodo.Server.Classes
             settings.Logging.Header = "komodo";
             settings.Logging.SyslogServerIp = "127.0.0.1";
             settings.Logging.SyslogServerPort = 514;
-            settings.Logging.MinimumLevel = 1;
+            settings.Logging.MinimumLevel = Severity.Info;
+            settings.Logging.FileLogging = true;
+            settings.Logging.FileDirectory = "./Logs/";
+            settings.Logging.Filename = "Komodo.log";
 
             if (!Directory.Exists("./Data/")) Directory.CreateDirectory("./Data/");
+            if (!Directory.Exists("./Logs/")) Directory.CreateDirectory("./Logs/");
 
             settings.Database = new DbSettings("./Data/Komodo.db");
 

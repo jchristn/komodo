@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
- 
+
+using SyslogLogging;
+
 using Komodo.Classes;
 using Komodo.Crawler;
 using Komodo.IndexClient;
@@ -30,11 +33,13 @@ namespace Komodo.Daemon
         #endregion
 
         #region Private-Members
-         
+
+        private string _Header = "[Komodo] ";
         private CancellationTokenSource _TokenSource = new CancellationTokenSource();
         private CancellationToken _Token;
 
         private DaemonSettings _Settings = null;
+        private LoggingModule _Logging = null;
         private KomodoIndices _Indices = null;
 
         #endregion
@@ -386,6 +391,23 @@ namespace Komodo.Daemon
                 _Settings.SourceDocuments,
                 _Settings.ParsedDocuments,
                 _Settings.Postings);
+
+            _Logging = new LoggingModule(
+                _Settings.Logging.SyslogServerIp,
+                _Settings.Logging.SyslogServerPort,
+                _Settings.Logging.ConsoleLogging,
+                _Settings.Logging.MinimumLevel,
+                false, false, true, false, false, false);
+             
+            if (_Settings.Logging.FileLogging && !String.IsNullOrEmpty(_Settings.Logging.Filename))
+            {
+                if (String.IsNullOrEmpty(_Settings.Logging.FileDirectory)) _Settings.Logging.FileDirectory = "./";
+                while (_Settings.Logging.FileDirectory.Contains("\\")) _Settings.Logging.FileDirectory.Replace("\\", "/");
+                if (!Directory.Exists(_Settings.Logging.FileDirectory)) Directory.CreateDirectory(_Settings.Logging.FileDirectory);
+
+                _Logging.FileLogging = FileLoggingMode.FileWithDate;
+                _Logging.LogFilename = _Settings.Logging.FileDirectory + _Settings.Logging.Filename;
+            } 
         }
 
         private KomodoIndex GetIndexClient(string indexName)
@@ -394,7 +416,8 @@ namespace Komodo.Daemon
             KomodoIndex idx = _Indices.Get(indexName);
 
             if (idx == null)
-            { 
+            {
+                _Logging.Warn(_Header + "index " + indexName + " could not be found");
                 throw new KeyNotFoundException("No index with name '" + indexName + "' could be found.");
             }
 

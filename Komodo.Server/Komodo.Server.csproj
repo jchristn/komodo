@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.5.0.4</Version>
+    <Version>1.5.0.5</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Server: Information search, storage, and retrieval that runs as a standalone RESTful server</Product>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management</PackageTags>
-    <PackageReleaseNotes>Refactor and Komodo.Daemon</PackageReleaseNotes>
+    <PackageReleaseNotes>File logging</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

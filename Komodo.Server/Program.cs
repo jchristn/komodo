@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,6 +72,16 @@ namespace Komodo.Server
                     false,
                     false,
                     false);
+
+                if (_Settings.Logging.FileLogging && !String.IsNullOrEmpty(_Settings.Logging.Filename))
+                {
+                    if (String.IsNullOrEmpty(_Settings.Logging.FileDirectory)) _Settings.Logging.FileDirectory = "./";
+                    while (_Settings.Logging.FileDirectory.Contains("\\")) _Settings.Logging.FileDirectory.Replace("\\", "/");
+                    if (!Directory.Exists(_Settings.Logging.FileDirectory)) Directory.CreateDirectory(_Settings.Logging.FileDirectory);
+
+                    _Logging.FileLogging = FileLoggingMode.FileWithDate;
+                    _Logging.LogFilename = _Settings.Logging.FileDirectory + _Settings.Logging.Filename;
+                }
 
                 _ORM = new WatsonORM(_Settings.Database.ToDatabaseSettings());
 

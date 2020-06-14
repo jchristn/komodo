@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SyslogLogging;
 using Komodo.Classes;
 
 namespace Komodo.Server.Classes
@@ -116,8 +117,16 @@ namespace Komodo.Server.Classes
             /// API key to use for admin operations (please keep secret).
             /// </summary>
             public string AdminApiKey { get; set; }
+
+            /// <summary>
+            /// Instantiate the object.
+            /// </summary>
+            public ServerSettings()
+            {
+
+            }
         }
-         
+
         /// <summary>
         /// Logging settings.
         /// </summary>
@@ -141,14 +150,37 @@ namespace Komodo.Server.Classes
             /// <summary>
             /// Minimum level required before sending a syslog message.
             /// </summary>
-            public int MinimumLevel;
+            public Severity MinimumLevel;
 
             /// <summary>
             /// Enable console logging.
             /// </summary>
             public bool ConsoleLogging;
+
+            /// <summary>
+            /// Enable file logging.
+            /// </summary>
+            public bool FileLogging;
+
+            /// <summary>
+            /// Directory for log files.
+            /// </summary>
+            public string FileDirectory;
+
+            /// <summary>
+            /// Base filename for log files.
+            /// </summary>
+            public string Filename;
+
+            /// <summary>
+            /// Instantiate the object.
+            /// </summary>
+            public LoggingSettings()
+            {
+
+            }
         }
-          
+
         #endregion
 
         #region Public-Methods

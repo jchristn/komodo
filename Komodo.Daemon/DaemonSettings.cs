@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SyslogLogging;
 using Watson.ORM;
 using Watson.ORM.Core;
 using Komodo.Classes;
@@ -91,6 +92,15 @@ namespace Komodo.Daemon
             ret.ParsedDocuments = new StorageSettings(new DiskSettings("./Data/Parsed/"));
             ret.Postings = new StorageSettings(new DiskSettings("./Data/Postings/"));
 
+            ret.Logging = new LoggingSettings();
+            ret.Logging.ConsoleLogging = false;
+            ret.Logging.FileDirectory = "./Logs/";
+            ret.Logging.FileLogging = true;
+            ret.Logging.Filename = "Komodo.log";
+            ret.Logging.MinimumLevel = Severity.Info;
+            ret.Logging.SyslogServerIp = "127.0.0.1";
+            ret.Logging.SyslogServerPort = 514;
+
             return ret;
         }
 
@@ -121,7 +131,36 @@ namespace Komodo.Daemon
             /// <summary>
             /// Minimum level required before sending a syslog message.
             /// </summary>
-            public int MinimumLevel; 
+            public Severity MinimumLevel;
+
+            /// <summary>
+            /// Enable console logging.
+            /// </summary>
+            public bool ConsoleLogging;
+
+            /// <summary>
+            /// Enable file logging.
+            /// </summary>
+            public bool FileLogging;
+
+            /// <summary>
+            /// Directory for log files.
+            /// </summary>
+            public string FileDirectory;
+
+            /// <summary>
+            /// Base filename for log files.
+            /// </summary>
+            public string Filename;
+
+            /// <summary>
+            /// Instantiate the object.
+            /// </summary>
+            public LoggingSettings()
+            {
+
+            }
+
         }
 
         #endregion
@@ -210,6 +249,16 @@ namespace Komodo.Daemon
                         dir = Path.GetDirectoryName(Path.GetFullPath(Postings.Disk.Directory));
                         if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                     }
+                }
+            }
+
+            if (Logging != null)
+            {
+                if (Logging.FileLogging && !String.IsNullOrEmpty(Logging.Filename))
+                {
+                    if (String.IsNullOrEmpty(Logging.FileDirectory)) Logging.FileDirectory = "./";
+                    while (Logging.FileDirectory.Contains("\\")) Logging.FileDirectory.Replace("\\", "/");
+                    if (!Directory.Exists(Logging.FileDirectory)) Directory.CreateDirectory(Logging.FileDirectory); 
                 }
             }
         }
