@@ -121,6 +121,19 @@ namespace Komodo.Server.Classes
             #region Initialize-Database-and-Create-Records
 
             WatsonORM orm = new WatsonORM(settings.Database.ToDatabaseSettings());
+
+            orm.InitializeDatabase();
+            orm.InitializeTable(typeof(ApiKey));
+            orm.InitializeTable(typeof(Index));
+            orm.InitializeTable(typeof(Metadata));
+            orm.InitializeTable(typeof(Node));
+            orm.InitializeTable(typeof(ParsedDocument));
+            orm.InitializeTable(typeof(Permission));
+            orm.InitializeTable(typeof(SourceDocument));
+            orm.InitializeTable(typeof(TermDoc));
+            orm.InitializeTable(typeof(TermGuid));
+            orm.InitializeTable(typeof(User));
+
             DbExpression e = new DbExpression("id", DbOperators.GreaterThan, 0);
 
             User user = null;

@@ -14,6 +14,7 @@ using Komodo.Classes;
 using Komodo.IndexManager;
 using Komodo.Server.Classes;
 using Common = Komodo.Classes.Common;
+using Index = Komodo.Classes.Index;
 
 namespace Komodo.Server
 {
@@ -72,6 +73,18 @@ namespace Komodo.Server
                     false);
 
                 _ORM = new WatsonORM(_Settings.Database.ToDatabaseSettings());
+
+                _ORM.InitializeDatabase();
+                _ORM.InitializeTable(typeof(ApiKey));
+                _ORM.InitializeTable(typeof(Index));
+                _ORM.InitializeTable(typeof(Metadata));
+                _ORM.InitializeTable(typeof(Node));
+                _ORM.InitializeTable(typeof(ParsedDocument));
+                _ORM.InitializeTable(typeof(Permission));
+                _ORM.InitializeTable(typeof(SourceDocument));
+                _ORM.InitializeTable(typeof(TermDoc));
+                _ORM.InitializeTable(typeof(TermGuid));
+                _ORM.InitializeTable(typeof(User));
 
                 _Indices = new KomodoIndices(_Settings.Database, _Settings.SourceDocuments, _Settings.ParsedDocuments, _Settings.Postings);
 
