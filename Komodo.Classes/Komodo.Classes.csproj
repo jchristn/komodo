@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.5.0.2</Version>
+    <Version>1.5.0.3</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Core Classes: Information search, storage, and retrieval</Product>
     <Description>Do not install directly.  Supporting classes for Komodo.  Please either install Komodo.Daemon to run search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, storage, and retrieval platform.</Description>
@@ -24,7 +24,6 @@
   <ItemGroup>
     <PackageReference Include="BlobHelper" Version="2.0.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="WatsonORM" Version="1.2.0" />
   </ItemGroup>
 

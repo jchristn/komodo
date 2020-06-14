@@ -1,13 +1,15 @@
+in root directory, NOT in Komodo.Server
+
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /app
 COPY . ./
-RUN dotnet restore
+RUN dotnet restore ./Komodo.Server/Komodo.Server.csproj
 
 WORKDIR /app/Komodo.Server
 RUN dotnet build   -f netcoreapp3.1 -c Release
 RUN dotnet publish -f netcoreapp3.1 -c Release -o out
 
-# Build runtime image 
+# Build runtime image
 FROM mcr.microsoft.com/dotnet/core/runtime:3.1
 WORKDIR /app
 EXPOSE 9090/tcp

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.5.0.2</Version>
+    <Version>1.5.0.3</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Server: Information search, storage, and retrieval that runs as a standalone RESTful server</Product>
@@ -24,7 +24,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Komodo.IndexManager" Version="1.5.0.2" />
+    <PackageReference Include="Komodo.IndexManager" Version="1.5.0.3" />
     <PackageReference Include="SyslogLogging" Version="1.3.2.2" />
     <PackageReference Include="Watson" Version="3.0.11" />
   </ItemGroup>

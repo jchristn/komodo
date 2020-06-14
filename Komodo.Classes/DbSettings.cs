@@ -52,6 +52,14 @@ namespace Komodo.Classes
         public string DatabaseName { get; set; }
 
         /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        public DbSettings()
+        {
+
+        }
+
+        /// <summary>
         /// Instantiate the object for Sqlite only.
         /// </summary>
         /// <param name="filename">Database filename.</param>

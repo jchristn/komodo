@@ -67,14 +67,14 @@ Modify the ```System.json``` ```TempStorage```, ```SourceDocuments```, ```Parsed
 2) Execute the Docker build process from the **solution directory**.
 ```
 $ cd [Solution Directory]
-$ docker build -f Dockerfile -t komodo .
+$ docker build -f Dockerfile -t komodo-1.5 .
 ```
 
 3) Verify the image exists:
 ```
 $ docker images
 REPOSITORY                              TAG                 IMAGE ID            CREATED             SIZE
-komodo-1.4                              latest              047e29f37f9c        2 seconds ago       328MB
+komodo-1.5                              latest              047e29f37f9c        2 seconds ago       328MB
 mcr.microsoft.com/dotnet/core/sdk       3.1                 abbb476b7b81        11 days ago         737MB
 mcr.microsoft.com/dotnet/core/runtime   3.1                 4b555235dfc0        11 days ago         327MB
 ```
@@ -82,22 +82,22 @@ mcr.microsoft.com/dotnet/core/runtime   3.1                 4b555235dfc0        
 4) Execute the container:
 ```
 Windows
-$ docker run --user ContainerAdministrator -p 9090:9090 komodo
+$ docker run --user ContainerAdministrator -p 9090:9090 komodo-1.5
 
 Linux or Mac 
-$ docker run --user root -p 9090:9090 komodo
+$ docker run --user root -p 9090:9090 komodo-1.5
 ```
 
 5) Connect to Komodo in your browser: 
 ```
-http://localhost:8000
+http://localhost:9090
 ```
 
 6) Get the container name:
 ```
 $ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                    NAMES
-3627b4e812fd        komodo-1.4          "dotnet Komodo.Serve…"   About a minute ago   Up About a minute   0.0.0.0:8000->8000/tcp   silly_khayyam
+3627b4e812fd        komodo-1.5          "dotnet Komodo.Serve…"   About a minute ago   Up About a minute   0.0.0.0:8000->8000/tcp   silly_khayyam
 ```
 
 7) Kill a running container:
