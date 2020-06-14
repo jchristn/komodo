@@ -1,3 +1,5 @@
-# Placeholder
+# Komodo.Parser
 
-Documentation will be added soon.
+The Komodo.Parser project exposes APIs necessary to parse HTML, JSON, SQL, Sqlite, XML, and Text data.
+
+Please refer to the Test.Parser project for a full example.
