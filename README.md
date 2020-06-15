@@ -26,10 +26,6 @@ If you have any issues or feedback, please file an issue here in Github.  We'd l
 - NuGet packages for each sub-project
 - First release of Komodo.Daemon; in-process instance of Komodo for search, storage, and retrieval within your application
 
-## Project Documentation
-
-Please refer to the ```Documentation``` folder under each project for documentation.
-
 ## API Documentation
 
 Please refer to the Komodo POSTman collection in the root directory.
@@ -50,4 +46,4 @@ Refer to ```Docker.md``` for details.  The ```System.json``` and ```Komodo.db```
 
 ## Version History
 
-Please refer to CHANGELOG.md for details.
+Please refer to CHANGELOG.md for details. 
