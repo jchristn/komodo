@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using SyslogLogging;
 using Komodo.Classes;
+using Komodo.Daemon;
 
 namespace Komodo.Server.Classes
 {
@@ -184,6 +185,33 @@ namespace Komodo.Server.Classes
         #endregion
 
         #region Public-Methods
+
+        /// <summary>
+        /// Convert Settings to DaemonSettings.
+        /// </summary>
+        /// <returns>DaemonSettings.</returns>
+        public DaemonSettings ToDaemonSettings()
+        {
+            DaemonSettings ret = new DaemonSettings();
+            ret.Database = Database;
+
+            ret.Logging = new DaemonSettings.LoggingSettings();
+            ret.Logging.ConsoleLogging = Logging.ConsoleLogging;
+            ret.Logging.FileDirectory = Logging.FileDirectory;
+            ret.Logging.FileLogging = Logging.FileLogging;
+            ret.Logging.Filename = Logging.Filename;
+            ret.Logging.Header = Logging.Header;
+            ret.Logging.MinimumLevel = Logging.MinimumLevel;
+            ret.Logging.SyslogServerIp = Logging.SyslogServerIp;
+            ret.Logging.SyslogServerPort = Logging.SyslogServerPort;
+
+            ret.ParsedDocuments = ParsedDocuments;
+            ret.Postings = Postings;
+            ret.SourceDocuments = SourceDocuments;
+            ret.TempStorage = TempStorage;
+
+            return ret;
+        }
 
         #endregion
 

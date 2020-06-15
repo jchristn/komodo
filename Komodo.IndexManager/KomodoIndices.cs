@@ -186,7 +186,7 @@ namespace Komodo.IndexManager
         /// </summary>
         /// <param name="name">Name.</param>
         /// <returns>Index client.</returns>
-        public KomodoIndex Get(string name)
+        public KomodoIndex GetIndexClient(string name)
         {
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
@@ -199,6 +199,23 @@ namespace Komodo.IndexManager
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Retrieve an index.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <returns>Index.</returns>
+        public Index GetIndex(string name)
+        {
+            if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<Index>(nameof(Index.Name)),
+                DbOperators.Equals,
+                name);
+
+            return _ORM.SelectFirst<Index>(e);
         }
 
         /// <summary>

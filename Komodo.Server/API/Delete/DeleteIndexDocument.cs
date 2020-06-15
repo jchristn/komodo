@@ -24,31 +24,29 @@ namespace Komodo.Server
         {
             string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " DeleteIndexDocument ";
              
-            string name = md.Http.Request.RawUrlEntries[0];
-            string docId = md.Http.Request.RawUrlEntries[1];
+            string indexName = md.Http.Request.RawUrlEntries[0];
+            string sourceGuid = md.Http.Request.RawUrlEntries[1];
 
-            KomodoIndex idx = _Indices.Get(name);
-            if (idx == null)
+            if (!_Daemon.IndexExists(indexName))
             {
-                _Logging.Warn(header + "unable to retrieve index " + name);
+                _Logging.Warn(header + "index " + indexName + " does not exist");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
                 return;
             }
 
-            SourceDocument doc = idx.GetSourceDocumentMetadata(docId);
-            if (doc == null)
+            if (!_Daemon.SourceDocumentExists(indexName, sourceGuid))
             {
-                _Logging.Warn(header + "unable to find document " + name + "/" + docId);
+                _Logging.Warn(header + "document " + indexName + "/" + sourceGuid + " does not exist");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(new ErrorResponse(404, "Unknown document.", null, null).ToJson(true));
                 return;
             }
 
-            idx.Remove(docId);
-            _Logging.Debug(header + "deleted document ID " + docId + " from index " + name);
+            _Daemon.RemoveDocument(indexName, sourceGuid);
+            _Logging.Debug(header + "deleted document " + indexName + "/" + sourceGuid);
             md.Http.Response.StatusCode = 204;
             await md.Http.Response.Send();
             return;

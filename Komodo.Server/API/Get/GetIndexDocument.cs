@@ -21,25 +21,24 @@ namespace Komodo.Server
         {
             string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndexDocument ";
              
-            string name = md.Http.Request.RawUrlEntries[0];
-            string docId = md.Http.Request.RawUrlEntries[1];
+            string indexName = md.Http.Request.RawUrlEntries[0];
+            string sourceGuid = md.Http.Request.RawUrlEntries[1];
 
-            KomodoIndex idx = _Indices.Get(name);
-            if (idx == null)
+            if (!_Daemon.IndexExists(indexName))
             {
-                _Logging.Warn(header + "unable to find index " + name);
+                _Logging.Warn(header + "index " + indexName + " does not exist");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
                 return;
             }
-             
+
             if (!md.Params.Parsed)
             {
-                DocumentData content = await idx.GetSourceDocumentContent(docId);
+                DocumentData content = await _Daemon.GetSourceDocumentContent(indexName, sourceGuid);
                 if (content == null)
                 {
-                    _Logging.Warn(header + "unable to find document " + name + "/" + docId);
+                    _Logging.Warn(header + "document " + indexName + "/" + sourceGuid + " does not exist");
                     md.Http.Response.StatusCode = 404;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(new ErrorResponse(404, "Unknown document.", null, null).ToJson(true));
@@ -55,10 +54,10 @@ namespace Komodo.Server
             }
             else
             {
-                SourceDocument source = idx.GetSourceDocumentMetadata(docId);
-                ParsedDocument parsed = idx.GetParsedDocument(docId);
-                object parseResult = idx.GetParseResult(docId);
-                PostingsResult postingsResult = idx.GetPostings(docId);
+                SourceDocument source = _Daemon.GetSourceDocumentMetadata(indexName, sourceGuid);
+                ParsedDocument parsed = _Daemon.GetParsedDocumentMetadata(indexName, sourceGuid); 
+                object parseResult = _Daemon.GetDocumentParseResult(indexName, sourceGuid);
+                PostingsResult postingsResult = _Daemon.GetDocumentPostings(indexName, sourceGuid);
 
                 DocumentMetadata ret = new DocumentMetadata(source, parsed, parseResult, postingsResult);
                 md.Http.Response.StatusCode = 200;

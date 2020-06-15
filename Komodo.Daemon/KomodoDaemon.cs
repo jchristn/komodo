@@ -112,6 +112,17 @@ namespace Komodo.Daemon
         }
 
         /// <summary>
+        /// Retrieve an index.
+        /// </summary>
+        /// <param name="indexName">Name of the index.</param>
+        /// <returns>Index.</returns>
+        public Index GetIndex(string indexName)
+        {
+            if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            return _Indices.GetIndex(indexName);
+        }
+
+        /// <summary>
         /// Gather statistics for one or all indices.
         /// </summary>
         /// <param name="indexName">Optional name of the index.</param>
@@ -413,7 +424,7 @@ namespace Komodo.Daemon
         private KomodoIndex GetIndexClient(string indexName)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
-            KomodoIndex idx = _Indices.Get(indexName);
+            KomodoIndex idx = _Indices.GetIndexClient(indexName);
 
             if (idx == null)
             {

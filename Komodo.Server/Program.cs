@@ -11,7 +11,8 @@ using Watson.ORM.Core;
 using WatsonWebserver;
 using Webserver = WatsonWebserver.Server;
 
-using Komodo.Classes; 
+using Komodo.Classes;
+using Komodo.Daemon;
 using Komodo.IndexManager;
 using Komodo.Server.Classes;
 using Common = Komodo.Classes.Common;
@@ -26,8 +27,9 @@ namespace Komodo.Server
         private static LoggingModule _Logging;
         private static WatsonORM _ORM;
         private static AuthManager _Auth;
-        private static ConnManager _Conn; 
-        private static KomodoIndices _Indices;
+        private static ConnManager _Conn;
+        private static DaemonSettings _DaemonSettings;
+        private static KomodoDaemon _Daemon; 
         private static ConsoleManager _Console;
         private static Webserver _Webserver;
 
@@ -83,6 +85,9 @@ namespace Komodo.Server
                     _Logging.LogFilename = _Settings.Logging.FileDirectory + _Settings.Logging.Filename;
                 }
 
+                _DaemonSettings = _Settings.ToDaemonSettings();
+                _Daemon = new KomodoDaemon(_DaemonSettings);
+
                 _ORM = new WatsonORM(_Settings.Database.ToDatabaseSettings());
 
                 _ORM.InitializeDatabase();
@@ -96,9 +101,7 @@ namespace Komodo.Server
                 _ORM.InitializeTable(typeof(TermDoc));
                 _ORM.InitializeTable(typeof(TermGuid));
                 _ORM.InitializeTable(typeof(User));
-
-                _Indices = new KomodoIndices(_Settings.Database, _Settings.SourceDocuments, _Settings.ParsedDocuments, _Settings.Postings);
-
+                 
                 _Auth = new AuthManager(_ORM);
 
                 _Conn = new ConnManager();
@@ -112,7 +115,7 @@ namespace Komodo.Server
                 _Webserver.ContentRoutes.Add("/Assets/", true);
                 _Webserver.AccessControl.Mode = AccessControlMode.DefaultPermit;
 
-                if (_Settings.EnableConsole) _Console = new ConsoleManager(_Settings, _Indices, ExitApplication);
+                if (_Settings.EnableConsole) _Console = new ConsoleManager(_Settings, ExitApplication);
 
                 #endregion
 
@@ -437,8 +440,7 @@ namespace Komodo.Server
             }
             finally
             {
-                _Conn.Remove(Thread.CurrentThread.ManagedThreadId);
-
+                _Conn.Remove(Thread.CurrentThread.ManagedThreadId); 
                 _Logging.Debug(header + ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " + ctx.Response.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]");
             }
         }

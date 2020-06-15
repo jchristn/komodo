@@ -20,8 +20,7 @@ namespace Komodo.Server.Classes
         #region Private-Members
 
         private bool _Enabled;
-        private Settings _Settings;
-        private KomodoIndices _Indices;
+        private Settings _Settings; 
         private Func<bool> _ExitDelegate;
 
         #endregion
@@ -31,20 +30,16 @@ namespace Komodo.Server.Classes
         /// <summary>
         /// Instantiate the object.
         /// </summary>
-        /// <param name="config">Server configuration.</param>
-        /// <param name="indices">List of indices.</param>
+        /// <param name="settings">Server configuration.</param>
         /// <param name="exitApplication">Function to call when terminating the server.</param>
         public ConsoleManager(
-            Settings config,
-            KomodoIndices indices,
+            Settings settings, 
             Func<bool> exitApplication)
         {
-            if (config == null) throw new ArgumentNullException(nameof(config));
-            if (indices == null) throw new ArgumentNullException(nameof(indices));
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
 
             _Enabled = true;
-            _Settings = config;
-            _Indices = indices;
+            _Settings = settings;
             _ExitDelegate = exitApplication;
 
             Task.Run(() => ConsoleWorker());
@@ -93,11 +88,7 @@ namespace Komodo.Server.Classes
                         _Enabled = false;
                         _ExitDelegate();
                         break;
-
-                    case "list":
-                        ListIndices();
-                        break;
-
+                         
                     default:
                         Console.WriteLine("Unknown command.  '?' for help.");
                         break;
@@ -110,29 +101,11 @@ namespace Komodo.Server.Classes
             Console.WriteLine("---");
             Console.WriteLine("  ?                         help / this menu");
             Console.WriteLine("  cls / c                   clear the console");
-            Console.WriteLine("  quit / q                  exit the application");
-            Console.WriteLine("  list                      list indices");
+            Console.WriteLine("  quit / q                  exit the application"); 
             Console.WriteLine("");
             return;
         }
-
-        private void ListIndices()
-        {
-            List<KomodoIndex> indices = _Indices.Get();
-            if (indices != null && indices.Count > 0)
-            {
-                Console.WriteLine("Indices: " + indices.Count);
-                foreach (KomodoIndex index in indices)
-                {
-                    Console.WriteLine("  " + index.Name + " [" + index.GUID+ "]");
-                }
-            }
-            else
-            {
-                Console.WriteLine("No indices");
-            }
-        }
-
+         
         #endregion 
     }
 }

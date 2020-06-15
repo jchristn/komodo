@@ -23,18 +23,11 @@ namespace Komodo.Server
         {
             string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndex ";
 
-            string name = md.Http.Request.RawUrlEntries[0];
-
-            DbExpression e = new DbExpression(
-                _ORM.GetColumnName<Index>(nameof(Index.Name)), 
-                DbOperators.Equals, 
-                name);
-
-            Index idx = _ORM.SelectFirst<Index>(e);
-            
-            if (idx == null)
+            string indexName = md.Http.Request.RawUrlEntries[0];
+            Index index = _Daemon.GetIndex(indexName);
+            if (index == null)
             {
-                _Logging.Warn(header + "unable to find index " + name);
+                _Logging.Warn(header + "index " + indexName + " does not exist");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
@@ -43,7 +36,7 @@ namespace Komodo.Server
 
             md.Http.Response.StatusCode = 200;
             md.Http.Response.ContentType = "application/json";
-            await md.Http.Response.Send(Common.SerializeJson(idx, md.Params.Pretty));
+            await md.Http.Response.Send(Common.SerializeJson(index, md.Params.Pretty));
             return; 
         }
     }

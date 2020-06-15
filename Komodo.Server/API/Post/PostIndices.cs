@@ -33,30 +33,21 @@ namespace Komodo.Server
             }
 
             byte[] reqData = Common.StreamToBytes(md.Http.Request.Data);
-            Index req = Common.DeserializeJson<Index>(reqData);
-            req.OwnerGUID = md.User.GUID;
-            if (String.IsNullOrEmpty(req.GUID)) req.GUID = Guid.NewGuid().ToString();
-            
-            if (_Indices.Exists(req.Name))
+            Index index = Common.DeserializeJson<Index>(reqData);
+            index.OwnerGUID = md.User.GUID;
+            if (String.IsNullOrEmpty(index.GUID)) index.GUID = Guid.NewGuid().ToString();
+
+            if (_Daemon.IndexExists(index.Name))
             {
-                _Logging.Warn(header + "index " + req.Name + " already exists");
-                md.Http.Response.StatusCode = 400;
+                _Logging.Warn(header + "index " + index.Name + " already exists");
+                md.Http.Response.StatusCode = 409;
                 md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(new ErrorResponse(400, "Index already exists.", null, null).ToJson(true));
+                await md.Http.Response.Send(new ErrorResponse(409, "Index already exists.", null, null).ToJson(true));
                 return;
             }
 
-            KomodoIndex ki = _Indices.Add(req);
-            if (ki == null || ki == default(KomodoIndex))
-            {
-                _Logging.Warn(header + "unable to add index");
-                md.Http.Response.StatusCode = 400;
-                md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(new ErrorResponse(400, "Unable to add index.", null, null).ToJson(true));
-                return;
-            }
-
-            _Logging.Debug(header + "created index " + req.Name);
+            _Daemon.AddIndex(index);
+            _Logging.Debug(header + "created index " + index.Name);
             md.Http.Response.StatusCode = 201;
             await md.Http.Response.Send();
             return;

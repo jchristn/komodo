@@ -146,28 +146,52 @@ namespace Komodo.Server.Classes
             Permission perm = null;
             Index idx = null;
 
-            if (orm.SelectMany<User>(e) == null)
+            List<User> users = orm.SelectMany<User>(e);
+            if (users == null || users.Count < 1)
             {
+                Console.WriteLine("| Creating first user 'default'");
                 user = new User("default", "Default", "default@default.com", "default");
                 user = orm.Insert<User>(user);
+            } 
+            else
+            {
+                Console.WriteLine("| Users already exist, not creating default user");
             }
 
-            if (orm.SelectMany<Index>(e) == null)
+            List<Index> indices = orm.SelectMany<Index>(e);
+            if (indices == null || indices.Count < 1)
             {
+                Console.WriteLine("| Creating first index 'default'");
                 idx = new Index(user.GUID, "default");
                 idx = orm.Insert<Index>(idx);
             }
-
-            if (orm.SelectMany<ApiKey>(e) == null)
+            else
             {
+                Console.WriteLine("| Indices already exist, not creating default index");
+            }
+
+            List<ApiKey> keys = orm.SelectMany<ApiKey>(e);
+            if (keys == null || keys.Count < 1)
+            {
+                Console.WriteLine("| Creating first API key 'default'");
                 apiKey = new ApiKey("default", user.GUID, true);
                 apiKey = orm.Insert<ApiKey>(apiKey);
             }
+            else
+            {
+                Console.WriteLine("| API keys already exist, not creating default API key");
+            }
 
-            if (orm.SelectMany<Permission>(e) == null)
-            { 
+            List<Permission> perms = orm.SelectMany<Permission>(e);
+            if (perms == null || perms.Count < 1)
+            {
+                Console.WriteLine("| Creating first permission 'default'");
                 perm = new Permission(idx.GUID, user.GUID, apiKey.GUID, true, true, true, true, true);
                 perm = orm.Insert<Permission>(perm);
+            }
+            else
+            {
+                Console.WriteLine("| Permissions already exist, not creating default permissions");
             }
              
             #endregion

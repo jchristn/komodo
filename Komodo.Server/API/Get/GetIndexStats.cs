@@ -20,14 +20,25 @@ namespace Komodo.Server
         {
             string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndexStats ";
              
-            string name = md.Http.Request.RawUrlEntries[0];
-            IndicesStats stats = _Indices.Stats(name);
+            string indexName = md.Http.Request.RawUrlEntries[0];
+            IndicesStats stats = _Daemon.GetIndexStats(indexName);
             if (stats == null)
             {
-                _Logging.Warn(header + "unable to find index " + name);
-                md.Http.Response.StatusCode = 404;
-                md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
+                if (String.IsNullOrEmpty(indexName))
+                {
+                    _Logging.Warn(header + "index " + indexName + " does not exist");
+                    md.Http.Response.StatusCode = 404;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
+                }
+                else
+                {
+                    _Logging.Warn(header + "no indices found");
+                    md.Http.Response.StatusCode = 404;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(404, "No indices found.", null, null).ToJson(true));
+                }
+
                 return;
             } 
 

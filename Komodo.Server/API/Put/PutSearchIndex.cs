@@ -31,25 +31,24 @@ namespace Komodo.Server
 
             SearchQuery query = Common.DeserializeJson<SearchQuery>(Common.StreamToBytes(md.Http.Request.Data));
 
-            string name = md.Http.Request.RawUrlEntries[0];
-            KomodoIndex idx = _Indices.Get(name);
-            if (idx == null || idx == default(KomodoIndex))
+            string indexName = md.Http.Request.RawUrlEntries[0];
+            if (!_Daemon.IndexExists(indexName))
             {
-                _Logging.Warn(header + "unable to find index " + name);
+                _Logging.Warn(header + "index " + indexName + " does not exist");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
                 return;
             }
-             
-            SearchResult result = idx.Search(query);
+
+            SearchResult result = _Daemon.Search(indexName, query);
 
             if (!result.Success)
             {
-                _Logging.Warn(header + "failed to execute search in index " + name);
+                _Logging.Warn(header + "failed to execute search in index " + indexName);
                 md.Http.Response.StatusCode = 500;
                 md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(new ErrorResponse(500, "Unable to search index '" + name + "'.", null, result).ToJson(true));
+                await md.Http.Response.Send(new ErrorResponse(500, "Unable to search index '" + indexName + "'.", null, result).ToJson(true));
                 return;
             }
              

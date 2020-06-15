@@ -28,18 +28,18 @@ namespace Komodo.Server
 
             string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PostIndexDocument ";
             string tempFile = _Settings.TempStorage.Disk.Directory + Guid.NewGuid().ToString();
-            string name = md.Http.Request.RawUrlEntries[0];
-            string docId = null;
-            if (md.Http.Request.RawUrlEntries.Count == 2) docId = md.Http.Request.RawUrlEntries[1];
+            string indexName = md.Http.Request.RawUrlEntries[0];
+            string sourceGuid = null;
+            if (md.Http.Request.RawUrlEntries.Count == 2) sourceGuid = md.Http.Request.RawUrlEntries[1];
 
             #endregion
 
-            #region Get-Index-Client
-
-            KomodoIndex idx = _Indices.Get(name);
-            if (idx == null || idx == default(KomodoIndex))
+            #region Check-Index-Existence
+             
+            Index index = _Daemon.GetIndex(indexName);
+            if (index == null)
             {
-                _Logging.Warn(header + "unknown index " + name);
+                _Logging.Warn(header + "index " + indexName + " does not exist");
                 md.Http.Response.StatusCode = 404;
                 md.Http.Response.ContentType = "application/json";
                 await md.Http.Response.Send(new ErrorResponse(404, "Unknown index.", null, null).ToJson(true));
@@ -50,11 +50,11 @@ namespace Komodo.Server
 
             #region Check-Supplied-GUID
 
-            if (!String.IsNullOrEmpty(docId))
+            if (!String.IsNullOrEmpty(sourceGuid))
             {
-                if (idx.ExistsSource(docId))
+                if (_Daemon.SourceDocumentExists(indexName, sourceGuid))
                 {
-                    _Logging.Warn(header + "requested source GUID " + docId + " already exists");
+                    _Logging.Warn(header + "document " + indexName + "/" + sourceGuid + " already exists");
                     md.Http.Response.StatusCode = 409;
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(new ErrorResponse(409, "Requested GUID already exists.", null, null).ToJson(true));
@@ -80,20 +80,16 @@ namespace Komodo.Server
             {
                 case "json":
                     docType = DocType.Json;
-                    break;
-
+                    break; 
                 case "xml":
                     docType = DocType.Xml;
-                    break;
-
+                    break; 
                 case "html":
                     docType = DocType.Html;
-                    break;
-
+                    break; 
                 case "sql":
                     docType = DocType.Sql;
-                    break;
-
+                    break; 
                 case "text":
                     docType = DocType.Text;
                     break;
@@ -155,24 +151,10 @@ namespace Komodo.Server
                     #endregion
                 }
                 else
-                {
-                    // long bytesRemaining = md.Http.Request.ContentLength;
-                    // byte[] buffer = new byte[65536];
-
+                { 
                     using (FileStream fs = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite))
                     {
-                        await md.Http.Request.Data.CopyToAsync(fs);
-                        /*
-                        while (bytesRemaining > 0)
-                        {
-                            int bytesRead = await md.Http.Request.Data.ReadAsync(buffer, 0, buffer.Length);
-                            if (bytesRead > 0)
-                            {
-                                bytesRemaining -= bytesRead;
-                                fs.Write(buffer, 0, bytesRead);
-                            }
-                        }
-                        */
+                        await md.Http.Request.Data.CopyToAsync(fs); 
                     }
 
                     contentLength = md.Http.Request.ContentLength;
@@ -190,9 +172,9 @@ namespace Komodo.Server
                 if (!String.IsNullOrEmpty(md.Params.Tags)) tags = Common.CsvToStringList(md.Params.Tags);
 
                 SourceDocument src = new SourceDocument(
-                    docId,
+                    sourceGuid,
                     md.User.GUID,
-                    idx.GUID,
+                    index.GUID,
                     md.Params.Name,
                     md.Params.Title,
                     tags,
@@ -208,18 +190,19 @@ namespace Komodo.Server
                 {
                     #region Sync
 
-                    IndexResult result = await idx.Add(
-                        src,
+                    IndexResult result = await _Daemon.AddDocument(
+                        indexName, 
+                        src, 
                         Common.ReadBinaryFile(tempFile),
                         !md.Params.Bypass,
                         new PostingsOptions());
 
                     if (!result.Success)
                     {
-                        _Logging.Warn(header + "unable to store document in index " + name);
+                        _Logging.Warn(header + "unable to store document in index " + indexName);
                         md.Http.Response.StatusCode = 500;
                         md.Http.Response.ContentType = "application/json";
-                        await md.Http.Response.Send(new ErrorResponse(500, "Unable to store document in index '" + name + "'.", null, result).ToJson(true));
+                        await md.Http.Response.Send(new ErrorResponse(500, "Unable to store document in index '" + indexName + "'.", null, result).ToJson(true));
                         return;
                     }
 
@@ -242,7 +225,8 @@ namespace Komodo.Server
                     result.Postings = null;
                     result.Time = null;
 
-                    Task unawaited = idx.Add(
+                    Task unawaited = _Daemon.AddDocument(
+                        index.Name,
                         src,
                         Common.ReadBinaryFile(tempFile),
                         !md.Params.Bypass,

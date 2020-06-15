@@ -50,6 +50,10 @@ namespace Test.Daemon
                         GetIndices();
                         break;
 
+                    case "get index":
+                        GetIndex();
+                        break;
+
                     case "index exists":
                         IndexExists();
                         break;
@@ -186,6 +190,7 @@ namespace Test.Daemon
             Console.WriteLine("Index management commands:");
             Console.WriteLine("|  ");
             Console.WriteLine("|  get indices              retrieve a list of index names");
+            Console.WriteLine("|  get index                retrieve an index by name");
             Console.WriteLine("|  index exists             check if index exists by name");
             Console.WriteLine("|  index stats              retrieve stats for all or a specific index");
             Console.WriteLine("|  add index                add an index");
@@ -225,6 +230,20 @@ namespace Test.Daemon
             else
             {
                 Console.WriteLine(Common.SerializeJson(indices, true));
+            }
+        }
+
+        static void GetIndex()
+        {
+            string indexName = Common.InputString("Index name:", "default", false);
+            Index index = _Komodo.GetIndex(indexName);
+            if (index == null)
+            {
+                Console.WriteLine("(none)");
+            }
+            else
+            {
+                Console.WriteLine(Common.SerializeJson(index, true));
             }
         }
 
