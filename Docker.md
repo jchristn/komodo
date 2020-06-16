@@ -8,11 +8,11 @@ Komodo stores and manages a lot of persistent data.  Any data stored within a co
 
 ### Copy in Node Configuration
 
-The ```System.json``` file which defines the configuration for your node should be copied in as part of your ```Dockerfile```.  Do not allow it to be built dynamically.
+The ```System.json``` file which defines the configuration for your node should be either be copied in as part of your ```Dockerfile``` or overridden using either ```-v``` or ```docker-compose```.  Do not allow it to be built dynamically.
 
-Be sure to set ```System.json``` ```EnableConsole``` to false and ```Logging.ConsoleLogging``` to false.
+Set ```System.json``` ```EnableConsole``` to false and ```Logging.ConsoleLogging``` to false.  
 
-Be sure to set your ```System.json``` ```Server.ListenerHostname``` to ```*```.
+Set your ```System.json``` ```Server.ListenerHostname``` to ```*```.
 
 ### Use an External Database
 
@@ -86,6 +86,15 @@ $ docker run --user ContainerAdministrator -p 9090:9090 komodo-1.5
 
 Linux or Mac 
 $ docker run --user root -p 9090:9090 komodo-1.5
+```
+
+To run using a ```System.json``` from your filesystem (or external storage) use the following.  Note that the first parameter to ```-v``` is the path to the file outside of the container image and the second parameter is the path within the image.  The app is in ```/app``` so the path will need to reflect that.
+```
+Windows
+$ docker run --user ContainerAdministrator -p 9090:9090 -v /[PathOnLocalFilesystem]/System.json:/app/System.json komodo-1.5
+
+Linux or Mac 
+$ docker run --user root -p 9090:9090 -v /[PathOnLocalFilesystem]/System.json:/app/System.json komodo-1.5
 ```
 
 5) Connect to Komodo in your browser: 

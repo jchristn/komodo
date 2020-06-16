@@ -42,7 +42,7 @@ dotnet Komodo.Server.dll
 
 ## Deploying Komodo.Server with Docker
 
-Refer to ```Docker.md``` for details.  The ```System.json``` and ```Komodo.db``` files in the solution root directory are present specifically for Docker deployments.
+Refer to ```Docker.md``` for details.
 
 ## Version History
 
