@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.0.6</Version>
+    <Version>1.5.0.12</Version>
     <Description>Komodo is an information search, storage, and retrieval platform.  Komodo.Daemon runs in process within your application.  Use Komodo.Server if you wish to use Komodo as a standalone server.</Description>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <Authors>Joel Christner</Authors>
@@ -14,12 +14,12 @@
     <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/Assets/komodo-icon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management</PackageTags>
-    <PackageReleaseNotes>File logging</PackageReleaseNotes>
+    <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management metadata</PackageTags>
+    <PackageReleaseNotes>Dependency update</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.IndexManager" Version="1.5.0.4" />
+    <PackageReference Include="Komodo.IndexManager" Version="1.5.0.15" />
     <PackageReference Include="SyslogLogging" Version="1.3.2.2" />
   </ItemGroup>
 

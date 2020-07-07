@@ -2,10 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.5.0.18</Version>
+    <Description>Metadata manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, storage, and retrieval platform.</Description>
+    <Version>1.6.0.0</Version>
     <Authors>Joel Christner</Authors>
-    <Product>Komodo Index Client: Information search, storage, and retrieval</Product>
-    <Description>Index client for Komodo. Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, storage, and retrieval platform.</Description>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
@@ -13,25 +12,21 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management metadata</PackageTags>
-    <PackageReleaseNotes>Leverage new SearchFilter method</PackageReleaseNotes>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.Postings" Version="1.5.0.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE.md">
+    <None Update="LICENSE.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="LICENSE.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="Komodo.IndexManager" Version="1.5.0.15" />
   </ItemGroup>
 
 </Project>

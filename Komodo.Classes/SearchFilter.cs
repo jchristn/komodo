@@ -100,6 +100,217 @@ namespace Komodo.Classes
 
         #region Public-Methods
 
+        /// <summary>
+        /// Evaluates a value against the search filter.
+        /// </summary>
+        /// <param name="value">Value.</param>
+        /// <returns>True if matched.</returns>
+        public bool EvaluateValue(object value)
+        {
+            if (String.IsNullOrEmpty(Field)) throw new InvalidOperationException("Search filter field cannot be null.");
+
+            if (Condition == SearchCondition.Contains)
+            {
+                if (value == null && Value == null) return true;
+                if (value == null && Value != null) return false;
+                if (value != null && Value == null) return false;
+
+                string str1 = value.ToString();
+                string str2 = Value.ToString();
+                return str1.Contains(str2);
+            }
+            else if (Condition == SearchCondition.ContainsNot)
+            {
+                if (value == null && Value == null) return false;
+                if (value == null && Value != null) return true;
+                if (value != null && Value == null) return true;
+
+                string str1 = value.ToString();
+                string str2 = Value.ToString();
+                return !str1.Contains(str2); 
+            }
+            else if (Condition == SearchCondition.EndsWith)
+            {
+                if (value == null && Value == null) return true;
+                if (value == null && Value != null) return false;
+                if (value != null && Value == null) return false;
+
+                string str1 = value.ToString();
+                string str2 = Value.ToString();
+                return str1.EndsWith(str2);
+            }
+            else if (Condition == SearchCondition.Equals)
+            {
+                if (value == null && Value == null) return true;
+                if (value == null && Value != null) return false;
+                if (value != null && Value == null) return false;
+
+                string str1 = value.ToString();
+                string str2 = Value.ToString();
+                return str1.Equals(str2);
+            }
+            else if (Condition == SearchCondition.GreaterThan)
+            {
+                if (value == null || Value == null) return false;
+
+                if (value is DateTime)
+                {
+                    DateTime dt1 = Convert.ToDateTime(value);
+                    DateTime dt2 = Convert.ToDateTime(Value);
+                    return dt1 > dt2;                    
+                }
+                else if (value is decimal)
+                {
+                    decimal d1 = Convert.ToDecimal(value);
+                    decimal d2 = Convert.ToDecimal(Value);
+                    return d1 > d2;
+                }
+                else if (value is Int64)
+                {
+                    Int64 l1 = Convert.ToInt64(value);
+                    Int64 l2 = Convert.ToInt64(Value);
+                    return l1 > l2;
+                }
+                else if (value is Int32)
+                {
+                    Int32 i1 = Convert.ToInt32(value);
+                    Int32 i2 = Convert.ToInt32(Value);
+                    return i1 > i2;
+                }  
+
+                return false;
+            }
+            else if (Condition == SearchCondition.GreaterThanOrEqualTo)
+            {
+                if (value == null && Value == null) return true;
+                if (value == null || Value == null) return false;
+
+                if (value is DateTime)
+                {
+                    DateTime dt1 = Convert.ToDateTime(value);
+                    DateTime dt2 = Convert.ToDateTime(Value);
+                    return dt1 >= dt2;
+                }
+                else if (value is decimal)
+                {
+                    decimal d1 = Convert.ToDecimal(value);
+                    decimal d2 = Convert.ToDecimal(Value);
+                    return d1 >= d2;
+                }
+                else if (value is Int64)
+                {
+                    Int64 l1 = Convert.ToInt64(value);
+                    Int64 l2 = Convert.ToInt64(Value);
+                    return l1 >= l2;
+                }
+                else if (value is Int32)
+                {
+                    Int32 i1 = Convert.ToInt32(value);
+                    Int32 i2 = Convert.ToInt32(Value);
+                    return i1 >= i2;
+                }
+
+                return false;
+            }
+            else if (Condition == SearchCondition.IsNotNull)
+            {
+                if (value == null) return false;
+                return true;
+            }
+            else if (Condition == SearchCondition.IsNull)
+            {
+                if (value != null) return false;
+                return true;
+            }
+            else if (Condition == SearchCondition.LessThan)
+            {
+                if (value == null || Value == null) return false;
+
+                if (value is DateTime)
+                {
+                    DateTime dt1 = Convert.ToDateTime(value);
+                    DateTime dt2 = Convert.ToDateTime(Value);
+                    return dt1 < dt2;
+                }
+                else if (value is decimal)
+                {
+                    decimal d1 = Convert.ToDecimal(value);
+                    decimal d2 = Convert.ToDecimal(Value);
+                    return d1 < d2;
+                }
+                else if (value is Int64)
+                {
+                    Int64 l1 = Convert.ToInt64(value);
+                    Int64 l2 = Convert.ToInt64(Value);
+                    return l1 < l2;
+                }
+                else if (value is Int32)
+                {
+                    Int32 i1 = Convert.ToInt32(value);
+                    Int32 i2 = Convert.ToInt32(Value);
+                    return i1 < i2;
+                }
+
+                return false;
+            }
+            else if (Condition == SearchCondition.LessThanOrEqualTo)
+            {
+                if (value == null && Value == null) return true;
+                if (value == null || Value == null) return false;
+
+                if (value is DateTime)
+                {
+                    DateTime dt1 = Convert.ToDateTime(value);
+                    DateTime dt2 = Convert.ToDateTime(Value);
+                    return dt1 <= dt2;
+                }
+                else if (value is decimal)
+                {
+                    decimal d1 = Convert.ToDecimal(value);
+                    decimal d2 = Convert.ToDecimal(Value);
+                    return d1 <= d2;
+                }
+                else if (value is Int64)
+                {
+                    Int64 l1 = Convert.ToInt64(value);
+                    Int64 l2 = Convert.ToInt64(Value);
+                    return l1 <= l2;
+                }
+                else if (value is Int32)
+                {
+                    Int32 i1 = Convert.ToInt32(value);
+                    Int32 i2 = Convert.ToInt32(Value);
+                    return i1 <= i2;
+                }
+
+                return false;
+            }
+            else if (Condition == SearchCondition.NotEquals)
+            {
+                if (value == null && Value == null) return false;
+                if (value == null && Value != null) return true;
+                if (value != null && Value == null) return true;
+
+                string str1 = value.ToString();
+                string str2 = Value.ToString();
+                return !str1.Equals(str2);
+            }
+            else if (Condition == SearchCondition.StartsWith)
+            {
+                if (value == null && Value == null) return true;
+                if (value == null && Value != null) return false;
+                if (value != null && Value == null) return false;
+
+                string str1 = value.ToString();
+                string str2 = Value.ToString();
+                return str1.StartsWith(str2);
+            }
+            else
+            {
+                throw new ArgumentException("Unknown search filter condition: " + Condition.ToString() + ".");
+            }
+        }
+
         #endregion
 
         #region Private-Methods

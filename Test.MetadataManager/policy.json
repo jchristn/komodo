@@ -1,0 +1,57 @@
+{
+	"IndexGUID": "default",
+	"Rules": [
+		{
+			"Name": "My first rule",
+			"Description": "My first rule",
+			"Enabled": true,
+			"Required": {
+				"Terms": [
+					"hello"
+				],
+				"Filter": [ 
+				]
+			},
+			"Exclude": {
+				"Terms": [
+					"world"
+				]
+			}, 
+			"AddMetadataDocument": [
+				{
+					"IndexGUID": "metadata",
+					"Name": "My metadata document",
+					"Title": "This is my metadata document",
+					"Tags": [
+						"tag1",
+						"tag2"
+					],
+					"Parse": true,
+					"Properties": [
+						{
+							"ValueAction": "Static",
+							"Key": "StaticKey",
+							"Value": "StaticValue"
+						},
+						{
+							"ValueAction": "CopyFromDocument",
+							"Key": "FirstName",
+							"SourceProperty": "firstname"
+						}
+					]
+				}
+			],
+			"Postback": {
+				"IncludeSource": true,
+				"IncludeParsed": true,
+				"IncludeParseResult": true,
+				"IncludeMetadata": true,
+				"IncludeRules": true,
+				"IncludeDerivedDocuments": true,
+				"Urls": [
+					"http://localhost:8888/postback"
+				]
+			} 
+		}
+	]
+}

@@ -54,6 +54,17 @@ namespace Komodo.IndexClient
         /// </summary>
         public Action<string> Logger = null;
 
+        /// <summary>
+        /// Direct access to the underlying ORM.
+        /// </summary>
+        public WatsonORM ORM
+        {
+            get
+            {
+                return _ORM;
+            }
+        }
+
         #endregion
 
         #region Private-Members
@@ -65,10 +76,10 @@ namespace Komodo.IndexClient
         private WatsonORM _ORM = null;
 
         private StorageSettings _SourceDocsStorageSettings = null;
-        private StorageSettings _ParsedDocsStorageSettings = null;
+        private StorageSettings _ParsedDocsStorageSettings = null; 
         private StorageSettings _PostingsStorageSettings = null;
         private Blobs _SourceDocsStorage = null;
-        private Blobs _ParsedDocsStorage = null;
+        private Blobs _ParsedDocsStorage = null; 
         private Blobs _PostingsStorage = null;
 
         #endregion
@@ -91,7 +102,7 @@ namespace Komodo.IndexClient
             if (String.IsNullOrEmpty(idx.GUID)) throw new ArgumentNullException(nameof(idx.GUID));
             if (sourceDocs == null) throw new ArgumentNullException(nameof(sourceDocs));
             if (parsedDocs == null) throw new ArgumentNullException(nameof(parsedDocs));
-            if (postings == null) throw new ArgumentNullException(nameof(postings));
+            if (postings == null) throw new ArgumentNullException(nameof(postings)); 
 
             _DbSettings = dbSettings;
             _ORM = new WatsonORM(_DbSettings.ToDatabaseSettings());
@@ -100,6 +111,7 @@ namespace Komodo.IndexClient
             _ORM.InitializeTable(typeof(ApiKey));
             _ORM.InitializeTable(typeof(Index));
             _ORM.InitializeTable(typeof(Metadata));
+            _ORM.InitializeTable(typeof(MetadataDocument));
             _ORM.InitializeTable(typeof(Node));
             _ORM.InitializeTable(typeof(ParsedDocument));
             _ORM.InitializeTable(typeof(Permission));
@@ -113,7 +125,7 @@ namespace Komodo.IndexClient
 
             _SourceDocsStorageSettings = sourceDocs;
             _ParsedDocsStorageSettings = parsedDocs;
-            _PostingsStorageSettings = postings;
+            _PostingsStorageSettings = postings; 
 
             InitializeStorage();
         }
@@ -291,6 +303,24 @@ namespace Komodo.IndexClient
         }
 
         /// <summary>
+        /// Retrieve metadata documents attached to a source document GUID.
+        /// Metadata documents serve as pointers to derived metadata files which have to be retrieved separately by their GUID.
+        /// </summary>
+        /// <param name="sourceGuid">Source document GUID.</param>
+        /// <returns>List of metadata documents.</returns>
+        public List<MetadataDocument> GetMetadataDocuments(string sourceGuid)
+        {
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<MetadataDocument>(nameof(MetadataDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            return _ORM.SelectMany<MetadataDocument>(e);
+        }
+
+        /// <summary>
         /// Check if a source document exists by GUID.
         /// </summary>
         /// <param name="sourceGuid">Source document GUID.</param>
@@ -325,6 +355,25 @@ namespace Komodo.IndexClient
 
             ParsedDocument ret = _ORM.SelectFirst<ParsedDocument>(e);
             if (ret != null && ret != default(ParsedDocument)) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check if metadata documents exist by the source document GUID.
+        /// </summary>
+        /// <param name="sourceGuid">Source document GUID.</param>
+        /// <returns>True if exists.</returns>
+        public bool ExistsMetadata(string sourceGuid)
+        {
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
+
+            DbExpression e = new DbExpression(
+                _ORM.GetColumnName<MetadataDocument>(nameof(MetadataDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            MetadataDocument ret = _ORM.SelectFirst<MetadataDocument>(e);
+            if (ret != null && ret != default(MetadataDocument)) return true;
             return false;
         }
 
@@ -374,7 +423,7 @@ namespace Komodo.IndexClient
 
             await _SourceDocsStorage.Write(sourceDoc.GUID, sourceDoc.ContentType, data);
 
-            _ORM.Insert<SourceDocument>(sourceDoc);
+            ret.Source = _ORM.Insert<SourceDocument>(sourceDoc);
 
             ret.Time.PersistSourceDocument.End = DateTime.Now.ToUniversalTime();
 
@@ -433,7 +482,7 @@ namespace Komodo.IndexClient
                 #region Persist-Parsed-Doc
 
                 ret.Time.PersistParsedDocument.Start = DateTime.Now.ToUniversalTime();
-                ParsedDocument parsedDoc = new ParsedDocument(
+                ret.Parsed = new ParsedDocument(
                     sourceDoc.GUID,
                     sourceDoc.OwnerGUID,
                     _GUID,
@@ -442,8 +491,8 @@ namespace Komodo.IndexClient
                     ret.Postings.Terms.Count,
                     ret.Postings.Postings.Count);
 
-                parsedDoc = _ORM.Insert<ParsedDocument>(parsedDoc);
-                await _ParsedDocsStorage.Write(parsedDoc.GUID, "application/json", Common.SerializeJson(ret.ParseResult, true));
+                ret.Parsed = _ORM.Insert<ParsedDocument>(ret.Parsed);
+                await _ParsedDocsStorage.Write(ret.Parsed.GUID, "application/json", Common.SerializeJson(ret.ParseResult, true));
                 ret.Time.PersistParsedDocument.End = DateTime.Now.ToUniversalTime();
 
                 #endregion
@@ -451,7 +500,7 @@ namespace Komodo.IndexClient
                 #region Persist-Postings 
 
                 ret.Time.PersistPostingsDocument.Start = DateTime.Now.ToUniversalTime(); 
-                await _PostingsStorage.Write(parsedDoc.GUID, "application/json", Common.SerializeJson(ret.Postings, true));
+                await _PostingsStorage.Write(ret.Parsed.GUID, "application/json", Common.SerializeJson(ret.Postings, true));
                 ret.Time.PersistPostingsDocument.End = DateTime.Now.ToUniversalTime();
 
                 #endregion
@@ -490,7 +539,7 @@ namespace Komodo.IndexClient
                 // Term Docs
                 foreach (string term in terms)
                 {
-                    TermDoc td = new TermDoc(_GUID, termGuids[term], sourceDoc.GUID, parsedDoc.GUID);
+                    TermDoc td = new TermDoc(_GUID, termGuids[term], sourceDoc.GUID, ret.Parsed.GUID);
                     td = _ORM.Insert<TermDoc>(td);
                 }
 
@@ -520,7 +569,26 @@ namespace Komodo.IndexClient
         }
 
         /// <summary>
-        /// Remove a document.
+        /// Add metadata document to a source document.
+        /// </summary>
+        /// <param name="sourceDoc">Source document.</param>
+        /// <param name="metadataDoc">Metadata document.</param>
+        /// <param name="metadata">Metadata.</param>
+        /// <returns>Metadata document.</returns>
+        public MetadataDocument AddMetadata(SourceDocument sourceDoc, MetadataDocument metadataDoc)
+        {
+            if (sourceDoc == null) throw new ArgumentNullException(nameof(sourceDoc));
+            if (metadataDoc == null) throw new ArgumentNullException(nameof(metadataDoc)); 
+
+            metadataDoc.IndexGUID = _GUID;
+            metadataDoc.OwnerGUID = sourceDoc.OwnerGUID;
+
+            return _ORM.Insert<MetadataDocument>(metadataDoc);
+        }
+         
+        /// <summary>
+        /// Remove a document.  This will also delete parsed documents and metadata documents attached to the source document.
+        /// Derived metadata documents will not be deleted; they will need to be deleted individually, each by their own GUID.
         /// </summary>
         /// <param name="sourceGuid">Source document GUID.</param>
         public void Remove(string sourceGuid)
@@ -544,11 +612,83 @@ namespace Komodo.IndexClient
                 DbOperators.Equals,
                 sourceGuid);
              
-            ParsedDocument parsedDoc = _ORM.SelectFirst<ParsedDocument>(eParsedDoc);
-            if (parsedDoc != null && parsedDoc != default(ParsedDocument))
+            List<ParsedDocument> parsedDocs = _ORM.SelectMany<ParsedDocument>(eParsedDoc);
+            if (parsedDocs != null && parsedDocs.Count > 0)
             {
-                _ORM.Delete<ParsedDocument>(parsedDoc);
-                _ParsedDocsStorage.Delete(parsedDoc.GUID);
+                foreach (ParsedDocument parsedDoc in parsedDocs)
+                {
+                    _ORM.Delete<ParsedDocument>(parsedDoc);
+                    _ParsedDocsStorage.Delete(parsedDoc.GUID);
+                }
+            }
+
+            DbExpression eMetadataDoc = new DbExpression(
+                _ORM.GetColumnName<MetadataDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            List<MetadataDocument> metadataDocs = _ORM.SelectMany<MetadataDocument>(eMetadataDoc);
+            if (metadataDocs != null && metadataDocs.Count > 0)
+            {
+                foreach (MetadataDocument metadataDoc in metadataDocs)
+                {
+                    _ORM.Delete<MetadataDocument>(metadataDoc); 
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove metadata associated with a document.
+        /// Derived metadata documents will not be deleted; they will need to be deleted individually, each by their own GUID.
+        /// </summary>
+        /// <param name="sourceGuid">Source document GUID.</param>
+        public void RemoveMetadata(string sourceGuid)
+        {
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
+
+            DbExpression eMetadataDoc = new DbExpression(
+                _ORM.GetColumnName<MetadataDocument>(nameof(ParsedDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            List<MetadataDocument> metadataDocs = _ORM.SelectMany<MetadataDocument>(eMetadataDoc);
+            if (metadataDocs != null && metadataDocs.Count > 0)
+            {
+                foreach (MetadataDocument metadataDoc in metadataDocs)
+                {
+                    _ORM.Delete<MetadataDocument>(metadataDoc);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove a specific metadata document associated with a document.
+        /// Derived metadata documents will not be deleted; they will need to be deleted individually, each by their own GUID.
+        /// </summary>
+        /// <param name="sourceGuid">Source document GUID.</param>
+        /// <param name="metadataDocGuid">Metadata document GUID.</param>
+        public void RemoveMetadata(string sourceGuid, string metadataDocGuid)
+        {
+            if (String.IsNullOrEmpty(sourceGuid)) throw new ArgumentNullException(nameof(sourceGuid));
+            if (String.IsNullOrEmpty(metadataDocGuid)) throw new ArgumentNullException(nameof(metadataDocGuid));
+
+            DbExpression eMetadataDoc = new DbExpression(
+                _ORM.GetColumnName<MetadataDocument>(nameof(MetadataDocument.SourceDocumentGUID)),
+                DbOperators.Equals,
+                sourceGuid);
+
+            eMetadataDoc.PrependAnd(new DbExpression(
+                _ORM.GetColumnName<MetadataDocument>(nameof(MetadataDocument.GUID)),
+                DbOperators.Equals,
+                metadataDocGuid));
+
+            List<MetadataDocument> metadataDocs = _ORM.SelectMany<MetadataDocument>(eMetadataDoc);
+            if (metadataDocs != null && metadataDocs.Count > 0)
+            {
+                foreach (MetadataDocument metadataDoc in metadataDocs)
+                {
+                    _ORM.Delete<MetadataDocument>(metadataDoc);
+                }
             }
         }
 
@@ -723,7 +863,7 @@ namespace Komodo.IndexClient
             else if (_PostingsStorageSettings.Kvpbase != null) _PostingsStorage = new Blobs(_PostingsStorageSettings.Kvpbase);
             else throw new ArgumentException("No storage settings found in postings storage settings object.");
 
-            #endregion
+            #endregion 
         }
 
         private string ParsedDocGuidFromSourceDocGuid(string guid)
@@ -1411,110 +1551,25 @@ namespace Komodo.IndexClient
             else if (doc.Type == DocType.Xml) nodes = ((XmlParseResult)parseResult).Flattened;
             else throw new ArgumentException("Unknown doucment type: " + doc.Type.ToString());
 
-            if (nodes != null && nodes.Count > 0) return DataNodeMatchExists(nodes, filter);
-            else return false;
-        }
-
-        private bool DataNodeMatchExists(List<DataNode> nodes, SearchFilter filter)
-        {
-            decimal nodeDecimalVal = 0m;
-            decimal filterDecimalVal = 0m;
-
-            foreach (DataNode node in nodes)
+            if (nodes.Exists(n => n.Key.Equals(filter.Field)))
             {
-                if (node.Key.Equals(filter.Field))
+                List<DataNode> filteredNodes = nodes.Where(n => n.Key.Equals(filter.Field)).ToList();
+                if (filteredNodes == null || filteredNodes.Count < 1)
                 {
-                    switch (filter.Condition)
+                    return false;
+                }
+                else
+                {
+                    foreach (DataNode node in nodes)
                     {
-                        case SearchCondition.Contains:
-                            if (node.Data == null && String.IsNullOrEmpty(filter.Value)) return true;
-                            if (node.Data == null) return false;
-                            if (node.Data.ToString().Contains(filter.Value)) return true;
-                            return false;
-                        case SearchCondition.ContainsNot:
-                            if (node.Data == null && String.IsNullOrEmpty(filter.Value)) return false;
-                            if (node.Data == null) return true;
-                            if (node.Data.ToString().Contains(filter.Value)) return false;
-                            return true;
-                        case SearchCondition.EndsWith:
-                            if (node.Data == null && String.IsNullOrEmpty(filter.Value)) return true;
-                            if (node.Data == null) return false;
-                            if (node.Data.ToString().EndsWith(filter.Value)) return true;
-                            return false;
-                        case SearchCondition.Equals:
-                            if (node.Data == null && String.IsNullOrEmpty(filter.Value)) return true;
-                            if (node.Data == null) return false;
-                            if (node.Data.ToString().Equals(filter.Value)) return true;
-                            return false;
-                        case SearchCondition.GreaterThan:
-                            if (node.Data == null) return false;
-                            if (String.IsNullOrEmpty(node.Data.ToString())) return false;
-                            if (Decimal.TryParse(node.Data.ToString(), out nodeDecimalVal))
-                            {
-                                if (Decimal.TryParse(filter.Value, out filterDecimalVal))
-                                {
-                                    return (nodeDecimalVal > filterDecimalVal);
-                                }
-                            }
-                            return false;
-                        case SearchCondition.GreaterThanOrEqualTo:
-                            if (node.Data == null) return false;
-                            if (String.IsNullOrEmpty(node.Data.ToString())) return false;
-                            if (Decimal.TryParse(node.Data.ToString(), out nodeDecimalVal))
-                            {
-                                if (Decimal.TryParse(filter.Value, out filterDecimalVal))
-                                {
-                                    return (nodeDecimalVal >= filterDecimalVal);
-                                }
-                            }
-                            return false;
-                        case SearchCondition.IsNotNull:
-                            if (node.Data != null) return true;
-                            return false;
-                        case SearchCondition.IsNull:
-                            if (node.Data == null) return true;
-                            return false;
-                        case SearchCondition.LessThan:
-                            if (node.Data == null) return false;
-                            if (String.IsNullOrEmpty(node.Data.ToString())) return false;
-                            if (Decimal.TryParse(node.Data.ToString(), out nodeDecimalVal))
-                            {
-                                if (Decimal.TryParse(filter.Value, out filterDecimalVal))
-                                {
-                                    return (nodeDecimalVal < filterDecimalVal);
-                                }
-                            }
-                            return false;
-                        case SearchCondition.LessThanOrEqualTo:
-                            if (node.Data == null) return false;
-                            if (String.IsNullOrEmpty(node.Data.ToString())) return false;
-                            if (Decimal.TryParse(node.Data.ToString(), out nodeDecimalVal))
-                            {
-                                if (Decimal.TryParse(filter.Value, out filterDecimalVal))
-                                {
-                                    return (nodeDecimalVal <= filterDecimalVal);
-                                }
-                            }
-                            return false;
-                        case SearchCondition.NotEquals:
-                            if (node.Data == null && String.IsNullOrEmpty(filter.Value)) return false;
-                            if (node.Data == null) return true;
-                            if (node.Data.ToString().Equals(filter.Value)) return false;
-                            return true;
-                        case SearchCondition.StartsWith:
-                            if (node.Data == null && String.IsNullOrEmpty(filter.Value)) return true;
-                            if (node.Data == null) return false;
-                            if (node.Data.ToString().StartsWith(filter.Value)) return true;
-                            return false;
-                        default:
-                            throw new ArgumentException("Unknown search condition type: " + filter.Condition.ToString());
-                    }
+                        if (filter.EvaluateValue(node.Data)) return true;
+                    } 
                 }
             }
 
             return false;
         }
-
+         
         #endregion
 
         #region Private-Enumeration-Methods

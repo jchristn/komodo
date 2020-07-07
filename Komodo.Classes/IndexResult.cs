@@ -30,12 +30,15 @@ namespace Komodo.Classes
         /// </summary>
         public IndexResultTimestamps Time = new IndexResultTimestamps();
 
-        /*
         /// <summary>
-        /// The result of crawling, if applicable.
+        /// Source document.
         /// </summary>
-        public object CrawlResult = null;
-        */ 
+        public SourceDocument Source = null;
+
+        /// <summary>
+        /// Parsed document, if any.
+        /// </summary>
+        public ParsedDocument Parsed = null;
 
         /// <summary>
         /// The result of parsing, if enabled.
@@ -64,14 +67,7 @@ namespace Komodo.Classes
             /// Start and end timestamps for the overall indexing operation.
             /// </summary>
             public Timestamps Overall = new Timestamps();
-
-            /*
-            /// <summary>
-            /// Start and end timestamps for crawling (retrieving) the source document.
-            /// </summary>
-            public Timestamps CrawlTime = new Timestamps();
-            */
-
+             
             /// <summary>
             /// Start and end timestamps for persisting the source document to storage.
             /// </summary>

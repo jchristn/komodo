@@ -37,7 +37,7 @@ namespace Komodo.Daemon
         /// Parsed document storage settings.
         /// </summary>
         public StorageSettings ParsedDocuments { get; set; }
-
+         
         /// <summary>
         /// Postings document storage settings.
         /// </summary>
@@ -89,7 +89,7 @@ namespace Komodo.Daemon
             ret.Database = new DbSettings("./Data/Komodo.db");
             ret.TempStorage = new StorageSettings(new DiskSettings("./Data/Temp/"));
             ret.SourceDocuments = new StorageSettings(new DiskSettings("./Data/Source/"));
-            ret.ParsedDocuments = new StorageSettings(new DiskSettings("./Data/Parsed/"));
+            ret.ParsedDocuments = new StorageSettings(new DiskSettings("./Data/Parsed/")); 
             ret.Postings = new StorageSettings(new DiskSettings("./Data/Postings/"));
 
             ret.Logging = new LoggingSettings();
@@ -251,7 +251,7 @@ namespace Komodo.Daemon
                     }
                 }
             }
-
+             
             if (Logging != null)
             {
                 if (Logging.FileLogging && !String.IsNullOrEmpty(Logging.Filename))

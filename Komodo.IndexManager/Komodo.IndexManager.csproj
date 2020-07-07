@@ -2,18 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.5.0.4</Version>
+    <Version>1.5.0.15</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Index Manager: Information search, storage, and retrieval</Product>
-    <Description>Index manager for Komodo.  Please either install Komodo.Daemon to run search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, storage, and retrieval platform.</Description>
+    <Description>Index manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, storage, and retrieval platform.</Description>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/Assets/komodo-icon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management</PackageTags>
-    <PackageReleaseNotes>Refactor and Komodo.Daemon</PackageReleaseNotes>
+    <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management metadata</PackageTags>
+    <PackageReleaseNotes>Dependency update</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.IndexClient" Version="1.5.0.3" />
+    <PackageReference Include="Komodo.IndexClient" Version="1.5.0.18" />
   </ItemGroup>
 
   <ItemGroup>

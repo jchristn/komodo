@@ -30,6 +30,17 @@ namespace Komodo.IndexManager
             }
         }
 
+        /// <summary>
+        /// Direct access to the underlying ORM.
+        /// </summary>
+        public WatsonORM ORM
+        {
+            get
+            {
+                return _ORM;
+            }
+        }
+
         #endregion
 
         #region Private-Members
@@ -77,6 +88,7 @@ namespace Komodo.IndexManager
             _ORM.InitializeTable(typeof(ApiKey));
             _ORM.InitializeTable(typeof(Index));
             _ORM.InitializeTable(typeof(Metadata));
+            _ORM.InitializeTable(typeof(MetadataDocument));
             _ORM.InitializeTable(typeof(Node));
             _ORM.InitializeTable(typeof(ParsedDocument));
             _ORM.InitializeTable(typeof(Permission));
@@ -193,11 +205,11 @@ namespace Komodo.IndexManager
             lock (_IndicesLock)
             {
                 if (_Indices.Exists(i => i.Name.Equals(name)))
-                {
+                { 
                     return _Indices.First(i => i.Name.Equals(name));
                 }
             }
-
+             
             return null;
         }
 

@@ -10,7 +10,7 @@
 | Komodo.IndexClient | Index client | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.IndexClient.svg?style=flat)](https://www.nuget.org/packages/Komodo.IndexClient/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.IndexClient.svg)](https://www.nuget.org/packages/Komodo.IndexClient) | Postings |
 | Komodo.IndexManager | Index manager | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.IndexManager.svg?style=flat)](https://www.nuget.org/packages/Komodo.IndexManager/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.IndexManager.svg)](https://www.nuget.org/packages/Komodo.IndexManager) | IndexClient |
 | Komodo.Daemon | In-process version of Komodo | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.Daemon.svg?style=flat)](https://www.nuget.org/packages/Komodo.Daemon/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.Daemon.svg)](https://www.nuget.org/packages/Komodo.Daemon) | IndexManager |
-| Komodo.Server | Standalone API server | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.Server.svg?style=flat)](https://www.nuget.org/packages/Komodo.Server/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.Server.svg)](https://www.nuget.org/packages/Komodo.Server) | IndexManager |
+| Komodo.Server | Standalone API server | [![NuGet Version](https://img.shields.io/nuget/v/Komodo.Server.svg?style=flat)](https://www.nuget.org/packages/Komodo.Server/) | [![NuGet](https://img.shields.io/nuget/dt/Komodo.Server.svg)](https://www.nuget.org/packages/Komodo.Server) | Daemon |
  
 # Komodo Search
 

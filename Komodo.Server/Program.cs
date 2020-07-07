@@ -55,72 +55,13 @@ namespace Komodo.Server
                     Setup setup = new Setup();
                 }
 
-                #endregion
-
-                #region Initialize-Globals
-
                 _Settings = Settings.FromFile("System.json");
 
-                Welcome();
-
-                _Logging = new LoggingModule(
-                    _Settings.Logging.SyslogServerIp,
-                    _Settings.Logging.SyslogServerPort,
-                    _Settings.Logging.ConsoleLogging,
-                    (Severity)_Settings.Logging.MinimumLevel,
-                    false,
-                    true,
-                    true,
-                    false,
-                    false,
-                    false);
-
-                if (_Settings.Logging.FileLogging && !String.IsNullOrEmpty(_Settings.Logging.Filename))
-                {
-                    if (String.IsNullOrEmpty(_Settings.Logging.FileDirectory)) _Settings.Logging.FileDirectory = "./";
-                    while (_Settings.Logging.FileDirectory.Contains("\\")) _Settings.Logging.FileDirectory.Replace("\\", "/");
-                    if (!Directory.Exists(_Settings.Logging.FileDirectory)) Directory.CreateDirectory(_Settings.Logging.FileDirectory);
-
-                    _Logging.FileLogging = FileLoggingMode.FileWithDate;
-                    _Logging.LogFilename = _Settings.Logging.FileDirectory + _Settings.Logging.Filename;
-                }
-
-                _DaemonSettings = _Settings.ToDaemonSettings();
-                _Daemon = new KomodoDaemon(_DaemonSettings);
-
-                _ORM = new WatsonORM(_Settings.Database.ToDatabaseSettings());
-
-                _ORM.InitializeDatabase();
-                _ORM.InitializeTable(typeof(ApiKey));
-                _ORM.InitializeTable(typeof(Index));
-                _ORM.InitializeTable(typeof(Metadata));
-                _ORM.InitializeTable(typeof(Node));
-                _ORM.InitializeTable(typeof(ParsedDocument));
-                _ORM.InitializeTable(typeof(Permission));
-                _ORM.InitializeTable(typeof(SourceDocument));
-                _ORM.InitializeTable(typeof(TermDoc));
-                _ORM.InitializeTable(typeof(TermGuid));
-                _ORM.InitializeTable(typeof(User));
-                 
-                _Auth = new AuthManager(_ORM);
-
-                _Conn = new ConnManager();
-
-                _Webserver = new WatsonWebserver.Server(
-                    _Settings.Server.ListenerHostname,
-                    _Settings.Server.ListenerPort,
-                    _Settings.Server.Ssl,
-                    RequestReceived);
-                 
-                _Webserver.ContentRoutes.Add("/Assets/", true);
-                _Webserver.AccessControl.Mode = AccessControlMode.DefaultPermit;
-
-                if (_Settings.EnableConsole) _Console = new ConsoleManager(_Settings, ExitApplication);
-
                 #endregion
-
-                #region Wait-for-Server-Thread
-
+                 
+                Welcome(initialSetup);
+                InitializeGlobals();
+                 
                 EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
                 bool waitHandleSignal = false;
                 do
@@ -128,9 +69,7 @@ namespace Komodo.Server
                     waitHandleSignal = waitHandle.WaitOne(1000);
                 } while (!waitHandleSignal);
 
-                _Logging.Debug(header + "exiting");
-
-                #endregion 
+                _Logging.Debug(header + "exiting"); 
             }
             catch (Exception e)
             {
@@ -138,11 +77,11 @@ namespace Komodo.Server
             }
         }
 
-        private static void Welcome()
+        private static void Welcome(bool skipLogo)
         {
             ConsoleColor prior = Console.ForegroundColor; 
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine(Logo());
+            if (!skipLogo) Console.WriteLine(Logo());
             Console.WriteLine("Komodo | Information search, storage, and retrieval | v" + _Version);
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("");
@@ -175,6 +114,90 @@ namespace Komodo.Server
             }
 
             Console.ForegroundColor = prior;
+        }
+
+        private static void InitializeGlobals()
+        {
+            ConsoleColor prior = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            Console.Write("| Initializing logging            : ");
+            _Logging = new LoggingModule(
+                _Settings.Logging.SyslogServerIp,
+                _Settings.Logging.SyslogServerPort,
+                _Settings.Logging.ConsoleLogging,
+                (Severity)_Settings.Logging.MinimumLevel,
+                false,
+                true,
+                true,
+                false,
+                false,
+                false);
+
+            if (_Settings.Logging.FileLogging && !String.IsNullOrEmpty(_Settings.Logging.Filename))
+            {
+                if (String.IsNullOrEmpty(_Settings.Logging.FileDirectory)) _Settings.Logging.FileDirectory = "./";
+                while (_Settings.Logging.FileDirectory.Contains("\\")) _Settings.Logging.FileDirectory.Replace("\\", "/");
+                if (!Directory.Exists(_Settings.Logging.FileDirectory)) Directory.CreateDirectory(_Settings.Logging.FileDirectory);
+
+                _Logging.FileLogging = FileLoggingMode.FileWithDate;
+                _Logging.LogFilename = _Settings.Logging.FileDirectory + _Settings.Logging.Filename;
+            }
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing Komodo daemon      : ");
+            _DaemonSettings = _Settings.ToDaemonSettings();
+            _Daemon = new KomodoDaemon(_DaemonSettings);
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing database           : ");
+            _ORM = new WatsonORM(_Settings.Database.ToDatabaseSettings());
+            _ORM.InitializeDatabase();
+            _ORM.InitializeTable(typeof(ApiKey));
+            _ORM.InitializeTable(typeof(Index));
+            _ORM.InitializeTable(typeof(Metadata));
+            _ORM.InitializeTable(typeof(MetadataDocument));
+            _ORM.InitializeTable(typeof(Node));
+            _ORM.InitializeTable(typeof(ParsedDocument));
+            _ORM.InitializeTable(typeof(Permission));
+            _ORM.InitializeTable(typeof(SourceDocument));
+            _ORM.InitializeTable(typeof(TermDoc));
+            _ORM.InitializeTable(typeof(TermGuid));
+            _ORM.InitializeTable(typeof(User));
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing authentication     : ");
+            _Auth = new AuthManager(_ORM);
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing connection manager : ");
+            _Conn = new ConnManager();
+            Console.WriteLine("[success]");
+
+            Console.Write("| Initializing webserver          : ");
+            _Webserver = new WatsonWebserver.Server(
+                _Settings.Server.ListenerHostname,
+                _Settings.Server.ListenerPort,
+                _Settings.Server.Ssl,
+                RequestReceived);
+
+            _Webserver.ContentRoutes.Add("/Assets/", true);
+            _Webserver.AccessControl.Mode = AccessControlMode.DefaultPermit;
+            Console.WriteLine("[success]");
+
+            if (_Settings.Server.Ssl)
+            {
+                Console.WriteLine("| https://" + _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort);
+            }
+            else
+            { 
+                Console.WriteLine("| http://" + _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort); 
+            }
+
+            if (_Settings.EnableConsole) _Console = new ConsoleManager(_Settings, ExitApplication);
+
+            Console.ForegroundColor = prior;
+            Console.WriteLine("");
         }
 
         private static string Logo()

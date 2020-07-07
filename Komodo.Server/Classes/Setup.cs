@@ -88,7 +88,7 @@ namespace Komodo.Server.Classes
             settings.Server.HeaderApiKey = "x-api-key";
             settings.Server.AdminApiKey = "komodoadmin";
             settings.Server.ListenerPort = 9090;
-            settings.Server.ListenerHostname = "127.0.0.1";
+            settings.Server.ListenerHostname = "localhost";
 
             settings.Logging = new Settings.LoggingSettings();
             settings.Logging.ConsoleLogging = true;
@@ -116,7 +116,7 @@ namespace Komodo.Server.Classes
             string parsedDirectory = "./Data/ParsedDocuments/";
             settings.ParsedDocuments = new StorageSettings(new DiskSettings(parsedDirectory));
             if (!Directory.Exists(parsedDirectory)) Directory.CreateDirectory(parsedDirectory);
-
+             
             string postingsDirectory = "./Data/Postings/";
             settings.Postings = new StorageSettings(new DiskSettings(postingsDirectory));
             if (!Directory.Exists(postingsDirectory)) Directory.CreateDirectory(postingsDirectory);
@@ -131,6 +131,7 @@ namespace Komodo.Server.Classes
             orm.InitializeTable(typeof(ApiKey));
             orm.InitializeTable(typeof(Index));
             orm.InitializeTable(typeof(Metadata));
+            orm.InitializeTable(typeof(MetadataDocument));
             orm.InitializeTable(typeof(Node));
             orm.InitializeTable(typeof(ParsedDocument));
             orm.InitializeTable(typeof(Permission));

@@ -44,7 +44,7 @@ namespace Komodo.Server.Classes
         /// Parsed document storage settings.
         /// </summary>
         public StorageSettings ParsedDocuments { get; set; }
-
+         
         /// <summary>
         /// Postings document storage settings.
         /// </summary>
@@ -205,9 +205,9 @@ namespace Komodo.Server.Classes
             ret.Logging.SyslogServerIp = Logging.SyslogServerIp;
             ret.Logging.SyslogServerPort = Logging.SyslogServerPort;
 
+            ret.SourceDocuments = SourceDocuments;
             ret.ParsedDocuments = ParsedDocuments;
             ret.Postings = Postings;
-            ret.SourceDocuments = SourceDocuments;
             ret.TempStorage = TempStorage;
 
             return ret;

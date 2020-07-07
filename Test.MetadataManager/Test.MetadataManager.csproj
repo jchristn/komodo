@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Komodo.IndexClient\Komodo.IndexClient.csproj" />
+    <ProjectReference Include="..\Komodo.IndexManager\Komodo.IndexManager.csproj" />
+    <ProjectReference Include="..\Komodo.MetadataManager\Komodo.MetadataManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="policy.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="person1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="person2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="person3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
