@@ -10,4 +10,10 @@
     <ProjectReference Include="..\Komodo.Crawler\Komodo.Crawler.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="BlobHelper">
+      <HintPath>..\..\..\Misc\BlobHelper-2.0\BlobHelper\bin\Debug\netstandard2.0\BlobHelper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

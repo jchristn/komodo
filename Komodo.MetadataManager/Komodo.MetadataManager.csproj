@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Description>Metadata manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, storage, and retrieval platform.</Description>
-    <Version>1.6.0.0</Version>
+    <Description>Metadata manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
+    <Version>1.6.0.1</Version>
     <Authors>Joel Christner</Authors>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -13,6 +13,8 @@
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management metadata</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Product>Komodo Metadata Manager: Information search, metadata, storage, and retrieval</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.IndexManager" Version="1.5.0.15" />
+    <PackageReference Include="Komodo.IndexManager" Version="1.5.1" />
   </ItemGroup>
 
 </Project>

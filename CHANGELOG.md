@@ -2,13 +2,19 @@
 
 ## Current Version
 
+v1.5.1
+
+- Dependency update
+- New crawlers for AWS S3, S3 compatible storage (Minio, Less3, etc), Azure, Kvpbase
+- Non-integrated version of metadata manager
+
+## Previous Versions
+
 v1.5.0
 
 - Dependency update
 - NuGet packages for each sub-project
 - First release of Komodo.Daemon; in-process instance of Komodo for search, storage, and retrieval within your application
-
-## Previous Versions
 
 v1.4.2
 

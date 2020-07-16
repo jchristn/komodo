@@ -3,11 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.5.0.13</Version>
+    <Version>1.5.1</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
-    <Product>Komodo Server: Information search, storage, and retrieval that runs as a standalone RESTful server</Product>
-    <Description>Komodo is an information search, storage, and retrieval platform.  Komodo.Server is a standalone RESTful server.  Use Komodo.Daemon if you wish to integrate search directly within your application.</Description>
+    <Product>Komodo Server: Information search, metadata, storage, and retrieval that runs as a standalone RESTful server</Product>
+    <Description>Komodo is an information search, metadata, storage, and retrieval platform.  Komodo.Server is a standalone RESTful server.  Use Komodo.Daemon if you wish to integrate search directly within your application.</Description>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
@@ -24,9 +24,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Komodo.Daemon" Version="1.5.0.12" />
+    <PackageReference Include="Komodo.Daemon" Version="1.5.1" />
     <PackageReference Include="SyslogLogging" Version="1.3.2.2" />
-    <PackageReference Include="Watson" Version="3.0.12.1" />
+    <PackageReference Include="Watson" Version="3.0.13" />
   </ItemGroup>
 
   <ItemGroup>

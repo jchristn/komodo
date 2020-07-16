@@ -5,8 +5,8 @@
     <Version>1.5.0.3</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
-    <Product>Komodo SDK: Information search, storage, and retrieval</Product>
-    <Description>Client SDK in C# for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server if you wish to use this client SDK.  Komodo is an information search, storage, and retrieval platform.</Description>
+    <Product>Komodo SDK: Information search, metadata, storage, and retrieval</Product>
+    <Description>Client SDK in C# for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server if you wish to use this client SDK.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>

@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BlobHelper" Version="2.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Komodo.IndexClient\Komodo.IndexClient.csproj" />
   </ItemGroup>
 
