@@ -35,17 +35,17 @@ namespace Komodo.Crawler
         /// <summary>
         /// Creation timestamp.
         /// </summary>
-        public DateTime? Created = null;
+        public DateTime? CreatedUtc = null;
 
         /// <summary>
         /// Last access timestamp.
         /// </summary>
-        public DateTime? LastAccess = null;
+        public DateTime? LastAccessUtc = null;
 
         /// <summary>
         /// Last update timestamp.
         /// </summary>
-        public DateTime? LastUpdate = null;
+        public DateTime? LastUpdateUtc = null;
 
         /// <summary>
         /// Instantiate the object.
@@ -69,7 +69,9 @@ namespace Komodo.Crawler
             ret.ContentType = md.ContentType;
             ret.ContentLength = md.ContentLength;
             ret.ETag = md.ETag;
-            ret.Created = md.Created;
+            ret.CreatedUtc = md.CreatedUtc;
+            ret.LastAccessUtc = md.LastAccessUtc;
+            ret.LastUpdateUtc = md.LastUpdateUtc;
             return ret;
         }
 
@@ -86,9 +88,9 @@ namespace Komodo.Crawler
             ret.Key = fi.Name;
             ret.ContentLength = fi.Length;
             ret.ETag = Common.Md5File(fi.FullName);
-            ret.Created = fi.CreationTimeUtc;
-            ret.LastAccess = fi.LastAccessTimeUtc;
-            ret.LastUpdate = fi.LastWriteTimeUtc;
+            ret.CreatedUtc = fi.CreationTimeUtc;
+            ret.LastAccessUtc = fi.LastAccessTimeUtc;
+            ret.LastUpdateUtc = fi.LastWriteTimeUtc;
             return ret;
         }
     }

@@ -129,7 +129,7 @@ namespace Komodo.Crawler
                 ret.DataStream = data.Data;
                 ret.Success = true;
             }
-            catch (Exception e)
+            catch (Exception)
             { 
             }
 
