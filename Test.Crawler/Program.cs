@@ -70,7 +70,8 @@ namespace Test.Crawler
             Console.WriteLine("Start time     : " + s3cr.Time.Start.ToString());
             Console.WriteLine("End time       : " + s3cr.Time.End.ToString());
             Console.WriteLine("Total ms       : " + s3cr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + s3cr.ContentLength + " bytes"); 
+            Console.WriteLine("Content length : " + s3cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(s3cr.Metadata, false));
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(s3cr.Data));
         }
 
@@ -91,6 +92,7 @@ namespace Test.Crawler
             Console.WriteLine("End time       : " + ar.Time.End.ToString());
             Console.WriteLine("Total ms       : " + ar.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Content length : " + ar.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(ar.Metadata, false));
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(ar.Data));
         }
 
@@ -112,6 +114,7 @@ namespace Test.Crawler
             Console.WriteLine("End time       : " + kcr.Time.End.ToString());
             Console.WriteLine("Total ms       : " + kcr.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Content length : " + kcr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(kcr.Metadata, false));
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(kcr.Data));
         }
 
@@ -128,6 +131,7 @@ namespace Test.Crawler
             Console.WriteLine("End time       : " + fcr.Time.End.ToString());
             Console.WriteLine("Total ms       : " + fcr.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Content length : " + fcr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(fcr.Metadata, false));
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
         }
 
@@ -165,7 +169,7 @@ namespace Test.Crawler
             Console.WriteLine("Start time     : " + hcr.Time.Start.ToString());
             Console.WriteLine("End time       : " + hcr.Time.End.ToString());
             Console.WriteLine("Total ms       : " + hcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + hcr.ContentLength + " bytes");
+            Console.WriteLine("Content length : " + hcr.ContentLength + " bytes"); 
             Console.WriteLine("Headers        : ");
             if (hcr.Headers != null && hcr.Headers.Count > 0)
             {

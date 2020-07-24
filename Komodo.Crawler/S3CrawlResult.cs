@@ -26,6 +26,11 @@ namespace Komodo.Crawler
         public Timestamps Time = new Timestamps();
 
         /// <summary>
+        /// Object metadata.
+        /// </summary>
+        public ObjectMetadata Metadata = null;
+
+        /// <summary>
         /// The filename to which the retrieved file was downloaded.
         /// </summary>
         public string Filename = null;

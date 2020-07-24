@@ -24,7 +24,7 @@ namespace Komodo.Crawler
         /// Start and end timestamps.
         /// </summary>
         public Timestamps Time = new Timestamps();
-
+         
         /// <summary>
         /// The filename to which the retrieved file was downloaded.
         /// </summary>

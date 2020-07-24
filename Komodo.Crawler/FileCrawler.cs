@@ -46,7 +46,8 @@ namespace Komodo.Crawler
         /// <returns>Crawl result.</returns>
         public FileCrawlResult Get()
         {
-            FileCrawlResult ret = new FileCrawlResult(); 
+            FileCrawlResult ret = new FileCrawlResult();
+            ret.Metadata = ObjectMetadata.FromFileInfo(new FileInfo(Filename));
             ret.ContentLength = new FileInfo(Filename).Length;
             ret.FileStream = new FileStream(Filename, FileMode.Open, FileAccess.Read);
             ret.Success = true;
@@ -64,6 +65,7 @@ namespace Komodo.Crawler
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
             FileCrawlResult ret = new FileCrawlResult();
+            ret.Metadata = ObjectMetadata.FromFileInfo(new FileInfo(Filename));
             ret.ContentLength = new FileInfo(Filename).Length;
 
             using (FileStream source = new FileStream(Filename, FileMode.Open, FileAccess.Read))

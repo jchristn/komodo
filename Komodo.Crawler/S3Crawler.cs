@@ -124,13 +124,13 @@ namespace Komodo.Crawler
             try
             {
                 BlobData data = _Blobs.GetStream(Key).Result;
+                ret.Metadata = ObjectMetadata.FromBlobMetadata(_Blobs.GetMetadata(Key).Result);
                 ret.ContentLength = data.ContentLength;
                 ret.DataStream = data.Data;
                 ret.Success = true;
             }
             catch (Exception e)
-            {
-                Console.WriteLine(Common.SerializeJson(e, true));
+            { 
             }
 
             ret.Time.End = DateTime.Now;
@@ -151,6 +151,7 @@ namespace Komodo.Crawler
             try
             {
                 BlobData data = _Blobs.GetStream(Key).Result;
+                ret.Metadata = ObjectMetadata.FromBlobMetadata(_Blobs.GetMetadata(Key).Result);
                 ret.ContentLength = data.ContentLength; 
 
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
@@ -239,6 +240,7 @@ namespace Komodo.Crawler
             try
             {
                 BlobData data = await _Blobs.GetStream(Key);
+                ret.Metadata = ObjectMetadata.FromBlobMetadata(await _Blobs.GetMetadata(Key));
                 ret.ContentLength = data.ContentLength;
                 ret.DataStream = data.Data;
                 ret.Success = true;
@@ -265,7 +267,8 @@ namespace Komodo.Crawler
 
             try
             {
-                BlobData data = _Blobs.GetStream(Key).Result;
+                BlobData data = await _Blobs.GetStream(Key);
+                ret.Metadata = ObjectMetadata.FromBlobMetadata(await _Blobs.GetMetadata(Key));
                 ret.ContentLength = data.ContentLength;
 
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
