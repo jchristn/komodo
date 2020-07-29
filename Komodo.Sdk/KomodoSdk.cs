@@ -213,7 +213,7 @@ namespace Komodo.Sdk
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
             string url = indexName;
-            if (cleanup) url += "?cleanup=true";
+            if (cleanup) url += "?cleanup";
 
             RestRequest req = new RestRequest(
                 _Endpoint + url,
@@ -403,7 +403,7 @@ namespace Komodo.Sdk
 
             string docTypeStr = DocTypeString(docType);
 
-            string url = indexName + "?type=" + docTypeStr + "&bypass=true";
+            string url = indexName + "?type=" + docTypeStr + "&bypass";
             if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
             if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
             if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
@@ -480,7 +480,7 @@ namespace Komodo.Sdk
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
 
-            string url = indexName + "/" + docId + "?parsed=true&pretty=true";
+            string url = indexName + "/" + docId + "?parsed&pretty";
 
             RestRequest req = new RestRequest(
                 _Endpoint + url,
@@ -576,7 +576,7 @@ namespace Komodo.Sdk
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (query == null) throw new ArgumentNullException(nameof(query));
 
-            string url = indexName + "/enumerate";
+            string url = indexName + "?enumerate";
 
             RestRequest req = new RestRequest(
                 _Endpoint + url,

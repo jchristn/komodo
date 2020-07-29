@@ -93,6 +93,9 @@ namespace Komodo.Server
                 case "text":
                     docType = DocType.Text;
                     break;
+                case "unknown":
+                    docType = DocType.Unknown;
+                    break;
 
                 default:
                     _Logging.Warn(header + "invalid 'type' value found in querystring: " + md.Params.Type);
