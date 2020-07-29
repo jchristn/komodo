@@ -618,6 +618,8 @@ namespace Komodo.Sdk
                     return "text";
                 case DocType.Xml:
                     return "xml";
+                case DocType.Unknown:
+                    return "unknown";
             }
 
             throw new ArgumentException("Unknown DocType: " + docType.ToString());
