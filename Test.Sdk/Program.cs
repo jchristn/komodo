@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Komodo.Sdk;
-using Komodo.Classes;
-using Index = Komodo.Classes.Index;
+using Komodo.Sdk.Classes;
+using Index = Komodo.Sdk.Classes.Index;
 
 namespace Test.Sdk
 {
@@ -22,7 +22,7 @@ namespace Test.Sdk
             {
                 #region Initialize
 
-                Welcome();
+                Console.WriteLine("Komodo SDK");
 
                 _Sdk = new KomodoSdk(
                     InputString("Endpoint:", "http://localhost:9090/", false),
@@ -99,22 +99,7 @@ namespace Test.Sdk
                 Console.ReadLine();
             }
         }
-
-        static void Welcome()
-        {
-            string ret =
-                Environment.NewLine +
-                Environment.NewLine +
-                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
-                "░░░█░█░█▀▀█░█▀▄▀█░█▀▀█░█▀▀▄░█▀▀█░░░" + Environment.NewLine +
-                "░░░█▀▄░█░░█░█░▀░█░█░░█░█░░█░█░░█░░░" + Environment.NewLine +
-                "░░░▀░▀░▀▀▀▀░▀░░░▀░▀▀▀▀░▀▀▀░░▀▀▀▀░░░" + Environment.NewLine +
-                "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░" + Environment.NewLine +
-                Environment.NewLine;
-
-            Console.WriteLine(ret);
-        }
-
+         
         static void Menu()
         {
             Console.WriteLine("Available commands:");
@@ -183,7 +168,7 @@ namespace Test.Sdk
             if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
 
             List<string> tags = new List<string>();
-            if (!String.IsNullOrEmpty(tagsStr)) tags = Common.CsvToStringList(tagsStr);
+            if (!String.IsNullOrEmpty(tagsStr)) tags = CsvToStringList(tagsStr);
             IndexResult resp = _Sdk.AddDocument(indexName, sourceUrl, title, tags, docType, data).Result;
             if (resp != null) Console.WriteLine(SerializeJson(resp, true));
         }
@@ -203,7 +188,7 @@ namespace Test.Sdk
             if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
 
             List<string> tags = new List<string>();
-            if (!String.IsNullOrEmpty(tagsStr)) tags = Common.CsvToStringList(tagsStr);
+            if (!String.IsNullOrEmpty(tagsStr)) tags = CsvToStringList(tagsStr);
 
             IndexResult resp = _Sdk.StoreDocument(indexName, sourceUrl, title, tags, docType, data).Result;
             if (resp != null) Console.WriteLine(SerializeJson(resp, true));
@@ -451,5 +436,29 @@ namespace Test.Sdk
                 return ms.ToArray();
             }
         }
+
+         
+        static List<string> CsvToStringList(string csv)
+        {
+            if (String.IsNullOrEmpty(csv))
+            {
+                return null;
+            }
+
+            List<string> ret = new List<string>();
+
+            string[] array = csv.Split(',');
+
+            if (array != null && array.Length > 0)
+            {
+                foreach (string curr in array)
+                {
+                    if (String.IsNullOrEmpty(curr)) continue;
+                    ret.Add(curr.Trim());
+                }
+            }
+
+            return ret;
+        } 
     }
 }

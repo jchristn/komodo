@@ -10,8 +10,8 @@ using System.Web;
 using RestWrapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Komodo.Classes;  
-using Index = Komodo.Classes.Index;
+using Komodo.Sdk.Classes;  
+using Index = Komodo.Sdk.Classes.Index;
 
 namespace Komodo.Sdk
 {
@@ -272,7 +272,7 @@ namespace Komodo.Sdk
             
             if (tags != null && tags.Count > 0)
             {
-                url += "&tags=" + WebUtility.UrlEncode(Common.StringListToCsv(tags));
+                url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
             }
 
             RestRequest req = new RestRequest(
@@ -344,7 +344,7 @@ namespace Komodo.Sdk
 
             if (tags != null && tags.Count > 0)
             {
-                url += "&tags=" + WebUtility.UrlEncode(Common.StringListToCsv(tags));
+                url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
             }
 
             RestRequest req = new RestRequest(
@@ -410,7 +410,7 @@ namespace Komodo.Sdk
 
             if (tags != null && tags.Count > 0)
             {
-                url += "&tags=" + WebUtility.UrlEncode(Common.StringListToCsv(tags));
+                url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
             }
              
             RestRequest req = new RestRequest(
@@ -693,6 +693,53 @@ namespace Komodo.Sdk
 
                 return ms.ToArray();
             }
+        }
+         
+        private static List<string> CsvToStringList(string csv)
+        {
+            if (String.IsNullOrEmpty(csv))
+            {
+                return null;
+            }
+
+            List<string> ret = new List<string>();
+
+            string[] array = csv.Split(',');
+
+            if (array != null && array.Length > 0)
+            {
+                foreach (string curr in array)
+                {
+                    if (String.IsNullOrEmpty(curr)) continue;
+                    ret.Add(curr.Trim());
+                }
+            }
+
+            return ret;
+        }
+
+        private static string StringListToCsv(List<string> strings)
+        {
+            if (strings == null || strings.Count < 1) return null;
+
+            int added = 0;
+            string ret = "";
+
+            foreach (string curr in strings)
+            {
+                if (added == 0)
+                {
+                    ret += curr;
+                }
+                else
+                {
+                    ret += "," + curr;
+                }
+
+                added++;
+            }
+
+            return ret;
         }
 
         #endregion
