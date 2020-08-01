@@ -38,7 +38,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The name of the object.
         /// </summary>
-        [Column("name", false, DataTypes.Nvarchar, 128, false)]
+        [Column("name", false, DataTypes.Nvarchar, 128, true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -120,7 +120,6 @@ namespace Komodo.Classes
         {
             if (String.IsNullOrEmpty(ownerGuid)) throw new ArgumentNullException(nameof(ownerGuid));
             if (String.IsNullOrEmpty(indexGuid)) throw new ArgumentNullException(nameof(indexGuid));
-            if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             if (contentLength < 0) throw new ArgumentException("Content length must be zero or greater.");
 
             GUID = Guid.NewGuid().ToString();
@@ -158,7 +157,6 @@ namespace Komodo.Classes
         { 
             if (String.IsNullOrEmpty(ownerGuid)) throw new ArgumentNullException(nameof(ownerGuid));
             if (String.IsNullOrEmpty(indexGuid)) throw new ArgumentNullException(nameof(indexGuid));
-            if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             if (contentLength < 0) throw new ArgumentException("Content length must be zero or greater.");
 
             if (!String.IsNullOrEmpty(guid)) GUID = guid;

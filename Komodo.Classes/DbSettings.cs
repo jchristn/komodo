@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 using Watson.ORM;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 
 namespace Komodo.Classes
 {
@@ -176,23 +180,28 @@ namespace Komodo.Classes
     /// <summary>
     /// Database type.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum DbType
     {
         /// <summary>
         /// MySQL.
         /// </summary>
+        [EnumMember(Value = "Mysql")]
         Mysql,
         /// <summary>
         /// PostgreSQL.
         /// </summary>
+        [EnumMember(Value = "Postgresql")]
         Postgresql,
         /// <summary>
         /// Sqlite.
         /// </summary>
+        [EnumMember(Value = "Sqlite")]
         Sqlite,
         /// <summary>
         /// SQL Server including Express.
         /// </summary>
+        [EnumMember(Value = "SqlServer")]
         SqlServer
     }
 }

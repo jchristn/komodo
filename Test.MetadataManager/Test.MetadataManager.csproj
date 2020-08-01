@@ -6,8 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Komodo.IndexClient\Komodo.IndexClient.csproj" />
-    <ProjectReference Include="..\Komodo.IndexManager\Komodo.IndexManager.csproj" />
     <ProjectReference Include="..\Komodo.MetadataManager\Komodo.MetadataManager.csproj" />
   </ItemGroup>
 

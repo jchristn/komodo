@@ -433,7 +433,7 @@ namespace Komodo.Server
                  
                 if (!String.IsNullOrEmpty(md.Params.Type))
                 {
-                    List<string> matchVals = new List<string> { "json", "xml", "html", "sql", "text" };
+                    List<string> matchVals = new List<string> { "json", "xml", "html", "sql", "text", "unknown" };
                     if (!matchVals.Contains(md.Params.Type))
                     {
                         _Logging.Warn(header + "invalid 'type' value found in querystring: " + md.Params.Type);

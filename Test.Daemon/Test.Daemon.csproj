@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Komodo.Classes\Komodo.Classes.csproj" />
     <ProjectReference Include="..\Komodo.Daemon\Komodo.Daemon.csproj" />
   </ItemGroup>
 

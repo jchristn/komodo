@@ -158,18 +158,20 @@ namespace Test.Sdk
             string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
+            string docName = InputString("Document name:", null, true);
+            if (String.IsNullOrEmpty(docName)) return;
+
             string sourceUrl = InputString("Source URL:", null, true);
             DocType docType = GetDocType();
             string title = InputString("Title:", null, true);
             string tagsStr = InputString("Tags CSV:", null, true);
-            string sourceFile = InputString("Filename:", "order1.json", true);
+            string sourceFile = InputString("Filename:", "", true);
             byte[] data = null;
-
             if (!String.IsNullOrEmpty(sourceFile)) data = File.ReadAllBytes(sourceFile);
 
             List<string> tags = new List<string>();
             if (!String.IsNullOrEmpty(tagsStr)) tags = CsvToStringList(tagsStr);
-            IndexResult resp = _Sdk.AddDocument(indexName, sourceUrl, title, tags, docType, data).Result;
+            IndexResult resp = _Sdk.AddDocument(indexName, docName, sourceUrl, title, tags, docType, data).Result;
             if (resp != null) Console.WriteLine(SerializeJson(resp, true));
         }
 
@@ -257,11 +259,11 @@ namespace Test.Sdk
             string indexName = InputString("Index name:", null, true);
             if (String.IsNullOrEmpty(indexName)) return;
 
-            string filename = InputString("Enumeration filename:", "enum1.json", true);
-            if (String.IsNullOrEmpty(filename)) return;
+            EnumerationQuery eq = new EnumerationQuery();
+            string filename = InputString("Enumeration filename:", "", true);
+            if (!String.IsNullOrEmpty(filename)) eq = DeserializeJson<EnumerationQuery>(File.ReadAllBytes(filename));
 
-            EnumerationQuery query = DeserializeJson<EnumerationQuery>(File.ReadAllBytes(filename));
-            EnumerationResult result = _Sdk.Enumerate(indexName, query).Result;
+            EnumerationResult result = _Sdk.Enumerate(indexName, eq).Result;
             if (result != null) Console.WriteLine(SerializeJson(result, true));
         }
 
@@ -436,7 +438,6 @@ namespace Test.Sdk
                 return ms.ToArray();
             }
         }
-
          
         static List<string> CsvToStringList(string csv)
         {

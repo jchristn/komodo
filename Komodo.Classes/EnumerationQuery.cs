@@ -40,13 +40,31 @@ namespace Komodo.Classes
         /// <summary>
         /// Search filters to apply to enumeration.
         /// </summary>
-        public List<SearchFilter> Filters = new List<SearchFilter>();
+        public List<SearchFilter> Filters
+        {
+            get
+            {
+                return _Filters;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _Filters = new List<SearchFilter>();
+                }
+                else
+                {
+                    _Filters = value;
+                }
+            }
+        }
 
         #endregion
 
         #region Private-Members
 
         private int _MaxResults = 1000;
+        private List<SearchFilter> _Filters = new List<SearchFilter>();
 
         #endregion
 

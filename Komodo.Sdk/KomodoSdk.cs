@@ -239,9 +239,9 @@ namespace Komodo.Sdk
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocument(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        public async Task<IndexResult> AddDocument(string indexName, string docName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
         {
-            return await AddDocument(indexName, null, sourceUrl, title, tags, docType, data);
+            return await AddDocument(indexName, docName, null, sourceUrl, title, tags, docType, data);
         }
 
         /// <summary>
@@ -255,9 +255,10 @@ namespace Komodo.Sdk
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocument(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        public async Task<IndexResult> AddDocument(string indexName, string docName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
+            if (String.IsNullOrEmpty(docName)) throw new ArgumentNullException(nameof(docName));
             if (String.IsNullOrEmpty(sourceUrl)
                 && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
 
@@ -269,7 +270,8 @@ namespace Komodo.Sdk
 
             if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
             if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
-            
+            if (!String.IsNullOrEmpty(docName)) url += "&name=" + WebUtility.UrlEncode(docName);
+
             if (tags != null && tags.Count > 0)
             {
                 url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));

@@ -72,11 +72,9 @@ namespace Komodo.Server.Classes
             // ________________12345678901234567890123456789012345678901234567890123456789012345678901234567890
             Console.WriteLine("Thank you for using Komodo!  We'll put together a basic system configuration");
             Console.WriteLine("so you can be up and running quickly.");
-            Console.WriteLine("");
-            Console.WriteLine("Press ENTER to get started.");
-            Console.WriteLine("");
+            Console.WriteLine(""); 
             Console.WriteLine(Common.Line(79, "-"));
-            Console.ReadLine();
+            Console.WriteLine("");
 
             #endregion
 

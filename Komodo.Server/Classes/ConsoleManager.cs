@@ -89,8 +89,7 @@ namespace Komodo.Server.Classes
                         _ExitDelegate();
                         break;
                          
-                    default:
-                        Console.WriteLine("Unknown command.  '?' for help.");
+                    default: 
                         break;
                 }
             }

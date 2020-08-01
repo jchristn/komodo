@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Komodo.Classes\Komodo.Classes.csproj" />
     <ProjectReference Include="..\Komodo.Crawler\Komodo.Crawler.csproj" />
   </ItemGroup>
 

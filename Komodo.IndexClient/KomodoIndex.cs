@@ -282,6 +282,8 @@ namespace Komodo.IndexClient
                     return Common.DeserializeJson<TextParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
                 case DocType.Xml:
                     return Common.DeserializeJson<XmlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
+                case DocType.Unknown:
+                    return null;
                 default:
                     throw new Exception("Unsupported document type: " + parsed.Type.ToString());
             }
@@ -461,6 +463,10 @@ namespace Komodo.IndexClient
                     XmlParseResult xmlResult = xmlParser.ParseBytes(data);
                     ret.ParseResult = xmlResult;
                 }
+                else if (sourceDoc.Type == DocType.Unknown)
+                {
+                    ret.ParseResult = null;
+                }
                 else
                 {
                     throw new Exception("Unsupported document type: " + sourceDoc.Type.ToString());
@@ -472,78 +478,106 @@ namespace Komodo.IndexClient
 
                 #region Generate-Postings
 
-                ret.Time.Postings.Start = DateTime.Now.ToUniversalTime();
-                PostingsGenerator postings = new PostingsGenerator(options);
-                ret.Postings = postings.ProcessParseResult(ret.ParseResult);
-                ret.Time.Postings.End = DateTime.Now.ToUniversalTime();
+                if (ret.ParseResult != null)
+                {
+                    ret.Time.Postings.Start = DateTime.Now.ToUniversalTime();
+                    PostingsGenerator postings = new PostingsGenerator(options);
+                    ret.Postings = postings.ProcessParseResult(ret.ParseResult);
+                    ret.Time.Postings.End = DateTime.Now.ToUniversalTime();
+                }
+                else
+                {
+                    ret.Time.Postings = null;
+                }
 
                 #endregion
 
                 #region Persist-Parsed-Doc
 
-                ret.Time.PersistParsedDocument.Start = DateTime.Now.ToUniversalTime();
-                ret.Parsed = new ParsedDocument(
-                    sourceDoc.GUID,
-                    sourceDoc.OwnerGUID,
-                    _GUID,
-                    sourceDoc.Type,
-                    data.Length,
-                    ret.Postings.Terms.Count,
-                    ret.Postings.Postings.Count);
+                if (ret.ParseResult != null)
+                {
+                    ret.Time.PersistParsedDocument.Start = DateTime.Now.ToUniversalTime();
+                    ret.Parsed = new ParsedDocument(
+                        sourceDoc.GUID,
+                        sourceDoc.OwnerGUID,
+                        _GUID,
+                        sourceDoc.Type,
+                        data.Length,
+                        ret.Postings.Terms.Count,
+                        ret.Postings.Postings.Count);
 
-                ret.Parsed = _ORM.Insert<ParsedDocument>(ret.Parsed);
-                await _ParsedDocsStorage.Write(ret.Parsed.GUID, "application/json", Common.SerializeJson(ret.ParseResult, true));
-                ret.Time.PersistParsedDocument.End = DateTime.Now.ToUniversalTime();
+                    ret.Parsed = _ORM.Insert<ParsedDocument>(ret.Parsed);
+                    await _ParsedDocsStorage.Write(ret.Parsed.GUID, "application/json", Common.SerializeJson(ret.ParseResult, true));
+                    ret.Time.PersistParsedDocument.End = DateTime.Now.ToUniversalTime();
+                }
+                else
+                {
+                    ret.Time.PersistParsedDocument = null;
+                }
 
                 #endregion
 
                 #region Persist-Postings 
 
-                ret.Time.PersistPostingsDocument.Start = DateTime.Now.ToUniversalTime(); 
-                await _PostingsStorage.Write(ret.Parsed.GUID, "application/json", Common.SerializeJson(ret.Postings, true));
-                ret.Time.PersistPostingsDocument.End = DateTime.Now.ToUniversalTime();
+                if (ret.ParseResult != null)
+                {
+                    ret.Time.PersistPostingsDocument.Start = DateTime.Now.ToUniversalTime();
+                    await _PostingsStorage.Write(ret.Parsed.GUID, "application/json", Common.SerializeJson(ret.Postings, true));
+                    ret.Time.PersistPostingsDocument.End = DateTime.Now.ToUniversalTime();
+                }
+                else
+                {
+                    ret.Time.PersistPostingsDocument = null;
+                }
 
                 #endregion
 
                 #region Persist-Terms
 
-                ret.Time.Terms.Start = DateTime.Now.ToUniversalTime();
-
-                // term, guid
-                Dictionary<string, string> termGuids = new Dictionary<string, string>();
-
-                // Term GUIDs
-                List<string> terms = GetParseResultTerms(sourceDoc.Type, ret.ParseResult);
-                if (terms != null && terms.Count > 0) terms = terms.Distinct().ToList();
-
-                foreach (string term in terms)
+                if (ret.ParseResult != null)
                 {
-                    DbExpression e = new DbExpression(
-                        _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
-                        DbOperators.Equals,
-                        term);
+                    ret.Time.Terms.Start = DateTime.Now.ToUniversalTime();
 
-                    TermGuid tg = _ORM.SelectFirst<TermGuid>(e);
-                    if (tg == null || tg == default(TermGuid))
+                    // term, guid
+                    Dictionary<string, string> termGuids = new Dictionary<string, string>();
+
+                    // Term GUIDs
+                    List<string> terms = GetParseResultTerms(sourceDoc.Type, ret.ParseResult);
+                    if (terms != null && terms.Count > 0) terms = terms.Distinct().ToList();
+
+                    foreach (string term in terms)
                     {
-                        tg = new TermGuid();
-                        tg.GUID = Guid.NewGuid().ToString();
-                        tg.IndexGUID = _GUID;
-                        tg.Term = term;
-                        tg = _ORM.Insert<TermGuid>(tg);
+                        DbExpression e = new DbExpression(
+                            _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
+                            DbOperators.Equals,
+                            term);
+
+                        TermGuid tg = _ORM.SelectFirst<TermGuid>(e);
+                        if (tg == null || tg == default(TermGuid))
+                        {
+                            tg = new TermGuid();
+                            tg.GUID = Guid.NewGuid().ToString();
+                            tg.IndexGUID = _GUID;
+                            tg.Term = term;
+                            tg = _ORM.Insert<TermGuid>(tg);
+                        }
+
+                        termGuids.Add(term, tg.GUID);
                     }
 
-                    termGuids.Add(term, tg.GUID);
-                }
+                    // Term Docs
+                    foreach (string term in terms)
+                    {
+                        TermDoc td = new TermDoc(_GUID, termGuids[term], sourceDoc.GUID, ret.Parsed.GUID);
+                        td = _ORM.Insert<TermDoc>(td);
+                    }
 
-                // Term Docs
-                foreach (string term in terms)
+                    ret.Time.Terms.End = DateTime.Now.ToUniversalTime();
+                }
+                else
                 {
-                    TermDoc td = new TermDoc(_GUID, termGuids[term], sourceDoc.GUID, ret.Parsed.GUID);
-                    td = _ORM.Insert<TermDoc>(td);
+                    ret.Time.Terms = null;
                 }
-
-                ret.Time.Terms.End = DateTime.Now.ToUniversalTime();
 
                 #endregion 
             }

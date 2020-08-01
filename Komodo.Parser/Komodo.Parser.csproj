@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.5.1</Version>
+    <Version>1.5.1.4</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Parser: Information search, metadata, storage, and retrieval</Product>
@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
-    <PackageReference Include="Komodo.Crawler" Version="1.5.1.4" />
+    <PackageReference Include="Komodo.Crawler" Version="1.5.1.9" />
     <PackageReference Include="XmlToPox" Version="1.0.2" />
   </ItemGroup>
 
