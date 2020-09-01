@@ -56,17 +56,17 @@ namespace Komodo.Parser
         /// <summary>
         /// List of opengraph meta video tags of the HTML page.
         /// </summary>
-        public List<string> MetaVideoTagsOpengraph { get; set; }
+        public List<string> MetaVideoTagsOpengraph = new List<string>();
 
         /// <summary>
         /// Image URLs from the HTML page.
         /// </summary>
-        public List<string> ImageUrls { get; set; }
+        public List<string> ImageUrls = new List<string>();
 
         /// <summary>
         /// Links from the HTML page.
         /// </summary>
-        public List<string> Links { get; set; }
+        public List<string> Links = new List<string>();
 
         /// <summary>
         /// Full HTML head content.
@@ -84,14 +84,14 @@ namespace Komodo.Parser
         public string BodyStripped { get; set; }
 
         /// <summary>
-        /// List of tokens found in the HTML body.
+        /// Tokens found including their count.
         /// </summary>
-        public List<string> Tokens { get; set; }
+        public Dictionary<string, int> Tokens = new Dictionary<string, int>();
 
         /// <summary>
-        /// Schema of the HTML document.
+        /// Schema of the document.
         /// </summary>
-        public Dictionary<string, DataType> Schema { get; set; }
+        public Dictionary<string, DataType> Schema = new Dictionary<string, DataType>();
          
         #endregion
 
@@ -152,7 +152,7 @@ namespace Komodo.Parser
             if (Tokens != null && Tokens.Count > 0)
             {
                 ret += "  Tokens             : " + Tokens.Count + Environment.NewLine;
-                foreach (string curr in Tokens) ret += "    " + curr + Environment.NewLine;
+                foreach (KeyValuePair<string, int> curr in Tokens) ret += "    " + curr.Key + " [" + curr.Value + "]"+ Environment.NewLine;
             }
 
             ret += "---";

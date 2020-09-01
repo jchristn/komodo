@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using BlobHelper;
 using Komodo.Classes;
 using Komodo.Crawler;
 using Komodo.Parser;
@@ -17,11 +18,21 @@ namespace Test.Postings
             while (true)
             {
                 Console.WriteLine("Press ENTER to quit");
-                string crawlerType = Common.InputString("Crawler type [file|ftp|http|sql|sqlite]:", "file", true);
+
+                string crawlerType = Common.InputString("Crawler type [s3|azure|kvp|file|ftp|http|sql|sqlite]:", "file", true);
                 if (String.IsNullOrEmpty(crawlerType)) break;
 
                 switch (crawlerType)
                 {
+                    case "s3":
+                        S3Crawler();
+                        break;
+                    case "azure":
+                        AzureCrawler();
+                        break;
+                    case "kvp":
+                        KvpCrawler();
+                        break;
                     case "file":
                         FileCrawler();
                         break;
@@ -49,6 +60,162 @@ namespace Test.Postings
                 Common.InputString("Document type [Html|Json|Sql|Text|Xml]:", "Html", false)));
         }
 
+        static void S3Crawler()
+        {
+            string endpoint = Common.InputString("Endpoint:", null, true);
+            bool ssl = Common.InputBoolean("SSL:", true);
+            string bucket = Common.InputString("Bucket:", null, false);
+            string key = Common.InputString("Key:", null, false);
+            string accessKey = Common.InputString("Access Key:", null, false);
+            string secretKey = Common.InputString("Secret Key:", null, false);
+            AwsRegion region = (AwsRegion)(Enum.Parse(typeof(AwsRegion), Common.InputString("Region:", "USWest1", false)));
+            string baseUrl = Common.InputString("Base URL:", "http://localhost:8000/{bucket}/{key}", false);
+
+            S3Crawler s3c = null;
+            if (!String.IsNullOrEmpty(endpoint)) s3c = new S3Crawler(endpoint, ssl, bucket, key, accessKey, secretKey, region, baseUrl);
+            else s3c = new S3Crawler(bucket, key, accessKey, secretKey, region);
+
+            S3CrawlResult s3cr = s3c.Get();
+
+            Console.WriteLine("Success        : " + s3cr.Success);
+            Console.WriteLine("Start time     : " + s3cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + s3cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + s3cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + s3cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(s3cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(s3cr.Data));
+
+            Console.WriteLine("");
+            if (!s3cr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
+            DocType docType = GetDocType();
+
+            switch (docType)
+            {
+                case DocType.Html:
+                    ParseHtml(s3cr.Data);
+                    break;
+                case DocType.Json:
+                    ParseJson(s3cr.Data);
+                    break;
+                case DocType.Sql:
+                    // ParseSql();
+                    break;
+                case DocType.Text:
+                    ParseText(s3cr.Data);
+                    break;
+                case DocType.Xml:
+                    ParseXml(s3cr.Data);
+                    break;
+            }
+        }
+
+        static void AzureCrawler()
+        {
+            string accountName = Common.InputString("Account Name:", null, true);
+            string container = Common.InputString("Container:", null, false);
+            string endpoint = Common.InputString("Endpoint:", null, false);
+            string accessKey = Common.InputString("Access Key:", null, false);
+            string key = Common.InputString("Key:", null, false);
+
+            AzureBlobCrawler ac = new AzureBlobCrawler(accountName, container, endpoint, accessKey, key);
+
+            AzureBlobCrawlResult ar = ac.Get();
+
+            Console.WriteLine("Success        : " + ar.Success);
+            Console.WriteLine("Start time     : " + ar.Time.Start.ToString());
+            Console.WriteLine("End time       : " + ar.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + ar.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + ar.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(ar.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(ar.Data));
+
+            Console.WriteLine("");
+            if (!ar.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
+            DocType docType = GetDocType();
+
+            switch (docType)
+            {
+                case DocType.Html:
+                    ParseHtml(ar.Data);
+                    break;
+                case DocType.Json:
+                    ParseJson(ar.Data);
+                    break;
+                case DocType.Sql:
+                    // ParseSql();
+                    break;
+                case DocType.Text:
+                    ParseText(ar.Data);
+                    break;
+                case DocType.Xml:
+                    ParseXml(ar.Data);
+                    break;
+            }
+        }
+
+        static void KvpCrawler()
+        {
+            // string endpoint, string userGuid, string container, string apiKey, string key
+            string endpoint = Common.InputString("Endpoint:", null, false);
+            string userGuid = Common.InputString("User GUID:", null, true);
+            string container = Common.InputString("Container:", null, false);
+            string apiKey = Common.InputString("API Key:", null, false);
+            string key = Common.InputString("Key:", null, false);
+
+            KvpbaseCrawler kc = new KvpbaseCrawler(endpoint, userGuid, container, apiKey, key);
+
+            KvpbaseCrawlResult kcr = kc.Get();
+
+            Console.WriteLine("Success        : " + kcr.Success);
+            Console.WriteLine("Start time     : " + kcr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + kcr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + kcr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + kcr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(kcr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(kcr.Data));
+
+            Console.WriteLine("");
+            if (!kcr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
+            DocType docType = GetDocType();
+
+            switch (docType)
+            {
+                case DocType.Html:
+                    ParseHtml(kcr.Data);
+                    break;
+                case DocType.Json:
+                    ParseJson(kcr.Data);
+                    break;
+                case DocType.Sql:
+                    // ParseSql();
+                    break;
+                case DocType.Text:
+                    ParseText(kcr.Data);
+                    break;
+                case DocType.Xml:
+                    ParseXml(kcr.Data);
+                    break;
+            }
+        }
+
         static void FileCrawler()
         {
             string filename = Common.InputString("Filename:", null, true);
@@ -66,6 +233,13 @@ namespace Test.Postings
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
 
             Console.WriteLine("");
+            if (!fcr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
             DocType docType = GetDocType();
 
             switch (docType)
@@ -107,6 +281,13 @@ namespace Test.Postings
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
 
             Console.WriteLine("");
+            if (!fcr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
             DocType docType = GetDocType();
 
             switch (docType)
@@ -156,6 +337,13 @@ namespace Test.Postings
             Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(hcr.Data));
 
             Console.WriteLine("");
+            if (!hcr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
             DocType docType = GetDocType();
 
             switch (docType)
@@ -210,6 +398,14 @@ namespace Test.Postings
                 Console.WriteLine("  (null)");
             }
 
+            Console.WriteLine("");
+            if (!scr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
             ParseSql(scr.DataTable);
         }
 
@@ -233,6 +429,14 @@ namespace Test.Postings
             else
             {
                 Console.WriteLine("  (null)");
+            }
+
+            Console.WriteLine("");
+            if (!scr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
             }
 
             ParseSqlite(scr.DataTable);

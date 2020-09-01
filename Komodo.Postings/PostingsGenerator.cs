@@ -89,7 +89,7 @@ namespace Komodo.Postings
                 if (!String.IsNullOrEmpty(parsed.PageTitle))
                 {
                     List<string> terms = parsed.PageTitle.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -112,7 +112,7 @@ namespace Komodo.Postings
                 if (!String.IsNullOrEmpty(parsed.MetaDescription))
                 {
                     List<string> terms = parsed.MetaDescription.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -135,7 +135,7 @@ namespace Komodo.Postings
                 if (!String.IsNullOrEmpty(parsed.MetaDescriptionOpengraph))
                 {
                     List<string> terms = parsed.MetaDescriptionOpengraph.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -158,7 +158,7 @@ namespace Komodo.Postings
                 if (!String.IsNullOrEmpty(parsed.MetaKeywords))
                 {
                     List<string> terms = parsed.MetaKeywords.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -183,7 +183,7 @@ namespace Komodo.Postings
                     foreach (string curr in parsed.MetaVideoTagsOpengraph)
                     {
                         List<string> terms = curr.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                        if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                        if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                         int termCount = 0;
                         foreach (string tempTerm in terms)
@@ -247,7 +247,7 @@ namespace Komodo.Postings
                 if (!String.IsNullOrEmpty(parsed.Head))
                 {
                     List<string> terms = parsed.Head.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -270,7 +270,7 @@ namespace Komodo.Postings
                 if (!String.IsNullOrEmpty(parsed.Body))
                 {
                     List<string> terms = parsed.Body.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -307,7 +307,7 @@ namespace Komodo.Postings
                     if (curr.Data == null) continue;
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -342,7 +342,7 @@ namespace Komodo.Postings
                     if (curr.Data == null) continue;
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)
@@ -373,11 +373,11 @@ namespace Komodo.Postings
             if (parsed != null && parsed.Tokens != null && parsed.Tokens.Count > 0)
             {
                 int termCount = 0;
-                foreach (string curr in parsed.Tokens)
+                foreach (KeyValuePair<string, int> curr in parsed.Tokens)
                 {
-                    if (String.IsNullOrEmpty(curr)) continue;
+                    if (String.IsNullOrEmpty(curr.Key)) continue;
 
-                    string currTerm = curr.Trim().Trim(Environment.NewLine.ToCharArray());
+                    string currTerm = curr.Key.Trim().Trim(Environment.NewLine.ToCharArray());
                     if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
                     ret.Terms.Add(currTerm);
@@ -404,7 +404,7 @@ namespace Komodo.Postings
                     if (curr.Data == null) continue;
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringListPunctuation(terms);
+                    if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
                     int termCount = 0;
                     foreach (string tempTerm in terms)

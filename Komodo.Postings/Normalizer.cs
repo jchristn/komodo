@@ -13,6 +13,8 @@ namespace Komodo.Postings
     /// </summary>
     public static class Normalizer
     {
+        #region Public-Methods
+
         #region Normalize-Parsed-Objects
 
         /// <summary>
@@ -29,18 +31,18 @@ namespace Komodo.Postings
             HtmlParseResult ret = Common.CopyObject<HtmlParseResult>(data);
             if (options.NormalizeCase)
             {
-                ret.PageTitle = NormalizeStringCase(ret.PageTitle);
-                ret.MetaDescription = NormalizeStringCase(ret.MetaDescription);
-                ret.MetaDescriptionOpengraph = NormalizeStringCase(ret.MetaDescriptionOpengraph);
-                ret.MetaKeywords = NormalizeStringCase(ret.MetaKeywords);
-                ret.MetaImageOpengraph = NormalizeStringCase(ret.MetaImageOpengraph);
-                ret.MetaVideoTagsOpengraph = NormalizeStringListCase(ret.MetaVideoTagsOpengraph);
-                ret.ImageUrls = NormalizeStringListCase(ret.ImageUrls);
-                ret.Links = NormalizeStringListCase(ret.Links);
-                ret.Head = NormalizeStringCase(ret.Head);
-                ret.Body = NormalizeStringCase(ret.Body);
-                ret.BodyStripped = NormalizeStringCase(ret.BodyStripped);
-                ret.Tokens = NormalizeStringListCase(ret.Tokens);
+                ret.PageTitle = NormalizeCase(ret.PageTitle);
+                ret.MetaDescription = NormalizeCase(ret.MetaDescription);
+                ret.MetaDescriptionOpengraph = NormalizeCase(ret.MetaDescriptionOpengraph);
+                ret.MetaKeywords = NormalizeCase(ret.MetaKeywords);
+                ret.MetaImageOpengraph = NormalizeCase(ret.MetaImageOpengraph);
+                ret.MetaVideoTagsOpengraph = NormalizeCase(ret.MetaVideoTagsOpengraph);
+                ret.ImageUrls = NormalizeCase(ret.ImageUrls);
+                ret.Links = NormalizeCase(ret.Links);
+                ret.Head = NormalizeCase(ret.Head);
+                ret.Body = NormalizeCase(ret.Body);
+                ret.BodyStripped = NormalizeCase(ret.BodyStripped);
+                ret.Tokens = NormalizeCase(ret.Tokens);
             }
 
             if (options.RemovePunctuation)
@@ -50,29 +52,29 @@ namespace Komodo.Postings
                 ret.MetaDescriptionOpengraph = RemoveStringPunctuation(ret.MetaDescriptionOpengraph);
                 ret.MetaKeywords = RemoveStringPunctuation(ret.MetaKeywords);
                 // ret.MetaImageOpengraph = RemoveStringPunctuation(ret.MetaImageOpengraph);
-                ret.MetaVideoTagsOpengraph = RemoveStringListPunctuation(ret.MetaVideoTagsOpengraph);
+                ret.MetaVideoTagsOpengraph = RemoveStringPunctuation(ret.MetaVideoTagsOpengraph);
                 // ret.ImageUrls = RemovePunctuation(ret.ImageUrls);
                 // ret.Links = RemovePunctuation(ret.Links);
                 ret.Head = RemoveStringPunctuation(ret.Head);
                 ret.Body = RemoveStringPunctuation(ret.Body);
                 ret.BodyStripped = RemoveStringPunctuation(ret.BodyStripped);
-                ret.Tokens = RemoveStringListPunctuation(ret.Tokens);
+                ret.Tokens = RemovePunctuation(ret.Tokens);
             }
 
             if (options.RemoveStopWords)
             {
-                ret.PageTitle = RemoveStringStopWords(options, ret.PageTitle);
-                ret.MetaDescription = RemoveStringStopWords(options, ret.MetaDescription);
-                ret.MetaDescriptionOpengraph = RemoveStringStopWords(options, ret.MetaDescriptionOpengraph);
-                ret.MetaKeywords = RemoveStringStopWords(options, ret.MetaKeywords);
+                ret.PageTitle = RemoveStopWords(options, ret.PageTitle);
+                ret.MetaDescription = RemoveStopWords(options, ret.MetaDescription);
+                ret.MetaDescriptionOpengraph = RemoveStopWords(options, ret.MetaDescriptionOpengraph);
+                ret.MetaKeywords = RemoveStopWords(options, ret.MetaKeywords);
                 // ret.MetaImageOpengraph = RemoveStringStopWords(options, ret.MetaImageOpengraph);
-                ret.MetaVideoTagsOpengraph = RemoveStringListStopWords(options, ret.MetaVideoTagsOpengraph);
+                ret.MetaVideoTagsOpengraph = RemoveStopWords(options, ret.MetaVideoTagsOpengraph);
                 // ret.ImageUrls = RemoveStopWords(options, ret.ImageUrls);
                 // ret.Links = RemoveStopWords(options, ret.Links);
-                ret.Head = RemoveStringStopWords(options, ret.Head);
-                ret.Body = RemoveStringStopWords(options, ret.Body);
-                ret.BodyStripped = RemoveStringStopWords(options, ret.BodyStripped);
-                ret.Tokens = RemoveStringListStopWords(options, ret.Tokens);
+                ret.Head = RemoveStopWords(options, ret.Head);
+                ret.Body = RemoveStopWords(options, ret.Body);
+                ret.BodyStripped = RemoveStopWords(options, ret.BodyStripped);
+                ret.Tokens = RemoveStopWords(options, ret.Tokens);
             }
 
             return ret;
@@ -92,19 +94,19 @@ namespace Komodo.Postings
             JsonParseResult ret = Common.CopyObject<JsonParseResult>(data);
             if (options.NormalizeCase)
             {
-                ret.Schema = NormalizeSchemaCase(ret.Schema);
-                ret.Flattened = NormalizeDataNodeCase(ret.Flattened);
-                ret.Tokens = NormalizeStringListCase(ret.Tokens);
+                ret.Schema = NormalizeCase(ret.Schema);
+                ret.Flattened = NormalizeCase(ret.Flattened);
+                ret.Tokens = NormalizeCase(ret.Tokens);
             }
 
             if (options.RemovePunctuation)
             {
-                ret.Tokens = RemoveStringListPunctuation(ret.Tokens);
+                ret.Tokens = RemovePunctuation(ret.Tokens);
             }
 
             if (options.RemoveStopWords)
             {
-                ret.Tokens = RemoveStringListStopWords(options, ret.Tokens);
+                ret.Tokens = RemoveStopWords(options, ret.Tokens);
             }
 
             return ret;
@@ -124,19 +126,19 @@ namespace Komodo.Postings
             SqlParseResult ret = Common.CopyObject<SqlParseResult>(data);
             if (options.NormalizeCase)
             {
-                ret.Schema = NormalizeSchemaCase(ret.Schema);
-                ret.Flattened = NormalizeDataNodeCase(ret.Flattened);
-                ret.Tokens = NormalizeStringListCase(ret.Tokens);
+                ret.Schema = NormalizeCase(ret.Schema);
+                ret.Flattened = NormalizeCase(ret.Flattened);
+                ret.Tokens = NormalizeCase(ret.Tokens);
             }
 
             if (options.RemovePunctuation)
             {
-                ret.Tokens = RemoveStringListPunctuation(ret.Tokens);
+                ret.Tokens = RemovePunctuation(ret.Tokens);
             }
 
             if (options.RemoveStopWords)
             {
-                ret.Tokens = RemoveStringListStopWords(options, ret.Tokens);
+                ret.Tokens = RemoveStopWords(options, ret.Tokens);
             }
 
             return ret;
@@ -156,19 +158,19 @@ namespace Komodo.Postings
             XmlParseResult ret = Common.CopyObject<XmlParseResult>(data);
             if (options.NormalizeCase)
             {
-                ret.Schema = NormalizeSchemaCase(ret.Schema);
-                ret.Flattened = NormalizeDataNodeCase(ret.Flattened);
-                ret.Tokens = NormalizeStringListCase(ret.Tokens);
+                ret.Schema = NormalizeCase(ret.Schema);
+                ret.Flattened = NormalizeCase(ret.Flattened);
+                ret.Tokens = NormalizeCase(ret.Tokens);
             }
 
             if (options.RemovePunctuation)
             {
-                ret.Tokens = RemoveStringListPunctuation(ret.Tokens);
+                ret.Tokens = RemovePunctuation(ret.Tokens);
             }
 
             if (options.RemoveStopWords)
             {
-                ret.Tokens = RemoveStringListStopWords(options, ret.Tokens);
+                ret.Tokens = RemoveStopWords(options, ret.Tokens);
             }
 
             return ret;
@@ -188,17 +190,17 @@ namespace Komodo.Postings
             TextParseResult ret = Common.CopyObject<TextParseResult>(data);
             if (options.NormalizeCase)
             {
-                ret.Tokens = NormalizeStringListCase(ret.Tokens);
+                ret.Tokens = NormalizeCase(ret.Tokens);
             }
 
             if (options.RemovePunctuation)
             {
-                ret.Tokens = RemoveStringListPunctuation(ret.Tokens);
+                ret.Tokens = RemovePunctuation(ret.Tokens);
             }
 
             if (options.RemoveStopWords)
             {
-                ret.Tokens = RemoveStringListStopWords(options, ret.Tokens);
+                ret.Tokens = RemoveStopWords(options, ret.Tokens);
             }
 
             return ret;
@@ -209,62 +211,69 @@ namespace Komodo.Postings
         #region Normalize-Case
 
         /// <summary>
-        /// Normalize string case.
+        /// Normalize case.
         /// </summary>
         /// <param name="token">Token.</param>
         /// <returns>Token with normalized case.</returns>
-        public static string NormalizeStringCase(string token)
+        public static string NormalizeCase(string token)
         {
             if (String.IsNullOrEmpty(token)) return token;
             return token.ToLower();
         }
 
         /// <summary>
-        /// Normalize string case for a list of strings.
+        /// Normalize case.
         /// </summary>
-        /// <param name="tokenList">List of tokens.</param>
+        /// <param name="tokens">List of tokens.</param>
         /// <returns>List of tokens with normalized case.</returns>
-        public static List<string> NormalizeStringListCase(List<string> tokenList)
+        public static List<string> NormalizeCase(List<string> tokens)
         {
-            if (tokenList == null) return null;
-            if (tokenList.Count < 1) return tokenList;
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
             List<string> ret = new List<string>();
-            foreach (string curr in tokenList)
+            foreach (string curr in tokens)
             {
-                ret.Add(NormalizeStringCase(curr));
+                ret.Add(NormalizeCase(curr));
             }
             return ret;
         }
 
         /// <summary>
-        /// Normalize case for an object.
+        /// Normalize case.
+        /// </summary>
+        /// <param name="tokens">Dictionary where the keys contain tokens.</param>
+        /// <returns>Dictionary of tokens with normalized case.</returns>
+        public static Dictionary<string, int> NormalizeCase(Dictionary<string, int> tokens)
+        {
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
+            Dictionary<string, int> ret = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> curr in tokens)
+            {
+                AddToDictionary(curr.Key, curr.Value, ret);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Normalize case.
         /// </summary>
         /// <param name="val">Object.</param>
         /// <param name="valType">The data type of the object.</param>
         /// <returns>Object with normalized case.</returns>
-        public static object NormalizeObjectCase(object val, DataType valType)
+        public static object NormalizeCase(object val, DataType valType)
         {
-            if (val == null)
-            {
-                return null;
-            }
-
-            if (valType == DataType.String)
-            {
-                return NormalizeStringCase(val.ToString());
-            }
-            else
-            {
-                return val;
-            }
+            if (val == null) return null;
+            if (valType == DataType.String) return NormalizeCase(val.ToString());
+            return val;
         }
 
         /// <summary>
-        /// Normalize the case for a dictionary.
+        /// Normalize case.
         /// </summary>
         /// <param name="dict">Dictionary.</param>
         /// <returns>Dictionary with normalized case.</returns>
-        public static Dictionary<string, DataType> NormalizeSchemaCase(Dictionary<string, DataType> dict)
+        public static Dictionary<string, DataType> NormalizeCase(Dictionary<string, DataType> dict)
         {
             if (dict == null) return null;
             if (dict.Count < 1) return dict;
@@ -272,7 +281,7 @@ namespace Komodo.Postings
             foreach (KeyValuePair<string, DataType> curr in dict)
             {
                 string key = null;
-                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeStringCase(curr.Key);
+                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeCase(curr.Key);
                 if (ret.ContainsKey(key)) throw new Exception("Normalizing case would create duplicate keys in supplied dictionary");
                 ret.Add(key, curr.Value);
             }
@@ -280,11 +289,11 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Normalize the case for a dictionary.
+        /// Normalize case.
         /// </summary>
         /// <param name="dict">Dictionary.</param>
         /// <returns>Dictionary with normalized case.</returns>
-        public static Dictionary<string, string> NormalizeDictionaryCase(Dictionary<string, string> dict)
+        public static Dictionary<string, string> NormalizeCase(Dictionary<string, string> dict)
         {
             if (dict == null) return null;
             if (dict.Count < 1) return dict;
@@ -293,8 +302,8 @@ namespace Komodo.Postings
             {
                 string key = null;
                 string val = null;
-                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeStringCase(curr.Key);
-                if (!String.IsNullOrEmpty(curr.Value)) val = NormalizeStringCase(curr.Value);
+                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeCase(curr.Key);
+                if (!String.IsNullOrEmpty(curr.Value)) val = NormalizeCase(curr.Value);
                 if (ret.ContainsKey(key)) throw new Exception("Normalizing case would create duplicate keys in supplied dictionary");
                 ret.Add(key, val);
             }
@@ -302,19 +311,19 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Normalize case for a list of data nodes.
+        /// Normalize case.
         /// </summary>
         /// <param name="nodes">List of data nodes.</param>
         /// <returns>List of data nodes with normalized case.</returns>
-        public static List<DataNode> NormalizeDataNodeCase(List<DataNode> nodes)
+        public static List<DataNode> NormalizeCase(List<DataNode> nodes)
         {
             if (nodes == null) return null;
             if (nodes.Count < 1) return nodes;
             List<DataNode> ret = new List<DataNode>();
             foreach (DataNode curr in nodes)
             {
-                string key = NormalizeStringCase(curr.Key);
-                object data = NormalizeObjectCase(curr.Data, curr.Type);
+                string key = NormalizeCase(curr.Key);
+                object data = NormalizeCase(curr.Data, curr.Type);
                 ret.Add(new DataNode(key, data, curr.Type));
             }
             return ret;
@@ -325,7 +334,7 @@ namespace Komodo.Postings
         #region Remove-Punctuation
 
         /// <summary>
-        /// Remove punctuation from a string token.
+        /// Remove punctuation.
         /// </summary>
         /// <param name="token">String.</param>
         /// <returns>String without punctuation.</returns>
@@ -351,16 +360,16 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Remove punctuation from a list of string tokens.
+        /// Remove punctuation.
         /// </summary>
-        /// <param name="tokenList">List of string tokens.</param>
+        /// <param name="tokens">List of string tokens.</param>
         /// <returns>List of string tokens without punctuation.</returns>
-        public static List<string> RemoveStringListPunctuation(List<string> tokenList)
+        public static List<string> RemoveStringPunctuation(List<string> tokens)
         {
-            if (tokenList == null) return null;
-            if (tokenList.Count < 1) return tokenList;
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
             List<string> ret = new List<string>();
-            foreach (string curr in tokenList)
+            foreach (string curr in tokens)
             {
                 ret.Add(RemoveStringPunctuation(curr));
             }
@@ -368,12 +377,29 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Remove punctuation from an object.
+        /// Remove punctuation.
+        /// </summary>
+        /// <param name="tokens">Dictionary containing tokens as keys.</param>
+        /// <returns>Dictionary of tokens without punctuation.</returns>
+        public static Dictionary<string, int> RemovePunctuation(Dictionary<string, int> tokens)
+        {
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
+            Dictionary<string, int> ret = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> curr in tokens)
+            {
+                AddToDictionary(curr.Key, curr.Value, ret);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Remove punctuation.
         /// </summary>
         /// <param name="val">Object.</param>
         /// <param name="valType">The data type of the object.</param>
         /// <returns>Object without punctuation.</returns>
-        public static object RemoveObjectPunctuation(object val, DataType valType)
+        public static object RemovePunctuation(object val, DataType valType)
         {
             if (val == null) return null;
 
@@ -388,11 +414,11 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Remove punctuation from a dictionary.
+        /// Remove punctuation.
         /// </summary>
         /// <param name="dict">Dictionary.</param>
         /// <returns>Dictionary without punctuation.</returns>
-        public static Dictionary<string, string> RemoveDictionaryPunctuation(Dictionary<string, string> dict)
+        public static Dictionary<string, string> RemovePunctuation(Dictionary<string, string> dict)
         {
             if (dict == null) return null;
             if (dict.Count < 1) return dict;
@@ -410,11 +436,11 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Remove punctuation from a list of data nodes.
+        /// Remove punctuation.
         /// </summary>
         /// <param name="nodes">List of data nodes.</param>
         /// <returns>List of data nodes without punctuation.</returns>
-        public static List<DataNode> RemoveDataNodePunctuation(List<DataNode> nodes)
+        public static List<DataNode> RemovePunctuation(List<DataNode> nodes)
         {
             if (nodes == null) return null;
             if (nodes.Count < 1) return nodes;
@@ -425,7 +451,7 @@ namespace Komodo.Postings
                 object data = null;
 
                 if (!String.IsNullOrEmpty(curr.Key)) key = RemoveStringPunctuation(curr.Key);
-                if (curr.Data != null) data = RemoveObjectPunctuation(curr.Data, curr.Type);
+                if (curr.Data != null) data = RemovePunctuation(curr.Data, curr.Type);
                 ret.Add(new DataNode(key, data, curr.Type));
             }
             return ret;
@@ -436,12 +462,12 @@ namespace Komodo.Postings
         #region Remove-Stop-Words
 
         /// <summary>
-        /// Remove stop words from a string.
+        /// Remove stop words.
         /// </summary>
         /// <param name="options">Postings options.</param>
         /// <param name="token">String.</param>
         /// <returns>String without stop words.</returns>
-        public static string RemoveStringStopWords(PostingsOptions options, string token)
+        public static string RemoveStopWords(PostingsOptions options, string token)
         {
             if (options == null) return token;
             if (options.StopWords == null || options.StopWords.Count < 1) return token;
@@ -468,37 +494,55 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Remove stop words from a list of strings.
+        /// Remove stop words.
         /// </summary>
         /// <param name="options">Postings options.</param>
-        /// <param name="tokenList">List of strings.</param>
+        /// <param name="tokens">List of strings.</param>
         /// <returns>List of strings without stop words.</returns>
-        public static List<string> RemoveStringListStopWords(PostingsOptions options, List<string> tokenList)
+        public static List<string> RemoveStopWords(PostingsOptions options, List<string> tokens)
         {
-            if (tokenList == null) return null;
-            if (tokenList.Count < 1) return tokenList;
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
             List<string> ret = new List<string>();
-            foreach (string curr in tokenList)
+            foreach (string curr in tokens)
             {
-                ret.Add(RemoveStringStopWords(options, curr));
+                ret.Add(RemoveStopWords(options, curr));
             }
             return ret;
         }
 
         /// <summary>
-        /// Remove stop words from an object.
+        /// Remove stop words.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="tokens">Dictionary containing tokens as keys.</param>
+        /// <returns>Dictionary without stop words.</returns>
+        public static Dictionary<string, int> RemoveStopWords(PostingsOptions options, Dictionary<string, int> tokens)
+        {
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
+            Dictionary<string, int> ret = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, int> curr in tokens)
+            {
+                ret.Add(RemoveStopWords(options, curr.Key), curr.Value);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Remove stop words.
         /// </summary>
         /// <param name="options">Postings options.</param>
         /// <param name="token">Object.</param>
         /// <param name="tokenType">Data type of the object.</param>
         /// <returns>Object without stop words.</returns>
-        public static object RemoveObjectStopWords(PostingsOptions options, object token, DataType tokenType)
+        public static object RemoveStopWords(PostingsOptions options, object token, DataType tokenType)
         {
             if (token == null) return null;
 
             if (tokenType == DataType.String)
             {
-                return RemoveStringStopWords(options, token.ToString());
+                return RemoveStopWords(options, token.ToString());
             }
             else
             {
@@ -507,12 +551,12 @@ namespace Komodo.Postings
         }
 
         /// <summary>
-        /// Remove stop words from a dictionary.
+        /// Remove stop words.
         /// </summary>
         /// <param name="options">Postings options.</param>
         /// <param name="data">Dictionary.</param>
         /// <returns>Dictionary without stop words.</returns>
-        public static Dictionary<string, string> RemoveDictionaryStopWords(PostingsOptions options, Dictionary<string, string> data)
+        public static Dictionary<string, string> RemoveStopWords(PostingsOptions options, Dictionary<string, string> data)
         {
             if (options == null) return data;
             if (options.StopWords == null || options.StopWords.Count < 1) return data;
@@ -522,19 +566,19 @@ namespace Komodo.Postings
             Dictionary<string, string> ret = new Dictionary<string, string>();
             foreach (KeyValuePair<string, string> curr in data)
             {
-                ret.Add(curr.Key, RemoveStringStopWords(options, curr.Value));
+                ret.Add(curr.Key, RemoveStopWords(options, curr.Value));
             }
 
             return ret;
         }
 
         /// <summary>
-        /// Remove stop words from a list of data nodes.
+        /// Remove stop words.
         /// </summary>
         /// <param name="options">Postings options.</param>
         /// <param name="data">List of data nodes.</param>
         /// <returns>List of data nodes without stop words.</returns>
-        public static List<DataNode> RemoveDataNodeStopWords(PostingsOptions options, List<DataNode> data)
+        public static List<DataNode> RemoveStopWords(PostingsOptions options, List<DataNode> data)
         {
             if (options == null) return data;
             if (options.StopWords == null || options.StopWords.Count < 1) return data;
@@ -545,7 +589,7 @@ namespace Komodo.Postings
             {
                 if (curr.Data != null)
                 {
-                    ret.Add(new DataNode(curr.Key, RemoveObjectStopWords(options, curr.Data, curr.Type), curr.Type));
+                    ret.Add(new DataNode(curr.Key, RemoveStopWords(options, curr.Data, curr.Type), curr.Type));
                 }
                 else
                 {
@@ -556,6 +600,30 @@ namespace Komodo.Postings
             return ret;
         }
 
-        #endregion 
+        #endregion
+
+        #endregion
+
+        #region Private-Methods
+
+        private static void AddToDictionary(string key, int val, Dictionary<string, int> dict)
+        {
+            if (String.IsNullOrEmpty(key)) return;
+            if (dict == null) return;
+
+            if (dict.ContainsKey(key))
+            {
+                int orig = dict[key];
+                val = val + orig;
+                dict.Remove(key);
+                dict.Add(key, val);
+            }
+            else
+            {
+                dict.Add(key, val);
+            } 
+        }
+
+        #endregion
     }
 }

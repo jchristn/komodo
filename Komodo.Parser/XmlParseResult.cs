@@ -20,12 +20,7 @@ namespace Komodo.Parser
         /// Start and end timestamps.
         /// </summary>
         public Timestamps Time = new Timestamps();
-
-        /// <summary>
-        /// Schema for the object.
-        /// </summary>
-        public Dictionary<string, DataType> Schema = new Dictionary<string, DataType>();
-
+         
         /// <summary>
         /// Maximum node depth.
         /// </summary>
@@ -47,18 +42,23 @@ namespace Komodo.Parser
         public List<DataNode> Flattened { get; set; } = new List<DataNode>();
 
         /// <summary>
-        /// List of tokens found within the object.
+        /// Tokens found including their count.
         /// </summary>
-        public List<string> Tokens = new List<string>();
+        public Dictionary<string, int> Tokens = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Schema of the document.
+        /// </summary>
+        public Dictionary<string, DataType> Schema = new Dictionary<string, DataType>();
 
         #endregion
 
         #region Private-Members
-         
+
         #endregion
 
         #region Constructors-and-Factories
-         
+
         /// <summary>
         /// Instantiate the object.
         /// </summary>
@@ -103,12 +103,10 @@ namespace Komodo.Parser
 
             if (Tokens != null && Tokens.Count > 0)
             {
-                ret += "  Tokens : " + Tokens.Count + " entries" + Environment.NewLine;
-                foreach (string curr in Tokens)
-                {
-                    ret += "    " + curr + Environment.NewLine;
-                }
+                ret += "  Tokens             : " + Tokens.Count + Environment.NewLine;
+                foreach (KeyValuePair<string, int> curr in Tokens) ret += "    " + curr.Key + " [" + curr.Value + "]" + Environment.NewLine;
             }
+
             ret += "---";
             return ret;
         }

@@ -29,14 +29,14 @@ namespace Komodo.Parser
         public Timestamps Time = new Timestamps();
 
         /// <summary>
-        /// List of tokens found within the object.
+        /// Tokens found including their count.
         /// </summary>
-        public List<string> Tokens = new List<string>();
-
+        public Dictionary<string, int> Tokens = new Dictionary<string, int>();
+         
         #endregion
 
         #region Private-Members
-        
+
         private string _SourceContent { get; set; }
         private string _SourceUrl { get; set; }
 
@@ -49,7 +49,6 @@ namespace Komodo.Parser
         /// </summary>
         public TextParseResult()
         { 
-            Tokens = new List<string>();
         }
 
         #endregion
@@ -67,12 +66,10 @@ namespace Komodo.Parser
             ret += "  Success : " + Success + Environment.NewLine;
             if (Tokens != null && Tokens.Count > 0)
             {
-                ret += "  Tokens  : " + Tokens.Count + " entries" + Environment.NewLine;
-                foreach (string curr in Tokens)
-                {
-                    ret += "    " + curr + Environment.NewLine;
-                }
+                ret += "  Tokens             : " + Tokens.Count + Environment.NewLine;
+                foreach (KeyValuePair<string, int> curr in Tokens) ret += "    " + curr.Key + " [" + curr.Value + "]" + Environment.NewLine;
             }
+
             ret += "---";
             return ret;
         }

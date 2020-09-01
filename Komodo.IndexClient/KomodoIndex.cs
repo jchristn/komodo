@@ -542,15 +542,14 @@ namespace Komodo.IndexClient
                     Dictionary<string, string> termGuids = new Dictionary<string, string>();
 
                     // Term GUIDs
-                    List<string> terms = GetParseResultTerms(sourceDoc.Type, ret.ParseResult);
-                    if (terms != null && terms.Count > 0) terms = terms.Distinct().ToList();
+                    Dictionary<string, int> terms = GetParseResultTerms(sourceDoc.Type, ret.ParseResult); 
 
-                    foreach (string term in terms)
+                    foreach (KeyValuePair<string, int> term in terms)
                     {
                         DbExpression e = new DbExpression(
                             _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
                             DbOperators.Equals,
-                            term);
+                            term.Key);
 
                         TermGuid tg = _ORM.SelectFirst<TermGuid>(e);
                         if (tg == null || tg == default(TermGuid))
@@ -558,17 +557,17 @@ namespace Komodo.IndexClient
                             tg = new TermGuid();
                             tg.GUID = Guid.NewGuid().ToString();
                             tg.IndexGUID = _GUID;
-                            tg.Term = term;
+                            tg.Term = term.Key;
                             tg = _ORM.Insert<TermGuid>(tg);
                         }
 
-                        termGuids.Add(term, tg.GUID);
+                        termGuids.Add(term.Key, tg.GUID);
                     }
 
                     // Term Docs
-                    foreach (string term in terms)
+                    foreach (KeyValuePair<string, string> termGuid in termGuids)
                     {
-                        TermDoc td = new TermDoc(_GUID, termGuids[term], sourceDoc.GUID, ret.Parsed.GUID);
+                        TermDoc td = new TermDoc(_GUID, termGuid.Value, sourceDoc.GUID, ret.Parsed.GUID);
                         td = _ORM.Insert<TermDoc>(td);
                     }
 
@@ -1442,12 +1441,12 @@ namespace Komodo.IndexClient
             int termsTotal = queryTerms.Count;
             int matchCount = 0;
 
-            List<string> docTerms = GetParseResultTerms(doc.Type, parseResult);
+            Dictionary<string, int> docTerms = GetParseResultTerms(doc.Type, parseResult);
             if (docTerms == null || docTerms.Count < 1) return;
 
             foreach (KeyValuePair<string, string> currTerm in terms)
             {
-                if (docTerms.Contains(currTerm.Key))
+                if (docTerms.ContainsKey(currTerm.Key))
                 {
                     matchCount++;
                     matched.Add(currTerm.Key, currTerm.Value);
@@ -1489,7 +1488,7 @@ namespace Komodo.IndexClient
             }
         }
 
-        private List<string> GetParseResultTerms(DocType type, object parseResult)
+        private Dictionary<string, int> GetParseResultTerms(DocType type, object parseResult)
         {
             if (type == DocType.Html)
             {
@@ -1551,7 +1550,7 @@ namespace Komodo.IndexClient
             int filtersTotal = optionalFilters.Count;
             int matchCount = 0;
 
-            List<string> docTerms = GetParseResultTerms(doc.Type, parseResult);
+            Dictionary<string, int> docTerms = GetParseResultTerms(doc.Type, parseResult);
             if (docTerms == null || docTerms.Count < 1) return;
 
             foreach (SearchFilter filter in optionalFilters)

@@ -27,6 +27,7 @@ namespace Komodo.Parser
             }
             set
             {
+                if (value == null) throw new ArgumentNullException(nameof(SplitCharacters));
                 _SplitCharacters = value;
             }
         }
@@ -176,32 +177,76 @@ namespace Komodo.Parser
             return ret;
         }
 
-        private List<string> GetTokens(string data)
-        { 
+        private Dictionary<string, int> GetTokens(string data)
+        {
+            Dictionary<string, int> ret = new Dictionary<string, int>();
             List<string> temp = new List<string>();
 
             temp = new List<string>(data.Split(_SplitCharacters, StringSplitOptions.RemoveEmptyEntries)); 
 
             if (temp != null && temp.Count > 0)
             {
-                List<string> ret = new List<string>();
                 foreach (string s in temp)
                 {
-                    string tempStr = String.Copy(s);
+                    string tempStr = new string(s); 
                     if (!String.IsNullOrEmpty(tempStr))
                     {
                         tempStr = tempStr.Trim();
                         if (!String.IsNullOrEmpty(tempStr))
                         {
                             if (tempStr.Length < _MinimumTokenLength) continue;
-                            ret.Add(tempStr);
+                            AddToken(tempStr, ret);
                         }
                     }
                 }
-                return ret;
             }
 
-            return temp;
+            if (ret != null && ret.Count > 0)
+            {
+                ret = ret.OrderByDescending(u => u.Value).ToDictionary(z => z.Key, y => y.Value);
+            }
+
+            return ret;
+        }
+
+        private void AddToken(string token, Dictionary<string, int> dict)
+        {
+            if (String.IsNullOrEmpty(token)) return;
+            if (dict == null) return;
+
+            if (dict == null) dict = new Dictionary<string, int>();
+
+            if (dict.ContainsKey(token))
+            {
+                int count = dict[token];
+                count = count + 1;
+                dict.Remove(token);
+                dict.Add(token, count);
+            }
+            else
+            {
+                dict.Add(token, 1);
+            }
+        }
+
+        private void AddToken(KeyValuePair<string, int> token, Dictionary<string, int> dict)
+        {
+            if (String.IsNullOrEmpty(token.Key)) return;
+            if (dict == null) return;
+
+            if (dict == null) dict = new Dictionary<string, int>();
+
+            if (dict.ContainsKey(token.Key))
+            {
+                int count = dict[token.Key];
+                count = count + token.Value;
+                dict.Remove(token.Key);
+                dict.Add(token.Key, count);
+            }
+            else
+            {
+                dict.Add(token.Key, token.Value);
+            }
         }
 
         #endregion

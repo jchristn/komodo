@@ -25,7 +25,18 @@ namespace Komodo.Parser
         /// <summary>
         /// Text parser to use when evaluating text.
         /// </summary>
-        public TextParser TextParser = new TextParser();
+        public TextParser TextParser
+        {
+            get
+            {
+                return _TextParser;
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(TextParser));
+                _TextParser = value;
+            }
+        }
 
         /// <summary>
         /// Minimum length of a token to include in the result.
@@ -48,6 +59,7 @@ namespace Komodo.Parser
         #region Private-Members
          
         private int _MinimumTokenLength = 3;
+        private TextParser _TextParser = new TextParser();
 
         #endregion
 
@@ -152,26 +164,70 @@ namespace Komodo.Parser
             return ret;
         }
 
-        private List<string> GetTokens(List<DataNode> nodes)
+        private Dictionary<string, int> GetTokens(List<DataNode> nodes)
         {
-            List<string> ret = new List<string>();
+            Dictionary<string, int> ret = new Dictionary<string, int>();
 
             foreach (DataNode curr in nodes)
             {
                 if (curr.Data == null) continue;
                 if (String.IsNullOrEmpty(curr.Data.ToString())) continue;
 
-                TextParser.MinimumTokenLength = MinimumTokenLength;
-                TextParseResult tpr = TextParser.ParseString(curr.Data.ToString());
+                _TextParser.MinimumTokenLength = MinimumTokenLength;
+                TextParseResult tpr = _TextParser.ParseString(curr.Data.ToString());
 
-                foreach (string currToken in tpr.Tokens)
+                foreach (KeyValuePair<string, int> currToken in tpr.Tokens)
                 {
-                    ret.Add(currToken.ToLower());
+                    AddToken(currToken, ret);
                 }
             }
 
-            ret = ret.Distinct().ToList();
+            if (ret != null && ret.Count > 0)
+            {
+                ret = ret.OrderByDescending(u => u.Value).ToDictionary(z => z.Key, y => y.Value);
+            }
+
             return ret;
+        }
+
+        private void AddToken(string token, Dictionary<string, int> dict)
+        {
+            if (String.IsNullOrEmpty(token)) return;
+            if (dict == null) return;
+
+            if (dict == null) dict = new Dictionary<string, int>();
+
+            if (dict.ContainsKey(token))
+            {
+                int count = dict[token];
+                count = count + 1;
+                dict.Remove(token);
+                dict.Add(token, count);
+            }
+            else
+            {
+                dict.Add(token, 1);
+            }
+        }
+
+        private void AddToken(KeyValuePair<string, int> token, Dictionary<string, int> dict)
+        {
+            if (String.IsNullOrEmpty(token.Key)) return;
+            if (dict == null) return;
+
+            if (dict == null) dict = new Dictionary<string, int>();
+
+            if (dict.ContainsKey(token.Key))
+            {
+                int count = dict[token.Key];
+                count = count + token.Value;
+                dict.Remove(token.Key);
+                dict.Add(token.Key, count);
+            }
+            else
+            {
+                dict.Add(token.Key, token.Value);
+            }
         }
 
         #endregion
