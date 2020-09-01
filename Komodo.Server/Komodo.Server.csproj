@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.5.1.5</Version>
+    <Version>1.5.1.6</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Server: Information search, metadata, storage, and retrieval that runs as a standalone RESTful server</Product>
@@ -24,8 +24,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Komodo.Daemon" Version="1.5.1.5" />
-    <PackageReference Include="Watson" Version="3.1.0.1" />
+    <PackageReference Include="Komodo.Daemon" Version="1.5.1.6" />
+    <PackageReference Include="Watson" Version="3.1.0.2" />
   </ItemGroup>
 
   <ItemGroup>

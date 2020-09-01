@@ -185,7 +185,7 @@ namespace Test.Crawler
             if (String.IsNullOrEmpty(query)) return;
 
             DbSettings db = new DbSettings(
-                (DbType)(Enum.Parse(typeof(DbType), Common.InputString("DB type:", "MySql", false))),
+                (DbType)(Enum.Parse(typeof(DbType), Common.InputString("DB type:", "Mysql", false))),
                 Common.InputString("Hostname:", "localhost", false),
                 Common.InputInteger("Port:", 3306, true, false),
                 Common.InputString("Username:", "root", false),

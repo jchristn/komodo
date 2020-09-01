@@ -78,7 +78,7 @@ else
 ### Crawling SQL
 ```
 DbSettings db = new DbSettings(
-    DbTypes.MySql,
+    DbTypes.Mysql,
     "localhost",
     3306,
     "[username]",

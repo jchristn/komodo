@@ -37,6 +37,8 @@ namespace Komodo.Crawler
 
             _DbSettings = settings;
             _ORM = new WatsonORM(_DbSettings.ToDatabaseSettings());
+            _ORM.InitializeDatabase();
+
             _Query = query; 
         }
 
