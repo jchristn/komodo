@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-    <Version>1.5.1.5</Version>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.0;net461</TargetFrameworks>
+    <Version>1.5.2</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo SDK: Information search, metadata, storage, and retrieval</Product>
@@ -14,16 +14,16 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management integrate</PackageTags>
-    <PackageReleaseNotes>Refactor and Komodo.Daemon</PackageReleaseNotes>
+    <PackageReleaseNotes>Retarget to support .NET Standard 2.0, .NET Core 2.0, and .NET Framework 4.6.1</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RestWrapper" Version="2.1.4.1" />
+    <PackageReference Include="RestWrapper" Version="2.1.4.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE.md">
+    <None Include="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -188,7 +188,7 @@ namespace Komodo.Parser
             {
                 foreach (string s in temp)
                 {
-                    string tempStr = new string(s); 
+                    string tempStr = new string(s.ToCharArray()); 
                     if (!String.IsNullOrEmpty(tempStr))
                     {
                         tempStr = tempStr.Trim();

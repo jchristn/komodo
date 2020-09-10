@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.1</TargetFrameworks>
-    <Version>1.5.2</Version>
+    <TargetFrameworks>netcoreapp2.0;netstandard2.0;net461</TargetFrameworks>
+    <Version>1.5.2.1</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Parser: Information search, metadata, storage, and retrieval</Product>
@@ -14,18 +14,18 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management metadata</PackageTags>
-    <PackageReleaseNotes>Tokens now returned as a dictionary including the count</PackageReleaseNotes>
+    <PackageReleaseNotes>Retarget, dependency update</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
-    <PackageReference Include="Komodo.Crawler" Version="1.5.1.12" />
+    <PackageReference Include="Komodo.Crawler" Version="1.5.2" />
     <PackageReference Include="XmlToPox" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE.md">
+    <None Include="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -18,7 +18,7 @@ namespace Test.Crawler
             {
                 Console.WriteLine("Press ENTER to quit");
 
-                string crawlerType = Common.InputString("Crawler type [s3|azure|kvp|file|ftp|http|sql|sqlite]:", "file", true);
+                string crawlerType = Common.InputString("Crawler type [s3|azure|kvp|komodo|file|ftp|http|sql|sqlite]:", "file", true);
                 if (String.IsNullOrEmpty(crawlerType)) break;
 
                 switch (crawlerType)
@@ -31,6 +31,9 @@ namespace Test.Crawler
                         break;
                     case "kvp":
                         KvpCrawler();
+                        break;
+                    case "komodo":
+                        KomodoCrawler();
                         break;
                     case "file":
                         FileCrawler();
@@ -192,7 +195,57 @@ namespace Test.Crawler
                 Console.WriteLine("");
                 return;
             }
-             
+
+            DocType docType = GetDocType();
+
+            switch (docType)
+            {
+                case DocType.Html:
+                    ParseHtml(kcr.Data);
+                    break;
+                case DocType.Json:
+                    ParseJson(kcr.Data);
+                    break;
+                case DocType.Sql:
+                    // ParseSql();
+                    break;
+                case DocType.Text:
+                    ParseText(kcr.Data);
+                    break;
+                case DocType.Xml:
+                    ParseXml(kcr.Data);
+                    break;
+            }
+        }
+
+        static void KomodoCrawler()
+        {
+            // string endpoint, string indexGuid, string apiKey, string key
+            string endpoint = Common.InputString("Endpoint:", null, false);
+            string indexGuid = Common.InputString("Index GUID:", null, true);
+            string apiKey = Common.InputString("API Key:", null, false);
+            string key = Common.InputString("Key:", null, false);
+
+            KomodoCrawler kc = new KomodoCrawler(endpoint, indexGuid, apiKey, key);
+
+            KomodoCrawlResult kcr = kc.Get();
+
+            Console.WriteLine("Success        : " + kcr.Success);
+            Console.WriteLine("Start time     : " + kcr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + kcr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + kcr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + kcr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(kcr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(kcr.Data));
+
+            Console.WriteLine("");
+            if (!kcr.Success)
+            {
+                Console.WriteLine("Failure status reported");
+                Console.WriteLine("");
+                return;
+            }
+
             DocType docType = GetDocType();
 
             switch (docType)

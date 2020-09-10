@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.1</TargetFrameworks>
-    <Version>1.5.2</Version>
+    <TargetFrameworks>netcoreapp2.0;netstandard2.0;net461</TargetFrameworks>
+    <Version>1.5.2.1</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Index Client: Information search, metadata, storage, and retrieval</Product>
     <Description>Index client for Komodo. Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server. Komodo is an information search, metadata, storage, and retrieval platform.</Description>
@@ -13,19 +13,19 @@
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management metadata</PackageTags>
-    <PackageReleaseNotes>Dependency update</PackageReleaseNotes>
+    <PackageReleaseNotes>Dependency update and retarget</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE.md">
+    <None Include="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.Postings" Version="1.5.2" />
+    <PackageReference Include="Komodo.Postings" Version="1.5.2.1" />
   </ItemGroup>
 
   <ItemGroup>
