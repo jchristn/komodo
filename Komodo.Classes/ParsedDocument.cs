@@ -73,7 +73,7 @@ namespace Komodo.Classes
 
         /// <summary>
         /// The timestamp from when the document was indexed.
-        /// </summary
+        /// </summary>
         [JsonProperty(Order = 990)]
         [Column("indexed", false, DataTypes.DateTime, true)]
         public DateTime? Indexed { get; set; }

@@ -74,31 +74,37 @@ namespace Komodo.Classes
             /// <summary>
             /// Start and end timestamps for the overall indexing operation.
             /// </summary>
+            [JsonProperty(Order = -3)]
             public Timestamps Overall = new Timestamps();
-             
+
             /// <summary>
             /// Start and end timestamps for persisting the source document to storage.
             /// </summary>
+            [JsonProperty(Order = 990)]
             public Timestamps PersistSourceDocument = new Timestamps();
 
             /// <summary>
             /// Start and end timestamps for persisting the parsed document to storage.
             /// </summary>
+            [JsonProperty(Order = 991)]
             public Timestamps PersistParsedDocument = new Timestamps();
 
             /// <summary>
             /// Start and end timestamps for persisting the postings object to storage.
             /// </summary>
+            [JsonProperty(Order = 992)]
             public Timestamps PersistPostingsDocument = new Timestamps();
 
             /// <summary>
             /// Start and end timestamps for parsing the source document.
             /// </summary>
+            [JsonProperty(Order = -2)]
             public Timestamps Parse = new Timestamps();
 
             /// <summary>
             /// Start and end timestamps for generating postings from the parsed document.
             /// </summary>
+            [JsonProperty(Order = -1)]
             public Timestamps Postings = new Timestamps();
 
             /// <summary>

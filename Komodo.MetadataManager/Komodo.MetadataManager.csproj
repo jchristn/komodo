@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netstandard2.0;net461</TargetFrameworks>
     <Description>Metadata manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
-    <Version>1.6.1.4</Version>
+    <Version>1.6.1.5</Version>
     <Authors>Joel Christner</Authors>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.IndexManager" Version="1.6.1.4" />
+    <PackageReference Include="Komodo.IndexManager" Version="1.6.1.5" />
   </ItemGroup>
 
 </Project>

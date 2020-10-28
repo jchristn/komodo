@@ -51,6 +51,7 @@ namespace Komodo.MetadataManager
         /// Instantiate the object.
         /// </summary>
         /// <param name="policy">Metadata policy.</param>
+        /// <param name="indices">Komodo index manager.</param>
         public MetadataProcessor(MetadataPolicy policy, KomodoIndices indices)
         {
             if (policy == null) throw new ArgumentNullException(nameof(policy));
@@ -65,8 +66,8 @@ namespace Komodo.MetadataManager
         /// </summary>
         /// <param name="source">Source document.</param>
         /// <param name="parsed">Parsed document.</param>
-        /// <param name="rule">Matching metadata rules.</param>
-        /// <returns></returns>
+        /// <param name="parseResult">Parse result.</param>
+        /// <returns>List of metadata rules.</returns>
         public List<MetadataRule> GetMatchingRules(SourceDocument source, ParsedDocument parsed, object parseResult)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -158,7 +159,8 @@ namespace Komodo.MetadataManager
         /// </summary>
         /// <param name="source">Source document.</param>
         /// <param name="parsed">Parsed document.</param>
-        /// <returns>True if successful.</returns>
+        /// <param name="parseResult">Parse result.</param>
+        /// <returns>Metadata result.</returns>
         public async Task<MetadataResult> ProcessDocument(SourceDocument source, ParsedDocument parsed, object parseResult)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));

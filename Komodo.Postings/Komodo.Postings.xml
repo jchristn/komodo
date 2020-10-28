@@ -60,7 +60,7 @@
             <summary>
             Normalize case.
             </summary>
-            <param name="token">Token.</param>
+            <param name="tokens">Token.</param>
             <returns>Token with normalized case.</returns>
         </member>
         <member name="M:Komodo.Postings.Normalizer.NormalizeCase(System.Collections.Generic.List{System.String})">

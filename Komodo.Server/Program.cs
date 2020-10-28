@@ -81,37 +81,8 @@ namespace Komodo.Server
             ConsoleColor prior = Console.ForegroundColor; 
             Console.ForegroundColor = ConsoleColor.DarkGray;
             if (!skipLogo) Console.WriteLine(Logo());
-            Console.WriteLine("Komodo | Information search, storage, and retrieval | v" + _Version);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine("");
-
-            if (_Settings.Server.ListenerHostname.Equals("localhost") || _Settings.Server.ListenerHostname.Equals("127.0.0.1"))
-            {
-                //                          1         2         3         4         5         6         7         8
-                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("WARNING: Komodo started on '" + _Settings.Server.ListenerHostname + "'");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("Komodo can only service requests from the local machine.  If you wish to serve");
-                Console.WriteLine("external requests, edit the System.json file and specify a DNS-resolvable");
-                Console.WriteLine("hostname in the Server.ListenerHostname field.");
-                Console.WriteLine("");
-            }
-
-            List<string> adminListeners = new List<string> { "*", "+", "0.0.0.0" };
-
-            if (adminListeners.Contains(_Settings.Server.ListenerHostname))
-            {
-                //                          1         2         3         4         5         6         7         8
-                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("NOTICE: Komodo listening on a wildcard hostname: '" + _Settings.Server.ListenerHostname + "'");
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine("Komodo must be run with administrative privileges, otherwise it will not be");
-                Console.WriteLine("able to respond to incoming requests.");
-                Console.WriteLine("");
-            }
-
+            Console.WriteLine("Komodo | Information search, storage, and retrieval | v" + _Version); 
+            Console.WriteLine(""); 
             Console.ForegroundColor = prior;
         }
 
@@ -190,6 +161,7 @@ namespace Komodo.Server
                 //                          1         2         3         4         5         6         7         8
                 //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
                 Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("");
                 Console.WriteLine("WARNING: Komodo started on '" + _Settings.Server.ListenerHostname + "'");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("Komodo can only service requests from the local machine.  If you wish to serve");
@@ -205,6 +177,7 @@ namespace Komodo.Server
                 //                          1         2         3         4         5         6         7         8
                 //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
                 Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("");
                 Console.WriteLine("NOTICE: Komodo is listening on a wildcard hostname: '" + _Settings.Server.ListenerHostname + "'");
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
                 Console.WriteLine("Komodo must be run with administrative privileges, otherwise it will not be able");

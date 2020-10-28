@@ -948,7 +948,11 @@
             The number of postings in the parsed document.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Komodo.Classes.ParsedDocument.Indexed" -->
+        <member name="P:Komodo.Classes.ParsedDocument.Indexed">
+            <summary>
+            The timestamp from when the document was indexed.
+            </summary>
+        </member>
         <member name="P:Komodo.Classes.ParsedDocument.Created">
             <summary>
             The timestamp from when the entry was created.

@@ -129,6 +129,7 @@
             Instantiate the object.
             </summary>
             <param name="policy">Metadata policy.</param>
+            <param name="indices">Komodo index manager.</param>
         </member>
         <member name="M:Komodo.MetadataManager.MetadataProcessor.GetMatchingRules(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object)">
             <summary>
@@ -136,8 +137,8 @@
             </summary>
             <param name="source">Source document.</param>
             <param name="parsed">Parsed document.</param>
-            <param name="rule">Matching metadata rules.</param>
-            <returns></returns>
+            <param name="parseResult">Parse result.</param>
+            <returns>List of metadata rules.</returns>
         </member>
         <member name="M:Komodo.MetadataManager.MetadataProcessor.ProcessDocument(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object)">
             <summary>
@@ -145,7 +146,8 @@
             </summary>
             <param name="source">Source document.</param>
             <param name="parsed">Parsed document.</param>
-            <returns>True if successful.</returns>
+            <param name="parseResult">Parse result.</param>
+            <returns>Metadata result.</returns>
         </member>
         <member name="T:Komodo.MetadataManager.MetadataResult">
             <summary>
