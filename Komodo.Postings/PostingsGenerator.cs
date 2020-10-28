@@ -81,7 +81,8 @@ namespace Komodo.Postings
         private PostingsResult ProcessHtml(HtmlParseResult parsed)
         {
             PostingsResult ret = new PostingsResult();
-             
+            int termCount = 0;
+
             if (parsed != null)
             {
                 #region Title
@@ -90,17 +91,22 @@ namespace Komodo.Postings
                 {
                     List<string> terms = parsed.PageTitle.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
-
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                     
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -113,17 +119,22 @@ namespace Komodo.Postings
                 {
                     List<string> terms = parsed.MetaDescription.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
-
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                     
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -137,16 +148,21 @@ namespace Komodo.Postings
                     List<string> terms = parsed.MetaDescriptionOpengraph.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -160,16 +176,21 @@ namespace Komodo.Postings
                     List<string> terms = parsed.MetaKeywords.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -185,16 +206,21 @@ namespace Komodo.Postings
                         List<string> terms = curr.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                         if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
-                        int termCount = 0;
-                        foreach (string tempTerm in terms)
+                        for (int i = 0; i < terms.Count; i++)
                         {
-                            if (String.IsNullOrEmpty(tempTerm)) continue;
+                            if (String.IsNullOrEmpty(terms[i])) continue;
 
-                            string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                            string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                             if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                            Token token = new Token();
+                            token.Value = currTerm;
+                            token.Count = 1;
+                            token.Positions = new List<long>();
+                            token.Positions.Add(termCount);
+
                             ret.Terms.Add(currTerm);
-                            AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                            ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                             termCount++;
                         }
                     }
@@ -206,16 +232,21 @@ namespace Komodo.Postings
 
                 if (parsed.ImageUrls != null && parsed.ImageUrls.Count > 0)
                 {
-                    int termCount = 0;
-                    foreach (string tempTerm in parsed.ImageUrls)
+                    for (int i = 0; i < parsed.ImageUrls.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(parsed.ImageUrls[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = parsed.ImageUrls[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -226,16 +257,21 @@ namespace Komodo.Postings
 
                 if (parsed.Links != null && parsed.Links.Count > 0)
                 {
-                    int termCount = 0;
-                    foreach (string tempTerm in parsed.Links)
+                    for (int i = 0; i < parsed.Links.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(parsed.Links[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = parsed.Links[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -249,16 +285,21 @@ namespace Komodo.Postings
                     List<string> terms = parsed.Head.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -272,16 +313,21 @@ namespace Komodo.Postings
                     List<string> terms = parsed.Body.Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
 
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(termCount);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                         termCount++;
                     }
                 }
@@ -308,18 +354,22 @@ namespace Komodo.Postings
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
-
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                     
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(i);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
-                        termCount++;
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token); 
                     }
                 }
             }
@@ -343,18 +393,22 @@ namespace Komodo.Postings
 
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
-
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                     
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(i);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
-                        termCount++;
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token); 
                     }
                 }
             }
@@ -373,15 +427,13 @@ namespace Komodo.Postings
             if (parsed != null && parsed.Tokens != null && parsed.Tokens.Count > 0)
             {
                 int termCount = 0;
-                foreach (KeyValuePair<string, int> curr in parsed.Tokens)
+                foreach (Token token in parsed.Tokens)
                 {
-                    if (String.IsNullOrEmpty(curr.Key)) continue;
+                    if (String.IsNullOrEmpty(token.Value)) continue;
+                    if (token.Value.Length < _Options.MinTokenLength || token.Value.Length > _Options.MaxTokenLength) continue;
 
-                    string currTerm = curr.Key.Trim().Trim(Environment.NewLine.ToCharArray());
-                    if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
-
-                    ret.Terms.Add(currTerm);
-                    AddOrUpdatePosting(ret.Postings, currTerm, termCount);
+                    ret.Terms.Add(token.Value);
+                    ret.Postings = AddOrUpdatePosting(ret.Postings, token);
                     termCount++;
                 }
             }
@@ -402,21 +454,24 @@ namespace Komodo.Postings
                 foreach (DataNode curr in parsed.Flattened)
                 {
                     if (curr.Data == null) continue;
-
                     List<string> terms = curr.Data.ToString().Split(_Options.SplitCharacters, StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (_Options.RemovePunctuation) terms = Normalizer.RemoveStringPunctuation(terms);
-
-                    int termCount = 0;
-                    foreach (string tempTerm in terms)
+                     
+                    for (int i = 0; i < terms.Count; i++)
                     {
-                        if (String.IsNullOrEmpty(tempTerm)) continue;
+                        if (String.IsNullOrEmpty(terms[i])) continue;
 
-                        string currTerm = tempTerm.Trim().Trim(Environment.NewLine.ToCharArray());
+                        string currTerm = terms[i].Trim().Trim(Environment.NewLine.ToCharArray());
                         if (currTerm.Length < _Options.MinTokenLength || currTerm.Length > _Options.MaxTokenLength) continue;
 
+                        Token token = new Token();
+                        token.Value = currTerm;
+                        token.Count = 1;
+                        token.Positions = new List<long>();
+                        token.Positions.Add(i);
+
                         ret.Terms.Add(currTerm);
-                        AddOrUpdatePosting(ret.Postings, currTerm, termCount);
-                        termCount++;
+                        ret.Postings = AddOrUpdatePosting(ret.Postings, token); 
                     }
                 }
             }
@@ -428,21 +483,22 @@ namespace Komodo.Postings
             return ret;
         }
 
-        private void AddOrUpdatePosting(List<Posting> postings, string term, int termCount)
+        private List<Posting> AddOrUpdatePosting(List<Posting> postings, Token token)
         {
-            if (String.IsNullOrEmpty(term)) return;
-            term = term.Trim().Trim(Environment.NewLine.ToCharArray());
+            if (token == null) return postings;
+            if (String.IsNullOrEmpty(token.Value)) return postings;
+            if (postings == null) postings = new List<Posting>();
 
-            Posting match = postings.Where(s => s.Term.Equals(term)).FirstOrDefault();
+            Posting match = postings.Where(s => s.Term.Equals(token.Value)).FirstOrDefault();
             if (match == null || match == default(Posting))
             {
                 #region First-Entry
-
+                 
                 match = new Posting();
-                match.Term = term; 
-                match.Frequency = 1;
+                match.Term = token.Value; 
+                match.Frequency = token.Count;
                 match.Positions = new List<long>();
-                match.Positions.Add(termCount);
+                match.Positions.AddRange(token.Positions);
                 postings.Add(match);
 
                 #endregion
@@ -452,12 +508,16 @@ namespace Komodo.Postings
                 #region Update
 
                 postings.Remove(match);
-                match.Frequency = match.Frequency + 1;
-                match.Positions.Add(termCount);
+                match.Term = token.Value;
+                match.Frequency += token.Count;
+                match.Positions.AddRange(token.Positions);
+                if (match.Positions != null && match.Positions.Count > 0) match.Positions = match.Positions.Distinct().ToList();
                 postings.Add(match);
-
+                 
                 #endregion
             }
+
+            return postings;
         }
 
         #endregion

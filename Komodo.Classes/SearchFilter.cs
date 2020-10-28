@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,6 +15,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The field upon which to match.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string Field
         {
             get
@@ -36,6 +38,7 @@ namespace Komodo.Classes
         /// The value to be evaluated using the specified condition against the parsed document's content.
         /// When using GreaterThan, GreaterThanOrEqualTo, LessThan, or LessThanOrEqualTo, the value supplied must be convertible to decimal.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public string Value
         {
             get

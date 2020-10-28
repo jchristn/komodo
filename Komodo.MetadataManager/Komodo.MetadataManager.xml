@@ -1,0 +1,311 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Komodo.MetadataManager</name>
+    </assembly>
+    <members>
+        <member name="T:Komodo.MetadataManager.AddMetadataDocumentAction">
+            <summary>
+            Add metadata document action.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.AddMetadataDocumentAction.IndexGUID">
+            <summary>
+            GUID for the index where the metadata should be stored.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.AddMetadataDocumentAction.Name">
+            <summary>
+            The name for the derived document.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.AddMetadataDocumentAction.Title">
+            <summary>
+            The title for the derived document.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.AddMetadataDocumentAction.Tags">
+            <summary>
+            Tags for the derived document.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.AddMetadataDocumentAction.Parse">
+            <summary>
+            Indicate whether or not the metadata document should be parsed and indexed.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.AddMetadataDocumentAction.Properties">
+            <summary>
+            Document properties for the metadata document.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.AddMetadataDocumentAction.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.EndpointType">
+            <summary>
+            Endpoint type for add metadata document actions.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.EndpointType.Daemon">
+            <summary>
+            Daemon, memory-resident instance of Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.EndpointType.Server">
+            <summary>
+            Standalone Komodo server using RESTful API.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.MetadataDocumentProperty">
+            <summary>
+            Property for a metadata document.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataDocumentProperty.ValueAction">
+            <summary>
+            The action to take to define the value for this property.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataDocumentProperty.SourceProperty">
+            <summary>
+            The property from the parse result of the source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataDocumentProperty.Key">
+            <summary>
+            The key to use in the metadata document.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataDocumentProperty.Value">
+            <summary>
+            For static value actions, the value to use.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataDocumentProperty.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.MetadataPolicy">
+            <summary>
+            Metadata policy.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataPolicy.IndexGUID">
+            <summary>
+            Index GUID.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataPolicy.Rules">
+            <summary>
+            Metadata rules.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataPolicy.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.MetadataProcessor">
+            <summary>
+            Metadata processor for Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataProcessor.Policy">
+            <summary>
+            Metadata policy containing rules and actions.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataProcessor.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataProcessor.#ctor(Komodo.MetadataManager.MetadataPolicy,Komodo.IndexManager.KomodoIndices)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="policy">Metadata policy.</param>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataProcessor.GetMatchingRules(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object)">
+            <summary>
+            Determine if the document matches a rule.
+            </summary>
+            <param name="source">Source document.</param>
+            <param name="parsed">Parsed document.</param>
+            <param name="rule">Matching metadata rules.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataProcessor.ProcessDocument(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object)">
+            <summary>
+            Process a document using the configured rules.
+            </summary>
+            <param name="source">Source document.</param>
+            <param name="parsed">Parsed document.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="T:Komodo.MetadataManager.MetadataResult">
+            <summary>
+            Result from metadata processing.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataResult.Source">
+            <summary>
+            Source document.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataResult.Parsed">
+            <summary>
+            Parsed document.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataResult.ParseResult">
+            <summary>
+            Parse result.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataResult.MatchingRules">
+            <summary>
+            List of matching rules.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataResult.MetadataDocuments">
+            <summary>
+            Metadata documents.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataResult.DerivedDocuments">
+            <summary>
+            Source documents containing metadata derived from actions.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataResult.DerivedDocumentsData">
+            <summary>
+            Data from derived documents.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataResult.DerivedIndexResults">
+            <summary>
+            Results from indexing derived documents.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataResult.PostbackStatusCodes">
+            <summary>
+            Status codes from Postback operations.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.MetadataRule">
+            <summary>
+            Metadata rule.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataRule.Name">
+            <summary>
+            Name of the rule.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataRule.Description">
+            <summary>
+            Description of the rule.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.MetadataRule.Enabled">
+            <summary>
+            Indicates whether or not the rule is enabled.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataRule.Required">
+            <summary>
+            Filter that must match for inclusion.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataRule.Exclude">
+            <summary>
+            Filter that must not match for inclusion.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataRule.AddMetadataDocument">
+            <summary>
+            Definition of metadata document to add.
+            </summary>
+        </member>
+        <member name="P:Komodo.MetadataManager.MetadataRule.Postback">
+            <summary>
+            Definition of postback actions.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.MetadataRule.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.PostbackAction">
+            <summary>
+            Postback action.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.IncludeSource">
+            <summary>
+            Indicates whether or not the source document metadata should be included.  Default is true.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.IncludeParsed">
+            <summary>
+            Indicates whether or not the parsed document metadata should be included.  Default is true.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.IncludeParseResult">
+            <summary>
+            Indicates whether or not the parse results from the parsed document should be included.  Default is true.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.IncludeMetadata">
+            <summary>
+            Indicates whether or not the metadata document should be included.  Default is true.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.IncludeRules">
+            <summary>
+            Indicates whether or not the rules should be included.  Default is true.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.IncludeDerivedDocuments">
+            <summary>
+            Indicates whether or not the derived metadata documents should be included.  Default is true.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PostbackAction.Urls">
+            <summary>
+            List of URLs where data should be POSTed.
+            </summary>
+        </member>
+        <member name="M:Komodo.MetadataManager.PostbackAction.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.MetadataManager.PropertyValueAction">
+            <summary>
+            Property value action for a metadata document action within a metadata rule.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PropertyValueAction.CopyFromDocument">
+            <summary>
+            Copy the value directly from the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.MetadataManager.PropertyValueAction.Static">
+            <summary>
+            Assign a static value.
+            </summary>
+        </member>
+    </members>
+</doc>

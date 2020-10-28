@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -24,6 +25,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The character positions where the term was found.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public List<long> Positions { get; set; }
          
         #endregion

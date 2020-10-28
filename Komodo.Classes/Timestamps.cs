@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -12,6 +13,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The time at which the operation started.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public DateTime? Start
         {
             get
@@ -81,6 +83,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The total number of milliseconds that transpired between Start and End.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public double? TotalMs
         {
             get

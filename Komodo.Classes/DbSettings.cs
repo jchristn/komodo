@@ -18,6 +18,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Type of database: Mysql, Postgresql, Sqlite, SqlServer.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public DbType Type { get; set; }
 
         /// <summary>

@@ -18,17 +18,14 @@ namespace Komodo.Crawler
         /// <summary>
         /// Indicates if the crawler was successful.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public bool Success = false;
 
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public Timestamps Time = new Timestamps();
-
-        /// <summary>
-        /// Object metadata.
-        /// </summary>
-        public ObjectMetadata Metadata = null;
 
         /// <summary>
         /// The filename to which the retrieved file was downloaded.
@@ -45,6 +42,12 @@ namespace Komodo.Crawler
         /// </summary>
         [JsonIgnore]
         public Stream DataStream = null;
+
+        /// <summary>
+        /// Object metadata.
+        /// </summary>
+        [JsonProperty(Order = 990)]
+        public ObjectMetadata Metadata = null;
 
         /// <summary>
         /// Read the stream fully into a byte array.

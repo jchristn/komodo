@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Watson.ORM.Core; 
+using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,30 +15,35 @@ namespace Komodo.Classes
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [JsonProperty(Order = -4)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Globally-unique identifier of the user that owns the document record.
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("ownerguid", false, DataTypes.Nvarchar, 64, false)]
         public string OwnerGUID { get; set; }
 
         /// <summary>
         /// The globally-unique identifier of the index.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("indexguid", false, DataTypes.Nvarchar, 64, false)]
         public string IndexGUID { get; set; }
 
         /// <summary>
         /// The name of the object.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("name", false, DataTypes.Nvarchar, 128, true)]
         public string Name { get; set; }
 
@@ -84,16 +90,18 @@ namespace Komodo.Classes
         public string Md5 { get; set; }
 
         /// <summary>
-        /// The timestamp from when the entry was created.
-        /// </summary>
-        [Column("created", false, DataTypes.DateTime, false)]
-        public DateTime Created { get; set; }
-
-        /// <summary>
         /// The timestamp from when the document was indexed.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("indexed", false, DataTypes.DateTime, true)]
         public DateTime? Indexed { get; set; }
+
+        /// <summary>
+        /// The timestamp from when the entry was created.
+        /// </summary>
+        [JsonProperty(Order = 991)]
+        [Column("created", false, DataTypes.DateTime, false)]
+        public DateTime Created { get; set; }
 
         /// <summary>
         /// Instantiate the object.

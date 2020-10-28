@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -17,11 +18,13 @@ namespace Komodo.Classes
         /// <summary>
         /// Globally-unique identifier for the source document.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public string GUID = null;
 
         /// <summary>
         /// The type of document.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public DocType DocumentType = DocType.Unknown;
 
         /// <summary>
@@ -42,6 +45,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Source document metadata, if requested.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public SourceDocument Metadata = null;
 
         #endregion

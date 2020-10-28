@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Watson.ORM.Core; 
+using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,12 +15,14 @@ namespace Komodo.Classes
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
@@ -63,6 +66,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The timestamp from when the entry was created.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("created", false, DataTypes.DateTime, false)]
         public DateTime Created { get; set; }
          

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,18 +15,21 @@ namespace Komodo.Classes
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// Name of the user.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("name", false, DataTypes.Nvarchar, 64, false)]
         public string Name { get; set; }
 
@@ -44,6 +48,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Indicates whether or not the account is able to be used.
         /// </summary>
+        [JsonProperty(Order = 990)]
         [Column("active", false, DataTypes.Boolean, false)]
         public bool Active { get; set; }
 

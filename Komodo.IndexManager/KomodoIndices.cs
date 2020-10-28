@@ -69,6 +69,7 @@ namespace Komodo.IndexManager
         /// <param name="dbSettings">Database settings.</param>
         /// <param name="sourceDocs">Storage settings for source documents.</param>
         /// <param name="parsedDocs">Storage settings for parsed documents.</param>
+        /// <param name="postings">Storage settings for postings.</param>
         public KomodoIndices(DbSettings dbSettings, StorageSettings sourceDocs, StorageSettings parsedDocs, StorageSettings postings)
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));

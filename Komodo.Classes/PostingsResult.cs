@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -13,6 +14,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Indicates if the postings generator was successful.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public bool Success = false;
 
         /// <summary>
@@ -21,14 +23,16 @@ namespace Komodo.Classes
         public Timestamps Time = new Timestamps();
 
         /// <summary>
-        /// Postings.
-        /// </summary>
-        public List<Posting> Postings = new List<Posting>();
-
-        /// <summary>
         /// Terms.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public List<string> Terms = new List<string>();
+
+        /// <summary>
+        /// Postings.
+        /// </summary>
+        [JsonProperty(Order = 991)]
+        public List<Posting> Postings = new List<Posting>();
 
         /// <summary>
         /// Instantiate the object.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,24 +15,28 @@ namespace Komodo.Classes
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
+        [JsonProperty(Order = -3)]
         [Column("guid", false, DataTypes.Nvarchar, 64, false)]
         public string GUID { get; set; }
 
         /// <summary>
         /// The hostname of the node.
         /// </summary>
+        [JsonProperty(Order = -2)]
         [Column("hostname", false, DataTypes.Nvarchar, 128, false)]
         public string Hostname { get; set; }
 
         /// <summary>
         /// The port on which the node is listening for incoming HTTP or HTTPS requests.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("port", false, DataTypes.Int, false)]
         public int Port { get; set; }
 

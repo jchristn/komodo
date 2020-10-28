@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web; 
-using RestWrapper;
+using System.Collections.Generic; 
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Parser
 {
@@ -21,18 +15,21 @@ namespace Komodo.Parser
         /// <summary>
         /// Indicates if the parser was successful.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public bool Success = false;
 
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public Timestamps Time = new Timestamps();
 
         /// <summary>
-        /// Tokens found including their count.
+        /// Tokens found including their count and positions.
         /// </summary>
-        public Dictionary<string, int> Tokens = new Dictionary<string, int>();
-         
+        [JsonProperty(Order = 990)]
+        public List<Token> Tokens = new List<Token>();
+
         #endregion
 
         #region Private-Members
@@ -67,7 +64,10 @@ namespace Komodo.Parser
             if (Tokens != null && Tokens.Count > 0)
             {
                 ret += "  Tokens             : " + Tokens.Count + Environment.NewLine;
-                foreach (KeyValuePair<string, int> curr in Tokens) ret += "    " + curr.Key + " [" + curr.Value + "]" + Environment.NewLine;
+                foreach (Token curr in Tokens)
+                {
+                    ret += "    " + curr.Value + " count " + curr.Count + Environment.NewLine;
+                }
             }
 
             ret += "---";

@@ -196,57 +196,53 @@ namespace Komodo.Parser
         private string GetPageTitle(string data)
         {
             Match m = Regex.Match(data, @"<title>\s*(.+?)\s*</title>");
-            if (m.Success)
-                return WebUtility.UrlDecode(m.Groups[1].Value);
-            else return "";
+            if (m != null && m.Success) return WebUtility.UrlDecode(m.Groups[1].Value);
+            else return null;
         }
 
-        private string GetMetaDescription(HtmlDocument doc)
+        private string GetMetaValue(HtmlDocument doc, string prop)
         {
-            HtmlNode mdnode = doc.DocumentNode.SelectSingleNode("//meta[@name='description']");
-            if (mdnode != null)
+            if (doc == null || doc.DocumentNode == null) return null;
+            if (String.IsNullOrEmpty(prop)) return null;
+
+            try
             {
-                HtmlAttribute desc = mdnode.Attributes["content"];
-                return WebUtility.UrlDecode(desc.Value);
+                if (doc != null && doc.DocumentNode != null)
+                {
+                    HtmlNode node = doc.DocumentNode.SelectSingleNode(prop);
+                    if (node != null)
+                    {
+                        HtmlAttribute attr = node.Attributes["content"];
+                        if (attr != null) return WebUtility.UrlDecode(attr.Value);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
             }
 
             return null;
         }
 
+        private string GetMetaDescription(HtmlDocument doc)
+        {
+            return GetMetaValue(doc, "//meta[@name='description']"); 
+        }
+
         private string GetMetaKeywords(HtmlDocument doc)
         {
-            try
-            {
-                return WebUtility.UrlDecode(doc.DocumentNode.SelectSingleNode("//meta[@name='keywords']").Attributes["content"].Value);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return GetMetaValue(doc, "//meta[@name='keywords']"); 
         }
 
         private string GetMetaImageOpengraph(HtmlDocument doc)
         {
-            try
-            {
-                return WebUtility.UrlDecode(doc.DocumentNode.SelectSingleNode("//meta[@property='og:image']").Attributes["content"].Value);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return GetMetaValue(doc, "//meta[@property='og:image']"); 
         }
 
         private string GetMetaDescriptionOpengraph(HtmlDocument doc)
         {
-            try
-            {
-                return WebUtility.UrlDecode(doc.DocumentNode.SelectSingleNode("//meta[@property='og:description']").Attributes["content"].Value);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return GetMetaValue(doc, "//meta[@property='og:description']"); 
         }
 
         private List<string> GetMetaVideoTagsOpengraph(HtmlDocument doc)
@@ -259,14 +255,15 @@ namespace Komodo.Parser
                 foreach (HtmlNode curr in metas)
                 {
                     ret.Add(WebUtility.UrlDecode(curr.Attributes["content"].Value));
-                }
-
-                return ret;
+                } 
             }
             catch (Exception)
             {
-                return ret;
+
             }
+
+            if (ret != null && ret.Count > 0) ret = ret.Distinct().ToList();
+            return ret;
         }
 
         private List<string> GetImageUrls(HtmlDocument doc, string data)
@@ -277,15 +274,19 @@ namespace Komodo.Parser
             // using regex
             //
             string regexImgSrc = @"<img[^>]*?src\s*=\s*[""']?([^'"" >]+?)[ '""][^>]*?>";
-            MatchCollection matchesImgSrc = Regex.Matches(data, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            foreach (Match m in matchesImgSrc)
+            MatchCollection matches = Regex.Matches(data, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            
+            if (matches != null && matches.Count > 0)
             {
-                string link = m.Groups[1].Value;
-                if (!String.IsNullOrEmpty(link)) link = link.Trim();
-                // link = FormatUrl(link.Trim());
+                foreach (Match m in matches)
+                {
+                    string link = m.Groups[1].Value;
+                    if (!String.IsNullOrEmpty(link)) link = link.Trim();
+                    // link = FormatUrl(link.Trim());
 
-                string formatted = WebUtility.UrlDecode(link);
-                if (!String.IsNullOrEmpty(formatted)) links.Add(formatted);
+                    string formatted = WebUtility.UrlDecode(link);
+                    if (!String.IsNullOrEmpty(formatted)) links.Add(formatted);
+                }
             }
 
             //
@@ -301,7 +302,7 @@ namespace Komodo.Parser
             //
             // deduplicate
             //
-            links = links.Distinct().ToList();
+            if (links != null && links.Count > 0) links = links.Distinct().ToList();
             return links;
         }
 
@@ -312,31 +313,51 @@ namespace Komodo.Parser
             //
             // using HtmlAgilityPack
             //
-            foreach (HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
+            if (doc != null && doc.DocumentNode != null)
             {
-                string curr = link.GetAttributeValue("href", "");
-                // string formatted = FormatUrl(link.GetAttributeValue("href", ""));
-                if (!String.IsNullOrEmpty(curr)) links.Add(curr);
+                HtmlNodeCollection col = doc.DocumentNode.SelectNodes("//a[@href]");
+
+                if (col != null && col.Count > 0)
+                {
+                    foreach (HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
+                    {
+                        string curr = link.GetAttributeValue("href", "");
+                        // string formatted = FormatUrl(link.GetAttributeValue("href", ""));
+                        if (!String.IsNullOrEmpty(curr)) links.Add(curr);
+                    }
+                }
             }
 
             //
             // Deduplicate
             //
-            links = links.Distinct().ToList();
+            if (links != null && links.Count > 0) links = links.Distinct().ToList();
             return links;
         }
 
         private string GetHtmlHead(HtmlDocument doc)
         {
-            string head = doc.DocumentNode.SelectSingleNode("//head").InnerText;
-            if (!String.IsNullOrEmpty(head)) head = head.Trim();
+            string head = null;
+
+            if (doc != null && doc.DocumentNode != null)
+            {
+                head = doc.DocumentNode.SelectSingleNode("//head").InnerText;
+                if (!String.IsNullOrEmpty(head)) head = head.Trim();
+            }
+
             return head;
         }
 
         private string GetHtmlBody(HtmlDocument doc)
         {
-            string body = doc.DocumentNode.SelectSingleNode("//body").InnerText;
-            if (!String.IsNullOrEmpty(body)) body = body.Trim();
+            string body = null;
+
+            if (doc != null && doc.DocumentNode != null)
+            {
+                body = doc.DocumentNode.SelectSingleNode("//body").InnerText;
+                if (!String.IsNullOrEmpty(body)) body = body.Trim();
+            }
+
             return body;
         }
 
@@ -345,15 +366,21 @@ namespace Komodo.Parser
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(data);
 
-            var nodes = doc.DocumentNode.SelectNodes("//script|//style");
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//script|//style");
+            if (nodes != null && nodes.Count > 0)
+            {
+                foreach (var node in nodes)
+                {
+                    node.ParentNode.RemoveChild(node);
+                }
 
-            foreach (var node in nodes)
-                node.ParentNode.RemoveChild(node);
+                return doc.DocumentNode.OuterHtml;
+            }
 
-            return doc.DocumentNode.OuterHtml;
+            return null;
         }
 
-        private Dictionary<string, int> GetTokens(string data)
+        private List<Token> GetTokens(string data)
         {
             List<string> lines = new List<string>();
 
@@ -362,94 +389,50 @@ namespace Komodo.Parser
             doc.LoadHtml(data);
 
             HtmlNode root = doc.DocumentNode;
-            foreach (HtmlNode node in root.DescendantsAndSelf())
+            if (root != null)
             {
-                if (!node.HasChildNodes)
+                IEnumerable<HtmlNode> nodes = root.DescendantsAndSelf();
+                if (nodes != null && nodes.Count() > 0)
                 {
-                    string text = node.InnerText;
-                    if (!String.IsNullOrEmpty(text)) text = text.Trim();
-                    if (!String.IsNullOrEmpty(text)) lines.Add(text);
+                    foreach (HtmlNode node in nodes.ToList())
+                    {
+                        if (!node.HasChildNodes)
+                        {
+                            string text = node.InnerText;
+                            if (!String.IsNullOrEmpty(text)) text = text.Trim();
+                            if (!String.IsNullOrEmpty(text)) lines.Add(text);
+                        }
+                    }
                 }
             }
 
-            // Using nuglify...
-            /*
-            UglifyResult result = Uglify.HtmlToText(data);
-            string unfiltered = result.Code;
-
-            TextParser.MinimumTokenLength = MinimumTokenLength;
-            TextParseResult tpr = TextParser.ParseString(unfiltered);
-
-            foreach (string currToken in tpr.Tokens)
-            {
-                ret.Add(currToken.ToLower());
-            } 
-            */
-
-            Dictionary<string, int> ret = new Dictionary<string, int>();
+            List<Token> ret = new List<Token>();
 
             _TextParser.MinimumTokenLength = _MinimumTokenLength;
 
-            foreach (string line in lines)
+            if (lines != null && lines.Count > 0)
             {
-                TextParseResult tpr = _TextParser.ParseString(line);
-                if (tpr != null && tpr.Tokens != null && tpr.Tokens.Count > 0)
+                foreach (string line in lines)
                 {
-                    foreach (KeyValuePair<string, int> currToken in tpr.Tokens)
+                    TextParseResult tpr = _TextParser.ParseString(line);
+                    if (tpr != null && tpr.Tokens != null && tpr.Tokens.Count > 0)
                     {
-                        AddToken(currToken, ret);
+                        foreach (Token currToken in tpr.Tokens)
+                        {
+                            ret = ParserCommon.AddToken(currToken, ret);
+                        }
                     }
                 }
             }
 
             if (ret != null && ret.Count > 0)
             {
-                ret = ret.OrderByDescending(u => u.Value).ToDictionary(z => z.Key, y => y.Value);
+                ret = ret.OrderByDescending(u => u.Count).ToList();
             }
 
             return ret; 
         }
-         
-        private void AddToken(string token, Dictionary<string, int> dict)
-        {
-            if (String.IsNullOrEmpty(token)) return;
-            if (dict == null) return;
-
-            if (dict == null) dict = new Dictionary<string, int>();
-
-            if (dict.ContainsKey(token))
-            {
-                int count = dict[token];
-                count = count + 1;
-                dict.Remove(token);
-                dict.Add(token, count);
-            }
-            else
-            {
-                dict.Add(token, 1);
-            }
-        }
-
-        private void AddToken(KeyValuePair<string, int> token, Dictionary<string, int> dict)
-        {
-            if (String.IsNullOrEmpty(token.Key)) return;
-            if (dict == null) return;
-
-            if (dict == null) dict = new Dictionary<string, int>();
-
-            if (dict.ContainsKey(token.Key))
-            {
-                int count = dict[token.Key];
-                count = count + token.Value;
-                dict.Remove(token.Key);
-                dict.Add(token.Key, count);
-            }
-            else
-            {
-                dict.Add(token.Key, token.Value);
-            }
-        }
-
+           
         #endregion 
     }
 }

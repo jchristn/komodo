@@ -17,11 +17,13 @@ namespace Komodo.Classes
         /// <summary>
         /// The content type of the document.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public string ContentType = null;
 
         /// <summary>
         /// The content length of the source document.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public long ContentLength = 0;
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,6 +15,7 @@ namespace Komodo.Classes
         /// <summary>
         /// List of terms upon which to match.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public List<string> Terms
         {
             get

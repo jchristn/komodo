@@ -49,13 +49,13 @@ namespace Komodo.Crawler
         #endregion
 
         #region Constructors-and-Factories
-         
+
         /// <summary>
         /// Instantiate the object to crawl on Kvpbase.
         /// </summary>
-        /// <param name="accountName">The name of the account.</param>
-        /// <param name="container">Name of the container.</param>
         /// <param name="endpoint">The endpoint.</param>
+        /// <param name="userGuid">The user GUID.</param>
+        /// <param name="container">Name of the container.</param>
         /// <param name="apiKey">API key.</param>
         /// <param name="key">The object key.</param>
         public KvpbaseCrawler(string endpoint, string userGuid, string container, string apiKey, string key)

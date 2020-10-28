@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using BlobHelper;
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Crawler
 {
@@ -15,6 +16,7 @@ namespace Komodo.Crawler
         /// <summary>
         /// Object key.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string Key = null;
 
         /// <summary>
@@ -35,16 +37,19 @@ namespace Komodo.Crawler
         /// <summary>
         /// Creation timestamp.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public DateTime? CreatedUtc = null;
 
         /// <summary>
         /// Last access timestamp.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public DateTime? LastAccessUtc = null;
 
         /// <summary>
         /// Last update timestamp.
         /// </summary>
+        [JsonProperty(Order = 992)]
         public DateTime? LastUpdateUtc = null;
 
         /// <summary>

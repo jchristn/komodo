@@ -26,8 +26,7 @@ namespace Komodo.Server
         private static Settings _Settings;
         private static LoggingModule _Logging;
         private static WatsonORM _ORM;
-        private static AuthManager _Auth;
-        private static ConnManager _Conn;
+        private static AuthManager _Auth; 
         private static DaemonSettings _DaemonSettings;
         private static KomodoDaemon _Daemon; 
         private static ConsoleManager _Console;
@@ -169,11 +168,7 @@ namespace Komodo.Server
             Console.Write("| Initializing authentication     : ");
             _Auth = new AuthManager(_ORM);
             Console.WriteLine("[success]");
-
-            Console.Write("| Initializing connection manager : ");
-            _Conn = new ConnManager();
-            Console.WriteLine("[success]");
-
+             
             Console.Write("| Initializing webserver          : ");
             _Webserver = new WatsonWebserver.Server(
                 _Settings.Server.ListenerHostname,
@@ -183,16 +178,41 @@ namespace Komodo.Server
 
             _Webserver.ContentRoutes.Add("/Assets/", true);
             _Webserver.AccessControl.Mode = AccessControlMode.DefaultPermit;
-            Console.WriteLine("[success]");
+            _Webserver.Start();
 
-            if (_Settings.Server.Ssl)
+            Console.WriteLine(
+                "[success] " + 
+                (_Settings.Server.Ssl ? "https://" : "http://") + 
+                _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort);
+             
+            if (_Settings.Server.ListenerHostname.Equals("localhost") || _Settings.Server.ListenerHostname.Equals("127.0.0.1"))
             {
-                Console.WriteLine("| https://" + _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort);
+                //                          1         2         3         4         5         6         7         8
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("WARNING: Komodo started on '" + _Settings.Server.ListenerHostname + "'");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Komodo can only service requests from the local machine.  If you wish to serve");
+                Console.WriteLine("external requests, edit the system.json file and specify a DNS-resolvable");
+                Console.WriteLine("hostname in the Server.ListenerHostname field.");
+                Console.WriteLine("");
             }
-            else
-            { 
-                Console.WriteLine("| http://" + _Settings.Server.ListenerHostname + ":" + _Settings.Server.ListenerPort); 
+
+            List<string> adminListeners = new List<string> { "*", "+", "0.0.0.0" };
+
+            if (adminListeners.Contains(_Settings.Server.ListenerHostname))
+            {
+                //                          1         2         3         4         5         6         7         8
+                //                 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("NOTICE: Komodo is listening on a wildcard hostname: '" + _Settings.Server.ListenerHostname + "'");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine("Komodo must be run with administrative privileges, otherwise it will not be able");
+                Console.WriteLine("to respond to incoming requests.");
+                Console.WriteLine("");
             }
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
 
             if (_Settings.EnableConsole) _Console = new ConsoleManager(_Settings, ExitApplication);
 
@@ -227,9 +247,7 @@ namespace Komodo.Server
             try
             {
                 #region Base-Handlers
-
-                _Conn.Add(Thread.CurrentThread.ManagedThreadId, ctx);
-
+                 
                 if (ctx.Request.Method == HttpMethod.OPTIONS)
                 {
                     await OptionsHandler(ctx);
@@ -462,8 +480,7 @@ namespace Komodo.Server
                 return;
             }
             finally
-            {
-                _Conn.Remove(Thread.CurrentThread.ManagedThreadId); 
+            { 
                 _Logging.Debug(header + ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " + ctx.Response.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]");
             }
         }

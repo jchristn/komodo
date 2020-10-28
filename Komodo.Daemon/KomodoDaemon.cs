@@ -22,6 +22,9 @@ namespace Komodo.Daemon
     {
         #region Public-Members
          
+        /// <summary>
+        /// Daemon settings.
+        /// </summary>
         public DaemonSettings Settings
         {
             get

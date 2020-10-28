@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netstandard2.0;net461</TargetFrameworks>
-    <Version>1.5.2</Version>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netstandard2.0;net461</TargetFrameworks>
+    <Version>1.6.1.4</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Crawler: Information search, metadata, storage, and retrieval</Product>
     <Description>HTTP, HTTPS, FTP, S3, Azure, Kvpbase, and filesystem crawlers for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
@@ -17,6 +17,14 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>Komodo.Crawler.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>Komodo.Crawler.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="LICENSE.md">
       <Pack>True</Pack>
@@ -25,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.Classes" Version="1.5.2" />
+    <PackageReference Include="Komodo.Classes" Version="1.6.1.1" />
   </ItemGroup>
 
   <ItemGroup>

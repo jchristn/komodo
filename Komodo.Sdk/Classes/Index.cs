@@ -8,12 +8,7 @@ namespace Komodo.Sdk.Classes
     /// Repository where source and parsed documents are stored.
     /// </summary>
     public class Index
-    {
-        /// <summary>
-        /// Database row ID.
-        /// </summary>
-        public int Id { get; set; }
-
+    { 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>

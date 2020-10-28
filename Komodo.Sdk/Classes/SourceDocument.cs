@@ -8,12 +8,7 @@ namespace Komodo.Sdk.Classes
     /// Object that has been uploaded to Komodo.
     /// </summary>
     public class SourceDocument
-    {
-        /// <summary>
-        /// Database row ID.
-        /// </summary>
-        public int Id { get; set; }
-
+    { 
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>

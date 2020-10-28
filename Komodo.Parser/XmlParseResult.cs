@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic; 
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Parser
 {
@@ -14,11 +15,13 @@ namespace Komodo.Parser
         /// <summary>
         /// Indicates if the parser was successful.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public bool Success = false;
 
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public Timestamps Time = new Timestamps();
          
         /// <summary>
@@ -37,19 +40,22 @@ namespace Komodo.Parser
         public int ContainerCount { get; set; }
 
         /// <summary>
+        /// Schema of the document.
+        /// </summary>
+        [JsonProperty(Order = -2990)]
+        public Dictionary<string, DataType> Schema = new Dictionary<string, DataType>();
+
+        /// <summary>
         /// Flattened representation of the object.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public List<DataNode> Flattened { get; set; } = new List<DataNode>();
 
         /// <summary>
-        /// Tokens found including their count.
+        /// Tokens found including their count and positions.
         /// </summary>
-        public Dictionary<string, int> Tokens = new Dictionary<string, int>();
-
-        /// <summary>
-        /// Schema of the document.
-        /// </summary>
-        public Dictionary<string, DataType> Schema = new Dictionary<string, DataType>();
+        [JsonProperty(Order = 992)]
+        public List<Token> Tokens = new List<Token>();
 
         #endregion
 
@@ -104,7 +110,10 @@ namespace Komodo.Parser
             if (Tokens != null && Tokens.Count > 0)
             {
                 ret += "  Tokens             : " + Tokens.Count + Environment.NewLine;
-                foreach (KeyValuePair<string, int> curr in Tokens) ret += "    " + curr.Key + " [" + curr.Value + "]" + Environment.NewLine;
+                foreach (Token curr in Tokens)
+                {
+                    ret += "    " + curr.Value + " count " + curr.Count + Environment.NewLine;
+                }
             }
 
             ret += "---";

@@ -300,23 +300,23 @@ namespace Komodo.MetadataManager
         {
             if (docType == DocType.Html)
             {
-                if (((HtmlParseResult)parseResult).Tokens.ContainsKey(term)) return true;
+                if (((HtmlParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
             }
             else if (docType == DocType.Json)
             {
-                if (((JsonParseResult)parseResult).Tokens.ContainsKey(term)) return true;
+                if (((JsonParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
             }
             else if (docType == DocType.Sql)
             {
-                if (((SqlParseResult)parseResult).Tokens.ContainsKey(term)) return true;
+                if (((SqlParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
             }
             else if (docType == DocType.Text)
             {
-                if (((TextParseResult)parseResult).Tokens.ContainsKey(term)) return true;
+                if (((TextParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
             }
             else if (docType == DocType.Xml)
             {
-                if (((XmlParseResult)parseResult).Tokens.ContainsKey(term)) return true;
+                if (((XmlParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
             }
             else
             {

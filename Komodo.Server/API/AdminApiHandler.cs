@@ -20,15 +20,7 @@ namespace Komodo.Server
 
             switch (ctx.Request.Method)
             {
-                case HttpMethod.GET:
-                    if (ctx.Request.RawUrlWithoutQuery.Equals("/admin/connections"))
-                    {
-                        ctx.Response.StatusCode = 200;
-                        ctx.Response.ContentType = "application/json";
-                        await ctx.Response.Send(Common.SerializeJson(_Conn.GetActiveConnections(), true));
-                        return;
-                    }
-
+                case HttpMethod.GET: 
                     if (ctx.Request.RawUrlWithoutQuery.Equals("/admin/disks"))
                     {
                         ctx.Response.StatusCode = 200;

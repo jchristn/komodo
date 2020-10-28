@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using Watson.ORM.Core;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,12 +15,14 @@ namespace Komodo.Classes
         /// <summary>
         /// Database row ID.
         /// </summary>
+        [JsonIgnore]
         [Column("id", true, DataTypes.Int, false)]
         public int Id { get; set; }
 
         /// <summary>
         /// Key.
         /// </summary>
+        [JsonProperty(Order = -1)]
         [Column("configkey", false, DataTypes.Nvarchar, 64, false)]
         public string Key { get; set; }
 

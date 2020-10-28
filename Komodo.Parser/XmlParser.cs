@@ -271,9 +271,9 @@ namespace Komodo.Parser
             return ret;
         }
 
-        private Dictionary<string, int> GetTokens(List<DataNode> nodes)
+        private List<Token> GetTokens(List<DataNode> nodes)
         {
-            Dictionary<string, int> ret = new Dictionary<string, int>();
+            List<Token> ret = new List<Token>();
 
             _TextParser.MinimumTokenLength = MinimumTokenLength;
 
@@ -284,15 +284,15 @@ namespace Komodo.Parser
 
                 TextParseResult tpr = _TextParser.ParseString(curr.Data.ToString());
 
-                foreach (KeyValuePair<string, int> currToken in tpr.Tokens)
+                foreach (Token currToken in tpr.Tokens)
                 {
-                    AddToken(currToken, ret);
+                    ret = ParserCommon.AddToken(currToken, ret);
                 }
             }
 
             if (ret != null && ret.Count > 0)
             {
-                ret = ret.OrderByDescending(u => u.Value).ToDictionary(z => z.Key, y => y.Value);
+                ret = ret.OrderByDescending(u => u.Count).ToList();
             }
 
             return ret;

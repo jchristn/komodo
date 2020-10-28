@@ -233,6 +233,7 @@ namespace Komodo.Sdk
         /// Add a document to the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
+        /// <param name="docName">Name of the document.</param>
         /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
         /// <param name="title">Title for the document.</param>
         /// <param name="tags">Document tags.</param>
@@ -248,6 +249,7 @@ namespace Komodo.Sdk
         /// Add a document to the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
+        /// <param name="docName">Name of the document.</param>
         /// <param name="docGuid">Document GUID.</param>
         /// <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
         /// <param name="title">Title for the document.</param>

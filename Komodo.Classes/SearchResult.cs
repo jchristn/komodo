@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -17,16 +18,19 @@ namespace Komodo.Classes
         /// <summary>
         /// Indicates if the statistics operation was successful.
         /// </summary>
+        [JsonProperty(Order = -3)]
         public bool Success = false;
 
         /// <summary>
         /// The name of the index that was queried.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public string IndexName = null;
 
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public SearchResultTimeComponents Time = new SearchResultTimeComponents();
 
         /// <summary>
@@ -37,11 +41,13 @@ namespace Komodo.Classes
         /// <summary>
         /// List of terms not found.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public List<string> TermsNotFound = new List<string>();
 
         /// <summary>
         /// Documents that matched the query.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public List<MatchedDocument> Documents = new List<MatchedDocument>();
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -14,21 +15,25 @@ namespace Komodo.Classes
         /// <summary>
         /// SourceDocument record.
         /// </summary>
+        [JsonProperty(Order = -4)]
         public SourceDocument SourceRecord = null;
 
         /// <summary>
         /// ParsedDocument record.
         /// </summary>
+        [JsonProperty(Order = -3)]
         public ParsedDocument ParsedRecord = null;
 
         /// <summary>
         /// Parse result.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public object Parsed = null;
 
         /// <summary>
         /// Postings result.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public PostingsResult Postings = null;
 
         #endregion

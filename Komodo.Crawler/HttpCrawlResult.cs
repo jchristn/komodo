@@ -18,11 +18,13 @@ namespace Komodo.Crawler
         /// <summary>
         /// Indicates if the crawler was successful.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public bool Success = false;
 
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public Timestamps Time = new Timestamps();
          
         /// <summary>
@@ -36,11 +38,6 @@ namespace Komodo.Crawler
         public int StatusCode = 0;
 
         /// <summary>
-        /// The HTTP headers in the response.
-        /// </summary>
-        public Dictionary<string, string> Headers = new Dictionary<string, string>();
-
-        /// <summary>
         /// Length of the file retrieved.
         /// </summary>
         public long ContentLength = 0;
@@ -52,8 +49,21 @@ namespace Komodo.Crawler
         public Stream DataStream = null;
 
         /// <summary>
+        /// The HTTP headers in the response.
+        /// </summary>
+        [JsonProperty(Order = 990)]
+        public Dictionary<string, string> Headers = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Object metadata.
+        /// </summary>
+        [JsonProperty(Order = 991)]
+        public ObjectMetadata Metadata = null;
+
+        /// <summary>
         /// Read the stream fully into a byte array.
         /// </summary>
+        [JsonProperty(Order = 992)]
         public byte[] Data
         {
             get

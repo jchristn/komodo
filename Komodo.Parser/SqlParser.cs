@@ -164,9 +164,9 @@ namespace Komodo.Parser
             return ret;
         }
 
-        private Dictionary<string, int> GetTokens(List<DataNode> nodes)
+        private List<Token> GetTokens(List<DataNode> nodes)
         {
-            Dictionary<string, int> ret = new Dictionary<string, int>();
+            List<Token> ret = new List<Token>();
 
             _TextParser.MinimumTokenLength = MinimumTokenLength;
 
@@ -177,60 +177,20 @@ namespace Komodo.Parser
 
                 TextParseResult tpr = _TextParser.ParseString(curr.Data.ToString());
 
-                foreach (KeyValuePair<string, int> currToken in tpr.Tokens)
+                foreach (Token currToken in tpr.Tokens)
                 {
-                    AddToken(currToken, ret);
+                    ret = ParserCommon.AddToken(currToken, ret);
                 }
             }
 
             if (ret != null && ret.Count > 0)
             {
-                ret = ret.OrderByDescending(u => u.Value).ToDictionary(z => z.Key, y => y.Value);
+                ret = ret.OrderByDescending(u => u.Count).ToList();
             }
 
             return ret;
         }
-
-        private void AddToken(string token, Dictionary<string, int> dict)
-        {
-            if (String.IsNullOrEmpty(token)) return;
-            if (dict == null) return;
-
-            if (dict == null) dict = new Dictionary<string, int>();
-
-            if (dict.ContainsKey(token))
-            {
-                int count = dict[token];
-                count = count + 1;
-                dict.Remove(token);
-                dict.Add(token, count);
-            }
-            else
-            {
-                dict.Add(token, 1);
-            }
-        }
-
-        private void AddToken(KeyValuePair<string, int> token, Dictionary<string, int> dict)
-        {
-            if (String.IsNullOrEmpty(token.Key)) return;
-            if (dict == null) return;
-
-            if (dict == null) dict = new Dictionary<string, int>();
-
-            if (dict.ContainsKey(token.Key))
-            {
-                int count = dict[token.Key];
-                count = count + token.Value;
-                dict.Remove(token.Key);
-                dict.Add(token.Key, count);
-            }
-            else
-            {
-                dict.Add(token.Key, token.Value);
-            }
-        }
-
+         
         #endregion
     }
 }

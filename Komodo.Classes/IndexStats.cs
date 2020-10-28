@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text; 
+using System.Text;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -12,32 +13,20 @@ namespace Komodo.Classes
         /// <summary>
         /// Indicates if the statistics operation was successful.
         /// </summary>
+        [JsonProperty(Order = -3)]
         public bool Success = false;
-
-        /// <summary>
-        /// Start and end timestamps.
-        /// </summary>
-        public Timestamps Time = new Timestamps();
 
         /// <summary>
         /// The name of the index.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public string Name;
 
         /// <summary>
         /// The globally-unique identifier for the index.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string GUID;
-
-        /// <summary>
-        /// Source document statistics.
-        /// </summary>
-        public DocumentsStats SourceDocuments = new DocumentsStats();
-
-        /// <summary>
-        /// Parsed document statistics.
-        /// </summary>
-        public DocumentsStats ParsedDocuments = new DocumentsStats();
 
         /// <summary>
         /// The number of terms in the index.
@@ -48,6 +37,24 @@ namespace Komodo.Classes
         /// The number of postings in the index.
         /// </summary>
         public long Postings = 0;
+
+        /// <summary>
+        /// Start and end timestamps.
+        /// </summary>
+        [JsonProperty(Order = 990)]
+        public Timestamps Time = new Timestamps();
+
+        /// <summary>
+        /// Source document statistics.
+        /// </summary>
+        [JsonProperty(Order = 991)]
+        public DocumentsStats SourceDocuments = new DocumentsStats();
+
+        /// <summary>
+        /// Parsed document statistics.
+        /// </summary>
+        [JsonProperty(Order = 992)]
+        public DocumentsStats ParsedDocuments = new DocumentsStats();
 
         /// <summary>
         /// Document statistics.

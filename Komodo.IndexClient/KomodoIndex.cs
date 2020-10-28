@@ -542,14 +542,14 @@ namespace Komodo.IndexClient
                     Dictionary<string, string> termGuids = new Dictionary<string, string>();
 
                     // Term GUIDs
-                    Dictionary<string, int> terms = GetParseResultTerms(sourceDoc.Type, ret.ParseResult); 
+                    List<Token> tokens = GetParseResultTokens(sourceDoc.Type, ret.ParseResult); 
 
-                    foreach (KeyValuePair<string, int> term in terms)
+                    foreach (Token token in tokens)
                     {
                         DbExpression e = new DbExpression(
                             _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
                             DbOperators.Equals,
-                            term.Key);
+                            token.Value);
 
                         TermGuid tg = _ORM.SelectFirst<TermGuid>(e);
                         if (tg == null || tg == default(TermGuid))
@@ -557,11 +557,11 @@ namespace Komodo.IndexClient
                             tg = new TermGuid();
                             tg.GUID = Guid.NewGuid().ToString();
                             tg.IndexGUID = _GUID;
-                            tg.Term = term.Key;
+                            tg.Term = token.Value;
                             tg = _ORM.Insert<TermGuid>(tg);
                         }
 
-                        termGuids.Add(term.Key, tg.GUID);
+                        termGuids.Add(token.Value, tg.GUID);
                     }
 
                     // Term Docs
@@ -606,7 +606,6 @@ namespace Komodo.IndexClient
         /// </summary>
         /// <param name="sourceDoc">Source document.</param>
         /// <param name="metadataDoc">Metadata document.</param>
-        /// <param name="metadata">Metadata.</param>
         /// <returns>Metadata document.</returns>
         public MetadataDocument AddMetadata(SourceDocument sourceDoc, MetadataDocument metadataDoc)
         {
@@ -1441,20 +1440,19 @@ namespace Komodo.IndexClient
             int termsTotal = queryTerms.Count;
             int matchCount = 0;
 
-            Dictionary<string, int> docTerms = GetParseResultTerms(doc.Type, parseResult);
-            if (docTerms == null || docTerms.Count < 1) return;
+            List<Token> docTokens = GetParseResultTokens(doc.Type, parseResult);
+            if (docTokens == null || docTokens.Count < 1) return;
 
             foreach (KeyValuePair<string, string> currTerm in terms)
             {
-                if (docTerms.ContainsKey(currTerm.Key))
+                if (docTokens.Any(t => t.Value.Equals(currTerm.Key)))
                 {
                     matchCount++;
                     matched.Add(currTerm.Key, currTerm.Value);
                 }
             }
 
-            score = Convert.ToDecimal(matchCount) / Convert.ToDecimal(termsTotal);
-            // Console.WriteLine("Match count: " + matchCount + " / Terms total: " + termsTotal + " = Score: " + score);
+            score = Convert.ToDecimal(matchCount) / Convert.ToDecimal(termsTotal); 
         }
 
         private object GetParseResultFromParsedDocumentGuid(DocType type, string guid)
@@ -1488,7 +1486,7 @@ namespace Komodo.IndexClient
             }
         }
 
-        private Dictionary<string, int> GetParseResultTerms(DocType type, object parseResult)
+        private List<Token> GetParseResultTokens(DocType type, object parseResult)
         {
             if (type == DocType.Html)
             {
@@ -1550,26 +1548,19 @@ namespace Komodo.IndexClient
             int filtersTotal = optionalFilters.Count;
             int matchCount = 0;
 
-            Dictionary<string, int> docTerms = GetParseResultTerms(doc.Type, parseResult);
-            if (docTerms == null || docTerms.Count < 1) return;
+            List<Token> tokens = GetParseResultTokens(doc.Type, parseResult);
+            if (tokens == null || tokens.Count < 1) return;
 
             foreach (SearchFilter filter in optionalFilters)
-            {
-                // Console.Write("Evaluating filter: " + filter.Field + " " + filter.Condition.ToString() + " " + filter.Value + ": ");
+            { 
                 if (DocumentMatchesFilter(doc, parseResult, filter))
-                {
-                    // Console.WriteLine("MATCH");
+                { 
                     matchCount++;
                     matched.Add(filter);
-                }
-                else
-                {
-                    // Console.WriteLine("NO MATCH");
-                }
+                } 
             }
 
-            score = Convert.ToDecimal(matchCount) / Convert.ToDecimal(filtersTotal);
-            // Console.WriteLine("Match count: " + matchCount + " / Filters total: " + filtersTotal + " = Score: " + score);
+            score = Convert.ToDecimal(matchCount) / Convert.ToDecimal(filtersTotal); 
         }
 
         private bool DocumentMatchesFilter(ParsedDocument doc, object parseResult, SearchFilter filter)

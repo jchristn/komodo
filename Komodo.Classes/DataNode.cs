@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -16,17 +17,19 @@ namespace Komodo.Classes
         /// <summary>
         /// The key.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string Key { get; set; }
-
-        /// <summary>
-        /// The data associated with the key.
-        /// </summary>
-        public object Data { get; set; }
 
         /// <summary>
         /// The DataType associated with the key-value pair.
         /// </summary>
         public DataType Type { get; set; }
+
+        /// <summary>
+        /// The data associated with the key.
+        /// </summary>
+        [JsonProperty(Order = 990)]
+        public object Data { get; set; }
 
         #endregion
 

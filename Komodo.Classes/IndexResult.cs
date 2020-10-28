@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Komodo.Classes; 
+using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -13,11 +14,13 @@ namespace Komodo.Classes
         /// <summary>
         /// Indicates if the indexing operation was successful.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public bool Success = false;
 
         /// <summary>
         /// The source document GUID.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string GUID = null;
         
         /// <summary>
@@ -28,26 +31,31 @@ namespace Komodo.Classes
         /// <summary>
         /// Timestamps for the index operation.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public IndexResultTimestamps Time = new IndexResultTimestamps();
 
         /// <summary>
         /// Source document.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public SourceDocument Source = null;
 
         /// <summary>
         /// Parsed document, if any.
         /// </summary>
+        [JsonProperty(Order = 992)]
         public ParsedDocument Parsed = null;
 
         /// <summary>
         /// The result of parsing, if enabled.
         /// </summary>
+        [JsonProperty(Order = 993)]
         public object ParseResult = null;
 
         /// <summary>
         /// The result of generating postings, if enabled.
         /// </summary>
+        [JsonProperty(Order = 994)]
         public PostingsResult Postings = null;
 
         /// <summary>

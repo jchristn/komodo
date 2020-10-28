@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using RestWrapper;
 using Komodo.Classes;
+using Newtonsoft.Json;
 
 namespace Komodo.Parser
 {
@@ -21,11 +22,13 @@ namespace Komodo.Parser
         /// <summary>
         /// Indicates if the parser was successful.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public bool Success = false;
 
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public Timestamps Time = new Timestamps();
 
         /// <summary>
@@ -56,37 +59,43 @@ namespace Komodo.Parser
         /// <summary>
         /// List of opengraph meta video tags of the HTML page.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public List<string> MetaVideoTagsOpengraph = new List<string>();
 
         /// <summary>
         /// Image URLs from the HTML page.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public List<string> ImageUrls = new List<string>();
 
         /// <summary>
         /// Links from the HTML page.
         /// </summary>
+        [JsonProperty(Order = 992)]
         public List<string> Links = new List<string>();
 
         /// <summary>
         /// Full HTML head content.
         /// </summary>
+        [JsonProperty(Order = 993)]
         public string Head { get; set; }
 
         /// <summary>
         /// Full HTML body content.
         /// </summary>
+        [JsonProperty(Order = 994)]
         public string Body { get; set; }
 
         /// <summary>
         /// Full HTML body content with tags stripped.
         /// </summary>
+        [JsonProperty(Order = 995)]
         public string BodyStripped { get; set; }
 
         /// <summary>
-        /// Tokens found including their count.
+        /// Tokens found including their count and positions.
         /// </summary>
-        public Dictionary<string, int> Tokens = new Dictionary<string, int>();
+        public List<Token> Tokens = new List<Token>();
 
         /// <summary>
         /// Schema of the document.
@@ -130,19 +139,28 @@ namespace Komodo.Parser
             if (MetaVideoTagsOpengraph != null && MetaVideoTagsOpengraph.Count > 0)
             {
                 ret += "  MetaVideoTags OG   : " + MetaVideoTagsOpengraph.Count + Environment.NewLine;
-                foreach (string curr in MetaVideoTagsOpengraph) ret += "    " + curr + Environment.NewLine;
+                foreach (string curr in MetaVideoTagsOpengraph)
+                {
+                    ret += "    " + curr + Environment.NewLine;
+                }
             }
 
             if (ImageUrls != null && ImageUrls.Count > 0)
             {
                 ret += "  ImageUrls          : " + ImageUrls.Count + Environment.NewLine;
-                foreach (string curr in ImageUrls) ret += "    " + curr + Environment.NewLine;
+                foreach (string curr in ImageUrls)
+                {
+                    ret += "    " + curr + Environment.NewLine;
+                }
             }
 
             if (Links != null && Links.Count > 0)
             {
                 ret += "  Links              : " + Links.Count + Environment.NewLine;
-                foreach (string curr in Links) ret += "    " + curr + Environment.NewLine;
+                foreach (string curr in Links)
+                {
+                    ret += "    " + curr + Environment.NewLine;
+                }
             }
 
             ret += "  Head               : " + Head.Length + " characters" + Environment.NewLine;
@@ -152,7 +170,10 @@ namespace Komodo.Parser
             if (Tokens != null && Tokens.Count > 0)
             {
                 ret += "  Tokens             : " + Tokens.Count + Environment.NewLine;
-                foreach (KeyValuePair<string, int> curr in Tokens) ret += "    " + curr.Key + " [" + curr.Value + "]"+ Environment.NewLine;
+                foreach (Token curr in Tokens)
+                {
+                    ret += "    " + curr.Value + " count " + curr.Count + Environment.NewLine;
+                }
             }
 
             ret += "---";

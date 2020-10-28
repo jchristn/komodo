@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -13,6 +14,7 @@ namespace Komodo.Classes
         /// <summary>
         /// The GUID of the enumeration operation.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string GUID = Guid.NewGuid().ToString();
 
         /// <summary>
@@ -40,6 +42,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Search filters to apply to enumeration.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public List<SearchFilter> Filters
         {
             get

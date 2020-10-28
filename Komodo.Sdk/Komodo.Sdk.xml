@@ -1,0 +1,1120 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Komodo.Sdk</name>
+    </assembly>
+    <members>
+        <member name="T:Komodo.Sdk.Classes.DocType">
+            <summary>
+            Supported document types and data sources.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocType.Sql">
+            <summary>
+            SQL table
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocType.Html">
+            <summary>
+            HTML
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocType.Json">
+            <summary>
+            JSON
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocType.Xml">
+            <summary>
+            XML
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocType.Text">
+            <summary>
+            Text
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.DocumentData">
+            <summary>
+            Data from a document stored in Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentData.ContentType">
+            <summary>
+            The content type of the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentData.ContentLength">
+            <summary>
+            The content length of the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentData.DataStream">
+            <summary>
+            The stream containing the source document's data.  Important: accessing the 'Data' parameter will fully read 'DataStream'.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.DocumentData.Data">
+            <summary>
+            Byte array containing the data from the source DataStream.  Important: accessing the 'Data' will fully read 'DataStream'.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.DocumentData.#ctor(System.String,System.Int64,System.IO.Stream)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="contentType">Content type.</param>
+            <param name="contentLength">Content length.</param>
+            <param name="stream">Stream containing the data.</param>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.DocumentMetadata">
+            <summary>
+            Metadata about a document stored in Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentMetadata.SourceRecord">
+            <summary>
+            SourceDocument record.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentMetadata.ParsedRecord">
+            <summary>
+            ParsedDocument record.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentMetadata.Parsed">
+            <summary>
+            Parse result.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentMetadata.Postings">
+            <summary>
+            Postings result.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.DocumentMetadata.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.EnumerationQuery">
+            <summary>
+            Object used to enumerate an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationQuery.GUID">
+            <summary>
+            The GUID of the enumeration operation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.EnumerationQuery.MaxResults">
+            <summary>
+            Maximum number of results to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationQuery.StartIndex">
+            <summary>
+            The starting index position for the enumeration.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationQuery.Filters">
+            <summary>
+            Search filters to apply to enumeration.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.EnumerationQuery.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.EnumerationResult">
+            <summary>
+            Object returned as the result of an enumeration against an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationResult.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationResult.IndexName">
+            <summary>
+            The name of the index that was queried.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationResult.Query">
+            <summary>
+            The enumeration query performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.EnumerationResult.Matches">
+            <summary>
+            Source documents that matched the query.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.EnumerationResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.EnumerationResult.#ctor(Komodo.Sdk.Classes.EnumerationQuery)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="query">Enumeration query.</param>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.Index">
+            <summary>
+            Repository where source and parsed documents are stored.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Index.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Index.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns this index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Index.Name">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.Index.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.IndexResult">
+            <summary>
+            Result from an indexing operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.Success">
+            <summary>
+            Indicates if the indexing operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.GUID">
+            <summary>
+            The source document GUID.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.Type">
+            <summary>
+            The document type.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.Time">
+            <summary>
+            Timestamps for the index operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.Source">
+            <summary>
+            Source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.Parsed">
+            <summary>
+            Parsed document, if any.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.ParseResult">
+            <summary>
+            The result of parsing, if enabled.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.Postings">
+            <summary>
+            The result of generating postings, if enabled.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.IndexResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps">
+            <summary>
+            Timestamps for the index operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.Overall">
+            <summary>
+            Start and end timestamps for the overall indexing operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.PersistSourceDocument">
+            <summary>
+            Start and end timestamps for persisting the source document to storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.PersistParsedDocument">
+            <summary>
+            Start and end timestamps for persisting the parsed document to storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.PersistPostingsDocument">
+            <summary>
+            Start and end timestamps for persisting the postings object to storage.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.Parse">
+            <summary>
+            Start and end timestamps for parsing the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.Postings">
+            <summary>
+            Start and end timestamps for generating postings from the parsed document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps.Terms">
+            <summary>
+            Start and end timestamps for processing document terms and storing them in the database.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.IndexStats">
+            <summary>
+            Statistics for an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.Name">
+            <summary>
+            The name of the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.GUID">
+            <summary>
+            The globally-unique identifier for the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.SourceDocuments">
+            <summary>
+            Source document statistics.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.ParsedDocuments">
+            <summary>
+            Parsed document statistics.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.Terms">
+            <summary>
+            The number of terms in the index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.Postings">
+            <summary>
+            The number of postings in the index.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.IndexStats.DocumentsStats">
+            <summary>
+            Document statistics.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.DocumentsStats.Count">
+            <summary>
+            The number of documents.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.IndexStats.DocumentsStats.Bytes">
+            <summary>
+            The total size of the documents.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.MatchedDocument">
+            <summary>
+            A document matching a search query.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.MatchedDocument.GUID">
+            <summary>
+            Globally-unique identifier for the source document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.MatchedDocument.DocumentType">
+            <summary>
+            The type of document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.MatchedDocument.Score">
+            <summary>
+            The score of the document, between 0 and 1, over both terms and filters.  Only relevant when optional terms or filters are supplied in the search.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.MatchedDocument.TermsScore">
+            <summary>
+            The terms score of the document, between 0 and 1, when optional terms are supplied.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.MatchedDocument.FiltersScore">
+            <summary>
+            The filters score of the document, between 0 and 1, when optional filters are supplied.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.MatchedDocument.Metadata">
+            <summary>
+            Source document metadata, if requested.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.MatchedDocument.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.ParsedDocument">
+            <summary>
+            Object that has been parsed by Komodo.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.SourceDocumentGUID">
+            <summary>
+            Globally-unique identifier of the source document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns the document record.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.IndexGUID">
+            <summary>
+            Globally-unique identifier of the index.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.Type">
+            <summary>
+            The type of document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.ContentLength">
+            <summary>
+            The content length of the parsed document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.Terms">
+            <summary>
+            The number of terms in the parsed document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.Postings">
+            <summary>
+            The number of postings in the parsed document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.Created">
+            <summary>
+            The timestamp from when the entry was created.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.ParsedDocument.Indexed">
+            <summary>
+            The timestamp from when the document was indexed.
+            </summary> 
+        </member>
+        <member name="M:Komodo.Sdk.Classes.ParsedDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.Posting">
+            <summary>
+            A postings entry for a document, i.e. a term, its frequency, and its positions.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Posting.Term">
+            <summary>
+            Term.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Posting.Frequency">
+            <summary>
+            The frequency with which the term was found.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Posting.Positions">
+            <summary>
+            The character positions where the term was found.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.Posting.#ctor">
+            <summary>
+            Instantiate the Posting object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.Posting.ToString">
+            <summary>
+            Returns a human-readable string version of the object.
+            </summary>
+            <returns>String.</returns>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.PostingsResult">
+            <summary>
+            Results from generating postings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.PostingsResult.Success">
+            <summary>
+            Indicates if the postings generator was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.PostingsResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.PostingsResult.Postings">
+            <summary>
+            Postings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.PostingsResult.Terms">
+            <summary>
+            Terms.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.PostingsResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.QueryFilter">
+            <summary>
+            A filter for the query.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.QueryFilter.Terms">
+            <summary>
+            List of terms upon which to match.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.QueryFilter.Filter">
+            <summary>
+            List of filters upon which to match.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.QueryFilter.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.SearchCondition">
+            <summary>
+            Available conditions for search filters.
+            </summary> 
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.Equals">
+            <summary>
+            The left and right terms are equal to one another.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.NotEquals">
+            <summary>
+            The left and right terms are not equal to one another.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.GreaterThan">
+            <summary>
+            The left term is greater than the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.GreaterThanOrEqualTo">
+            <summary>
+            The left term is greater than or equal to the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.LessThan">
+            <summary>
+            The left term is less than the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.LessThanOrEqualTo">
+            <summary>
+            The left term is less than or equal to the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.IsNull">
+            <summary>
+            The left term is null.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.IsNotNull">
+            <summary>
+            The left term is not null.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.Contains">
+            <summary>
+            The left term is contained within the right term (list).
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.ContainsNot">
+            <summary>
+            The left term is not contained within the right term (list).
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.StartsWith">
+            <summary>
+            The left term starts with the right term.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchCondition.EndsWith">
+            <summary>
+            The left term ends with the right term.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.SearchFilter">
+            <summary>
+            A search filter.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchFilter.Field">
+            <summary>
+            The field upon which to match.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchFilter.Condition">
+            <summary>
+            The condition by which the parsed document's content is evaluated against the supplied value.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchFilter.Value">
+            <summary>
+            The value to be evaluated using the specified condition against the parsed document's content.
+            When using GreaterThan, GreaterThanOrEqualTo, LessThan, or LessThanOrEqualTo, the value supplied must be convertible to decimal.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchFilter.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchFilter.#ctor(System.String,Komodo.Sdk.Classes.SearchCondition,System.String)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="field">Field.</param>
+            <param name="condition">SearchCondition.</param>
+            <param name="value">Value.</param>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchFilter.EvaluateValue(System.Object)">
+            <summary>
+            Evaluates a value against the search filter.
+            </summary>
+            <param name="value">Value.</param>
+            <returns>True if matched.</returns>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.SearchQuery">
+            <summary>
+            Object used to search an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchQuery.GUID">
+            <summary>
+            The GUID of the search operation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchQuery.MaxResults">
+            <summary>
+            Maximum number of results to retrieve.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchQuery.StartIndex">
+            <summary>
+            The starting index position for the search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchQuery.Required">
+            <summary>
+            Required terms and search filter that must be satisfied to include a document in the results.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchQuery.Optional">
+            <summary>
+            Optional terms and search filter that may match on documents but are not required.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchQuery.Exclude">
+            <summary>
+            Terms and search filter that must be excluded from the results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchQuery.IncludeMetadata">
+            <summary>
+            Indicate whether document metadata should be included in the search result.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchQuery.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.SearchResult">
+            <summary>
+            Object returned as the result of a search against an index.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.Success">
+            <summary>
+            Indicates if the statistics operation was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.IndexName">
+            <summary>
+            The name of the index that was queried.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.Query">
+            <summary>
+            The search query performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.TermsNotFound">
+            <summary>
+            List of terms not found.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.Documents">
+            <summary>
+            Documents that matched the query.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchResult.#ctor(Komodo.Sdk.Classes.SearchQuery)">
+            <summary>
+            Instantiates the object.
+            </summary>
+            <param name="query">Search query.</param>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchResult.SortMatchesByScore">
+            <summary>
+            Sort matches by score.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents">
+            <summary>
+            Amount of time spent in various aspects of search.
+            Time elements may not add up to the 'Overall' time as not every element is measured.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.Overall">
+            <summary>
+            Overall time spent processing the search query.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.PreparationMs">
+            <summary>
+            Time spent, in milliseconds, preparing internal data structures for the search.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.RequiredExcludedTermsMs">
+            <summary>
+            Time spent, in milliseconds, evaluating required and excluded terms.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.ReadParseResultsMs">
+            <summary>
+            Time spent, in milliseconds, reading parse results from documents.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.OptionalTermsMs">
+            <summary>
+            Time spent, in milliseconds, evaluating optional terms.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.RequiredExcludedFiltersMs">
+            <summary>
+            Time spent, in milliseconds, evaluating required and excluded filters.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.OptionalFiltersMs">
+            <summary>
+            Time spent, in milliseconds, evaluating optional filters.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.SourceDocument">
+            <summary>
+            Object that has been uploaded to Komodo.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns the document record.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.IndexGUID">
+            <summary>
+            The globally-unique identifier of the index.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Name">
+            <summary>
+            The name of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Title">
+            <summary>
+            The title of the object.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Tags">
+            <summary>
+            The tags associated with the object.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Type">
+            <summary>
+            The type of document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.SourceURL">
+            <summary>
+            The URL from which the content was retrieved.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.ContentType">
+            <summary>
+            The content type of the object.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.ContentLength">
+            <summary>
+            The content length of the source document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Md5">
+            <summary>
+            The MD5 hash of the source content.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Created">
+            <summary>
+            The timestamp from when the entry was created.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.SourceDocument.Indexed">
+            <summary>
+            The timestamp from when the document was indexed.
+            </summary> 
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SourceDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.Timestamps">
+            <summary>
+            Object used to measure start, end, and total time associated with an operation.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Timestamps.Start">
+            <summary>
+            The time at which the operation started.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Timestamps.End">
+            <summary>
+            The time at which the operation ended.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.Classes.Timestamps.TotalMs">
+            <summary>
+            The total number of milliseconds that transpired between Start and End.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.Timestamps.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.KomodoException">
+            <summary>
+            Komodo exception.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.KomodoException.StatusCode">
+            <summary>
+            HTTP status code.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.KomodoException.ResponseData">
+            <summary>
+            Response data from Komodo.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.KomodoException.Type">
+            <summary>
+            The type of exception.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.ExceptionType">
+            <summary>
+            The type of Kvpbase exception.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.Unknown">
+            <summary>
+            Unknown exception type.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.CannotConnect">
+            <summary>
+            Could not connect to the server or could not retrieve a response.
+            </summary> 
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.InternalServerError">
+            <summary>
+            A server-side error was encountered.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.PayloadTooLarge">
+            <summary>
+            Request data too large.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.Conflict">
+            <summary>
+            A conflict exists, for example, attempting to write an object using a key that already exists.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.NotFound">
+            <summary>
+            The requested resource was not found.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.Unauthorized">
+            <summary>
+            You were not authorized to perform the request.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.ExceptionType.BadRequest">
+            <summary>
+            Your request was malformed.
+            </summary>
+        </member>
+        <member name="T:Komodo.Sdk.KomodoSdk">
+            <summary>
+            SDK for Komodo information storage, search, and retrieval platform.
+            </summary>
+        </member>
+        <member name="P:Komodo.Sdk.KomodoSdk.AcceptInvalidCertificates">
+            <summary>
+            Accept or decline server certificates that cannot be verified or are invalid.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.#ctor(System.String,System.String)">
+            <summary>
+            Initialize the SDK.
+            </summary>
+            <param name="endpoint">Endpoint URL of the form http://[hostname]:[port]/.</param>
+            <param name="apiKey">API key to use when accessing Komodo.</param> 
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.Loopback">
+            <summary>
+            Test authenticated connectivity to Komodo.
+            </summary>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.GetIndices">
+            <summary>
+            Return the list of indices available on the server.
+            </summary> 
+            <returns>List of index names.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.GetIndex(System.String)">
+            <summary>
+            Retrieve index details.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <returns>Index.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.GetIndexStats(System.String)">
+            <summary>
+            Retrieve statistics related to an index.
+            </summary>
+            <param name="indexName">Name of the index.</param> 
+            <returns>Index statistics.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.CreateIndex(Komodo.Sdk.Classes.Index)">
+            <summary>
+            Creates an index.
+            </summary> 
+            <param name="index">Index.</param> 
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.DeleteIndex(System.String,System.Boolean)">
+            <summary>
+            Deletes an index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="cleanup">True to delete files associated with the index.</param> 
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+            <summary>
+            Add a document to the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docName">Name of the document.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param> 
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+            <summary>
+            Add a document to the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docName">Name of the document.</param>
+            <param name="docGuid">Document GUID.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param> 
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocumentAsync(System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.String)">
+            <summary>
+            Add a document to the specified index asynchronously and expect a postback with the results.
+            </summary>
+            <param name="indexName">Name of the index.</param> 
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param>
+            <param name="postbackUrl">URL to which results should be POSTed back.</param>
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocumentAsync(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.String)">
+            <summary>
+            Add a document to the specified index asynchronously and expect a postback with the results.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docGuid">Document GUID.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param>
+            <param name="postbackUrl">URL to which results should be POSTed back.</param>
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+            <summary>
+            Store a document in the specified index without parsing and indexing.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param> 
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+            <summary>
+            Store a document in the specified index without parsing and indexing.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docGuid">Document GUID.</param>
+            <param name="sourceUrl">Source URL for the data (overrides 'data' parameter).</param>
+            <param name="title">Title for the document.</param>
+            <param name="tags">Document tags.</param>
+            <param name="docType">Type of document.</param>
+            <param name="data">Data from the document.</param> 
+            <returns>Index result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.GetSourceDocument(System.String,System.String)">
+            <summary>
+            Retrieve a document source from the specified index.
+            </summary>
+            <param name="name">Name of the index.</param>
+            <param name="docId">Document ID.</param>
+            <returns>Komodo object.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.GetDocumentMetadata(System.String,System.String)">
+            <summary>
+            Retrieve metadata for a document from the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docId">Document ID.</param> 
+            <returns>DocumentMetadata.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.DeleteDocument(System.String,System.String)">
+            <summary>
+            Deletes a document from the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="docId">Document ID.</param> 
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.Search(System.String,Komodo.Sdk.Classes.SearchQuery)">
+            <summary>
+            Search the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="query">Search query.</param> 
+            <returns>Search result.</returns>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.Enumerate(System.String,Komodo.Sdk.Classes.EnumerationQuery)">
+            <summary>
+            Enumerate source documents in the specified index.
+            </summary>
+            <param name="indexName">Name of the index.</param>
+            <param name="query">Enumeration query.</param> 
+            <returns>Enumeration result.</returns>
+        </member>
+    </members>
+</doc>

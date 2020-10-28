@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -12,11 +13,13 @@ namespace Komodo.Classes
         /// <summary>
         /// The GUID of the search operation.
         /// </summary>
+        [JsonProperty(Order = -4)]
         public string GUID = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Maximum number of results to retrieve.
         /// </summary>
+        [JsonProperty(Order = -3)]
         public int MaxResults
         {
             get
@@ -34,11 +37,19 @@ namespace Komodo.Classes
         /// <summary>
         /// The starting index position for the search.
         /// </summary>
+        [JsonProperty(Order = -2)]
         public int StartIndex = 0;
+
+        /// <summary>
+        /// Indicate whether document metadata should be included in the search result.
+        /// </summary>
+        [JsonProperty(Order = -1)]
+        public bool IncludeMetadata = false;
 
         /// <summary>
         /// Required terms and search filter that must be satisfied to include a document in the results.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public QueryFilter Required
         {
             get
@@ -55,6 +66,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Optional terms and search filter that may match on documents but are not required.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public QueryFilter Optional
         {
             get
@@ -71,6 +83,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Terms and search filter that must be excluded from the results.
         /// </summary>
+        [JsonProperty(Order = 92)]
         public QueryFilter Exclude
         {
             get
@@ -83,11 +96,6 @@ namespace Komodo.Classes
                 else _Exclude = value;
             }
         }
-
-        /// <summary>
-        /// Indicate whether document metadata should be included in the search result.
-        /// </summary>
-        public bool IncludeMetadata = false;
 
         #endregion
 

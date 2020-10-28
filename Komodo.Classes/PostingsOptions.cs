@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -45,13 +46,9 @@ namespace Komodo.Classes
         public int MaxTokenLength = 32;
 
         /// <summary>
-        /// List of stop words.
-        /// </summary>
-        public List<string> StopWords = new List<string>();
-
-        /// <summary>
         /// Characters on which to split terms.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public char[] SplitCharacters = new char[] 
         { 
             ']', 
@@ -89,7 +86,13 @@ namespace Komodo.Classes
             '\n',
             '\t'
         };
-         
+
+        /// <summary>
+        /// List of stop words.
+        /// </summary>
+        [JsonProperty(Order = 991)]
+        public List<string> StopWords = new List<string>();
+
         #endregion
 
         #region Private-Members

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Komodo.Classes
 {
@@ -16,6 +17,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Indicates if the statistics operation was successful.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public bool Success = false;
 
         /// <summary>
@@ -26,16 +28,19 @@ namespace Komodo.Classes
         /// <summary>
         /// Start and end timestamps.
         /// </summary>
+        [JsonProperty(Order = 990)]
         public Timestamps Time = new Timestamps();
 
         /// <summary>
         /// The enumeration query performed.
         /// </summary>
+        [JsonProperty(Order = 991)]
         public EnumerationQuery Query = null;
 
         /// <summary>
         /// Source documents that matched the query.
         /// </summary>
+        [JsonProperty(Order = 992)]
         public List<SourceDocument> Matches = new List<SourceDocument>();
 
         #endregion

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netstandard2.0;net461</TargetFrameworks>
-    <Version>1.5.2</Version>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netstandard2.0;net461</TargetFrameworks>
+    <Version>1.6.1.4</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Core Classes: Information search, metadata, storage, and retrieval</Product>
     <Description>Do not install directly.  Supporting classes for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
@@ -19,7 +19,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Code\Komodo\Core-1.4\Komodo.Classes\Komodo.Classes.xml</DocumentationFile>
+    <DocumentationFile>Komodo.Classes.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>Komodo.Classes.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="BlobHelper" Version="2.0.4.2" />
-    <PackageReference Include="WatsonORM" Version="1.3.0.5" />
+    <PackageReference Include="WatsonORM" Version="1.3.0.15" />
   </ItemGroup>
 
 </Project>

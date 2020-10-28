@@ -217,8 +217,34 @@ namespace Komodo.Postings
         /// <returns>Token with normalized case.</returns>
         public static string NormalizeCase(string token)
         {
-            if (String.IsNullOrEmpty(token)) return token;
-            return token.ToLower();
+            if (String.IsNullOrEmpty(token)) return null;
+            return token.ToLower().Trim();
+        }
+
+        /// <summary>
+        /// Normalize case.
+        /// </summary>
+        /// <param name="tokens">Token.</param>
+        /// <returns>Token with normalized case.</returns>
+        public static List<Token> NormalizeCase(List<Token> tokens)
+        {
+            if (tokens == null) return null;
+            if (tokens.Count < 1) return tokens;
+
+            List<Token> ret = new List<Token>();
+
+            foreach (Token token in tokens)
+            {
+                if (String.IsNullOrEmpty(token.Value)) continue;
+
+                Token updated = new Token();
+                updated.Value = token.Value.ToLower().Trim();
+                updated.Count = token.Count;
+                updated.Positions = token.Positions;
+                ret.Add(updated);
+            }
+
+            return ret;
         }
 
         /// <summary>
@@ -381,15 +407,17 @@ namespace Komodo.Postings
         /// </summary>
         /// <param name="tokens">Dictionary containing tokens as keys.</param>
         /// <returns>Dictionary of tokens without punctuation.</returns>
-        public static Dictionary<string, int> RemovePunctuation(Dictionary<string, int> tokens)
+        public static List<Token> RemovePunctuation(List<Token> tokens)
         {
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
-            Dictionary<string, int> ret = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, int> curr in tokens)
+            List<Token> ret = new List<Token>();
+            
+            foreach (Token token in tokens)
             {
-                AddToDictionary(curr.Key, curr.Value, ret);
+                ret = AddToken(token, ret);
             }
+
             return ret;
         }
 
@@ -517,15 +545,22 @@ namespace Komodo.Postings
         /// <param name="options">Postings options.</param>
         /// <param name="tokens">Dictionary containing tokens as keys.</param>
         /// <returns>Dictionary without stop words.</returns>
-        public static Dictionary<string, int> RemoveStopWords(PostingsOptions options, Dictionary<string, int> tokens)
+        public static List<Token> RemoveStopWords(PostingsOptions options, List<Token> tokens)
         {
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
-            Dictionary<string, int> ret = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, int> curr in tokens)
+            List<Token> ret = new List<Token>();
+
+            foreach (Token token in tokens)
             {
-                ret.Add(RemoveStopWords(options, curr.Key), curr.Value);
+                string updated = RemoveStopWords(options, token.Value);
+                if (!String.IsNullOrEmpty(updated))
+                {
+                    token.Value = updated;
+                    ret.Add(token);
+                }
             }
+
             return ret;
         }
 
@@ -621,7 +656,35 @@ namespace Komodo.Postings
             else
             {
                 dict.Add(key, val);
-            } 
+            }
+        }
+
+        private static List<Token> AddToken(Token token, List<Token> tokens)
+        {
+            if (token == null) return tokens;
+            if (String.IsNullOrEmpty(token.Value)) return tokens;
+            if (tokens == null) tokens = new List<Token>();
+
+            if (tokens.Any(t => t.Value.Equals(token.Value)))
+            {
+                Token original = tokens.First(t => t.Value.Equals(token.Value));
+                Token updated = new Token();
+                updated.Value = original.Value;
+                updated.Count = original.Count + token.Count;
+                updated.Positions = new List<long>();
+                if (original.Positions != null && original.Positions.Count > 0) updated.Positions.AddRange(original.Positions);
+                if (token.Positions != null && token.Positions.Count > 0) updated.Positions.AddRange(token.Positions);
+                if (updated.Positions.Count > 0) updated.Positions = updated.Positions.Distinct().ToList();
+
+                tokens.Remove(original);
+                tokens.Add(updated);
+            }
+            else
+            {
+                tokens.Add(token);
+            }
+
+            return tokens;
         }
 
         #endregion

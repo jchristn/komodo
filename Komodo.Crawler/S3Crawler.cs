@@ -84,7 +84,7 @@ namespace Komodo.Crawler
 
             InitializeBlobs();
         }
-         
+
         /// <summary>
         /// Instantiate the object to crawl on S3-compatible storage.
         /// </summary>
@@ -95,6 +95,7 @@ namespace Komodo.Crawler
         /// <param name="accessKey">Access key.</param>
         /// <param name="secretKey">Secret key.</param>
         /// <param name="region">The AWS region.</param>
+        /// <param name="baseUrl">Base URL to use for objects, i.e. https://[bucketname].s3.[regionname].amazonaws.com/.  For non-S3 endpoints, use {bucket} and {key} to indicate where these values should be inserted, i.e. http://{bucket}.[hostname]:[port]/{key} or https://[hostname]:[port]/{bucket}/key.</param>
         public S3Crawler(string endpoint, bool ssl, string bucket, string key, string accessKey, string secretKey, AwsRegion region, string baseUrl)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
