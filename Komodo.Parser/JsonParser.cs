@@ -33,29 +33,29 @@ namespace Komodo.Parser
                 _TextParser = value;
             }
         }
-
+         
         /// <summary>
-        /// Minimum length of a token to include in the result.
+        /// Parse options.
         /// </summary>
-        public int MinimumTokenLength
+        public ParseOptions ParseOptions
         {
             get
             {
-                return _MinimumTokenLength;
+                return _ParseOptions;
             }
             set
             {
-                if (value < 1) throw new ArgumentException("Minimum token length must be one or greater.");
-                _MinimumTokenLength = value;
+                if (value == null) throw new ArgumentNullException(nameof(ParseOptions));
+                _ParseOptions = value;
             }
         }
 
         #endregion
 
         #region Private-Members 
-
-        private int _MinimumTokenLength = 3;
+         
         private TextParser _TextParser = new TextParser();
+        private ParseOptions _ParseOptions = new ParseOptions();
 
         #endregion
 
@@ -68,6 +68,17 @@ namespace Komodo.Parser
         { 
         }
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="options">Parse options.</param>
+        public JsonParser(ParseOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            _ParseOptions = options;
+            _TextParser = new TextParser(_ParseOptions);
+        }
+
         #endregion
 
         #region Public-Methods
@@ -77,14 +88,22 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="url">Source URL.</param>
         /// <returns>Parse result.</returns>
-        public JsonParseResult ParseFromUrl(string url)
+        public ParseResult ParseFromUrl(string url)
         {
-            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));  
-            HttpCrawler crawler = new HttpCrawler(url); 
-            JsonParseResult result = new JsonParseResult();
-            HttpCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+
+            ParseResult ret = new ParseResult();
+            ret.Json = new ParseResult.JsonParseResult();
+
+            HttpCrawler crawler = new HttpCrawler(url);
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -94,14 +113,22 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="filename">Path and filename.</param>
         /// <returns>Parse result.</returns>
-        public JsonParseResult ParseFromFile(string filename)
+        public ParseResult ParseFromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
+
+            ParseResult ret = new ParseResult();
+            ret.Json = new ParseResult.JsonParseResult();
+
             FileCrawler crawler = new FileCrawler(filename);
-            JsonParseResult result = new JsonParseResult();
-            FileCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -111,7 +138,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="data">JSON string.</param>
         /// <returns>Parse result.</returns>
-        public JsonParseResult ParseString(string data)
+        public ParseResult ParseString(string data)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data));
             return ProcessSourceContent(data);
@@ -122,7 +149,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="bytes">Byte data containing JSON.</param>
         /// <returns>Parse result.</returns>
-        public JsonParseResult ParseBytes(byte[] bytes)
+        public ParseResult ParseBytes(byte[] bytes)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
             string sourceContent = Encoding.UTF8.GetString(bytes);
@@ -133,24 +160,26 @@ namespace Komodo.Parser
 
         #region Private-Methods
 
-        private JsonParseResult ProcessSourceContent(string content)
+        private ParseResult ProcessSourceContent(string content)
         {
             int maxDepth;
             int arrayCount;
             int nodeCount;
 
+            ParseResult ret = new ParseResult();
+            ret.Json = new ParseResult.JsonParseResult();
+
             JToken jtoken = JToken.Parse(content);
 
-            JsonParseResult ret = new JsonParseResult();
             ret.Flattened = Flatten(jtoken, out maxDepth, out arrayCount, out nodeCount);
-            ret.MaxDepth = maxDepth;
-            ret.ArrayCount = arrayCount;
-            ret.NodeCount = nodeCount; 
-            ret.Schema = BuildSchema(ret.Flattened);
-            ret.Tokens = GetTokens(ret.Flattened); 
-            ret.NodeCount = ret.Flattened.Count;
+            ret.Json.MaxDepth = maxDepth;
+            ret.Json.Arrays = arrayCount;
+            ret.Json.Nodes = nodeCount; 
+            ret.Schema = ParserCommon.BuildSchema(ret.Flattened);
+            ret.Tokens = ParserCommon.GetTokens(ret.Flattened, _TextParser); 
+
             ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -253,58 +282,7 @@ namespace Komodo.Parser
                 #endregion
             }
         }
-
-        private Dictionary<string, DataType> BuildSchema(List<DataNode> nodes)
-        {
-            Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
-
-            foreach (DataNode curr in nodes)
-            {
-                if (ret.ContainsKey(curr.Key))
-                {
-                    if (ret[curr.Key].Equals("null") && !curr.Type.Equals(DataType.Null))
-                    {
-                        // replace null with more specific type
-                        ret.Remove(curr.Key);
-                        ret.Add(curr.Key, curr.Type);
-                    }
-                    continue;
-                }
-                else
-                {
-                    ret.Add(curr.Key, curr.Type);
-                }
-            }
-
-            return ret;
-        }
-
-        private List<Token> GetTokens(List<DataNode> nodes)
-        {
-            List<Token> ret = new List<Token>();
-            _TextParser.MinimumTokenLength = MinimumTokenLength;
-
-            foreach (DataNode curr in nodes)
-            {
-                if (curr.Data == null) continue;
-                if (String.IsNullOrEmpty(curr.Data.ToString())) continue;
-
-                TextParseResult tpr = _TextParser.ParseString(curr.Data.ToString()); 
-
-                foreach (Token currToken in tpr.Tokens)
-                {
-                    ret = ParserCommon.AddToken(currToken, ret);
-                }
-            }
-
-            if (ret != null && ret.Count > 0)
-            {
-                ret = ret.OrderByDescending(u => u.Count).ToList();
-            }
-
-            return ret;
-        }
-         
+          
         #endregion
     }
 }

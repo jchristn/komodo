@@ -166,11 +166,11 @@ namespace Komodo.Daemon
         /// </summary>
         /// <param name="filename">Filename.</param>
         /// <returns>Result.</returns>
-        public FileCrawlResult CrawlFile(string filename)
+        public CrawlResult CrawlFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
             FileCrawler fc = new FileCrawler(filename);
-            FileCrawlResult fcr = fc.Get();
+            CrawlResult fcr = fc.Get();
             return fcr;
         }
 
@@ -179,11 +179,11 @@ namespace Komodo.Daemon
         /// </summary>
         /// <param name="url">URL.</param>
         /// <returns>Result.</returns>
-        public HttpCrawlResult CrawlWebpage(string url)
+        public CrawlResult CrawlWebpage(string url)
         {
             if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
             HttpCrawler hc = new HttpCrawler(url);
-            HttpCrawlResult hcr = hc.Get();
+            CrawlResult hcr = hc.Get();
             return hcr;
         }
 
@@ -192,11 +192,11 @@ namespace Komodo.Daemon
         /// </summary>
         /// <param name="url">URL.</param>
         /// <returns>Result.</returns>
-        public FtpCrawlResult CrawlFtp(string url)
+        public CrawlResult CrawlFtp(string url)
         {
             if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
             FtpCrawler fc = new FtpCrawler(url);
-            FtpCrawlResult fcr = fc.Get();
+            CrawlResult fcr = fc.Get();
             return fcr;
         }
 

@@ -57,14 +57,14 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.AzureBlobCrawler.TryGet(Komodo.Crawler.AzureBlobCrawlResult@)">
+        <member name="M:Komodo.Crawler.AzureBlobCrawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.AzureBlobCrawler.TryDownload(System.String,Komodo.Crawler.AzureBlobCrawlResult@)">
+        <member name="M:Komodo.Crawler.AzureBlobCrawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
@@ -85,51 +85,6 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="T:Komodo.Crawler.AzureBlobCrawlResult">
-            <summary>
-            Azure BLOB crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.AzureBlobCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.AzureBlobCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.AzureBlobCrawlResult.Filename">
-            <summary>
-            The filename to which the retrieved file was downloaded.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.AzureBlobCrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.AzureBlobCrawlResult.DataStream">
-            <summary>
-            File stream of the retrieved data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.AzureBlobCrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.AzureBlobCrawlResult.Data">
-            <summary>
-            Read the stream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.AzureBlobCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
-        </member>
         <member name="T:Komodo.Crawler.FileCrawler">
             <summary>
             Crawler for retrieving data from the file system.
@@ -149,6 +104,7 @@
         <member name="M:Komodo.Crawler.FileCrawler.Get">
             <summary>
             Retrieve the object.
+            Close and dispose the DataStream when done.
             </summary>
             <returns>Crawl result.</returns>
         </member>
@@ -159,60 +115,21 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.FileCrawler.TryGet(Komodo.Crawler.FileCrawlResult@)">
+        <member name="M:Komodo.Crawler.FileCrawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
+            Close and dispose the DataStream when done.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.FileCrawler.TryDownload(System.String,Komodo.Crawler.FileCrawlResult@)">
+        <member name="M:Komodo.Crawler.FileCrawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
             <param name="filename">The filename where the object should be saved.</param>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
-        </member>
-        <member name="T:Komodo.Crawler.FileCrawlResult">
-            <summary>
-            Filesystem crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FileCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FileCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FileCrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FileCrawlResult.FileStream">
-            <summary>
-            File stream of the retrieved file.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FileCrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.FileCrawlResult.Data">
-            <summary>
-            Read the FileStream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.FileCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
         </member>
         <member name="T:Komodo.Crawler.FtpCrawler">
             <summary>
@@ -253,14 +170,14 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.FtpCrawler.TryGet(Komodo.Crawler.FtpCrawlResult@)">
+        <member name="M:Komodo.Crawler.FtpCrawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.FtpCrawler.TryDownload(System.String,Komodo.Crawler.FtpCrawlResult@)">
+        <member name="M:Komodo.Crawler.FtpCrawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
@@ -280,51 +197,6 @@
             </summary>
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
-        </member>
-        <member name="T:Komodo.Crawler.FtpCrawlResult">
-            <summary>
-            FTP crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FtpCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FtpCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FtpCrawlResult.Filename">
-            <summary>
-            The filename to which the retrieved file was downloaded.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FtpCrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FtpCrawlResult.DataStream">
-            <summary>
-            File stream of the retrieved file.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.FtpCrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.FtpCrawlResult.Data">
-            <summary>
-            Read the stream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.FtpCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
         </member>
         <member name="T:Komodo.Crawler.HttpCrawler">
             <summary>
@@ -390,14 +262,14 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.HttpCrawler.TryGet(Komodo.Crawler.HttpCrawlResult@)">
+        <member name="M:Komodo.Crawler.HttpCrawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.HttpCrawler.TryDownload(System.String,Komodo.Crawler.HttpCrawlResult@)">
+        <member name="M:Komodo.Crawler.HttpCrawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
@@ -417,61 +289,6 @@
             </summary>
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
-        </member>
-        <member name="T:Komodo.Crawler.HttpCrawlResult">
-            <summary>
-            HTTP crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.Filename">
-            <summary>
-            The filename to which the retrieved file was downloaded.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.StatusCode">
-            <summary>
-            The HTTP status code.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.DataStream">
-            <summary>
-            File stream of the retrieved data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.Headers">
-            <summary>
-            The HTTP headers in the response.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.HttpCrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.HttpCrawlResult.Data">
-            <summary>
-            Read the stream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.HttpCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
         </member>
         <member name="T:Komodo.Crawler.HttpMethod">
             <summary>
@@ -550,14 +367,14 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.KomodoCrawler.TryGet(Komodo.Crawler.KomodoCrawlResult@)">
+        <member name="M:Komodo.Crawler.KomodoCrawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.KomodoCrawler.TryDownload(System.String,Komodo.Crawler.KomodoCrawlResult@)">
+        <member name="M:Komodo.Crawler.KomodoCrawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
@@ -577,51 +394,6 @@
             </summary>
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
-        </member>
-        <member name="T:Komodo.Crawler.KomodoCrawlResult">
-            <summary>
-            Komodo crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KomodoCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KomodoCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KomodoCrawlResult.Filename">
-            <summary>
-            The filename to which the retrieved file was downloaded.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KomodoCrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KomodoCrawlResult.DataStream">
-            <summary>
-            File stream of the retrieved data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KomodoCrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.KomodoCrawlResult.Data">
-            <summary>
-            Read the stream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.KomodoCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
         </member>
         <member name="T:Komodo.Crawler.KvpbaseCrawler">
             <summary>
@@ -676,14 +448,14 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.KvpbaseCrawler.TryGet(Komodo.Crawler.KvpbaseCrawlResult@)">
+        <member name="M:Komodo.Crawler.KvpbaseCrawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.KvpbaseCrawler.TryDownload(System.String,Komodo.Crawler.KvpbaseCrawlResult@)">
+        <member name="M:Komodo.Crawler.KvpbaseCrawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
@@ -703,110 +475,6 @@
             </summary>
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
-        </member>
-        <member name="T:Komodo.Crawler.KvpbaseCrawlResult">
-            <summary>
-            Kvpbase crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KvpbaseCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KvpbaseCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KvpbaseCrawlResult.Filename">
-            <summary>
-            The filename to which the retrieved file was downloaded.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KvpbaseCrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KvpbaseCrawlResult.DataStream">
-            <summary>
-            File stream of the retrieved data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.KvpbaseCrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.KvpbaseCrawlResult.Data">
-            <summary>
-            Read the stream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.KvpbaseCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
-        </member>
-        <member name="T:Komodo.Crawler.ObjectMetadata">
-            <summary>
-            Metadata for a crawled object.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.Key">
-            <summary>
-            Object key.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.ContentType">
-            <summary>
-            Content type.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.ContentLength">
-            <summary>
-            Content length.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.ETag">
-            <summary>
-            Etag.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.CreatedUtc">
-            <summary>
-            Creation timestamp.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.LastAccessUtc">
-            <summary>
-            Last access timestamp.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.ObjectMetadata.LastUpdateUtc">
-            <summary>
-            Last update timestamp.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.ObjectMetadata.#ctor">
-            <summary>
-            Instantiate the object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.ObjectMetadata.FromBlobMetadata(BlobHelper.BlobMetadata)">
-            <summary>
-            Instantiate the object.
-            </summary>
-            <param name="md">BLOB metadata.</param>
-            <returns>Object metadata.</returns>
-        </member>
-        <member name="M:Komodo.Crawler.ObjectMetadata.FromFileInfo(System.IO.FileInfo)">
-            <summary>
-            Instantiate the object.
-            </summary>
-            <param name="fi">FileInfo.</param>
-            <returns>Object metadata.</returns>
         </member>
         <member name="T:Komodo.Crawler.S3Crawler">
             <summary>
@@ -889,14 +557,14 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="M:Komodo.Crawler.S3Crawler.TryGet(Komodo.Crawler.S3CrawlResult@)">
+        <member name="M:Komodo.Crawler.S3Crawler.TryGet(Komodo.Classes.CrawlResult@)">
             <summary>
             Retrieve the object.
             </summary>
             <param name="result">Crawl result.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Crawler.S3Crawler.TryDownload(System.String,Komodo.Crawler.S3CrawlResult@)">
+        <member name="M:Komodo.Crawler.S3Crawler.TryDownload(System.String,Komodo.Classes.CrawlResult@)">
             <summary>
             Download the object to the supplied filename.
             </summary>
@@ -917,51 +585,6 @@
             <param name="filename">The filename where the object should be saved.</param>
             <returns>Crawl result.</returns>
         </member>
-        <member name="T:Komodo.Crawler.S3CrawlResult">
-            <summary>
-            S3 crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.S3CrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.S3CrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.S3CrawlResult.Filename">
-            <summary>
-            The filename to which the retrieved file was downloaded.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.S3CrawlResult.ContentLength">
-            <summary>
-            Length of the file retrieved.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.S3CrawlResult.DataStream">
-            <summary>
-            File stream of the retrieved data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.S3CrawlResult.Metadata">
-            <summary>
-            Object metadata.
-            </summary>
-        </member>
-        <member name="P:Komodo.Crawler.S3CrawlResult.Data">
-            <summary>
-            Read the stream fully into a byte array.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.S3CrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
-        </member>
         <member name="T:Komodo.Crawler.SqlCrawler">
             <summary>
             Crawler for retrieving data from a SQL database (SQL Server, MySQL, or PostgreSQL).
@@ -980,31 +603,6 @@
             </summary>
             <returns>DatabaseCrawlResult.</returns>
         </member>
-        <member name="T:Komodo.Crawler.SqlCrawlResult">
-            <summary>
-            Database crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.SqlCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.SqlCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.SqlCrawlResult.DataTable">
-            <summary>
-            DataTable containing the crawled data.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.SqlCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
-        </member>
         <member name="T:Komodo.Crawler.SqliteCrawler">
             <summary>
             Crawler for retrieving data from a Sqlite database file.
@@ -1022,31 +620,6 @@
             Retrieve data from the database using the supplied query.
             </summary>
             <returns>DatabaseCrawlResult.</returns>
-        </member>
-        <member name="T:Komodo.Crawler.SqliteCrawlResult">
-            <summary>
-            Database crawler result.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.SqliteCrawlResult.Success">
-            <summary>
-            Indicates if the crawler was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.SqliteCrawlResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Crawler.SqliteCrawlResult.DataTable">
-            <summary>
-            DataTable containing the crawled data.
-            </summary>
-        </member>
-        <member name="M:Komodo.Crawler.SqliteCrawlResult.#ctor">
-            <summary>
-            Instantiates the object.
-            </summary>
         </member>
     </members>
 </doc>

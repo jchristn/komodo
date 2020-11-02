@@ -131,7 +131,7 @@
             <param name="policy">Metadata policy.</param>
             <param name="indices">Komodo index manager.</param>
         </member>
-        <member name="M:Komodo.MetadataManager.MetadataProcessor.GetMatchingRules(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object)">
+        <member name="M:Komodo.MetadataManager.MetadataProcessor.GetMatchingRules(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,Komodo.Classes.ParseResult)">
             <summary>
             Determine if the document matches a rule.
             </summary>
@@ -140,7 +140,7 @@
             <param name="parseResult">Parse result.</param>
             <returns>List of metadata rules.</returns>
         </member>
-        <member name="M:Komodo.MetadataManager.MetadataProcessor.ProcessDocument(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,System.Object)">
+        <member name="M:Komodo.MetadataManager.MetadataProcessor.ProcessDocument(Komodo.Classes.SourceDocument,Komodo.Classes.ParsedDocument,Komodo.Classes.ParseResult)">
             <summary>
             Process a document using the configured rules.
             </summary>

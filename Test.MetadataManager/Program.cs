@@ -13,7 +13,7 @@ namespace Test.MetadataManager
 {
     class Program
     {
-        static DbSettings _Database = new DbSettings("./Index.db");
+        static DbSettings _Database = new DbSettings("./index.db");
         static Index _Index1 = null;
         static Index _Index2 = null;
         static KomodoIndices _Indices = null;
@@ -32,10 +32,10 @@ namespace Test.MetadataManager
 
             Console.WriteLine("Initializing index manager");
             _Indices = new KomodoIndices(
-                new DbSettings("./Indices.db"),
-                new StorageSettings(new DiskSettings("./Source/")),
-                new StorageSettings(new DiskSettings("./Parsed/")),
-                new StorageSettings(new DiskSettings("./Postings/")));
+                new DbSettings("./indices.db"),
+                new StorageSettings(new DiskSettings("./source/")),
+                new StorageSettings(new DiskSettings("./parsed/")),
+                new StorageSettings(new DiskSettings("./postings/")));
 
             #endregion
 

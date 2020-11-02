@@ -17,34 +17,18 @@ namespace Komodo.Parser
         #region Public-Members
 
         /// <summary>
-        /// Characters upon which text should be split.
+        /// Parse options.
         /// </summary>
-        public char[] SplitCharacters
+        public ParseOptions ParseOptions
         {
             get
             {
-                return _SplitCharacters;
+                return _ParseOptions;
             }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(SplitCharacters));
-                _SplitCharacters = value;
-            }
-        }
-
-        /// <summary>
-        /// Minimum length of a token to include in the result.
-        /// </summary>
-        public int MinimumTokenLength
-        {
-            get
-            {
-                return _MinimumTokenLength;
-            }
-            set
-            {
-                if (value < 1) throw new ArgumentException("Minimum token length must be one or greater.");
-                _MinimumTokenLength = value;
+                if (value == null) throw new ArgumentNullException(nameof(ParseOptions));
+                _ParseOptions = value;
             }
         }
 
@@ -52,45 +36,7 @@ namespace Komodo.Parser
 
         #region Private-Members 
 
-        private char[] _SplitCharacters = new char[]
-        {
-            ']',
-            '[',
-            ',',
-            '.',
-            ' ',
-            '\'',
-            '\"',
-            ';',
-            ':',
-            '<',
-            '>',
-            '.',
-            '/',
-            '\\',
-            '|',
-            '{',
-            '}',
-            '(',
-            ')',
-            '[',
-            ']',
-            '<',
-            '>',
-            '@',
-            '&',
-            '*',
-            '#',
-            '-',
-            '_',
-            '=',
-            '\u001a',
-            '\r',
-            '\n',
-            '\t'
-        };
-
-        private int _MinimumTokenLength = 3;
+        private ParseOptions _ParseOptions = new ParseOptions();
 
         #endregion
 
@@ -103,6 +49,16 @@ namespace Komodo.Parser
         {
         }
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="options">Parse options.</param>
+        public TextParser(ParseOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            _ParseOptions = options;
+        }
+
         #endregion
 
         #region Public-Methods
@@ -112,14 +68,21 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="url">Source URL.</param>
         /// <returns>Parse result.</returns>
-        public TextParseResult ParseFromUrl(string url)
+        public ParseResult ParseFromUrl(string url)
         {
             if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+
+            ParseResult ret = new ParseResult();
+
             HttpCrawler crawler = new HttpCrawler(url);
-            TextParseResult result = new TextParseResult();
-            HttpCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -129,14 +92,21 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="filename">Path and filename.</param>
         /// <returns>Parse result.</returns>
-        public TextParseResult ParseFromFile(string filename)
+        public ParseResult ParseFromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
+
+            ParseResult ret = new ParseResult();
+            
             FileCrawler crawler = new FileCrawler(filename);
-            TextParseResult result = new TextParseResult();
-            FileCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -146,7 +116,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="data">Text string.</param>
         /// <returns>Parse result.</returns>
-        public TextParseResult ParseString(string data)
+        public ParseResult ParseString(string data)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data));
             return ProcessSourceContent(data);
@@ -157,7 +127,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="bytes">Byte data containing text.</param>
         /// <returns>Parse result.</returns>
-        public TextParseResult ParseBytes(byte[] bytes)
+        public ParseResult ParseBytes(byte[] bytes)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
             string sourceContent = Encoding.UTF8.GetString(bytes);
@@ -168,50 +138,12 @@ namespace Komodo.Parser
 
         #region Private-Methods
 
-        private TextParseResult ProcessSourceContent(string data)
+        private ParseResult ProcessSourceContent(string data)
         {
-            TextParseResult ret = new TextParseResult();
-            ret.Tokens = GetTokens(data);
+            ParseResult ret = new ParseResult();
+            ret.Tokens = ParserCommon.GetTokens(data, _ParseOptions);
             ret.Success = true;
-            ret.Time.End = DateTime.Now;
-            return ret;
-        }
-
-        private List<Token> GetTokens(string data)
-        {
-            List<Token> ret = new List<Token>();
-            List<string> temp = new List<string>();
-
-            temp = new List<string>(data.Split(_SplitCharacters, StringSplitOptions.RemoveEmptyEntries)); 
-
-            if (temp != null && temp.Count > 0)
-            {
-                for (int i = 0; i < temp.Count; i++) 
-                {
-                    string tempStr = new string(temp[i].ToCharArray()); 
-                    if (!String.IsNullOrEmpty(tempStr))
-                    {
-                        tempStr = tempStr.Trim();
-                        if (!String.IsNullOrEmpty(tempStr))
-                        {
-                            if (tempStr.Length < _MinimumTokenLength) continue;
-
-                            Token token = new Token();
-                            token.Value = tempStr;
-                            token.Count = 1;
-                            token.Positions.Add(i);
-
-                            ret = ParserCommon.AddToken(token, ret);
-                        }
-                    }
-                }
-            }
-
-            if (ret != null && ret.Count > 0)
-            {
-                ret = ret.OrderByDescending(u => u.Count).ToList();
-            }
-
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
          

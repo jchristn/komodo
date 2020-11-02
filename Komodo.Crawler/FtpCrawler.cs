@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;  
+using System.Threading.Tasks;
+using Komodo.Classes;
 
 namespace Komodo.Crawler
 {
@@ -57,22 +58,30 @@ namespace Komodo.Crawler
         /// Retrieve the object.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public FtpCrawlResult Get()
+        public CrawlResult Get()
         {
-            FtpCrawlResult ret = new FtpCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            request.Credentials = new NetworkCredential(Username, Password); 
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+            try
+            {
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                request.Credentials = new NetworkCredential(Username, Password);
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
 
-            Stream responseStream = response.GetResponseStream();
-            ret.ContentLength = responseStream.Length; 
-            responseStream.CopyTo(ret.DataStream);
-            response.Close();
+                Stream responseStream = response.GetResponseStream();
+                ret.ContentLength = responseStream.Length;
+                responseStream.CopyTo(ret.DataStream);
+                response.Close();
 
-            ret.Success = true;
-            ret.Time.End = DateTime.Now;
+                ret.Success = true;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
+            }
+
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -81,45 +90,53 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public FtpCrawlResult Download(string filename)
+        public CrawlResult Download(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            FtpCrawlResult ret = new FtpCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            request.Credentials = new NetworkCredential(Username, Password);
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-
-            Stream responseStream = response.GetResponseStream();
-
-            ret.Filename = filename;
-            ret.ContentLength = responseStream.Length;
-
-            long bytesRemaining = ret.ContentLength;
-
-            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            try
             {
-                if (bytesRemaining > 0)
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                request.Credentials = new NetworkCredential(Username, Password);
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                Stream responseStream = response.GetResponseStream();
+
+                ret.Filename = filename;
+                ret.ContentLength = responseStream.Length;
+
+                long bytesRemaining = ret.ContentLength;
+
+                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
-                    while (bytesRemaining > 0)
+                    if (bytesRemaining > 0)
                     {
-                        byte[] buffer = new byte[65536];
-                        int bytesRead = responseStream.Read(buffer, 0, buffer.Length);
-                        if (bytesRead > 0)
+                        while (bytesRemaining > 0)
                         {
-                            bytesRemaining -= bytesRead;
-                            fs.Write(buffer, 0, bytesRead);
+                            byte[] buffer = new byte[65536];
+                            int bytesRead = responseStream.Read(buffer, 0, buffer.Length);
+                            if (bytesRead > 0)
+                            {
+                                bytesRemaining -= bytesRead;
+                                fs.Write(buffer, 0, bytesRead);
+                            }
                         }
                     }
                 }
-            }
-            
-            response.Close();
 
-            ret.Success = true;
-            ret.Time.End = DateTime.Now;
+                response.Close();
+
+                ret.Success = true;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
+            }
+
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret; 
         }
 
@@ -128,7 +145,7 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryGet(out FtpCrawlResult result)
+        public bool TryGet(out CrawlResult result)
         {
             result = null;
 
@@ -149,7 +166,7 @@ namespace Komodo.Crawler
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryDownload(string filename, out FtpCrawlResult result)
+        public bool TryDownload(string filename, out CrawlResult result)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
@@ -170,22 +187,30 @@ namespace Komodo.Crawler
         /// Retrieve the object asynchronously.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public async Task<FtpCrawlResult> GetAsync()
+        public async Task<CrawlResult> GetAsync()
         {
-            FtpCrawlResult ret = new FtpCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            request.Credentials = new NetworkCredential(Username, Password);
-            FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync());
+            try
+            {
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                request.Credentials = new NetworkCredential(Username, Password);
+                FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync());
 
-            Stream responseStream = response.GetResponseStream();
-            await responseStream.CopyToAsync(ret.DataStream);
-            ret.ContentLength = responseStream.Length;
-            response.Close();
+                Stream responseStream = response.GetResponseStream();
+                await responseStream.CopyToAsync(ret.DataStream);
+                ret.ContentLength = responseStream.Length;
+                response.Close();
 
-            ret.Success = true;
-            ret.Time.End = DateTime.Now;
+                ret.Success = true;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
+            }
+
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -194,45 +219,53 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public async Task<FtpCrawlResult> DownloadAsync(string filename)
+        public async Task<CrawlResult> DownloadAsync(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            FtpCrawlResult ret = new FtpCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            request.Credentials = new NetworkCredential(Username, Password);
-            FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync());
-
-            Stream responseStream = response.GetResponseStream();
-             
-            ret.Filename = filename;
-            ret.ContentLength = responseStream.Length;
-
-            long bytesRemaining = ret.ContentLength;
-
-            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            try
             {
-                if (bytesRemaining > 0)
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(SourceUrl);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                request.Credentials = new NetworkCredential(Username, Password);
+                FtpWebResponse response = (FtpWebResponse)(await request.GetResponseAsync());
+
+                Stream responseStream = response.GetResponseStream();
+
+                ret.Filename = filename;
+                ret.ContentLength = responseStream.Length;
+
+                long bytesRemaining = ret.ContentLength;
+
+                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
-                    while (bytesRemaining > 0)
+                    if (bytesRemaining > 0)
                     {
-                        byte[] buffer = new byte[65536];
-                        int bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length);
-                        if (bytesRead > 0)
+                        while (bytesRemaining > 0)
                         {
-                            bytesRemaining -= bytesRead;
-                            await fs.WriteAsync(buffer, 0, bytesRead);
+                            byte[] buffer = new byte[65536];
+                            int bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length);
+                            if (bytesRead > 0)
+                            {
+                                bytesRemaining -= bytesRead;
+                                await fs.WriteAsync(buffer, 0, bytesRead);
+                            }
                         }
                     }
                 }
+
+                response.Close();
+
+                ret.Success = true;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
             }
 
-            response.Close();
-
-            ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Komodo.Classes
+namespace Komodo.Sdk.Classes
 {
     /// <summary>
     /// Configuration and options for postings processing and terms extraction.
@@ -429,7 +426,7 @@ namespace Komodo.Classes
         #endregion
 
         #region Public-Methods
-         
+
         #endregion
 
         #region Private-Methods

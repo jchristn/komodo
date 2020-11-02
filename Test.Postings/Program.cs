@@ -75,18 +75,18 @@ namespace Test.Postings
             if (!String.IsNullOrEmpty(endpoint)) s3c = new S3Crawler(endpoint, ssl, bucket, key, accessKey, secretKey, region, baseUrl);
             else s3c = new S3Crawler(bucket, key, accessKey, secretKey, region);
 
-            S3CrawlResult s3cr = s3c.Get();
+            CrawlResult cr = s3c.Get();
 
-            Console.WriteLine("Success        : " + s3cr.Success);
-            Console.WriteLine("Start time     : " + s3cr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + s3cr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + s3cr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + s3cr.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(s3cr.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(s3cr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
 
             Console.WriteLine("");
-            if (!s3cr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
@@ -98,19 +98,19 @@ namespace Test.Postings
             switch (docType)
             {
                 case DocType.Html:
-                    ParseHtml(s3cr.Data);
+                    ParseHtml(cr.Data);
                     break;
                 case DocType.Json:
-                    ParseJson(s3cr.Data);
+                    ParseJson(cr.Data);
                     break;
                 case DocType.Sql:
                     // ParseSql();
                     break;
                 case DocType.Text:
-                    ParseText(s3cr.Data);
+                    ParseText(cr.Data);
                     break;
                 case DocType.Xml:
-                    ParseXml(s3cr.Data);
+                    ParseXml(cr.Data);
                     break;
             }
         }
@@ -125,18 +125,18 @@ namespace Test.Postings
 
             AzureBlobCrawler ac = new AzureBlobCrawler(accountName, container, endpoint, accessKey, key);
 
-            AzureBlobCrawlResult ar = ac.Get();
+            CrawlResult cr = ac.Get();
 
-            Console.WriteLine("Success        : " + ar.Success);
-            Console.WriteLine("Start time     : " + ar.Time.Start.ToString());
-            Console.WriteLine("End time       : " + ar.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + ar.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + ar.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(ar.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(ar.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
 
             Console.WriteLine("");
-            if (!ar.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
@@ -148,19 +148,19 @@ namespace Test.Postings
             switch (docType)
             {
                 case DocType.Html:
-                    ParseHtml(ar.Data);
+                    ParseHtml(cr.Data);
                     break;
                 case DocType.Json:
-                    ParseJson(ar.Data);
+                    ParseJson(cr.Data);
                     break;
                 case DocType.Sql:
                     // ParseSql();
                     break;
                 case DocType.Text:
-                    ParseText(ar.Data);
+                    ParseText(cr.Data);
                     break;
                 case DocType.Xml:
-                    ParseXml(ar.Data);
+                    ParseXml(cr.Data);
                     break;
             }
         }
@@ -176,18 +176,18 @@ namespace Test.Postings
 
             KvpbaseCrawler kc = new KvpbaseCrawler(endpoint, userGuid, container, apiKey, key);
 
-            KvpbaseCrawlResult kcr = kc.Get();
+            CrawlResult cr = kc.Get();
 
-            Console.WriteLine("Success        : " + kcr.Success);
-            Console.WriteLine("Start time     : " + kcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + kcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + kcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + kcr.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(kcr.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(kcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
 
             Console.WriteLine("");
-            if (!kcr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
@@ -199,19 +199,19 @@ namespace Test.Postings
             switch (docType)
             {
                 case DocType.Html:
-                    ParseHtml(kcr.Data);
+                    ParseHtml(cr.Data);
                     break;
                 case DocType.Json:
-                    ParseJson(kcr.Data);
+                    ParseJson(cr.Data);
                     break;
                 case DocType.Sql:
                     // ParseSql();
                     break;
                 case DocType.Text:
-                    ParseText(kcr.Data);
+                    ParseText(cr.Data);
                     break;
                 case DocType.Xml:
-                    ParseXml(kcr.Data);
+                    ParseXml(cr.Data);
                     break;
             }
         }
@@ -222,18 +222,18 @@ namespace Test.Postings
             if (String.IsNullOrEmpty(filename)) return;
 
             FileCrawler fc = new FileCrawler(filename);
-            FileCrawlResult fcr = fc.Get();
+            CrawlResult cr = fc.Get();
 
             Console.WriteLine("--- Crawl Result ---");
-            Console.WriteLine("Success        : " + fcr.Success);
-            Console.WriteLine("Start time     : " + fcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + fcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + fcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + fcr.ContentLength + " bytes");
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
 
             Console.WriteLine("");
-            if (!fcr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
@@ -245,19 +245,19 @@ namespace Test.Postings
             switch (docType)
             {
                 case DocType.Html:
-                    ParseHtml(fcr.Data);
+                    ParseHtml(cr.Data);
                     break;
                 case DocType.Json:
-                    ParseJson(fcr.Data);
+                    ParseJson(cr.Data);
                     break;
                 case DocType.Sql:
                     // ParseSql();
                     break;
                 case DocType.Text:
-                    ParseText(fcr.Data);
+                    ParseText(cr.Data);
                     break;
                 case DocType.Xml:
-                    ParseXml(fcr.Data);
+                    ParseXml(cr.Data);
                     break;
             }
         }
@@ -270,18 +270,18 @@ namespace Test.Postings
             FtpCrawler fc = new FtpCrawler(url);
             fc.Username = Common.InputString("Username:", null, true);
             fc.Password = Common.InputString("Password:", null, true);
-            FtpCrawlResult fcr = fc.Get();
+            CrawlResult cr = fc.Get();
 
             Console.WriteLine("--- Crawl Result ---");
-            Console.WriteLine("Success        : " + fcr.Success);
-            Console.WriteLine("Start time     : " + fcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + fcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + fcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + fcr.ContentLength + " bytes");
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
 
             Console.WriteLine("");
-            if (!fcr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
@@ -293,19 +293,19 @@ namespace Test.Postings
             switch (docType)
             {
                 case DocType.Html:
-                    ParseHtml(fcr.Data);
+                    ParseHtml(cr.Data);
                     break;
                 case DocType.Json:
-                    ParseJson(fcr.Data);
+                    ParseJson(cr.Data);
                     break;
                 case DocType.Sql:
                     // ParseSql();
                     break;
                 case DocType.Text:
-                    ParseText(fcr.Data);
+                    ParseText(cr.Data);
                     break;
                 case DocType.Xml:
-                    ParseXml(fcr.Data);
+                    ParseXml(cr.Data);
                     break;
             }
         }
@@ -320,24 +320,28 @@ namespace Test.Postings
             hc.Method = (HttpMethod)(Enum.Parse(typeof(HttpMethod), Common.InputString("Method:", "GET", false)));
             hc.Username = Common.InputString("Username:", null, true);
             hc.Password = Common.InputString("Password:", null, true);
-            HttpCrawlResult hcr = hc.Get();
+            CrawlResult cr = hc.Get();
 
             Console.WriteLine("--- Crawl Result ---");
-            Console.WriteLine("Success        : " + hcr.Success);
-            Console.WriteLine("Start time     : " + hcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + hcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + hcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + hcr.ContentLength + " bytes");
-            Console.WriteLine("Headers        : ");
-            if (hcr.Headers != null && hcr.Headers.Count > 0)
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            if (cr.Http != null)
             {
-                foreach (KeyValuePair<string, string> curr in hcr.Headers)
-                    Console.WriteLine("  " + curr.Key + ": " + curr.Value);
+                Console.WriteLine("Status code    : " + cr.Http.StatusCode);
+                if (cr.Http.Headers != null && cr.Http.Headers.Count > 0)
+                {
+                    Console.WriteLine("Headers        : ");
+                    foreach (KeyValuePair<string, string> curr in cr.Http.Headers)
+                        Console.WriteLine("  " + curr.Key + ": " + curr.Value);
+                }
             }
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(hcr.Data));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
 
             Console.WriteLine("");
-            if (!hcr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
@@ -349,19 +353,19 @@ namespace Test.Postings
             switch (docType)
             {
                 case DocType.Html:
-                    ParseHtml(hcr.Data);
+                    ParseHtml(cr.Data);
                     break;
                 case DocType.Json:
-                    ParseJson(hcr.Data);
+                    ParseJson(cr.Data);
                     break;
                 case DocType.Sql:
                     // ParseSql();
                     break;
                 case DocType.Text:
-                    ParseText(hcr.Data);
+                    ParseText(cr.Data);
                     break;
                 case DocType.Xml:
-                    ParseXml(hcr.Data);
+                    ParseXml(cr.Data);
                     break;
             }
         }
@@ -381,17 +385,17 @@ namespace Test.Postings
                 Common.InputString("Database name:", "dbname", false));
 
             SqlCrawler sc = new SqlCrawler(db, query);
-            SqlCrawlResult scr = sc.Get();
+            CrawlResult cr = sc.Get();
 
             Console.WriteLine("--- Crawl Result ---");
-            Console.WriteLine("Success    : " + scr.Success);
-            Console.WriteLine("Start time : " + scr.Time.Start.ToString());
-            Console.WriteLine("End time   : " + scr.Time.End.ToString());
-            Console.WriteLine("Total ms   : " + scr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Success    : " + cr.Success);
+            Console.WriteLine("Start time : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time   : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms   : " + cr.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Data       : ");
-            if (scr.DataTable != null)
+            if (cr.DataTable != null)
             {
-                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(scr.DataTable), true));
+                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(cr.DataTable), true));
             }
             else
             {
@@ -399,14 +403,14 @@ namespace Test.Postings
             }
 
             Console.WriteLine("");
-            if (!scr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
                 return;
             }
 
-            ParseSql(scr.DataTable);
+            ParseSql(cr.DataTable);
         }
 
         static void SqliteCrawler()
@@ -414,17 +418,17 @@ namespace Test.Postings
             SqliteCrawler sc = new SqliteCrawler(
                 Common.InputString("Filename:", null, false),
                 Common.InputString("Query:", null, false));
-            SqliteCrawlResult scr = sc.Get();
+            CrawlResult cr = sc.Get();
 
             Console.WriteLine("--- Crawl Result ---");
-            Console.WriteLine("Success    : " + scr.Success);
-            Console.WriteLine("Start time : " + scr.Time.Start.ToString());
-            Console.WriteLine("End time   : " + scr.Time.End.ToString());
-            Console.WriteLine("Total ms   : " + scr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Success    : " + cr.Success);
+            Console.WriteLine("Start time : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time   : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms   : " + cr.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Data       : ");
-            if (scr.DataTable != null)
+            if (cr.DataTable != null)
             {
-                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(scr.DataTable), true));
+                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(cr.DataTable), true));
             }
             else
             {
@@ -432,20 +436,20 @@ namespace Test.Postings
             }
 
             Console.WriteLine("");
-            if (!scr.Success)
+            if (!cr.Success)
             {
                 Console.WriteLine("Failure status reported");
                 Console.WriteLine("");
                 return;
             }
 
-            ParseSqlite(scr.DataTable);
+            ParseSqlite(cr.DataTable);
         }
 
         private static void ParseHtml(byte[] data)
         {
             HtmlParser hp = new HtmlParser();
-            HtmlParseResult hpr = hp.ParseBytes(data);
+            ParseResult hpr = hp.ParseBytes(data);
 
             Console.WriteLine("");
             Console.WriteLine("--- Parse Result ---");
@@ -454,7 +458,7 @@ namespace Test.Postings
 
             PostingsOptions po = new PostingsOptions();
             PostingsGenerator pg = new PostingsGenerator(po);
-            PostingsResult pr = pg.ProcessParseResult(hpr);
+            PostingsResult pr = pg.Process(hpr);
             
             Console.WriteLine("");
             Console.WriteLine("--- Postings Result ---");
@@ -465,7 +469,7 @@ namespace Test.Postings
         private static void ParseJson(byte[] data)
         {
             JsonParser jp = new JsonParser();
-            JsonParseResult jpr = jp.ParseBytes(data);
+            ParseResult jpr = jp.ParseBytes(data);
 
             Console.WriteLine("");
             Console.WriteLine("--- Parse Result ---");
@@ -474,7 +478,7 @@ namespace Test.Postings
 
             PostingsOptions po = new PostingsOptions();
             PostingsGenerator pg = new PostingsGenerator(po);
-            PostingsResult pr = pg.ProcessParseResult(jpr);
+            PostingsResult pr = pg.Process(jpr);
 
             Console.WriteLine("");
             Console.WriteLine("--- Postings Result ---");
@@ -485,7 +489,7 @@ namespace Test.Postings
         private static void ParseSql(DataTable data)
         {
             SqlParser sp = new SqlParser();
-            SqlParseResult spr = sp.Parse(data);
+            ParseResult spr = sp.Parse(data);
 
             Console.WriteLine("");
             Console.WriteLine("--- Parse Result ---");
@@ -494,7 +498,7 @@ namespace Test.Postings
 
             PostingsOptions po = new PostingsOptions();
             PostingsGenerator pg = new PostingsGenerator(po);
-            PostingsResult pr = pg.ProcessParseResult(spr);
+            PostingsResult pr = pg.Process(spr);
 
             Console.WriteLine("");
             Console.WriteLine("--- Postings Result ---");
@@ -505,7 +509,7 @@ namespace Test.Postings
         private static void ParseSqlite(DataTable data)
         {
             SqliteParser sp = new SqliteParser();
-            SqliteParseResult spr = sp.Parse(data);
+            ParseResult spr = sp.Parse(data);
 
             Console.WriteLine("");
             Console.WriteLine("--- Parse Result ---");
@@ -514,7 +518,7 @@ namespace Test.Postings
 
             PostingsOptions po = new PostingsOptions();
             PostingsGenerator pg = new PostingsGenerator(po);
-            PostingsResult pr = pg.ProcessParseResult(spr);
+            PostingsResult pr = pg.Process(spr);
 
             Console.WriteLine("");
             Console.WriteLine("--- Postings Result ---");
@@ -525,7 +529,7 @@ namespace Test.Postings
         private static void ParseText(byte[] data)
         {
             TextParser tp = new TextParser();
-            TextParseResult tpr = tp.ParseBytes(data);
+            ParseResult tpr = tp.ParseBytes(data);
 
             Console.WriteLine("");
             Console.WriteLine("--- Parse Result ---");
@@ -534,7 +538,7 @@ namespace Test.Postings
 
             PostingsOptions po = new PostingsOptions();
             PostingsGenerator pg = new PostingsGenerator(po);
-            PostingsResult pr = pg.ProcessParseResult(tpr);
+            PostingsResult pr = pg.Process(tpr);
 
             Console.WriteLine("");
             Console.WriteLine("--- Postings Result ---");
@@ -545,7 +549,7 @@ namespace Test.Postings
         private static void ParseXml(byte[] data)
         {
             XmlParser xp = new XmlParser();
-            XmlParseResult xpr = xp.ParseBytes(data);
+            ParseResult xpr = xp.ParseBytes(data);
 
             Console.WriteLine("");
             Console.WriteLine("--- Parse Result ---");
@@ -554,7 +558,7 @@ namespace Test.Postings
 
             PostingsOptions po = new PostingsOptions();
             PostingsGenerator pg = new PostingsGenerator(po);
-            PostingsResult pr = pg.ProcessParseResult(xpr);
+            PostingsResult pr = pg.Process(xpr);
 
             Console.WriteLine("");
             Console.WriteLine("--- Postings Result ---");

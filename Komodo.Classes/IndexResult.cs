@@ -50,7 +50,7 @@ namespace Komodo.Classes
         /// The result of parsing, if enabled.
         /// </summary>
         [JsonProperty(Order = 993)]
-        public object ParseResult = null;
+        public ParseResult ParseResult = null;
 
         /// <summary>
         /// The result of generating postings, if enabled.

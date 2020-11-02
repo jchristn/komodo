@@ -20,9 +20,9 @@ namespace Komodo.Server
 {
     public partial class Program
     {
-        private static async Task PostParse(RequestMetadata md)
+        private static async Task PostPostings(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PostParse ";
+            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PostPostings ";
              
             if (String.IsNullOrEmpty(md.Params.Type))
             {
@@ -35,7 +35,10 @@ namespace Komodo.Server
              
             byte[] data = null;
             CrawlResult crawlResult = null;
-            ParseResult parseResult = null; 
+            ParseResult parseResult = null;
+            PostingsOptions options = new PostingsOptions();
+            PostingsGenerator postingsGen = null;
+            PostingsResult postings = null;
 
             HttpCrawler httpCrawler = null;
             FileCrawler fileCrawler = null;
@@ -68,7 +71,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied URL.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+                         
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from URL " + md.Params.Url);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied URL.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "json":
@@ -93,7 +107,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied URL.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from URL " + md.Params.Url);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied URL.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "text":
@@ -118,7 +143,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied URL.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from URL " + md.Params.Url);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied URL.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "xml":
@@ -143,7 +179,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied URL.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from URL " + md.Params.Url);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied URL.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     default:
@@ -153,10 +200,15 @@ namespace Komodo.Server
                         await md.Http.Response.Send(new ErrorResponse(400, "Invalid document type.", null, null).ToJson(true));
                         return;
                 }
-                  
+                 
+                Dictionary<string, object> ret = new Dictionary<string, object>();
+                ret.Add("CrawlResult", crawlResult);
+                ret.Add("ParseResult", parseResult);
+                ret.Add("Postings", postings);
+
                 md.Http.Response.StatusCode = 200;
                 md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(Common.SerializeJson(parseResult, md.Params.Pretty));
+                await md.Http.Response.Send(Common.SerializeJson(ret, md.Params.Pretty));
                 return;
 
                 #endregion
@@ -189,7 +241,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied filename.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from filename " + md.Params.Filename);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied filename.", null, postings).ToJson(true));
+                            return;
+                        }
                         break; 
 
                     case "json":
@@ -214,7 +277,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied filename.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from filename " + md.Params.Filename);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied filename.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "text":
@@ -239,7 +313,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied filename.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from filename " + md.Params.Filename);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied filename.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "xml":
@@ -264,7 +349,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied filename.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to parse data from filename " + md.Params.Filename);
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied filename.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     default:
@@ -274,10 +370,15 @@ namespace Komodo.Server
                         await md.Http.Response.Send(new ErrorResponse(400, "Invalid document type.", null, null).ToJson(true));
                         return;
                 }
-                 
+
+                Dictionary<string, object> ret = new Dictionary<string, object>();
+                ret.Add("CrawlResult", crawlResult);
+                ret.Add("ParseResult", parseResult);
+                ret.Add("Postings", postings);
+
                 md.Http.Response.StatusCode = 200;
                 md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(Common.SerializeJson(parseResult, md.Params.Pretty));
+                await md.Http.Response.Send(Common.SerializeJson(ret, md.Params.Pretty));
                 return;
 
                 #endregion
@@ -316,11 +417,27 @@ namespace Komodo.Server
                     md.Http.Response.ContentType = "application/json";
                     await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from specified database.", null, parseResult).ToJson(true));
                     return;
-                } 
+                }
+
+                postingsGen = new PostingsGenerator(options);
+                postings = postingsGen.Process(parseResult);
+                if (!postings.Success)
+                {
+                    _Logging.Warn(header + "failed to parse data from database " + md.Params.DbName);
+                    md.Http.Response.StatusCode = 500;
+                    md.Http.Response.ContentType = "application/json";
+                    await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from specified database.", null, postings).ToJson(true));
+                    return;
+                }
+
+                Dictionary<string, object> ret = new Dictionary<string, object>();
+                ret.Add("CrawlResult", crawlResult);
+                ret.Add("ParseResult", parseResult);
+                ret.Add("Postings", postings);
 
                 md.Http.Response.StatusCode = 200;
                 md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(Common.SerializeJson(parseResult, md.Params.Pretty));
+                await md.Http.Response.Send(Common.SerializeJson(ret, md.Params.Pretty));
                 return;
                  
                 #endregion
@@ -343,7 +460,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied data.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to generate postings from supplied data");
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied data.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "json": 
@@ -356,7 +484,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied data.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to generate postings from supplied data");
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied data.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "text":
@@ -369,7 +508,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied data.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to generate postings from supplied data");
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied data.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     case "xml":
@@ -382,7 +532,18 @@ namespace Komodo.Server
                             md.Http.Response.ContentType = "application/json";
                             await md.Http.Response.Send(new ErrorResponse(400, "Failed to parse data from supplied data.", null, parseResult).ToJson(true));
                             return;
-                        } 
+                        }
+
+                        postingsGen = new PostingsGenerator(options);
+                        postings = postingsGen.Process(parseResult);
+                        if (!postings.Success)
+                        {
+                            _Logging.Warn(header + "failed to generate postings from supplied data");
+                            md.Http.Response.StatusCode = 500;
+                            md.Http.Response.ContentType = "application/json";
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to generate postings from data from supplied data.", null, postings).ToJson(true));
+                            return;
+                        }
                         break;
 
                     default:
@@ -392,10 +553,15 @@ namespace Komodo.Server
                         await md.Http.Response.Send(new ErrorResponse(400, "Invalid document type supplied.", null, null).ToJson(true));
                         return;
                 }
-                 
+
+                Dictionary<string, object> ret = new Dictionary<string, object>();
+                ret.Add("CrawlResult", crawlResult);
+                ret.Add("ParseResult", parseResult);
+                ret.Add("Postings", postings);
+
                 md.Http.Response.StatusCode = 200;
                 md.Http.Response.ContentType = "application/json";
-                await md.Http.Response.Send(Common.SerializeJson(parseResult, md.Params.Pretty));
+                await md.Http.Response.Send(Common.SerializeJson(ret, md.Params.Pretty));
                 return;
 
                 #endregion

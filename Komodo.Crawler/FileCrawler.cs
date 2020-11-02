@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Komodo.Classes;
 
 namespace Komodo.Crawler
 { 
@@ -42,16 +43,26 @@ namespace Komodo.Crawler
 
         /// <summary>
         /// Retrieve the object.
+        /// Close and dispose the DataStream when done.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public FileCrawlResult Get()
+        public CrawlResult Get()
         {
-            FileCrawlResult ret = new FileCrawlResult();
-            ret.Metadata = ObjectMetadata.FromFileInfo(new FileInfo(Filename));
-            ret.ContentLength = new FileInfo(Filename).Length;
-            ret.FileStream = new FileStream(Filename, FileMode.Open, FileAccess.Read);
-            ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            CrawlResult ret = new CrawlResult();
+
+            try
+            {
+                ret.Metadata = CrawlResult.ObjectMetadata.FromFileInfo(new FileInfo(Filename));
+                ret.ContentLength = new FileInfo(Filename).Length;
+                ret.DataStream = new FileStream(Filename, FileMode.Open, FileAccess.Read);
+                ret.Success = true;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
+            }
+
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -60,34 +71,44 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public FileCrawlResult Download(string filename)
+        public CrawlResult Download(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            FileCrawlResult ret = new FileCrawlResult();
-            ret.Metadata = ObjectMetadata.FromFileInfo(new FileInfo(Filename));
-            ret.ContentLength = new FileInfo(Filename).Length;
+            CrawlResult ret = new CrawlResult();
 
-            using (FileStream source = new FileStream(Filename, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (FileStream target = new FileStream(filename, FileMode.CreateNew, FileAccess.ReadWrite))
+                ret.Metadata = CrawlResult.ObjectMetadata.FromFileInfo(new FileInfo(Filename));
+                ret.ContentLength = new FileInfo(Filename).Length;
+
+                using (FileStream source = new FileStream(Filename, FileMode.Open, FileAccess.Read))
                 {
-                    source.CopyTo(target);
+                    using (FileStream target = new FileStream(filename, FileMode.CreateNew, FileAccess.ReadWrite))
+                    {
+                        source.CopyTo(target);
+                    }
                 }
+
+                ret.DataStream = null;
+                ret.Success = true;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
             }
 
-            ret.FileStream = null;
-            ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
         /// <summary>
         /// Retrieve the object.
+        /// Close and dispose the DataStream when done.
         /// </summary>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryGet(out FileCrawlResult result)
+        public bool TryGet(out CrawlResult result)
         {
             result = null;
 
@@ -97,7 +118,7 @@ namespace Komodo.Crawler
                 return true;
             }
             catch (Exception)
-            {
+            { 
                 return false;
             }
         }
@@ -108,7 +129,7 @@ namespace Komodo.Crawler
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryDownload(string filename, out FileCrawlResult result)
+        public bool TryDownload(string filename, out CrawlResult result)
         {
             result = null;
 

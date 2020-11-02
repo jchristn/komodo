@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks; 
-using RestWrapper; 
+using RestWrapper;
+using Komodo.Classes;
 
 namespace Komodo.Crawler
 {
@@ -85,31 +86,41 @@ namespace Komodo.Crawler
         /// Retrieve the object.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public HttpCrawlResult Get()
+        public CrawlResult Get()
         {
-            _RestRequest = new RestRequest(
-                SourceUrl,
-                ConvertHttpMethod(Method),
-                Headers,
-                null);
+            CrawlResult ret = new CrawlResult();
+            ret.Http = new CrawlResult.HttpCrawlResult();
 
-            SetRestRequestValues();
-             
-            if (Data == null || Data.Length < 1) _RestResponse = _RestRequest.Send();
-            else _RestResponse = _RestRequest.Send(Data);
-
-            HttpCrawlResult ret = new HttpCrawlResult();
-
-            if (_RestResponse != null)
+            try
             {
+                _RestRequest = new RestRequest(
+                    SourceUrl,
+                    ConvertHttpMethod(Method),
+                    Headers,
+                    null);
+
+                SetRestRequestValues();
+
+                if (Data == null || Data.Length < 1) _RestResponse = _RestRequest.Send();
+                else _RestResponse = _RestRequest.Send(Data);
+
+                if (_RestResponse != null)
+                {
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
+                    ret.ContentLength = _RestResponse.ContentLength;
+                    ret.DataStream = _RestResponse.Data;
+                    ret.Http.Headers = _RestResponse.Headers;
+                }
+
+                ret.Http.StatusCode = _RestResponse.StatusCode;
                 if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
-                ret.ContentLength = _RestResponse.ContentLength;
-                ret.DataStream = _RestResponse.Data;
-                ret.Headers = _RestResponse.Headers;
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
             }
 
-            ret.StatusCode = _RestResponse.StatusCode;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -118,56 +129,66 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public HttpCrawlResult Download(string filename)
+        public CrawlResult Download(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            _RestRequest = new RestRequest(
-                SourceUrl,
-                ConvertHttpMethod(Method),
-                Headers,
-                null);
+            CrawlResult ret = new CrawlResult();
+            ret.Http = new CrawlResult.HttpCrawlResult();
 
-            SetRestRequestValues();
-
-            if (Data == null || Data.Length < 1) _RestResponse = _RestRequest.Send();
-            else _RestResponse = _RestRequest.Send(Data);
-
-            HttpCrawlResult ret = new HttpCrawlResult();
-
-            if (_RestResponse != null)
+            try
             {
-                if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299)
+                _RestRequest = new RestRequest(
+                    SourceUrl,
+                    ConvertHttpMethod(Method),
+                    Headers,
+                    null);
+
+                SetRestRequestValues();
+
+                if (Data == null || Data.Length < 1) _RestResponse = _RestRequest.Send();
+                else _RestResponse = _RestRequest.Send(Data);
+
+                if (_RestResponse != null)
                 {
-                    ret.Success = true;
-                    ret.Filename = filename;
-
-                    using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299)
                     {
-                        if (_RestResponse.ContentLength > 0)
-                        {
-                            long bytesRemaining = _RestResponse.ContentLength;
+                        ret.Success = true;
+                        ret.Filename = filename;
 
-                            while (bytesRemaining > 0)
+                        using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                        {
+                            if (_RestResponse.ContentLength > 0)
                             {
-                                byte[] buffer = new byte[65536];
-                                int bytesRead = _RestResponse.Data.Read(buffer, 0, buffer.Length);
-                                if (bytesRead > 0)
+                                long bytesRemaining = _RestResponse.ContentLength;
+
+                                while (bytesRemaining > 0)
                                 {
-                                    bytesRemaining -= bytesRead;
-                                    fs.Write(buffer, 0, bytesRead);
+                                    byte[] buffer = new byte[65536];
+                                    int bytesRead = _RestResponse.Data.Read(buffer, 0, buffer.Length);
+                                    if (bytesRead > 0)
+                                    {
+                                        bytesRemaining -= bytesRead;
+                                        fs.Write(buffer, 0, bytesRead);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                ret.ContentLength = _RestResponse.ContentLength;
-                ret.DataStream = null;
-                ret.Headers = _RestResponse.Headers;
+                    ret.ContentLength = _RestResponse.ContentLength;
+                    ret.DataStream = null;
+                    ret.Http.Headers = _RestResponse.Headers;
+                    ret.Http.StatusCode = _RestResponse.StatusCode;
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
+                }
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -176,7 +197,7 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryGet(out HttpCrawlResult result)
+        public bool TryGet(out CrawlResult result)
         {
             result = null;
 
@@ -197,7 +218,7 @@ namespace Komodo.Crawler
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryDownload(string filename, out HttpCrawlResult result)
+        public bool TryDownload(string filename, out CrawlResult result)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
@@ -218,30 +239,40 @@ namespace Komodo.Crawler
         /// Retrieve the object asynchronously.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public async Task<HttpCrawlResult> GetAsync()
+        public async Task<CrawlResult> GetAsync()
         {
-            _RestRequest = new RestRequest(
-                SourceUrl,
-                ConvertHttpMethod(Method),
-                Headers,
-                null);
+            CrawlResult ret = new CrawlResult();
+            ret.Http = new CrawlResult.HttpCrawlResult();
 
-            SetRestRequestValues();
-
-            if (Data == null || Data.Length < 1) _RestResponse = await _RestRequest.SendAsync();
-            else _RestResponse = await _RestRequest.SendAsync(Data);
-
-            HttpCrawlResult ret = new HttpCrawlResult();
-
-            if (_RestResponse != null)
+            try
             {
-                if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
-                ret.ContentLength = _RestResponse.ContentLength;
-                ret.DataStream = _RestResponse.Data;
-                ret.Headers = _RestResponse.Headers;
+                _RestRequest = new RestRequest(
+                    SourceUrl,
+                    ConvertHttpMethod(Method),
+                    Headers,
+                    null);
+
+                SetRestRequestValues();
+
+                if (Data == null || Data.Length < 1) _RestResponse = await _RestRequest.SendAsync();
+                else _RestResponse = await _RestRequest.SendAsync(Data);
+
+                if (_RestResponse != null)
+                {
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
+                    ret.ContentLength = _RestResponse.ContentLength;
+                    ret.DataStream = _RestResponse.Data;
+                    ret.Http.Headers = _RestResponse.Headers;
+                    ret.Http.StatusCode = _RestResponse.StatusCode;
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
+                }
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -250,56 +281,66 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public async Task<HttpCrawlResult> DownloadAsync(string filename)
+        public async Task<CrawlResult> DownloadAsync(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            _RestRequest = new RestRequest(
-                SourceUrl,
-                ConvertHttpMethod(Method),
-                Headers,
-                null);
+            CrawlResult ret = new CrawlResult();
+            ret.Http = new CrawlResult.HttpCrawlResult();
 
-            SetRestRequestValues();
-
-            if (Data == null || Data.Length < 1) _RestResponse = await _RestRequest.SendAsync();
-            else _RestResponse = await _RestRequest.SendAsync(Data);
-
-            HttpCrawlResult ret = new HttpCrawlResult();
-
-            if (_RestResponse != null)
+            try
             {
-                if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299)
+                _RestRequest = new RestRequest(
+                    SourceUrl,
+                    ConvertHttpMethod(Method),
+                    Headers,
+                    null);
+
+                SetRestRequestValues();
+
+                if (Data == null || Data.Length < 1) _RestResponse = await _RestRequest.SendAsync();
+                else _RestResponse = await _RestRequest.SendAsync(Data);
+
+                if (_RestResponse != null)
                 {
-                    ret.Success = true;
-                    ret.Filename = filename;
-
-                    using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299)
                     {
-                        if (_RestResponse.ContentLength > 0)
-                        {
-                            long bytesRemaining = _RestResponse.ContentLength;
+                        ret.Success = true;
+                        ret.Filename = filename;
 
-                            while (bytesRemaining > 0)
+                        using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                        {
+                            if (_RestResponse.ContentLength > 0)
                             {
-                                byte[] buffer = new byte[65536];
-                                int bytesRead = await _RestResponse.Data.ReadAsync(buffer, 0, buffer.Length);
-                                if (bytesRead > 0)
+                                long bytesRemaining = _RestResponse.ContentLength;
+
+                                while (bytesRemaining > 0)
                                 {
-                                    bytesRemaining -= bytesRead;
-                                    await fs.WriteAsync(buffer, 0, bytesRead);
+                                    byte[] buffer = new byte[65536];
+                                    int bytesRead = await _RestResponse.Data.ReadAsync(buffer, 0, buffer.Length);
+                                    if (bytesRead > 0)
+                                    {
+                                        bytesRemaining -= bytesRead;
+                                        await fs.WriteAsync(buffer, 0, bytesRead);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                ret.ContentLength = _RestResponse.ContentLength;
-                ret.DataStream = null;
-                ret.Headers = _RestResponse.Headers;
+                    ret.ContentLength = _RestResponse.ContentLength;
+                    ret.DataStream = null;
+                    ret.Http.Headers = _RestResponse.Headers;
+                    ret.Http.StatusCode = _RestResponse.StatusCode;
+                    if (_RestResponse.StatusCode >= 200 && _RestResponse.StatusCode <= 299) ret.Success = true;
+                }
+            }
+            catch (Exception e)
+            {
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 

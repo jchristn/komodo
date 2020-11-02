@@ -18,191 +18,177 @@ namespace Komodo.Postings
         #region Normalize-Parsed-Objects
 
         /// <summary>
-        /// Normalize parsed HTML.
+        /// Normalize parse result.
         /// </summary>
         /// <param name="options">Postings options.</param>
-        /// <param name="data">Parsed HTML.</param>
-        /// <returns>Normalized parsed HTML.</returns>
-        public static HtmlParseResult NormalizeHtml(PostingsOptions options, HtmlParseResult data)
+        /// <param name="pr">Parse result.</param>
+        /// <returns>Normalized parse result.</returns>
+        public static ParseResult Normalize(PostingsOptions options, ParseResult pr)
         {
-            if (options == null) options = new PostingsOptions();
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (pr == null) throw new ArgumentNullException(nameof(pr));
 
-            HtmlParseResult ret = Common.CopyObject<HtmlParseResult>(data);
-            if (options.NormalizeCase)
+            ParseResult ret = Common.CopyObject<ParseResult>(pr); 
+            ret.Time = new Timestamps();
+            ret.Time.Start = DateTime.Now.ToUniversalTime();
+
+            if (options.TokenManipulation != null)
             {
-                ret.PageTitle = NormalizeCase(ret.PageTitle);
-                ret.MetaDescription = NormalizeCase(ret.MetaDescription);
-                ret.MetaDescriptionOpengraph = NormalizeCase(ret.MetaDescriptionOpengraph);
-                ret.MetaKeywords = NormalizeCase(ret.MetaKeywords);
-                ret.MetaImageOpengraph = NormalizeCase(ret.MetaImageOpengraph);
-                ret.MetaVideoTagsOpengraph = NormalizeCase(ret.MetaVideoTagsOpengraph);
-                ret.ImageUrls = NormalizeCase(ret.ImageUrls);
-                ret.Links = NormalizeCase(ret.Links);
-                ret.Head = NormalizeCase(ret.Head);
-                ret.Body = NormalizeCase(ret.Body);
-                ret.BodyStripped = NormalizeCase(ret.BodyStripped);
-                ret.Tokens = NormalizeCase(ret.Tokens);
+                #region Token-Manipulation
+
+                if (ret.Html != null)
+                {
+                    #region HTML
+
+                    if (options.TokenManipulation.RemovePunctuation)
+                    {
+                        ret.Html.Head.Title = RemovePunctuation(options, ret.Html.Head.Title);
+                        ret.Html.Head.MetaDescription = RemovePunctuation(options, ret.Html.Head.MetaDescription);
+                        ret.Html.Head.MetaDescriptionOpengraph = RemovePunctuation(options, ret.Html.Head.MetaDescriptionOpengraph);
+                        ret.Html.Head.MetaKeywords = RemovePunctuation(options, ret.Html.Head.MetaKeywords);
+                        ret.Html.Head.MetaImageOpengraph = RemovePunctuation(options, ret.Html.Head.MetaImageOpengraph);
+                        ret.Html.Head.MetaVideoTagsOpengraph = RemovePunctuation(options, ret.Html.Head.MetaVideoTagsOpengraph);
+                        ret.Html.Head.Content = RemovePunctuation(options, ret.Html.Head.Content);
+                        ret.Html.Head.Tokens = RemovePunctuation(options, ret.Html.Head.Tokens);
+
+                        ret.Html.Body.Content = RemovePunctuation(options, ret.Html.Body.Content);
+                        ret.Html.Body.Tokens = RemovePunctuation(options, ret.Html.Body.Tokens); 
+                    }
+
+                    if (options.TokenManipulation.SetLowerCase)
+                    {
+                        ret.Html.Head.Title = NormalizeCase(options, ret.Html.Head.Title);
+                        ret.Html.Head.MetaDescription = NormalizeCase(options, ret.Html.Head.MetaDescription);
+                        ret.Html.Head.MetaDescriptionOpengraph = NormalizeCase(options, ret.Html.Head.MetaDescriptionOpengraph);
+                        ret.Html.Head.MetaKeywords = NormalizeCase(options, ret.Html.Head.MetaKeywords);
+                        ret.Html.Head.MetaImageOpengraph = NormalizeCase(options, ret.Html.Head.MetaImageOpengraph);
+                        ret.Html.Head.MetaVideoTagsOpengraph = NormalizeCase(options, ret.Html.Head.MetaVideoTagsOpengraph);
+                        ret.Html.Head.Content = NormalizeCase(options, ret.Html.Head.Content);
+                        ret.Html.Head.Tokens = NormalizeCase(options, ret.Html.Head.Tokens);
+
+                        ret.Html.Body.ImageUrls = NormalizeCase(options, ret.Html.Body.ImageUrls);
+                        ret.Html.Body.Links = NormalizeCase(options, ret.Html.Body.Links);
+                        ret.Html.Body.Content = NormalizeCase(options, ret.Html.Body.Content);
+                        ret.Html.Body.Tokens = NormalizeCase(options, ret.Html.Body.Tokens);
+                    }
+
+                    if (options.TokenManipulation.RemoveStopWords)
+                    {
+                        ret.Html.Head.Title = RemoveStopWords(options, ret.Html.Head.Title);
+                        ret.Html.Head.MetaDescription = RemoveStopWords(options, ret.Html.Head.MetaDescription);
+                        ret.Html.Head.MetaDescriptionOpengraph = RemoveStopWords(options, ret.Html.Head.MetaDescriptionOpengraph);
+                        ret.Html.Head.MetaKeywords = RemoveStopWords(options, ret.Html.Head.MetaKeywords);
+                        ret.Html.Head.MetaImageOpengraph = RemoveStopWords(options, ret.Html.Head.MetaImageOpengraph);
+                        ret.Html.Head.MetaVideoTagsOpengraph = RemoveStopWords(options, ret.Html.Head.MetaVideoTagsOpengraph);
+                        ret.Html.Head.Content = RemoveStopWords(options, ret.Html.Head.Content);
+                        ret.Html.Head.Tokens = RemoveStopWords(options, ret.Html.Head.Tokens);
+
+                        ret.Html.Body.Content = RemoveStopWords(options, ret.Html.Body.Content);
+                        ret.Html.Body.Tokens = RemoveStopWords(options, ret.Html.Body.Tokens); 
+                    }
+
+                    if (options.TokenManipulation.ReduceWhitespace)
+                    {
+                        ret.Html.Head.Title = ReduceWhitespace(options, ret.Html.Head.Title);
+                        ret.Html.Head.MetaDescription = ReduceWhitespace(options, ret.Html.Head.MetaDescription);
+                        ret.Html.Head.MetaDescriptionOpengraph = ReduceWhitespace(options, ret.Html.Head.MetaDescriptionOpengraph);
+                        ret.Html.Head.MetaKeywords = ReduceWhitespace(options, ret.Html.Head.MetaKeywords);
+                        ret.Html.Head.MetaImageOpengraph = ReduceWhitespace(options, ret.Html.Head.MetaImageOpengraph);
+                        ret.Html.Head.MetaVideoTagsOpengraph = ReduceWhitespace(options, ret.Html.Head.MetaVideoTagsOpengraph);
+                        ret.Html.Head.Content = ReduceWhitespace(options, ret.Html.Head.Content);
+                        ret.Html.Head.Tokens = ReduceWhitespace(options, ret.Html.Head.Tokens);
+
+                        ret.Html.Body.ImageUrls = ReduceWhitespace(options, ret.Html.Body.ImageUrls);
+                        ret.Html.Body.Links = ReduceWhitespace(options, ret.Html.Body.Links);
+                        ret.Html.Body.Content = ReduceWhitespace(options, ret.Html.Body.Content);
+                        ret.Html.Body.Tokens = ReduceWhitespace(options, ret.Html.Body.Tokens);
+                    }
+
+                    #endregion
+                }
+
+                if (options.TokenManipulation.RemovePunctuation)
+                {
+                    // do not change schema keys
+                    // if (ret.Schema != null) ret.Schema = RemovePunctuation(options, ret.Schema);
+                    if (ret.Flattened != null) ret.Flattened = RemovePunctuation(options, ret.Flattened);
+                    if (ret.Tokens != null) ret.Tokens = RemovePunctuation(options, ret.Tokens);
+                }
+
+                if (options.TokenManipulation.SetLowerCase)
+                {
+                    if (ret.Schema != null) ret.Schema = NormalizeCase(options, ret.Schema);
+                    if (ret.Flattened != null) ret.Flattened = NormalizeCase(options, ret.Flattened);
+                    if (ret.Tokens != null) ret.Tokens = NormalizeCase(options, ret.Tokens);
+                }
+
+                if (options.TokenManipulation.RemoveStopWords)
+                {
+                    // do not change schema keys
+                    // if (ret.Schema != null) ret.Schema = RemoveStopWords(options, ret.Schema);
+                    if (ret.Flattened != null) ret.Flattened = RemoveStopWords(options, ret.Flattened);
+                    if (ret.Tokens != null) ret.Tokens = RemoveStopWords(options, ret.Tokens);
+                }
+
+                if (options.TokenManipulation.ReduceWhitespace)
+                {
+                    // do not change schema keys
+                    // if (ret.Schema != null) ret.Schema = ReduceWhitespace(options, ret.Schema);
+                    if (ret.Flattened != null) ret.Flattened = ReduceWhitespace(options, ret.Flattened);
+                    if (ret.Tokens != null) ret.Tokens = ReduceWhitespace(options, ret.Tokens);
+                }
+
+                #endregion
             }
 
-            if (options.RemovePunctuation)
+            if (options.TokenLength != null)
             {
-                ret.PageTitle = RemoveStringPunctuation(ret.PageTitle);
-                ret.MetaDescription = RemoveStringPunctuation(ret.MetaDescription);
-                ret.MetaDescriptionOpengraph = RemoveStringPunctuation(ret.MetaDescriptionOpengraph);
-                ret.MetaKeywords = RemoveStringPunctuation(ret.MetaKeywords);
-                // ret.MetaImageOpengraph = RemoveStringPunctuation(ret.MetaImageOpengraph);
-                ret.MetaVideoTagsOpengraph = RemoveStringPunctuation(ret.MetaVideoTagsOpengraph);
-                // ret.ImageUrls = RemovePunctuation(ret.ImageUrls);
-                // ret.Links = RemovePunctuation(ret.Links);
-                ret.Head = RemoveStringPunctuation(ret.Head);
-                ret.Body = RemoveStringPunctuation(ret.Body);
-                ret.BodyStripped = RemoveStringPunctuation(ret.BodyStripped);
-                ret.Tokens = RemovePunctuation(ret.Tokens);
+                #region Token-Length
+
+                if (ret.Html != null && ret.Html.Head != null && ret.Html.Head.Tokens != null)
+                {
+                    List<Token> updated = new List<Token>();
+
+                    foreach (Token token in ret.Html.Head.Tokens)
+                    {
+                        if (IsWithinLength(token.Value, options.TokenLength.Min, options.TokenLength.Max))
+                            updated.Add(token);
+                    }
+
+                    ret.Html.Head.Tokens = updated;
+                }
+
+                if (ret.Html != null && ret.Html.Body != null && ret.Html.Body.Tokens != null)
+                {
+                    List<Token> updated = new List<Token>();
+
+                    foreach (Token token in ret.Html.Body.Tokens)
+                    {
+                        if (IsWithinLength(token.Value, options.TokenLength.Min, options.TokenLength.Max))
+                            updated.Add(token);
+                    }
+
+                    ret.Html.Body.Tokens = updated;
+                }
+
+                if (ret.Tokens != null)
+                {
+                    List<Token> updated = new List<Token>();
+
+                    foreach (Token token in ret.Tokens)
+                    {
+                        if (IsWithinLength(token.Value, options.TokenLength.Min, options.TokenLength.Max))
+                            updated.Add(token);
+                    }
+
+                    ret.Tokens = updated;
+                } 
+
+                #endregion
             }
 
-            if (options.RemoveStopWords)
-            {
-                ret.PageTitle = RemoveStopWords(options, ret.PageTitle);
-                ret.MetaDescription = RemoveStopWords(options, ret.MetaDescription);
-                ret.MetaDescriptionOpengraph = RemoveStopWords(options, ret.MetaDescriptionOpengraph);
-                ret.MetaKeywords = RemoveStopWords(options, ret.MetaKeywords);
-                // ret.MetaImageOpengraph = RemoveStringStopWords(options, ret.MetaImageOpengraph);
-                ret.MetaVideoTagsOpengraph = RemoveStopWords(options, ret.MetaVideoTagsOpengraph);
-                // ret.ImageUrls = RemoveStopWords(options, ret.ImageUrls);
-                // ret.Links = RemoveStopWords(options, ret.Links);
-                ret.Head = RemoveStopWords(options, ret.Head);
-                ret.Body = RemoveStopWords(options, ret.Body);
-                ret.BodyStripped = RemoveStopWords(options, ret.BodyStripped);
-                ret.Tokens = RemoveStopWords(options, ret.Tokens);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Normalize parsed JSON.
-        /// </summary>
-        /// <param name="options">Postings options.</param>
-        /// <param name="data">Parsed JSON.</param>
-        /// <returns>Normalized parsed JSON.</returns>
-        public static JsonParseResult NormalizeJson(PostingsOptions options, JsonParseResult data)
-        {
-            if (options == null) options = new PostingsOptions();
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            JsonParseResult ret = Common.CopyObject<JsonParseResult>(data);
-            if (options.NormalizeCase)
-            {
-                ret.Schema = NormalizeCase(ret.Schema);
-                ret.Flattened = NormalizeCase(ret.Flattened);
-                ret.Tokens = NormalizeCase(ret.Tokens);
-            }
-
-            if (options.RemovePunctuation)
-            {
-                ret.Tokens = RemovePunctuation(ret.Tokens);
-            }
-
-            if (options.RemoveStopWords)
-            {
-                ret.Tokens = RemoveStopWords(options, ret.Tokens);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Normalize parsed SQL.
-        /// </summary>
-        /// <param name="options">Postings options.</param>
-        /// <param name="data">Parsed SQL.</param>
-        /// <returns>Normalized parsed SQL.</returns>
-        public static SqlParseResult NormalizeSql(PostingsOptions options, SqlParseResult data)
-        {
-            if (options == null) options = new PostingsOptions();
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            SqlParseResult ret = Common.CopyObject<SqlParseResult>(data);
-            if (options.NormalizeCase)
-            {
-                ret.Schema = NormalizeCase(ret.Schema);
-                ret.Flattened = NormalizeCase(ret.Flattened);
-                ret.Tokens = NormalizeCase(ret.Tokens);
-            }
-
-            if (options.RemovePunctuation)
-            {
-                ret.Tokens = RemovePunctuation(ret.Tokens);
-            }
-
-            if (options.RemoveStopWords)
-            {
-                ret.Tokens = RemoveStopWords(options, ret.Tokens);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Normalize parsed XML.
-        /// </summary>
-        /// <param name="options">Postings options.</param>
-        /// <param name="data">Parsed XML.</param>
-        /// <returns>Normalized parsed XML.</returns>
-        public static XmlParseResult NormalizeXml(PostingsOptions options, XmlParseResult data)
-        {
-            if (options == null) options = new PostingsOptions();
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            XmlParseResult ret = Common.CopyObject<XmlParseResult>(data);
-            if (options.NormalizeCase)
-            {
-                ret.Schema = NormalizeCase(ret.Schema);
-                ret.Flattened = NormalizeCase(ret.Flattened);
-                ret.Tokens = NormalizeCase(ret.Tokens);
-            }
-
-            if (options.RemovePunctuation)
-            {
-                ret.Tokens = RemovePunctuation(ret.Tokens);
-            }
-
-            if (options.RemoveStopWords)
-            {
-                ret.Tokens = RemoveStopWords(options, ret.Tokens);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Normalize parsed text.
-        /// </summary>
-        /// <param name="options">Postings options.</param>
-        /// <param name="data">Parsed text.</param>
-        /// <returns>Normalized parsed text.</returns>
-        public static TextParseResult NormalizeText(PostingsOptions options, TextParseResult data)
-        {
-            if (options == null) options = new PostingsOptions();
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            TextParseResult ret = Common.CopyObject<TextParseResult>(data);
-            if (options.NormalizeCase)
-            {
-                ret.Tokens = NormalizeCase(ret.Tokens);
-            }
-
-            if (options.RemovePunctuation)
-            {
-                ret.Tokens = RemovePunctuation(ret.Tokens);
-            }
-
-            if (options.RemoveStopWords)
-            {
-                ret.Tokens = RemoveStopWords(options, ret.Tokens);
-            }
-
+            ret.Time.End = DateTime.Now.ToUniversalTime();
+            ret.Success = true;
             return ret;
         }
 
@@ -213,21 +199,28 @@ namespace Komodo.Postings
         /// <summary>
         /// Normalize case.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="token">Token.</param>
         /// <returns>Token with normalized case.</returns>
-        public static string NormalizeCase(string token)
+        public static string NormalizeCase(PostingsOptions options, string token)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.SetLowerCase) return token;
             if (String.IsNullOrEmpty(token)) return null;
+
             return token.ToLower().Trim();
         }
 
         /// <summary>
         /// Normalize case.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="tokens">Token.</param>
         /// <returns>Token with normalized case.</returns>
-        public static List<Token> NormalizeCase(List<Token> tokens)
+        public static List<Token> NormalizeCase(PostingsOptions options, List<Token> tokens)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.SetLowerCase) return tokens;
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
 
@@ -250,108 +243,95 @@ namespace Komodo.Postings
         /// <summary>
         /// Normalize case.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="tokens">List of tokens.</param>
         /// <returns>List of tokens with normalized case.</returns>
-        public static List<string> NormalizeCase(List<string> tokens)
+        public static List<string> NormalizeCase(PostingsOptions options, List<string> tokens)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.SetLowerCase) return tokens;
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
+
             List<string> ret = new List<string>();
+
             foreach (string curr in tokens)
             {
-                ret.Add(NormalizeCase(curr));
+                ret.Add(NormalizeCase(options, curr));
             }
+
             return ret;
         }
 
         /// <summary>
         /// Normalize case.
         /// </summary>
-        /// <param name="tokens">Dictionary where the keys contain tokens.</param>
-        /// <returns>Dictionary of tokens with normalized case.</returns>
-        public static Dictionary<string, int> NormalizeCase(Dictionary<string, int> tokens)
-        {
-            if (tokens == null) return null;
-            if (tokens.Count < 1) return tokens;
-            Dictionary<string, int> ret = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, int> curr in tokens)
-            {
-                AddToDictionary(curr.Key, curr.Value, ret);
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// Normalize case.
-        /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="val">Object.</param>
         /// <param name="valType">The data type of the object.</param>
         /// <returns>Object with normalized case.</returns>
-        public static object NormalizeCase(object val, DataType valType)
+        public static object NormalizeCase(PostingsOptions options, object val, DataType valType)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.SetLowerCase) return val;
             if (val == null) return null;
-            if (valType == DataType.String) return NormalizeCase(val.ToString());
+
+            if (valType == DataType.String)
+            {
+                return NormalizeCase(options, val.ToString());
+            }
+
             return val;
         }
 
         /// <summary>
         /// Normalize case.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="dict">Dictionary.</param>
         /// <returns>Dictionary with normalized case.</returns>
-        public static Dictionary<string, DataType> NormalizeCase(Dictionary<string, DataType> dict)
+        public static Dictionary<string, DataType> NormalizeCase(PostingsOptions options, Dictionary<string, DataType> dict)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.SetLowerCase) return dict;
             if (dict == null) return null;
             if (dict.Count < 1) return dict;
+
             Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
+
             foreach (KeyValuePair<string, DataType> curr in dict)
             {
                 string key = null;
-                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeCase(curr.Key);
+                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeCase(options, curr.Key);
                 if (ret.ContainsKey(key)) throw new Exception("Normalizing case would create duplicate keys in supplied dictionary");
                 ret.Add(key, curr.Value);
             }
+
             return ret;
         }
 
         /// <summary>
         /// Normalize case.
         /// </summary>
-        /// <param name="dict">Dictionary.</param>
-        /// <returns>Dictionary with normalized case.</returns>
-        public static Dictionary<string, string> NormalizeCase(Dictionary<string, string> dict)
-        {
-            if (dict == null) return null;
-            if (dict.Count < 1) return dict;
-            Dictionary<string, string> ret = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, string> curr in dict)
-            {
-                string key = null;
-                string val = null;
-                if (!String.IsNullOrEmpty(curr.Key)) key = NormalizeCase(curr.Key);
-                if (!String.IsNullOrEmpty(curr.Value)) val = NormalizeCase(curr.Value);
-                if (ret.ContainsKey(key)) throw new Exception("Normalizing case would create duplicate keys in supplied dictionary");
-                ret.Add(key, val);
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// Normalize case.
-        /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="nodes">List of data nodes.</param>
         /// <returns>List of data nodes with normalized case.</returns>
-        public static List<DataNode> NormalizeCase(List<DataNode> nodes)
+        public static List<DataNode> NormalizeCase(PostingsOptions options, List<DataNode> nodes)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.SetLowerCase) return nodes;
             if (nodes == null) return null;
             if (nodes.Count < 1) return nodes;
+
             List<DataNode> ret = new List<DataNode>();
+
             foreach (DataNode curr in nodes)
             {
-                string key = NormalizeCase(curr.Key);
-                object data = NormalizeCase(curr.Data, curr.Type);
+                string key = NormalizeCase(options, curr.Key);
+                object data = NormalizeCase(options, curr.Data, curr.Type);
                 ret.Add(new DataNode(key, data, curr.Type));
             }
+
             return ret;
         }
 
@@ -362,60 +342,82 @@ namespace Komodo.Postings
         /// <summary>
         /// Remove punctuation.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="token">String.</param>
         /// <returns>String without punctuation.</returns>
-        public static string RemoveStringPunctuation(string token)
+        public static string RemovePunctuation(PostingsOptions options, string token)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return token;
+            if (options.PunctuationCharacters == null || options.PunctuationCharacters.Length < 1) return token;
             if (String.IsNullOrEmpty(token)) return token;
 
-            string punctuation = "!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
-            string ret = "";
-            foreach (char c in token)
-            {
-                if (punctuation.Contains(c))
-                {
-                    ret += " ";
-                }
-                else
-                {
-                    ret += c;
-                }
-            }
-
-            return ret;
+            return ReplaceChars(token, options.PunctuationCharacters, ' '); 
         }
 
         /// <summary>
         /// Remove punctuation.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="tokens">List of string tokens.</param>
         /// <returns>List of string tokens without punctuation.</returns>
-        public static List<string> RemoveStringPunctuation(List<string> tokens)
+        public static List<string> RemovePunctuation(PostingsOptions options, List<string> tokens)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return tokens;
+            if (options.PunctuationCharacters == null || options.PunctuationCharacters.Length < 1) return tokens;
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
+
             List<string> ret = new List<string>();
-            foreach (string curr in tokens)
+            foreach (string token in tokens)
             {
-                ret.Add(RemoveStringPunctuation(curr));
+                ret.Add(RemovePunctuation(options, token));
             }
+
             return ret;
         }
 
         /// <summary>
         /// Remove punctuation.
         /// </summary>
-        /// <param name="tokens">Dictionary containing tokens as keys.</param>
-        /// <returns>Dictionary of tokens without punctuation.</returns>
-        public static List<Token> RemovePunctuation(List<Token> tokens)
+        /// <param name="options">Postings options.</param>
+        /// <param name="token">Token.</param>
+        /// <returns>Token without punctuation.</returns>
+        public static Token RemovePunctuation(PostingsOptions options, Token token)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return token;
+            if (options.PunctuationCharacters == null || options.PunctuationCharacters.Length < 1) return token;
+            if (token == null) return null;
+            if (String.IsNullOrEmpty(token.Value)) return token;
+
+            Token updated = new Token();
+            updated.Value = RemovePunctuation(options, token.Value);
+            updated.Count = token.Count;
+            updated.Positions = token.Positions;
+            return updated;
+        }
+
+        /// <summary>
+        /// Remove punctuation.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="tokens">Tokens.</param>
+        /// <returns>Tokens without punctuation.</returns>
+        public static List<Token> RemovePunctuation(PostingsOptions options, List<Token> tokens)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return tokens;
+            if (options.PunctuationCharacters == null || options.PunctuationCharacters.Length < 1) return tokens;
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
+
             List<Token> ret = new List<Token>();
-            
+
             foreach (Token token in tokens)
             {
-                ret = AddToken(token, ret);
+                ret.Add(RemovePunctuation(options, token));
             }
 
             return ret;
@@ -424,16 +426,20 @@ namespace Komodo.Postings
         /// <summary>
         /// Remove punctuation.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="val">Object.</param>
         /// <param name="valType">The data type of the object.</param>
         /// <returns>Object without punctuation.</returns>
-        public static object RemovePunctuation(object val, DataType valType)
+        public static object RemovePunctuation(PostingsOptions options, object val, DataType valType)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return val;
+            if (options.PunctuationCharacters == null || options.PunctuationCharacters.Length < 1) return val;
             if (val == null) return null;
 
             if (valType == DataType.String)
             {
-                return RemoveStringPunctuation(val.ToString());
+                return RemovePunctuation(options, val.ToString());
             }
             else
             {
@@ -444,42 +450,51 @@ namespace Komodo.Postings
         /// <summary>
         /// Remove punctuation.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="dict">Dictionary.</param>
         /// <returns>Dictionary without punctuation.</returns>
-        public static Dictionary<string, string> RemovePunctuation(Dictionary<string, string> dict)
+        public static Dictionary<string, DataType> RemovePunctuation(PostingsOptions options, Dictionary<string, DataType> dict)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return dict;
             if (dict == null) return null;
             if (dict.Count < 1) return dict;
-            Dictionary<string, string> ret = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, string> curr in dict)
+
+            Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
+
+            foreach (KeyValuePair<string, DataType> curr in dict)
             {
                 string key = null;
-                string val = null;
-                if (!String.IsNullOrEmpty(curr.Key)) key = RemoveStringPunctuation(curr.Key);
-                if (!String.IsNullOrEmpty(curr.Value)) val = RemoveStringPunctuation(curr.Value);
+                if (!String.IsNullOrEmpty(curr.Key)) key = RemovePunctuation(options, curr.Key);
                 if (ret.ContainsKey(key)) throw new Exception("Removing punctuation would create duplicate keys in supplied dictionary");
-                ret.Add(key, val);
+                ret.Add(key, curr.Value);
             }
+
             return ret;
         }
 
         /// <summary>
         /// Remove punctuation.
         /// </summary>
+        /// <param name="options">Postings options.</param>
         /// <param name="nodes">List of data nodes.</param>
         /// <returns>List of data nodes without punctuation.</returns>
-        public static List<DataNode> RemovePunctuation(List<DataNode> nodes)
+        public static List<DataNode> RemovePunctuation(PostingsOptions options, List<DataNode> nodes)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return nodes;
+            if (options.PunctuationCharacters == null || options.PunctuationCharacters.Length < 1) return nodes;
             if (nodes == null) return null;
             if (nodes.Count < 1) return nodes;
+
             List<DataNode> ret = new List<DataNode>();
             foreach (DataNode curr in nodes)
             {
                 string key = null;
                 object data = null;
 
-                if (!String.IsNullOrEmpty(curr.Key)) key = RemoveStringPunctuation(curr.Key);
-                if (curr.Data != null) data = RemovePunctuation(curr.Data, curr.Type);
+                if (!String.IsNullOrEmpty(curr.Key)) key = RemovePunctuation(options, curr.Key);
+                if (curr.Data != null) data = RemovePunctuation(options, curr.Data, curr.Type);
                 ret.Add(new DataNode(key, data, curr.Type));
             }
             return ret;
@@ -497,7 +512,8 @@ namespace Komodo.Postings
         /// <returns>String without stop words.</returns>
         public static string RemoveStopWords(PostingsOptions options, string token)
         {
-            if (options == null) return token;
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemoveStopWords) return token;
             if (options.StopWords == null || options.StopWords.Count < 1) return token;
             if (String.IsNullOrEmpty(token)) return token;
 
@@ -529,13 +545,19 @@ namespace Komodo.Postings
         /// <returns>List of strings without stop words.</returns>
         public static List<string> RemoveStopWords(PostingsOptions options, List<string> tokens)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemoveStopWords) return tokens;
+            if (options.StopWords == null || options.StopWords.Count < 1) return tokens;
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
+
             List<string> ret = new List<string>();
+
             foreach (string curr in tokens)
             {
                 ret.Add(RemoveStopWords(options, curr));
             }
+
             return ret;
         }
 
@@ -547,8 +569,12 @@ namespace Komodo.Postings
         /// <returns>Dictionary without stop words.</returns>
         public static List<Token> RemoveStopWords(PostingsOptions options, List<Token> tokens)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemoveStopWords) return tokens;
+            if (options.StopWords == null || options.StopWords.Count < 1) return tokens;
             if (tokens == null) return null;
             if (tokens.Count < 1) return tokens;
+
             List<Token> ret = new List<Token>();
 
             foreach (Token token in tokens)
@@ -573,6 +599,9 @@ namespace Komodo.Postings
         /// <returns>Object without stop words.</returns>
         public static object RemoveStopWords(PostingsOptions options, object token, DataType tokenType)
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemoveStopWords) return token;
+            if (options.StopWords == null || options.StopWords.Count < 1) return token;
             if (token == null) return null;
 
             if (tokenType == DataType.String)
@@ -589,19 +618,24 @@ namespace Komodo.Postings
         /// Remove stop words.
         /// </summary>
         /// <param name="options">Postings options.</param>
-        /// <param name="data">Dictionary.</param>
+        /// <param name="dict">Dictionary.</param>
         /// <returns>Dictionary without stop words.</returns>
-        public static Dictionary<string, string> RemoveStopWords(PostingsOptions options, Dictionary<string, string> data)
+        public static Dictionary<string, DataType> RemoveStopWords(PostingsOptions options, Dictionary<string, DataType> dict)
         {
-            if (options == null) return data;
-            if (options.StopWords == null || options.StopWords.Count < 1) return data;
-            if (data == null) return null;
-            if (data.Count < 1) return data;
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemovePunctuation) return dict;
+            if (dict == null) return null;
+            if (dict.Count < 1) return dict;
 
-            Dictionary<string, string> ret = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, string> curr in data)
+            Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
+
+            foreach (KeyValuePair<string, DataType> curr in dict)
             {
-                ret.Add(curr.Key, RemoveStopWords(options, curr.Value));
+                string key = null;
+                if (!String.IsNullOrEmpty(curr.Key)) key = RemoveStopWords(options, curr.Key);
+                if (String.IsNullOrEmpty(key)) continue;
+                if (ret.ContainsKey(key)) throw new Exception("Removing stop words would create duplicate keys in supplied dictionary");
+                ret.Add(key, curr.Value);
             }
 
             return ret;
@@ -615,11 +649,13 @@ namespace Komodo.Postings
         /// <returns>List of data nodes without stop words.</returns>
         public static List<DataNode> RemoveStopWords(PostingsOptions options, List<DataNode> data)
         {
-            if (options == null) return data;
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemoveStopWords) return data;
             if (options.StopWords == null || options.StopWords.Count < 1) return data;
             if (data == null || data.Count < 1) return data;
 
             List<DataNode> ret = new List<DataNode>();
+
             foreach (DataNode curr in data)
             {
                 if (curr.Data != null)
@@ -637,29 +673,157 @@ namespace Komodo.Postings
 
         #endregion
 
+        #region Reduce-Whitespace
+
+        /// <summary>
+        /// Reduce whitespace.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="token">Token.</param>
+        /// <returns>Token with reduced whitespace.</returns>
+        public static string ReduceWhitespace(PostingsOptions options, string token)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.ReduceWhitespace) return token; 
+            if (String.IsNullOrEmpty(token)) return token;
+
+            token = token
+                .Replace("\r", " ")
+                .Replace("\n", " ")
+                .Replace("\f", " ")
+                .Replace("\0", " ")
+                .Replace("\t", " ");
+
+            while (token.Contains("  ")) token = token.Replace("  ", " ");
+            return token;
+        }
+
+        /// <summary>
+        /// Reduce whitespace.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="tokens">Tokens.</param>
+        /// <returns>Tokens with reduced whitespace.</returns>
+        public static List<string> ReduceWhitespace(PostingsOptions options, List<string> tokens)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.ReduceWhitespace) return tokens;
+            if (tokens == null || tokens.Count < 1) return tokens;
+
+            List<string> ret = new List<string>();
+
+            foreach (string token in tokens)
+            {
+                ret.Add(ReduceWhitespace(options, token));
+            }
+
+            if (ret != null && ret.Count > 0) ret = ret.Distinct().ToList();
+            return ret;
+        }
+
+        /// <summary>
+        /// Reduce whitespace.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="tokens">Tokens.</param>
+        /// <returns>Tokens with reduced whitespace.</returns>
+        public static List<Token> ReduceWhitespace(PostingsOptions options, List<Token> tokens)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.ReduceWhitespace) return tokens;
+            if (tokens == null || tokens.Count < 1) return tokens;
+
+            Dictionary<string, Token> dict = new Dictionary<string, Token>();
+            List<Token> ret = new List<Token>();
+
+            foreach (Token token in tokens)
+            {
+                if (String.IsNullOrEmpty(token.Value)) continue;
+                token.Value = ReduceWhitespace(options, token.Value);
+                dict = AddToken(dict, token);
+            }
+
+            if (dict != null && dict.Count > 0) ret = dict.Values.ToList();
+            return ret;
+        }
+
+        /// <summary>
+        /// Reduce whitespace.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="token">Token.</param>
+        /// <param name="tokenType">Data type of the token.</param>
+        /// <returns>Token with reduced whitespace.</returns>
+        public static object ReduceWhitespace(PostingsOptions options, object token, DataType tokenType)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.ReduceWhitespace) return token;
+            if (token == null) return null;
+
+            if (tokenType == DataType.String)
+            {
+                return ReduceWhitespace(options, token.ToString());
+            }
+            else
+            {
+                return token;
+            }
+        }
+
+        /// <summary>
+        /// Reduce whitespace.
+        /// </summary>
+        /// <param name="options">Postings options.</param>
+        /// <param name="data">Data nodes.</param>
+        /// <returns>Data nodes with reduced whitespace.</returns>
+        public static List<DataNode> ReduceWhitespace(PostingsOptions options, List<DataNode> data)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (!options.TokenManipulation.RemoveStopWords) return data;
+            if (options.StopWords == null || options.StopWords.Count < 1) return data;
+            if (data == null || data.Count < 1) return data;
+
+            List<DataNode> ret = new List<DataNode>();
+
+            foreach (DataNode curr in data)
+            {
+                if (curr.Data != null)
+                {
+                    ret.Add(new DataNode(curr.Key, ReduceWhitespace(options, curr.Data, curr.Type), curr.Type));
+                }
+                else
+                {
+                    ret.Add(new DataNode(curr.Key, null, curr.Type));
+                }
+            }
+
+            return ret;
+        }
+         
+        #endregion
+
         #endregion
 
         #region Private-Methods
 
-        private static void AddToDictionary(string key, int val, Dictionary<string, int> dict)
+        private static string ReplaceChars(string str, char[] separators, char newVal)
         {
-            if (String.IsNullOrEmpty(key)) return;
-            if (dict == null) return;
+            if (String.IsNullOrEmpty(str)) return str;
+            if (separators == null || separators.Length < 1) return str;
 
-            if (dict.ContainsKey(key))
-            {
-                int orig = dict[key];
-                val = val + orig;
-                dict.Remove(key);
-                dict.Add(key, val);
-            }
-            else
-            {
-                dict.Add(key, val);
-            }
+            StringBuilder sb = new StringBuilder(str);
+            foreach (var c in separators) { sb.Replace(c, newVal); }
+            return sb.ToString();
         }
 
-        private static List<Token> AddToken(Token token, List<Token> tokens)
+        private static bool IsWithinLength(string str, int minLen, int maxLen)
+        {
+            if (String.IsNullOrEmpty(str)) return false;
+            if (str.Length < minLen || str.Length > maxLen) return false;
+            return true;
+        }
+
+        private static List<Token> aAddToken(List<Token> tokens, Token token)
         {
             if (token == null) return tokens;
             if (String.IsNullOrEmpty(token.Value)) return tokens;
@@ -667,22 +831,63 @@ namespace Komodo.Postings
 
             if (tokens.Any(t => t.Value.Equals(token.Value)))
             {
-                Token original = tokens.First(t => t.Value.Equals(token.Value));
-                Token updated = new Token();
-                updated.Value = original.Value;
-                updated.Count = original.Count + token.Count;
-                updated.Positions = new List<long>();
-                if (original.Positions != null && original.Positions.Count > 0) updated.Positions.AddRange(original.Positions);
-                if (token.Positions != null && token.Positions.Count > 0) updated.Positions.AddRange(token.Positions);
-                if (updated.Positions.Count > 0) updated.Positions = updated.Positions.Distinct().ToList();
+                Token orig = tokens.First(t => t.Value.Equals(token.Value));
 
-                tokens.Remove(original);
-                tokens.Add(updated);
+                Token replace = new Token();
+                replace.Value = orig.Value;
+                replace.Count = orig.Count + token.Count;
+                replace.Positions = new List<long>();
+
+                if (token.Positions != null && token.Positions.Count > 0)
+                {
+                    replace.Positions.AddRange(token.Positions);
+                    replace.Positions.AddRange(orig.Positions);
+                }
+
+                tokens.Remove(orig);
+                tokens.Add(replace);
             }
             else
             {
                 tokens.Add(token);
             }
+
+            if (tokens != null && tokens.Count > 0)
+            {
+                tokens = tokens.OrderByDescending(t => t.Count).ToList();
+            }
+
+            return tokens;
+        }
+
+        private static Dictionary<string, Token> AddToken(Dictionary<string, Token> tokens, Token token)
+        {
+            if (token == null) return tokens;
+            if (String.IsNullOrEmpty(token.Value)) return tokens;
+            if (tokens == null) tokens = new Dictionary<string, Token>();
+
+            if (tokens.ContainsKey(token.Value))
+            {
+                Token orig = tokens[token.Value];
+
+                Token replace = new Token();
+                replace.Value = orig.Value;
+                replace.Count = orig.Count + token.Count;
+                replace.Positions = new List<long>();
+
+                if (token.Positions != null && token.Positions.Count > 0)
+                {
+                    replace.Positions.AddRange(token.Positions);
+                    replace.Positions.AddRange(orig.Positions);
+                }
+
+                tokens.Remove(orig.Value);
+                tokens.Add(replace.Value, replace);
+            }
+            else
+            { 
+                tokens.Add(token.Value, token);
+            }  
 
             return tokens;
         }

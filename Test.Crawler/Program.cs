@@ -66,16 +66,16 @@ namespace Test.Crawler
             S3Crawler s3c = null;
             if (!String.IsNullOrEmpty(endpoint)) s3c = new S3Crawler(endpoint, ssl, bucket, key, accessKey, secretKey, region, baseUrl);
             else s3c = new S3Crawler(bucket, key, accessKey, secretKey, region);
-            
-            S3CrawlResult s3cr = s3c.Get();
 
-            Console.WriteLine("Success        : " + s3cr.Success);
-            Console.WriteLine("Start time     : " + s3cr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + s3cr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + s3cr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + s3cr.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(s3cr.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(s3cr.Data));
+            CrawlResult cr = s3c.Get();
+
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void AzureCrawler()
@@ -88,15 +88,15 @@ namespace Test.Crawler
 
             AzureBlobCrawler ac = new AzureBlobCrawler(accountName, container, endpoint, accessKey, key);
 
-            AzureBlobCrawlResult ar = ac.Get();
+            CrawlResult cr = ac.Get();
 
-            Console.WriteLine("Success        : " + ar.Success);
-            Console.WriteLine("Start time     : " + ar.Time.Start.ToString());
-            Console.WriteLine("End time       : " + ar.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + ar.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + ar.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(ar.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(ar.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void KvpCrawler()
@@ -110,15 +110,15 @@ namespace Test.Crawler
 
             KvpbaseCrawler kc = new KvpbaseCrawler(endpoint, userGuid, container, apiKey, key);
 
-            KvpbaseCrawlResult kcr = kc.Get();
+            CrawlResult cr = kc.Get();
 
-            Console.WriteLine("Success        : " + kcr.Success);
-            Console.WriteLine("Start time     : " + kcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + kcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + kcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + kcr.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(kcr.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(kcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void KomodoCrawler()
@@ -131,15 +131,15 @@ namespace Test.Crawler
 
             KomodoCrawler kc = new KomodoCrawler(endpoint, indexGuid, apiKey, key);
 
-            KomodoCrawlResult kcr = kc.Get();
+            CrawlResult cr = kc.Get();
 
-            Console.WriteLine("Success        : " + kcr.Success);
-            Console.WriteLine("Start time     : " + kcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + kcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + kcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + kcr.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(kcr.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(kcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void FileCrawler()
@@ -148,15 +148,15 @@ namespace Test.Crawler
             if (String.IsNullOrEmpty(filename)) return;
 
             FileCrawler fc = new FileCrawler(filename);
-            FileCrawlResult fcr = fc.Get();
+            CrawlResult cr = fc.Get();
 
-            Console.WriteLine("Success        : " + fcr.Success);
-            Console.WriteLine("Start time     : " + fcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + fcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + fcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + fcr.ContentLength + " bytes");
-            Console.WriteLine("Metadata       : " + Common.SerializeJson(fcr.Metadata, false));
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Metadata       : " + Common.SerializeJson(cr.Metadata, false));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void FtpCrawler()
@@ -167,14 +167,14 @@ namespace Test.Crawler
             FtpCrawler fc = new FtpCrawler(url);
             fc.Username = Common.InputString("Username:", null, true);
             fc.Password = Common.InputString("Password:", null, true);
-            FtpCrawlResult fcr = fc.Get();
+            CrawlResult cr = fc.Get();
 
-            Console.WriteLine("Success        : " + fcr.Success);
-            Console.WriteLine("Start time     : " + fcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + fcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + fcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + fcr.ContentLength + " bytes");
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(fcr.Data));
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes");
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void HttpCrawler()
@@ -187,20 +187,24 @@ namespace Test.Crawler
             hc.Method = (HttpMethod)(Enum.Parse(typeof(HttpMethod), Common.InputString("Method:", "GET", false)));
             hc.Username = Common.InputString("Username:", null, true);
             hc.Password = Common.InputString("Password:", null, true);
-            HttpCrawlResult hcr = hc.Get();
+            CrawlResult cr = hc.Get();
 
-            Console.WriteLine("Success        : " + hcr.Success);
-            Console.WriteLine("Start time     : " + hcr.Time.Start.ToString());
-            Console.WriteLine("End time       : " + hcr.Time.End.ToString());
-            Console.WriteLine("Total ms       : " + hcr.Time.TotalMs.ToString() + "ms");
-            Console.WriteLine("Content length : " + hcr.ContentLength + " bytes"); 
-            Console.WriteLine("Headers        : ");
-            if (hcr.Headers != null && hcr.Headers.Count > 0)
+            Console.WriteLine("Success        : " + cr.Success);
+            Console.WriteLine("Start time     : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time       : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms       : " + cr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Content length : " + cr.ContentLength + " bytes"); 
+            if (cr.Http != null)
             {
-                foreach (KeyValuePair<string, string> curr in hcr.Headers)
-                    Console.WriteLine("  " + curr.Key + ": " + curr.Value);
+                Console.WriteLine("Status code    : " + cr.Http.StatusCode);
+                if (cr.Http.Headers != null && cr.Http.Headers.Count > 0)
+                {
+                    Console.WriteLine("Headers        : ");
+                    foreach (KeyValuePair<string, string> curr in cr.Http.Headers)
+                        Console.WriteLine("  " + curr.Key + ": " + curr.Value);
+                }
             }
-            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(hcr.Data));
+            Console.WriteLine("Data           :" + Environment.NewLine + Encoding.UTF8.GetString(cr.Data));
         }
 
         static void SqlCrawler()
@@ -218,16 +222,16 @@ namespace Test.Crawler
                 Common.InputString("Database name:", "dbname", false));
 
             SqlCrawler sc = new SqlCrawler(db, query);
-            SqlCrawlResult scr = sc.Get();
+            CrawlResult cr = sc.Get();
 
-            Console.WriteLine("Success    : " + scr.Success);
-            Console.WriteLine("Start time : " + scr.Time.Start.ToString());
-            Console.WriteLine("End time   : " + scr.Time.End.ToString());
-            Console.WriteLine("Total ms   : " + scr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Success    : " + cr.Success);
+            Console.WriteLine("Start time : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time   : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms   : " + cr.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Data       : ");
-            if (scr.DataTable != null)
+            if (cr.DataTable != null)
             {
-                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(scr.DataTable), true));
+                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(cr.DataTable), true));
             }
             else
             {
@@ -240,16 +244,16 @@ namespace Test.Crawler
             SqliteCrawler sc = new SqliteCrawler(
                 Common.InputString("Filename:", null, false),
                 Common.InputString("Query:", null, false));
-            SqliteCrawlResult scr = sc.Get();
+            CrawlResult cr = sc.Get();
 
-            Console.WriteLine("Success    : " + scr.Success);
-            Console.WriteLine("Start time : " + scr.Time.Start.ToString());
-            Console.WriteLine("End time   : " + scr.Time.End.ToString());
-            Console.WriteLine("Total ms   : " + scr.Time.TotalMs.ToString() + "ms");
+            Console.WriteLine("Success    : " + cr.Success);
+            Console.WriteLine("Start time : " + cr.Time.Start.ToString());
+            Console.WriteLine("End time   : " + cr.Time.End.ToString());
+            Console.WriteLine("Total ms   : " + cr.Time.TotalMs.ToString() + "ms");
             Console.WriteLine("Data       : ");
-            if (scr.DataTable != null)
+            if (cr.DataTable != null)
             {
-                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(scr.DataTable), true));
+                Console.WriteLine(Common.SerializeJson(Common.DataTableToListDynamic(cr.DataTable), true));
             }
             else
             {

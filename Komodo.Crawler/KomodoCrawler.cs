@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BlobHelper;
+using Komodo.Classes;
 
 namespace Komodo.Crawler
 {
@@ -70,24 +71,24 @@ namespace Komodo.Crawler
         /// Retrieve the object.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public KomodoCrawlResult Get()
+        public CrawlResult Get()
         {
-            KomodoCrawlResult ret = new KomodoCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
             try
             {
                 BlobData data = _Blobs.GetStream(Key).Result;
-                ret.Metadata = ObjectMetadata.FromBlobMetadata(_Blobs.GetMetadata(Key).Result);
+                ret.Metadata = CrawlResult.ObjectMetadata.FromBlobMetadata(_Blobs.GetMetadata(Key).Result);
                 ret.ContentLength = data.ContentLength;
                 ret.DataStream = data.Data;
                 ret.Success = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret; 
         }
 
@@ -96,16 +97,16 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public KomodoCrawlResult Download(string filename)
+        public CrawlResult Download(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            KomodoCrawlResult ret = new KomodoCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
             try
             {
                 BlobData data = _Blobs.GetStream(Key).Result;
-                ret.Metadata = ObjectMetadata.FromBlobMetadata(_Blobs.GetMetadata(Key).Result);
+                ret.Metadata = CrawlResult.ObjectMetadata.FromBlobMetadata(_Blobs.GetMetadata(Key).Result);
                 ret.ContentLength = data.ContentLength; 
 
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
@@ -131,12 +132,12 @@ namespace Komodo.Crawler
                 ret.DataStream = null;
                 ret.Success = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret; 
         }
 
@@ -145,7 +146,7 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryGet(out KomodoCrawlResult result)
+        public bool TryGet(out CrawlResult result)
         {
             result = null;
 
@@ -166,7 +167,7 @@ namespace Komodo.Crawler
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <param name="result">Crawl result.</param>
         /// <returns>True if successful.</returns>
-        public bool TryDownload(string filename, out KomodoCrawlResult result)
+        public bool TryDownload(string filename, out CrawlResult result)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
@@ -187,24 +188,24 @@ namespace Komodo.Crawler
         /// Retrieve the object asynchronously.
         /// </summary>
         /// <returns>Crawl result.</returns>
-        public async Task<KomodoCrawlResult> GetAsync()
+        public async Task<CrawlResult> GetAsync()
         {
-            KomodoCrawlResult ret = new KomodoCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
             try
             {
                 BlobData data = await _Blobs.GetStream(Key);
-                ret.Metadata = ObjectMetadata.FromBlobMetadata(await _Blobs.GetMetadata(Key));
+                ret.Metadata = CrawlResult.ObjectMetadata.FromBlobMetadata(await _Blobs.GetMetadata(Key));
                 ret.ContentLength = data.ContentLength;
                 ret.DataStream = data.Data;
                 ret.Success = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
@@ -213,16 +214,16 @@ namespace Komodo.Crawler
         /// </summary>
         /// <param name="filename">The filename where the object should be saved.</param>
         /// <returns>Crawl result.</returns>
-        public async Task<KomodoCrawlResult> DownloadAsync(string filename)
+        public async Task<CrawlResult> DownloadAsync(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
 
-            KomodoCrawlResult ret = new KomodoCrawlResult();
+            CrawlResult ret = new CrawlResult();
 
             try
             {
                 BlobData data = await _Blobs.GetStream(Key);
-                ret.Metadata = ObjectMetadata.FromBlobMetadata(await _Blobs.GetMetadata(Key));
+                ret.Metadata = CrawlResult.ObjectMetadata.FromBlobMetadata(await _Blobs.GetMetadata(Key));
                 ret.ContentLength = data.ContentLength;
 
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
@@ -248,12 +249,12 @@ namespace Komodo.Crawler
                 ret.DataStream = null;
                 ret.Success = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                ret.Exception = e;
             }
 
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 

@@ -50,25 +50,22 @@ namespace Komodo.Crawler
         /// Retrieve data from the database using the supplied query.
         /// </summary>
         /// <returns>DatabaseCrawlResult.</returns>
-        public SqlCrawlResult Get()
+        public CrawlResult Get()
         {
-            bool success = false;
-            DataTable result = null;
-
+            CrawlResult ret = new CrawlResult();
+              
             try
             {
-                result = _ORM.Query(_Query);
-                success = true;
+                DataTable result = _ORM.Query(_Query);
+                ret.Success = true;
+                ret.DataTable = result;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                ret.Exception = e;
             }
 
-            SqlCrawlResult ret = new SqlCrawlResult();
-            ret.DataTable = result;
-            ret.Success = success;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 

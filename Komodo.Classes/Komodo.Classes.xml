@@ -54,6 +54,145 @@
             Commonly-used methods in Komodo and supporting applications.
             </summary>
         </member>
+        <member name="T:Komodo.Classes.CrawlResult">
+            <summary>
+            Crawl result.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.Success">
+            <summary>
+            Indicates if the crawler was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.Filename">
+            <summary>
+            The filename to which the retrieved file was downloaded.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ContentLength">
+            <summary>
+            Length of the file retrieved.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.Http">
+            <summary>
+            HTTP crawl result.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.Metadata">
+            <summary>
+            Object metadata.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.DataTable">
+            <summary>
+            DataTable containing the crawled data.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.DataStream">
+            <summary>
+            File stream of the retrieved data.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.CrawlResult.Data">
+            <summary>
+            Read the stream fully into a byte array.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.Exception">
+            <summary>
+            Exception encountered during crawl.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.CrawlResult.#ctor">
+            <summary>
+            Instantiates the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.CrawlResult.ObjectMetadata">
+            <summary>
+            Object metadata.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.Key">
+            <summary>
+            Object key.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.ContentType">
+            <summary>
+            Content type.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.ContentLength">
+            <summary>
+            Content length.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.ETag">
+            <summary>
+            Etag.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.CreatedUtc">
+            <summary>
+            Creation timestamp.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.LastAccessUtc">
+            <summary>
+            Last access timestamp.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.ObjectMetadata.LastUpdateUtc">
+            <summary>
+            Last update timestamp.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.CrawlResult.ObjectMetadata.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.CrawlResult.ObjectMetadata.FromBlobMetadata(BlobHelper.BlobMetadata)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="md">BLOB metadata.</param>
+            <returns>Object metadata.</returns>
+        </member>
+        <member name="M:Komodo.Classes.CrawlResult.ObjectMetadata.FromFileInfo(System.IO.FileInfo)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="fi">FileInfo.</param>
+            <returns>Object metadata.</returns>
+        </member>
+        <member name="T:Komodo.Classes.CrawlResult.HttpCrawlResult">
+            <summary>
+            HTTP crawl result.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.HttpCrawlResult.StatusCode">
+            <summary>
+            The HTTP status code.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.CrawlResult.HttpCrawlResult.Headers">
+            <summary>
+            The HTTP headers in the response.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.CrawlResult.HttpCrawlResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
         <member name="T:Komodo.Classes.DataNode">
             <summary>
             A node of data from a parsed document.
@@ -988,6 +1127,341 @@
             <param name="postings">The number of postings in the parsed document.</param>
             <param name="contentLength">The content length of the parsed document.</param>
         </member>
+        <member name="T:Komodo.Classes.ParseOptions">
+            <summary>
+            Options to indicate how the parser should behave.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.Text">
+            <summary>
+            HTML-specific parse options.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.Html">
+            <summary>
+            HTML-specific parse options.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.Json">
+            <summary>
+            JSON-specific parse options.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.Xml">
+            <summary>
+            XML-specific parse options.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.Sql">
+            <summary>
+            SQL and Sqlite specific parse options.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseOptions.TextParseOptions">
+            <summary>
+            Text-specific parse options.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.TextParseOptions.SplitCharacters">
+            <summary>
+            Characters upon which text should be split.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.TextParseOptions.MinimumTokenLength">
+            <summary>
+            Minimum length of a token to include in the result.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseOptions.TextParseOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseOptions.HtmlParseOptions">
+            <summary>
+            HTML-specific parse options.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.HtmlParseOptions.ExcludeFromHead">
+            <summary>
+            List of nodes to exclude from the HTML head.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseOptions.HtmlParseOptions.ExcludeFromBody">
+            <summary>
+            List of nodes to exclude from the HTML body.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseOptions.HtmlParseOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseOptions.JsonParseOptions">
+            <summary>
+            JSON-specific parse options.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseOptions.JsonParseOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseOptions.XmlParseOptions">
+            <summary>
+            XML-specific parse options.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseOptions.XmlParseOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseOptions.SqlParseOptions">
+            <summary>
+            SQL and Sqlite parse options.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseOptions.SqlParseOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult">
+            <summary>
+            Parsed document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Success">
+            <summary>
+            Indicates if the parser was successful.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Time">
+            <summary>
+            Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Html">
+            <summary>
+            HTML parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Xml">
+            <summary>
+            XML parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Json">
+            <summary>
+            JSON parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Sql">
+            <summary>
+            SQL parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Tokens">
+            <summary>
+            Tokens found including their count and positions.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Schema">
+            <summary>
+            Schema of the document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.Flattened">
+            <summary>
+            Flattened representation of the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult.HtmlParseResult">
+            <summary>
+            HTML-specific parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.Head">
+            <summary>
+            HTML body contents and parse results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.Body">
+            <summary>
+            HTML body contents and parse results.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.HtmlParseResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead">
+            <summary>
+            HTML body contents and parse results.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.Title">
+            <summary>
+            The title of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.MetaDescription">
+            <summary>
+            The meta description of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.MetaDescriptionOpengraph">
+            <summary>
+            The opengraph meta description of the HTML page.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.MetaKeywords">
+            <summary>
+            The meta keywords of the HTML page.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.MetaImageOpengraph">
+            <summary>
+            The opengraph meta image of the HTML page.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.MetaVideoTagsOpengraph">
+            <summary>
+            List of opengraph meta video tags of the HTML page.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.Tokens">
+            <summary>
+            Tokens found including their count and positions.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.Content">
+            <summary>
+            HTML head content.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.HtmlParseResult.HtmlHead.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult.HtmlParseResult.HtmlBody">
+            <summary>
+            HTML body contents and parse results.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.HtmlBody.ImageUrls">
+            <summary>
+            Image URLs from the HTML page.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.HtmlBody.Links">
+            <summary>
+            Links from the HTML page.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.HtmlParseResult.HtmlBody.Tokens">
+            <summary>
+            Tokens found including their count and positions.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.ParseResult.HtmlParseResult.HtmlBody.Content">
+            <summary>
+            HTML body content.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.HtmlParseResult.HtmlBody.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult.XmlParseResult">
+            <summary>
+            XML-specific parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.XmlParseResult.MaxDepth">
+            <summary>
+            Maximum node depth.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.XmlParseResult.Arrays">
+            <summary>
+            Number of arrays within the object.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.XmlParseResult.Nodes">
+            <summary>
+            Number of nodes within the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.XmlParseResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult.JsonParseResult">
+            <summary>
+            JSON-specific parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.JsonParseResult.MaxDepth">
+            <summary>
+            Maximum node depth.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.JsonParseResult.Arrays">
+            <summary>
+            Number of arrays within the object.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.JsonParseResult.Nodes">
+            <summary>
+            Number of nodes within the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.JsonParseResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.ParseResult.SqlParseResult">
+            <summary>
+            SQL and Sqlite specific parse details.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.SqlParseResult.MaxDepth">
+            <summary>
+            Maximum node depth.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.SqlParseResult.Rows">
+            <summary>
+            Number of rows within the table.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.ParseResult.SqlParseResult.Columns">
+            <summary>
+            Number of columns within the table.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.ParseResult.SqlParseResult.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
         <member name="T:Komodo.Classes.Permission">
             <summary>
             Specifies API permissions associated with API keys. 
@@ -1097,44 +1571,29 @@
             Configuration and options for postings processing and terms extraction.
             </summary>
         </member>
-        <member name="F:Komodo.Classes.PostingsOptions.NormalizeCase">
+        <member name="P:Komodo.Classes.PostingsOptions.TokenLength">
             <summary>
-            True to set text to lowercase.
+            Token length options.
             </summary>
         </member>
-        <member name="F:Komodo.Classes.PostingsOptions.RemovePunctuation">
+        <member name="P:Komodo.Classes.PostingsOptions.TokenManipulation">
             <summary>
-            True to remove punctuation characters.
+            Token manipulation options.
             </summary>
         </member>
-        <member name="F:Komodo.Classes.PostingsOptions.RemoveStopWords">
+        <member name="P:Komodo.Classes.PostingsOptions.SplitCharacters">
             <summary>
-            True to remove stopwords.
+            Characters on which to split tokens.
             </summary>
         </member>
-        <member name="F:Komodo.Classes.PostingsOptions.PerformStemming">
+        <member name="P:Komodo.Classes.PostingsOptions.PunctuationCharacters">
             <summary>
-            True to perform stemming on tokens.
+            Punctuation characters to remove.
             </summary>
         </member>
-        <member name="F:Komodo.Classes.PostingsOptions.MinTokenLength">
+        <member name="P:Komodo.Classes.PostingsOptions.StopWords">
             <summary>
-            Minimum length of a token.
-            </summary>
-        </member>
-        <member name="F:Komodo.Classes.PostingsOptions.MaxTokenLength">
-            <summary>
-            Maximum length of a token.
-            </summary>
-        </member>
-        <member name="F:Komodo.Classes.PostingsOptions.SplitCharacters">
-            <summary>
-            Characters on which to split terms.
-            </summary>
-        </member>
-        <member name="F:Komodo.Classes.PostingsOptions.StopWords">
-            <summary>
-            List of stop words.
+            List of stop words to remove when enabled.
             </summary>
         </member>
         <member name="M:Komodo.Classes.PostingsOptions.#ctor">
@@ -1142,15 +1601,59 @@
             Instantiate the object.
             </summary>
         </member>
-        <member name="M:Komodo.Classes.PostingsOptions.ToString">
+        <member name="T:Komodo.Classes.PostingsOptions.TokenLengthOptions">
             <summary>
-            Create a human readable string of the object.
+            Token length requirements.
             </summary>
-            <returns>String.</returns>
         </member>
-        <member name="M:Komodo.Classes.PostingsOptions.SetStopWordsFromFile">
+        <member name="P:Komodo.Classes.PostingsOptions.TokenLengthOptions.Min">
             <summary>
-            Set the stop words using StopWords.txt in the working directory or in the Docs directory, if either exists.
+            Minimum token length.
+            </summary>
+        </member>
+        <member name="P:Komodo.Classes.PostingsOptions.TokenLengthOptions.Max">
+            <summary>
+            Maximum token length.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.PostingsOptions.TokenLengthOptions.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Classes.PostingsOptions.TokenManipulationOptions">
+            <summary>
+            Token manipulation options.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.TokenManipulationOptions.SetLowerCase">
+            <summary>
+            True to set text to lowercase.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.TokenManipulationOptions.ReduceWhitespace">
+            <summary>
+            True to reduce whitespace.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.TokenManipulationOptions.RemovePunctuation">
+            <summary>
+            True to remove punctuation characters.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.TokenManipulationOptions.RemoveStopWords">
+            <summary>
+            True to remove stopwords.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsOptions.TokenManipulationOptions.PerformStemming">
+            <summary>
+            True to perform stemming on tokens.
+            </summary>
+        </member>
+        <member name="M:Komodo.Classes.PostingsOptions.TokenManipulationOptions.#ctor">
+            <summary>
+            Instantiate the object.
             </summary>
         </member>
         <member name="T:Komodo.Classes.PostingsResult">
@@ -1166,6 +1669,11 @@
         <member name="F:Komodo.Classes.PostingsResult.Time">
             <summary>
             Start and end timestamps.
+            </summary>
+        </member>
+        <member name="F:Komodo.Classes.PostingsResult.Normalized">
+            <summary>
+            Normalized parse result.
             </summary>
         </member>
         <member name="F:Komodo.Classes.PostingsResult.Terms">

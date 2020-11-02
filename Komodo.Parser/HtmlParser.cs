@@ -35,29 +35,29 @@ namespace Komodo.Parser
                 _TextParser = value;
             }
         }
-
+         
         /// <summary>
-        /// Minimum length of a token to include in the result.
+        /// Parse options.
         /// </summary>
-        public int MinimumTokenLength
+        public ParseOptions ParseOptions
         {
             get
             {
-                return _MinimumTokenLength;
+                return _ParseOptions;
             }
             set
             {
-                if (value < 1) throw new ArgumentException("Minimum token length must be one or greater.");
-                _MinimumTokenLength = value;
+                if (value == null) throw new ArgumentNullException(nameof(ParseOptions));
+                _ParseOptions = value;
             }
         }
 
         #endregion
 
         #region Private-Members
-
-        private int _MinimumTokenLength = 3;
+         
         private TextParser _TextParser = new TextParser();
+        private ParseOptions _ParseOptions = new ParseOptions();
 
         #endregion
 
@@ -67,7 +67,19 @@ namespace Komodo.Parser
         /// Instantiate the object.
         /// </summary>
         public HtmlParser()
-        { 
+        {
+
+        }
+
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="options">Parse options.</param>
+        public HtmlParser(ParseOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            _ParseOptions = options;
+            _TextParser = new TextParser(_ParseOptions);
         }
 
         #endregion
@@ -79,14 +91,22 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="url">Source URL.</param>
         /// <returns>Parse result.</returns>
-        public HtmlParseResult ParseFromUrl(string url)
+        public ParseResult ParseFromUrl(string url)
         {
             if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+
+            ParseResult ret = new ParseResult();
+            ret.Html = new ParseResult.HtmlParseResult();
+
             HttpCrawler crawler = new HttpCrawler(url);
-            HtmlParseResult result = new HtmlParseResult();
-            HttpCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -96,14 +116,22 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="filename">Path and filename.</param>
         /// <returns>Parse result.</returns>
-        public HtmlParseResult ParseFromFile(string filename)
+        public ParseResult ParseFromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
+
+            ParseResult ret = new ParseResult();
+            ret.Html = new ParseResult.HtmlParseResult();
+
             FileCrawler crawler = new FileCrawler(filename);
-            HtmlParseResult result = new HtmlParseResult();
-            FileCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -113,7 +141,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="data">HTML string.</param>
         /// <returns>Parse result.</returns>
-        public HtmlParseResult ParseString(string data)
+        public ParseResult ParseString(string data)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data));
             return ProcessSourceContent(data);
@@ -124,7 +152,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="bytes">Byte data containing HTML.</param>
         /// <returns>Parse result.</returns>
-        public HtmlParseResult ParseBytes(byte[] bytes)
+        public ParseResult ParseBytes(byte[] bytes)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
             string sourceContent = Encoding.UTF8.GetString(bytes);
@@ -135,65 +163,147 @@ namespace Komodo.Parser
 
         #region Private-Methods
 
-        private HtmlParseResult ProcessSourceContent(string data)
+        private ParseResult ProcessSourceContent(string data)
         {
-            // 
-            // Load HTML Document
-            //
+            #region Load-Document
+
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(data);
-            HtmlParseResult ret = new HtmlParseResult();
 
-            //
-            // Metadata
-            //
-            ret.PageTitle = GetPageTitle(data);
-            ret.MetaDescription = GetMetaDescription(doc);
-            ret.MetaKeywords = GetMetaKeywords(doc);
-            ret.MetaImageOpengraph = GetMetaImageOpengraph(doc);
-            ret.MetaDescriptionOpengraph = GetMetaDescriptionOpengraph(doc);
-            ret.MetaVideoTagsOpengraph = GetMetaVideoTagsOpengraph(doc);
-            ret.ImageUrls = GetImageUrls(doc, data);
-            ret.Links = GetLinks(doc);
+            ParseResult ret = new ParseResult();
+            ret.Html = new ParseResult.HtmlParseResult();
 
-            //
-            // Data
-            //
-            ret.Head = GetHtmlHead(doc);
-            ret.Body = GetHtmlBody(doc);
-            ret.BodyStripped = GetHtmlBodyStripped(data);
-            ret.Tokens = GetTokens(ret.BodyStripped);
+            #endregion
+
+            #region Head
+
+            ret.Html.Head.Title = GetTitle(data);
+            ret.Html.Head.MetaDescription = GetMetaDescription(doc);
+            ret.Html.Head.MetaKeywords = GetMetaKeywords(doc);
+            ret.Html.Head.MetaImageOpengraph = GetMetaImageOpengraph(doc);
+            ret.Html.Head.MetaDescriptionOpengraph = GetMetaDescriptionOpengraph(doc);
+            ret.Html.Head.MetaVideoTagsOpengraph = GetMetaVideoTagsOpengraph(doc);
+
+            StringBuilder head = new StringBuilder(" ");
+
+            if (!String.IsNullOrEmpty(ret.Html.Head.Title))
+                head.Append(" " + ret.Html.Head.Title);
+
+            if (!String.IsNullOrEmpty(ret.Html.Head.MetaDescription))
+                head.Append(" " + ret.Html.Head.MetaDescription);
+
+            if (ret.Html.Head.MetaKeywords != null && ret.Html.Head.MetaKeywords.Count > 0)
+                head.Append(" " + String.Join(" ", ret.Html.Head.MetaKeywords));
+
+            if (!String.IsNullOrEmpty(ret.Html.Head.MetaDescriptionOpengraph))
+                head.Append(" " + ret.Html.Head.MetaDescriptionOpengraph);
+
+            if (ret.Html.Head.MetaVideoTagsOpengraph != null && ret.Html.Head.MetaVideoTagsOpengraph.Count > 0)
+                head.Append(" " + String.Join(" ", ret.Html.Head.MetaVideoTagsOpengraph));
+            
+            ret.Html.Head.Content = head.ToString();
+            ret.Html.Head.Tokens = ParserCommon.GetTokens(ret.Html.Head.Content, _ParseOptions);
+             
+            #endregion
+
+            #region Body
+
+            ret.Html.Body.ImageUrls = GetImageUrls(doc, data);
+            ret.Html.Body.Links = GetLinks(doc);
+            ret.Html.Body.Content = GetHtmlBody(doc);
+            ret.Html.Body.Tokens = ParserCommon.GetTokens(ret.Html.Body.Content, _ParseOptions);
+
+            #endregion
+
+            #region Data
+             
+            ret.Tokens = new List<Token>();
+
+            long bodyStartingPosition = 0; 
+            if (ret.Html.Head.Tokens != null && ret.Html.Head.Tokens.Count > 0)
+            {
+                ret.Tokens.AddRange(ret.Html.Head.Tokens);
+
+                foreach (Token token in ret.Html.Head.Tokens)
+                { 
+                    if (token.Positions != null && token.Positions.Count > 0)
+                    {
+                        long maxPos = token.Positions.Max(); 
+
+                        if (maxPos >= bodyStartingPosition)
+                        { 
+                            bodyStartingPosition = (maxPos + 1);
+                        }
+                    }
+                }
+            }
+
+            // bodyStartingPosition + [body token position] will yield the correct position across the entire set of tokens
+
+            if (ret.Html.Body.Tokens != null && ret.Html.Body.Tokens.Count > 0)
+            {
+                List<Token> updatedTokens = new List<Token>();
+
+                foreach (Token token in ret.Html.Body.Tokens)
+                {
+                    Token updated = new Token();
+                    updated.Value = token.Value;
+                    updated.Count = token.Count;
+                    updated.Positions = new List<long>();
+
+                    if (token.Positions != null  && token.Positions.Count > 0)
+                    {
+                        foreach (long tokenPos in token.Positions)
+                        {
+                            long updatedPosition = bodyStartingPosition + tokenPos;
+                            updated.Positions.Add(updatedPosition);
+                        }
+                    }
+
+                    updatedTokens.Add(updated);
+
+                    ret.Html.Body.Tokens = updatedTokens;
+                }
+
+                foreach (Token token in ret.Html.Body.Tokens)
+                {
+                    ret.Tokens = ParserCommon.AddToken(ret.Tokens, token);
+                }
+            }
+             
             ret.Schema = BuildSchema();
 
+            #endregion
+
             ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
          
         private Dictionary<string, DataType> BuildSchema()
         {
             Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
+             
+            // Head
+            ret.Add("Html.Head.Title", DataType.String);
+            ret.Add("Html.Head.MetaDescription", DataType.String);
+            ret.Add("Html.Head.MetaKeywords", DataType.String);
+            ret.Add("Html.Head.MetaImageOpengraph", DataType.String);
+            ret.Add("Html.Head.MetaDescriptionOpengraph", DataType.String);
+            ret.Add("Html.Head.MetaVideoTagsOpengraph", DataType.Array);
+            ret.Add("Html.Head.Tokens", DataType.Array);
+            ret.Add("Html.Head.Content", DataType.String);
 
-            // Metadata
-            ret.Add("PageTitle", DataType.String);
-            ret.Add("MetaDescription", DataType.String);
-            ret.Add("MetaDescriptionOpengraph", DataType.String);
-            ret.Add("MetaKeywords", DataType.String);
-            ret.Add("MetaImageOpengraph", DataType.String);
-            ret.Add("MetaVideoTagsOpengraph", DataType.Array);
-            ret.Add("ImageUrls", DataType.Array);
-            ret.Add("Links", DataType.Array);
-
-            // Data
-            ret.Add("Head", DataType.String);
-            ret.Add("Body", DataType.String);
-            ret.Add("BodyStripped", DataType.String);
-            ret.Add("Tokens", DataType.Array);
-
+            // Body
+            ret.Add("Html.Body.ImageUrls", DataType.Array);
+            ret.Add("Html.Body.Links", DataType.Array);
+            ret.Add("Html.Body.Tokens", DataType.Array);
+            ret.Add("Html.Body.Content", DataType.String);
+             
             return ret;
         } 
 
-        private string GetPageTitle(string data)
+        private string GetTitle(string data)
         {
             Match m = Regex.Match(data, @"<title>\s*(.+?)\s*</title>");
             if (m != null && m.Success) return WebUtility.UrlDecode(m.Groups[1].Value);
@@ -230,9 +340,25 @@ namespace Komodo.Parser
             return GetMetaValue(doc, "//meta[@name='description']"); 
         }
 
-        private string GetMetaKeywords(HtmlDocument doc)
+        private List<string> GetMetaKeywords(HtmlDocument doc)
         {
-            return GetMetaValue(doc, "//meta[@name='keywords']"); 
+            List<string> ret = new List<string>();
+            string keywords = GetMetaValue(doc, "//meta[@name='keywords']");
+            if (!String.IsNullOrEmpty(keywords))
+            {
+                keywords = keywords
+                    .Replace(",", " ")
+                    .Replace(";", " ")
+                    .Replace("-", " ")
+                    .Replace("_", " ")
+                    .Replace("/", " ");
+
+                while (keywords.Contains("  ")) keywords = keywords.Replace("  ", " ");
+                string[] parts = keywords.Split(' ');
+                if (parts != null && parts.Length > 0) ret = parts.ToList();
+            }
+
+            return ret;
         }
 
         private string GetMetaImageOpengraph(HtmlDocument doc)
@@ -341,8 +467,31 @@ namespace Komodo.Parser
 
             if (doc != null && doc.DocumentNode != null)
             {
-                head = doc.DocumentNode.SelectSingleNode("//head").InnerText;
-                if (!String.IsNullOrEmpty(head)) head = head.Trim();
+                foreach (string node in _ParseOptions.Html.ExcludeFromHead)
+                { 
+                    IEnumerable<HtmlNode> removeList = doc.DocumentNode.Descendants().Where(n => n.Name == node);
+                    if (removeList != null && removeList.Count() > 0)
+                    {
+                        foreach (HtmlNode removeNode in removeList.ToList())
+                        {
+                            removeNode.Remove();
+                        }
+                    }
+                }
+
+                head = doc.DocumentNode.SelectSingleNode("//head").InnerText; 
+            }
+
+            if (!String.IsNullOrEmpty(head))
+            {
+                head = WebUtility.HtmlDecode(
+                    head.Trim()
+                    .Replace("\n", " ")
+                    .Replace("\r", " ")
+                    .Replace("\t", " ")
+                    );
+
+                while (head.Contains("  ")) head = head.Replace("  ", " ");
             }
 
             return head;
@@ -354,34 +503,47 @@ namespace Komodo.Parser
 
             if (doc != null && doc.DocumentNode != null)
             {
+                foreach (string node in _ParseOptions.Html.ExcludeFromBody)
+                { 
+                    IEnumerable<HtmlNode> removeList = doc.DocumentNode.Descendants().Where(n => n.Name == node);
+                    if (removeList != null && removeList.Count() > 0)
+                    {
+                        foreach (HtmlNode removeNode in removeList.ToList())
+                        {
+                            removeNode.Remove();
+                        }
+                    }
+                }
+
                 body = doc.DocumentNode.SelectSingleNode("//body").InnerText;
-                if (!String.IsNullOrEmpty(body)) body = body.Trim();
+            }
+
+            if (!String.IsNullOrEmpty(body))
+            {
+                body = WebUtility.HtmlDecode(
+                    body.Trim()
+                    .Replace("\n", " ")
+                    .Replace("\r", " ")
+                    .Replace("\t", " ")
+                    );
+
+                while (body.Contains("  ")) body = body.Replace("  ", " ");
             }
 
             return body;
         }
-
-        private string GetHtmlBodyStripped(string data)
+         
+        private List<Token> GetTokens(List<string> data)
         {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(data);
-
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//script|//style");
-            if (nodes != null && nodes.Count > 0)
-            {
-                foreach (var node in nodes)
-                {
-                    node.ParentNode.RemoveChild(node);
-                }
-
-                return doc.DocumentNode.OuterHtml;
-            }
-
-            return null;
+            if (data == null || data.Count < 1) return new List<Token>(); 
+            string token = String.Join(" ", data);
+            return GetTokens(token);
         }
 
         private List<Token> GetTokens(string data)
         {
+            if (String.IsNullOrEmpty(data)) return new List<Token>();
+
             List<string> lines = new List<string>();
 
             // Using HtmlAgilityPack
@@ -407,19 +569,17 @@ namespace Komodo.Parser
             }
 
             List<Token> ret = new List<Token>();
-
-            _TextParser.MinimumTokenLength = _MinimumTokenLength;
-
+             
             if (lines != null && lines.Count > 0)
             {
                 foreach (string line in lines)
                 {
-                    TextParseResult tpr = _TextParser.ParseString(line);
-                    if (tpr != null && tpr.Tokens != null && tpr.Tokens.Count > 0)
+                    ParseResult pr = _TextParser.ParseString(line);
+                    if (pr != null && pr.Tokens != null && pr.Tokens.Count > 0)
                     {
-                        foreach (Token currToken in tpr.Tokens)
+                        foreach (Token currToken in pr.Tokens)
                         {
-                            ret = ParserCommon.AddToken(currToken, ret);
+                            ret = ParserCommon.AddToken(ret, currToken);
                         }
                     }
                 }
@@ -432,7 +592,7 @@ namespace Komodo.Parser
 
             return ret; 
         }
-           
+            
         #endregion 
     }
 }

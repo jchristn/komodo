@@ -289,7 +289,7 @@ namespace Test.Daemon
 
         static void CrawlHttp()
         {
-            HttpCrawlResult hcr = _Komodo.CrawlWebpage(
+            CrawlResult hcr = _Komodo.CrawlWebpage(
                 Common.InputString("URL:", null, false));
 
             if (hcr != null)
@@ -309,7 +309,7 @@ namespace Test.Daemon
 
         static void CrawlFtp()
         {
-            FtpCrawlResult fcr = _Komodo.CrawlFtp(
+            CrawlResult fcr = _Komodo.CrawlFtp(
                 Common.InputString("URL:", null, false));
 
             if (fcr != null)
@@ -329,7 +329,7 @@ namespace Test.Daemon
 
         static void CrawlFile()
         {
-            FileCrawlResult fcr = _Komodo.CrawlFile(
+            CrawlResult fcr = _Komodo.CrawlFile(
                 Common.InputString("Path:", null, false));
 
             if (fcr != null)

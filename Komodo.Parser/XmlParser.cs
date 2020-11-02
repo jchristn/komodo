@@ -33,18 +33,18 @@ namespace Komodo.Parser
         }
 
         /// <summary>
-        /// Minimum length of a token to include in the result.
+        /// Parse options.
         /// </summary>
-        public int MinimumTokenLength
+        public ParseOptions ParseOptions
         {
             get
             {
-                return _MinimumTokenLength;
+                return _ParseOptions;
             }
             set
             {
-                if (value < 1) throw new ArgumentException("Minimum token length must be one or greater.");
-                _MinimumTokenLength = value;
+                if (value == null) throw new ArgumentNullException(nameof(ParseOptions));
+                _ParseOptions = value;
             }
         }
 
@@ -52,8 +52,8 @@ namespace Komodo.Parser
 
         #region Private-Members
 
-        private int _MinimumTokenLength = 3;
         private TextParser _TextParser = new TextParser();
+        private ParseOptions _ParseOptions = new ParseOptions();
 
         #endregion
 
@@ -66,6 +66,17 @@ namespace Komodo.Parser
         {
         }
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="options">Parse options.</param>
+        public XmlParser(ParseOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            _ParseOptions = options;
+            _TextParser = new TextParser(_ParseOptions);
+        }
+
         #endregion
 
         #region Public-Methods
@@ -75,14 +86,22 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="url">Source URL.</param>
         /// <returns>Parse result.</returns>
-        public XmlParseResult ParseFromUrl(string url)
+        public ParseResult ParseFromUrl(string url)
         {
             if (String.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
+
+            ParseResult ret = new ParseResult();
+            ret.Xml = new ParseResult.XmlParseResult();
+
             HttpCrawler crawler = new HttpCrawler(url);
-            XmlParseResult result = new XmlParseResult();
-            HttpCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -92,14 +111,21 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="filename">Path and filename.</param>
         /// <returns>Parse result.</returns>
-        public XmlParseResult ParseFromFile(string filename)
+        public ParseResult ParseFromFile(string filename)
         {
             if (String.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
+            
+            ParseResult ret = new ParseResult();
+            ret.Xml = new ParseResult.XmlParseResult();
+
             FileCrawler crawler = new FileCrawler(filename);
-            XmlParseResult result = new XmlParseResult();
-            FileCrawlResult crawlResult = crawler.Get();
-            if (!crawlResult.Success) return result;
-            byte[] sourceData = crawlResult.Data;
+            CrawlResult cr = crawler.Get();
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+            byte[] sourceData = cr.Data;
             string sourceContent = Encoding.UTF8.GetString(sourceData);
             return ProcessSourceContent(sourceContent);
         }
@@ -109,7 +135,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="data">XML string.</param>
         /// <returns>Parse result.</returns>
-        public XmlParseResult ParseString(string data)
+        public ParseResult ParseString(string data)
         {
             if (String.IsNullOrEmpty(data)) throw new ArgumentNullException(nameof(data));
             return ProcessSourceContent(data);
@@ -120,7 +146,7 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="bytes">Byte data containing XML.</param>
         /// <returns>Parse result.</returns>
-        public XmlParseResult ParseBytes(byte[] bytes)
+        public ParseResult ParseBytes(byte[] bytes)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
             string sourceContent = Encoding.UTF8.GetString(bytes);
@@ -131,98 +157,98 @@ namespace Komodo.Parser
 
         #region Private-Methods
 
-        private XmlParseResult ProcessSourceContent(string content)
+        private ParseResult ProcessSourceContent(string content)
         {
+            ParseResult ret = new ParseResult();
+            ret.Xml = new ParseResult.XmlParseResult();
+
             int maxDepth = 0;
-            int nodeCount = 0;
-            int containerCount = 0;
+            int nodes = 0;
+            int arrays = 0;
 
             string pox = XmlTools.Convert(content);
             XElement xe = XElement.Parse(pox);
 
-            XmlParseResult ret = new XmlParseResult();
+            ret.Flattened = Flatten(xe, out maxDepth, out nodes, out arrays);
+            ret.Xml.MaxDepth = maxDepth;
+            ret.Xml.Nodes = nodes;
+            ret.Xml.Arrays = arrays;
 
-            ret.Flattened = Flatten(xe, out maxDepth, out nodeCount, out containerCount);
-            ret.MaxDepth = maxDepth;
-            ret.NodeCount = nodeCount;
-            ret.ContainerCount = containerCount;
-
-            ret.Schema = BuildSchema(ret.Flattened);
-            ret.Tokens = GetTokens(ret.Flattened);
-
-            ret.NodeCount = ret.Flattened.Count;
+            ret.Schema = ParserCommon.BuildSchema(ret.Flattened);
+            ret.Tokens = ParserCommon.GetTokens(ret.Flattened, _TextParser);
+             
             ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
 
-        private List<DataNode> Flatten(XElement xe, out int maxDepth, out int nodeCount, out int containerCount)
+        private List<DataNode> Flatten(XElement xe, out int maxDepth, out int nodes, out int arrays)
         {
             maxDepth = 1;
-            nodeCount = 0;
-            containerCount = 0;
+            nodes = 0;
+            arrays = 0;
 
-            List<DataNode> nodes = new List<DataNode>();
-            ExtractTokensAndValues(xe, "", 0, out nodes, out maxDepth, out nodeCount, out containerCount);
-            return nodes;
+            List<DataNode> dataNodes = new List<DataNode>();
+            ExtractTokensAndValues(xe, "", 0, out dataNodes, out maxDepth, out nodes, out arrays);
+            return dataNodes;
         }
 
         private void ExtractTokensAndValues(
             XElement currElement,
             string keyPrepend,
             int currDepth,
-            out List<DataNode> nodes,
+            out List<DataNode> dataNodes,
             out int maxDepth,
-            out int nodeCount,
-            out int containerCount)
+            out int nodes,
+            out int arrays)
         {
             // see http://www.java2s.com/Tutorial/CSharp/0540__XML/LoopThroughXmlDocumentRecursively.htm
 
-            nodes = new List<DataNode>();
+            dataNodes = new List<DataNode>();
             maxDepth = currDepth;
-            nodeCount = 0;
-            containerCount = 0;
+            nodes = 0;
+            arrays = 0;
 
             int childCount = currElement.Elements().Count();
             if (childCount > 0)
             {
                 #region Container
 
-                containerCount++;
+                arrays++;
                 if (!String.IsNullOrEmpty(keyPrepend))
                 {
-                    nodes.Add(new DataNode(keyPrepend + "." + currElement.Name.ToString(), null, DataType.Object));
+                    dataNodes.Add(new DataNode(keyPrepend + "." + currElement.Name.ToString(), null, DataType.Object));
                 }
                 else
                 {
-                    nodes.Add(new DataNode(currElement.Name.ToString(), null, DataType.Object));
+                    dataNodes.Add(new DataNode(currElement.Name.ToString(), null, DataType.Object));
                 }
 
                 foreach (XElement childElement in currElement.Elements())
                 {
-                    List<DataNode> childNodes = new List<DataNode>();
+                    List<DataNode> childDataNodes = new List<DataNode>();
                     int childMaxDepth;
-                    int childNodeCount;
-                    int childContainerCount;
+                    int childNodes;
+                    int childArrays;
 
                     if (String.IsNullOrEmpty(keyPrepend))
                     {
-                        ExtractTokensAndValues(childElement, currElement.Name.ToString(), currDepth + 1, out childNodes, out childMaxDepth, out childNodeCount, out childContainerCount);
+                        ExtractTokensAndValues(childElement, currElement.Name.ToString(), currDepth + 1, out childDataNodes, out childMaxDepth, out childNodes, out childArrays);
                     }
                     else
                     {
-                        ExtractTokensAndValues(childElement, keyPrepend + "." + currElement.Name.ToString(), currDepth + 1, out childNodes, out childMaxDepth, out childNodeCount, out childContainerCount);
+                        ExtractTokensAndValues(childElement, keyPrepend + "." + currElement.Name.ToString(), currDepth + 1, out childDataNodes, out childMaxDepth, out childNodes, out childArrays);
                     }
 
-                    foreach (DataNode currNode in childNodes)
+                    foreach (DataNode currNode in childDataNodes)
                     {
-                        nodes.Add(currNode);
+                        dataNodes.Add(currNode);
                     }
 
                     if (childMaxDepth > maxDepth) maxDepth = childMaxDepth;
-                    containerCount += childContainerCount;
-                    nodeCount += childNodeCount;
-                    nodeCount++;
+                    arrays += childArrays;
+                    nodes += childNodes;
+                    nodes++;
                 }
 
                 #endregion
@@ -231,113 +257,21 @@ namespace Komodo.Parser
             {
                 #region Leaf
 
-                nodeCount++;
+                nodes++;
 
                 if (!String.IsNullOrEmpty(keyPrepend))
                 {
-                    nodes.Add(new DataNode(keyPrepend + "." + currElement.Name.ToString(), currElement.Value, DataNode.TypeFromValue(currElement.Value)));
+                    dataNodes.Add(new DataNode(keyPrepend + "." + currElement.Name.ToString(), currElement.Value, DataNode.TypeFromValue(currElement.Value)));
                 }
                 else
                 {
-                    nodes.Add(new DataNode(currElement.Name.ToString(), currElement.Value, DataNode.TypeFromValue(currElement.Value)));
+                    dataNodes.Add(new DataNode(currElement.Name.ToString(), currElement.Value, DataNode.TypeFromValue(currElement.Value)));
                 }
 
                 #endregion
             }
         }
-
-        private Dictionary<string, DataType> BuildSchema(List<DataNode> nodes)
-        {
-            Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
-
-            foreach (DataNode curr in nodes)
-            {
-                if (ret.ContainsKey(curr.Key))
-                {
-                    if (ret[curr.Key].Equals("null") && !curr.Type.Equals(DataType.Null))
-                    {
-                        // replace null with more specific type
-                        ret.Remove(curr.Key);
-                        ret.Add(curr.Key, curr.Type);
-                    }
-                    continue;
-                }
-                else
-                {
-                    ret.Add(curr.Key, curr.Type);
-                }
-            }
-
-            return ret;
-        }
-
-        private List<Token> GetTokens(List<DataNode> nodes)
-        {
-            List<Token> ret = new List<Token>();
-
-            _TextParser.MinimumTokenLength = MinimumTokenLength;
-
-            foreach (DataNode curr in nodes)
-            {
-                if (curr.Data == null) continue;
-                if (String.IsNullOrEmpty(curr.Data.ToString())) continue;
-
-                TextParseResult tpr = _TextParser.ParseString(curr.Data.ToString());
-
-                foreach (Token currToken in tpr.Tokens)
-                {
-                    ret = ParserCommon.AddToken(currToken, ret);
-                }
-            }
-
-            if (ret != null && ret.Count > 0)
-            {
-                ret = ret.OrderByDescending(u => u.Count).ToList();
-            }
-
-            return ret;
-        }
-
-        private void AddToken(string token, Dictionary<string, int> dict)
-        {
-            if (String.IsNullOrEmpty(token)) return;
-            if (dict == null) return;
-
-            if (dict == null) dict = new Dictionary<string, int>();
-
-            if (dict.ContainsKey(token))
-            {
-                int count = dict[token];
-                count = count + 1;
-                dict.Remove(token);
-                dict.Add(token, count);
-            }
-            else
-            {
-                dict.Add(token, 1);
-            }
-        }
-
-        private void AddToken(KeyValuePair<string, int> token, Dictionary<string, int> dict)
-        {
-            if (String.IsNullOrEmpty(token.Key)) return;
-            if (dict == null) return;
-
-            if (dict == null) dict = new Dictionary<string, int>();
-
-            if (dict.ContainsKey(token.Key))
-            {
-                int count = dict[token.Key];
-                count = count + token.Value;
-                dict.Remove(token.Key);
-                dict.Add(token.Key, count);
-            }
-            else
-            {
-                dict.Add(token.Key, token.Value);
-            }
-        }
-
+         
         #endregion 
     }
 }

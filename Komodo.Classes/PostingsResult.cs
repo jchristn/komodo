@@ -23,15 +23,21 @@ namespace Komodo.Classes
         public Timestamps Time = new Timestamps();
 
         /// <summary>
-        /// Terms.
+        /// Normalized parse result.
         /// </summary>
         [JsonProperty(Order = 990)]
+        public ParseResult Normalized = new ParseResult();
+         
+        /// <summary>
+        /// Terms.
+        /// </summary>
+        [JsonProperty(Order = 991)]
         public List<string> Terms = new List<string>();
 
         /// <summary>
         /// Postings.
         /// </summary>
-        [JsonProperty(Order = 991)]
+        [JsonProperty(Order = 992)]
         public List<Posting> Postings = new List<Posting>();
 
         /// <summary>
@@ -40,6 +46,6 @@ namespace Komodo.Classes
         public PostingsResult()
         {
 
-        }
+        } 
     }
 }

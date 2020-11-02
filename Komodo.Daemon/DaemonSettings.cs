@@ -86,11 +86,11 @@ namespace Komodo.Daemon
         {
             DaemonSettings ret = new DaemonSettings();
 
-            ret.Database = new DbSettings("./Data/Komodo.db");
-            ret.TempStorage = new StorageSettings(new DiskSettings("./Data/Temp/"));
-            ret.SourceDocuments = new StorageSettings(new DiskSettings("./Data/Source/"));
-            ret.ParsedDocuments = new StorageSettings(new DiskSettings("./Data/Parsed/")); 
-            ret.Postings = new StorageSettings(new DiskSettings("./Data/Postings/"));
+            ret.Database = new DbSettings("./data/komodo.db");
+            ret.TempStorage = new StorageSettings(new DiskSettings("./data/temp/"));
+            ret.SourceDocuments = new StorageSettings(new DiskSettings("./data/source/"));
+            ret.ParsedDocuments = new StorageSettings(new DiskSettings("./data/parsed/")); 
+            ret.Postings = new StorageSettings(new DiskSettings("./data/postings/"));
 
             ret.Logging = new LoggingSettings();
             ret.Logging.ConsoleLogging = false;

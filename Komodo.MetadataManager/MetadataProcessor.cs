@@ -68,7 +68,7 @@ namespace Komodo.MetadataManager
         /// <param name="parsed">Parsed document.</param>
         /// <param name="parseResult">Parse result.</param>
         /// <returns>List of metadata rules.</returns>
-        public List<MetadataRule> GetMatchingRules(SourceDocument source, ParsedDocument parsed, object parseResult)
+        public List<MetadataRule> GetMatchingRules(SourceDocument source, ParsedDocument parsed, ParseResult parseResult)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (parsed == null) throw new ArgumentNullException(nameof(parsed));
@@ -161,7 +161,7 @@ namespace Komodo.MetadataManager
         /// <param name="parsed">Parsed document.</param>
         /// <param name="parseResult">Parse result.</param>
         /// <returns>Metadata result.</returns>
-        public async Task<MetadataResult> ProcessDocument(SourceDocument source, ParsedDocument parsed, object parseResult)
+        public async Task<MetadataResult> ProcessDocument(SourceDocument source, ParsedDocument parsed, ParseResult parseResult)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (parsed == null) throw new ArgumentNullException(nameof(parsed));
@@ -298,62 +298,16 @@ namespace Komodo.MetadataManager
             return result;
         }
 
-        private bool ParseResultMatchesTerm(object parseResult, DocType docType, string term)
+        private bool ParseResultMatchesTerm(ParseResult parseResult, DocType docType, string term)
         {
-            if (docType == DocType.Html)
-            {
-                if (((HtmlParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
-            }
-            else if (docType == DocType.Json)
-            {
-                if (((JsonParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
-            }
-            else if (docType == DocType.Sql)
-            {
-                if (((SqlParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
-            }
-            else if (docType == DocType.Text)
-            {
-                if (((TextParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
-            }
-            else if (docType == DocType.Xml)
-            {
-                if (((XmlParseResult)parseResult).Tokens.Any(t => t.Value.Equals(term))) return true;
-            }
-            else
-            {
-                throw new ArgumentException("Unknown document type: " + docType.ToString() + ".");
-            }
-
-            return false;
+            if (parseResult == null || parseResult.Tokens == null || parseResult.Tokens.Count < 1) return false;
+            return parseResult.Tokens.Any(t => t.Value.Equals(term)); 
         }
 
-        private bool ParseResultMatchesFilter(object parseResult, DocType docType, SearchFilter filter)
+        private bool ParseResultMatchesFilter(ParseResult parseResult, DocType docType, SearchFilter filter)
         {
-            if (docType == DocType.Html)
-            {
-                throw new ArgumentException("Filter matches not supported on documents of type Text.");
-            }
-            else if (docType == DocType.Json)
-            {
-                return DataNodesMatchesFilter(((JsonParseResult)parseResult).Flattened, filter);
-            }
-            else if (docType == DocType.Sql)
-            {
-                return DataNodesMatchesFilter(((SqlParseResult)parseResult).Flattened, filter);
-            }
-            else if (docType == DocType.Text)
-            {
-                throw new ArgumentException("Filter matches not supported on documents of type Text.");
-            }
-            else if (docType == DocType.Xml)
-            {
-                return DataNodesMatchesFilter(((XmlParseResult)parseResult).Flattened, filter);
-            }
-            else
-            {
-                throw new ArgumentException("Unknown document type: " + docType.ToString() + ".");
-            } 
+            if (parseResult == null || parseResult.Tokens == null || parseResult.Tokens.Count < 1) return false;
+            return DataNodesMatchesFilter(parseResult.Flattened, filter); 
         }
 
         private bool DataNodesMatchesFilter(List<DataNode> nodes, SearchFilter filter)
@@ -376,34 +330,16 @@ namespace Komodo.MetadataManager
             return false;
         }
 
-        private string GetValueFromParseResult(object parseResult, string key)
+        private string GetValueFromParseResult(ParseResult parseResult, string key)
         {
-            List<DataNode> nodes = new List<DataNode>();
-
-            if (parseResult is JsonParseResult)
-            {
-                nodes = ((JsonParseResult)parseResult).Flattened;
-            }
-            else if (parseResult is SqlParseResult)
-            {
-                nodes = ((SqlParseResult)parseResult).Flattened;
-            }
-            else if (parseResult is XmlParseResult)
-            {
-                nodes = ((XmlParseResult)parseResult).Flattened;
-            }
-            else
-            {
-                throw new ArgumentException("Unsupported parse result type");
-            }
+            if (parseResult == null) return null;
+            if (parseResult.Flattened == null || parseResult.Flattened.Count < 1) return null;
+            if (String.IsNullOrEmpty(key)) return null; 
              
-            if (nodes.Any(n => n.Key.Equals(key)))
+            if (parseResult.Flattened.Any(n => n.Key.Equals(key)))
             {
-                DataNode node = nodes.Where(n => n.Key.Equals(key)).First();
-                if (node.Data == null)
-                { 
-                    return null;
-                } 
+                DataNode node = parseResult.Flattened.Where(n => n.Key.Equals(key)).First();
+                if (node.Data == null) return null;
                 return node.Data.ToString();
             }
              

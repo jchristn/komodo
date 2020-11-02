@@ -95,27 +95,27 @@ namespace Komodo.Server.Classes
             settings.Logging.SyslogServerPort = 514;
             settings.Logging.MinimumLevel = Severity.Info;
             settings.Logging.FileLogging = true;
-            settings.Logging.FileDirectory = "./Logs/";
+            settings.Logging.FileDirectory = "./logs/";
             settings.Logging.Filename = "Komodo.log";
 
-            if (!Directory.Exists("./Data/")) Directory.CreateDirectory("./Data/");
-            if (!Directory.Exists("./Logs/")) Directory.CreateDirectory("./Logs/");
+            if (!Directory.Exists("./data/")) Directory.CreateDirectory("./data/");
+            if (!Directory.Exists("./logs/")) Directory.CreateDirectory("./logs/");
 
-            settings.Database = new DbSettings("./Data/Komodo.db");
+            settings.Database = new DbSettings("./data/komodo.db");
 
-            string tempDirectory = "./Data/Temp/";
+            string tempDirectory = "./data/temp/";
             settings.TempStorage = new StorageSettings(new DiskSettings(tempDirectory));
             if (!Directory.Exists(tempDirectory)) Directory.CreateDirectory(tempDirectory);
 
-            string sourceDirectory = "./Data/SourceDocuments/";
+            string sourceDirectory = "./data/source/";
             settings.SourceDocuments = new StorageSettings(new DiskSettings(sourceDirectory));
             if (!Directory.Exists(sourceDirectory)) Directory.CreateDirectory(sourceDirectory);
 
-            string parsedDirectory = "./Data/ParsedDocuments/";
+            string parsedDirectory = "./data/parsed/";
             settings.ParsedDocuments = new StorageSettings(new DiskSettings(parsedDirectory));
             if (!Directory.Exists(parsedDirectory)) Directory.CreateDirectory(parsedDirectory);
              
-            string postingsDirectory = "./Data/Postings/";
+            string postingsDirectory = "./data/postings/";
             settings.Postings = new StorageSettings(new DiskSettings(postingsDirectory));
             if (!Directory.Exists(postingsDirectory)) Directory.CreateDirectory(postingsDirectory);
 
@@ -197,7 +197,7 @@ namespace Komodo.Server.Classes
 
             #region Write-System-JSON
 
-            File.WriteAllBytes("./System.json", Encoding.UTF8.GetBytes(Common.SerializeJson(settings, true)));
+            File.WriteAllBytes("./system.json", Encoding.UTF8.GetBytes(Common.SerializeJson(settings, true)));
 
             #endregion
              

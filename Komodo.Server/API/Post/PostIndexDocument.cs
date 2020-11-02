@@ -113,6 +113,7 @@ namespace Komodo.Server
 
                 long contentLength = 0;
                 string md5 = null;
+                CrawlResult crawlResult = null;
 
                 if (!String.IsNullOrEmpty(md.Params.Url) || !String.IsNullOrEmpty(md.Params.Filename))
                 {
@@ -121,33 +122,33 @@ namespace Komodo.Server
                     if (!String.IsNullOrEmpty(md.Params.Url))
                     {
                         HttpCrawler httpCrawler = new HttpCrawler(md.Params.Url);
-                        HttpCrawlResult httpCrawlResult = httpCrawler.Download(tempFile);
-                        if (!httpCrawlResult.Success)
+                        crawlResult = httpCrawler.Download(tempFile);
+                        if (!crawlResult.Success)
                         {
                             _Logging.Warn(header + "failed to crawl URL " + md.Params.Url);
                             md.Http.Response.StatusCode = 500;
                             md.Http.Response.ContentType = "application/json";
-                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to crawl supplied URL.", null, httpCrawlResult).ToJson(true));
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to crawl supplied URL.", null, crawlResult).ToJson(true));
                             return;
                         }
 
-                        contentLength = httpCrawlResult.ContentLength;
+                        contentLength = crawlResult.ContentLength;
                         md5 = Common.Md5File(tempFile);
                     }
                     else
                     {
                         FileCrawler fileCrawler = new FileCrawler(md.Params.Filename);
-                        FileCrawlResult fileCrawlResult = fileCrawler.Download(tempFile);
-                        if (!fileCrawlResult.Success)
+                        crawlResult = fileCrawler.Download(tempFile);
+                        if (!crawlResult.Success)
                         {
                             _Logging.Warn(header + "failed to crawl filename " + md.Params.Filename);
                             md.Http.Response.StatusCode = 500;
                             md.Http.Response.ContentType = "application/json";
-                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to crawl supplied filename.", null, fileCrawlResult).ToJson(true));
+                            await md.Http.Response.Send(new ErrorResponse(400, "Failed to crawl supplied filename.", null, crawlResult).ToJson(true));
                             return;
                         }
 
-                        contentLength = fileCrawlResult.ContentLength;
+                        contentLength = crawlResult.ContentLength;
                         md5 = Common.Md5(tempFile);
                     }
 

@@ -14,15 +14,21 @@
             Text parser to use when evaluating text.
             </summary>
         </member>
-        <member name="P:Komodo.Parser.HtmlParser.MinimumTokenLength">
+        <member name="P:Komodo.Parser.HtmlParser.ParseOptions">
             <summary>
-            Minimum length of a token to include in the result.
+            Parse options.
             </summary>
         </member>
         <member name="M:Komodo.Parser.HtmlParser.#ctor">
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Parser.HtmlParser.#ctor(Komodo.Classes.ParseOptions)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="options">Parse options.</param>
         </member>
         <member name="M:Komodo.Parser.HtmlParser.ParseFromUrl(System.String)">
             <summary>
@@ -52,97 +58,6 @@
             <param name="bytes">Byte data containing HTML.</param>
             <returns>Parse result.</returns>
         </member>
-        <member name="T:Komodo.Parser.HtmlParseResult">
-            <summary>
-            Parsed text document.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.Success">
-            <summary>
-            Indicates if the parser was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.PageTitle">
-            <summary>
-            The title of the HTML page.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.MetaDescription">
-            <summary>
-            The meta description of the HTML page.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.MetaDescriptionOpengraph">
-            <summary>
-            The opengraph meta description of the HTML page.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.MetaKeywords">
-            <summary>
-            The meta keywords of the HTML page.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.MetaImageOpengraph">
-            <summary>
-            The opengraph meta image of the HTML page.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.MetaVideoTagsOpengraph">
-            <summary>
-            List of opengraph meta video tags of the HTML page.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.ImageUrls">
-            <summary>
-            Image URLs from the HTML page.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.Links">
-            <summary>
-            Links from the HTML page.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.Head">
-            <summary>
-            Full HTML head content.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.Body">
-            <summary>
-            Full HTML body content.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.HtmlParseResult.BodyStripped">
-            <summary>
-            Full HTML body content with tags stripped.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.Tokens">
-            <summary>
-            Tokens found including their count and positions.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.HtmlParseResult.Schema">
-            <summary>
-            Schema of the document.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.HtmlParseResult.#ctor">
-            <summary>
-            Instantiate the object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.HtmlParseResult.ToString">
-            <summary>
-            Returns a human-readable string version of the object.
-            </summary>
-            <returns>String.</returns>
-        </member>
         <member name="T:Komodo.Parser.JsonParser">
             <summary>
             Parser for JSON objects.
@@ -153,15 +68,21 @@
             Text parser to use when evaluating text.
             </summary>
         </member>
-        <member name="P:Komodo.Parser.JsonParser.MinimumTokenLength">
+        <member name="P:Komodo.Parser.JsonParser.ParseOptions">
             <summary>
-            Minimum length of a token to include in the result.
+            Parse options.
             </summary>
         </member>
         <member name="M:Komodo.Parser.JsonParser.#ctor">
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Parser.JsonParser.#ctor(Komodo.Classes.ParseOptions)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="options">Parse options.</param>
         </member>
         <member name="M:Komodo.Parser.JsonParser.ParseFromUrl(System.String)">
             <summary>
@@ -191,61 +112,53 @@
             <param name="bytes">Byte data containing JSON.</param>
             <returns>Parse result.</returns>
         </member>
-        <member name="T:Komodo.Parser.JsonParseResult">
+        <member name="T:Komodo.Parser.ParserCommon">
             <summary>
-            Parsed JSON document.
+            Commonly-used parser methods.
             </summary>
         </member>
-        <member name="F:Komodo.Parser.JsonParseResult.Success">
+        <member name="M:Komodo.Parser.ParserCommon.AddToken(System.Collections.Generic.List{Komodo.Classes.Token},Komodo.Classes.Token)">
             <summary>
-            Indicates if the parser was successful.
+            Adds a token to a list of tokens.  
+            If the token already exists in the list, the existing entry is updated and merged with the supplied token.
+            If the token entry does not exist in the list, it is added.
             </summary>
+            <param name="tokens">List of Tokens.</param>
+            <param name="token">Token to include in the list.</param>
+            <returns>Updated list of Tokens.</returns>
         </member>
-        <member name="F:Komodo.Parser.JsonParseResult.Time">
+        <member name="M:Komodo.Parser.ParserCommon.AddToken(System.Collections.Generic.Dictionary{System.String,Komodo.Classes.Token},Komodo.Classes.Token)">
             <summary>
-            Start and end timestamps.
+            Adds a token to a token dictionary.  
+            If the token already exists in the dictionary, the existing entry is updated and merged with the supplied token.
+            If the token entry does not exist in the dictionary, it is added.
             </summary>
+            <param name="tokens">Dictionary of Tokens.</param>
+            <param name="token">Token to include in the list.</param>
+            <returns>Updated dictionary of Tokens.</returns>
         </member>
-        <member name="F:Komodo.Parser.JsonParseResult.MaxDepth">
+        <member name="M:Komodo.Parser.ParserCommon.GetTokens(System.String,Komodo.Classes.ParseOptions)">
             <summary>
-            Maximum node depth.
+            Get tokens from a string.
             </summary>
+            <param name="data">String.</param>
+            <param name="options">Parse options.</param>
+            <returns>List of tokens.</returns>
         </member>
-        <member name="F:Komodo.Parser.JsonParseResult.ArrayCount">
+        <member name="M:Komodo.Parser.ParserCommon.GetTokens(System.Collections.Generic.List{Komodo.Classes.DataNode},Komodo.Parser.TextParser)">
             <summary>
-            Number of arrays within the object.
+            Get tokens from a list of data nodes.
             </summary>
+            <param name="nodes">List of data nodes.</param>
+            <param name="parser">Text parser.</param>
+            <returns>List of tokens.</returns>
         </member>
-        <member name="F:Komodo.Parser.JsonParseResult.NodeCount">
+        <member name="M:Komodo.Parser.ParserCommon.BuildSchema(System.Collections.Generic.List{Komodo.Classes.DataNode})">
             <summary>
-            Number of nodes within the object.
+            Build schema from a list of data nodes.
             </summary>
-        </member>
-        <member name="F:Komodo.Parser.JsonParseResult.Schema">
-            <summary>
-            Schema of the document.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.JsonParseResult.Flattened">
-            <summary>
-            Flattened representation of the object.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.JsonParseResult.Tokens">
-            <summary>
-            Tokens found including their count and positions.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.JsonParseResult.#ctor">
-            <summary>
-            Instantiate the object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.JsonParseResult.ToString">
-            <summary>
-            Returns a human-readable string version of the object.
-            </summary>
-            <returns>String.</returns>
+            <param name="nodes">List of data nodes.</param>
+            <returns>Dictionary containing schema.</returns>
         </member>
         <member name="T:Komodo.Parser.SqliteParser">
             <summary>
@@ -257,15 +170,21 @@
             Text parser to use when evaluating text.
             </summary>
         </member>
-        <member name="P:Komodo.Parser.SqliteParser.MinimumTokenLength">
+        <member name="P:Komodo.Parser.SqliteParser.ParseOptions">
             <summary>
-            Minimum length of a token to include in the result.
+            Parse options.
             </summary>
         </member>
         <member name="M:Komodo.Parser.SqliteParser.#ctor">
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Parser.SqliteParser.#ctor(Komodo.Classes.ParseOptions)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="options">Parse options.</param>
         </member>
         <member name="M:Komodo.Parser.SqliteParser.Parse(System.Data.DataTable)">
             <summary>
@@ -282,57 +201,6 @@
             <param name="query">Query to execute.</param>
             <returns>Parse result.</returns>
         </member>
-        <member name="T:Komodo.Parser.SqliteParseResult">
-            <summary>
-            Parsed Sqlite data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqliteParseResult.Success">
-            <summary>
-            Indicates if the parser was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqliteParseResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.SqliteParseResult.Rows">
-            <summary>
-            Number of rows.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.SqliteParseResult.Columns">
-            <summary>
-            Number of columns.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqliteParseResult.Schema">
-            <summary>
-            Schema of the document.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqliteParseResult.Flattened">
-            <summary>
-            Flattened representation of the object.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqliteParseResult.Tokens">
-            <summary>
-            Tokens found including their count and positions.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.SqliteParseResult.#ctor">
-            <summary>
-            Instantiate the object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.SqliteParseResult.ToString">
-            <summary>
-            Returns a human-readable string version of the object.
-            </summary>
-            <returns>String.</returns>
-        </member>
         <member name="T:Komodo.Parser.SqlParser">
             <summary>
             Parser for data in a SQL database (SQL Server, MySQL, PostgreSQL). 
@@ -343,15 +211,21 @@
             Text parser to use when evaluating text.
             </summary>
         </member>
-        <member name="P:Komodo.Parser.SqlParser.MinimumTokenLength">
+        <member name="P:Komodo.Parser.SqlParser.ParseOptions">
             <summary>
-            Minimum length of a token to include in the result.
+            Parse options.
             </summary>
         </member>
         <member name="M:Komodo.Parser.SqlParser.#ctor">
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Parser.SqlParser.#ctor(Komodo.Classes.ParseOptions)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="options">Parse options.</param>
         </member>
         <member name="M:Komodo.Parser.SqlParser.Parse(System.Data.DataTable)">
             <summary>
@@ -368,76 +242,26 @@
             <param name="query">Query to execute.</param>
             <returns>Parse result.</returns>
         </member>
-        <member name="T:Komodo.Parser.SqlParseResult">
-            <summary>
-            Parsed Sqlite data.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqlParseResult.Success">
-            <summary>
-            Indicates if the parser was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqlParseResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.SqlParseResult.Rows">
-            <summary>
-            Number of rows.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.SqlParseResult.Columns">
-            <summary>
-            Number of columns.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqlParseResult.Schema">
-            <summary>
-            Schema of the document.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqlParseResult.Flattened">
-            <summary>
-            Flattened representation of the object.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.SqlParseResult.Tokens">
-            <summary>
-            Tokens found including their count and positions.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.SqlParseResult.#ctor">
-            <summary>
-            Instantiate the object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.SqlParseResult.ToString">
-            <summary>
-            Returns a human-readable string version of the object.
-            </summary>
-            <returns>String.</returns>
-        </member>
         <member name="T:Komodo.Parser.TextParser">
             <summary>
             Parser for text data.
             </summary>
         </member>
-        <member name="P:Komodo.Parser.TextParser.SplitCharacters">
+        <member name="P:Komodo.Parser.TextParser.ParseOptions">
             <summary>
-            Characters upon which text should be split.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.TextParser.MinimumTokenLength">
-            <summary>
-            Minimum length of a token to include in the result.
+            Parse options.
             </summary>
         </member>
         <member name="M:Komodo.Parser.TextParser.#ctor">
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Parser.TextParser.#ctor(Komodo.Classes.ParseOptions)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="options">Parse options.</param>
         </member>
         <member name="M:Komodo.Parser.TextParser.ParseFromUrl(System.String)">
             <summary>
@@ -467,37 +291,6 @@
             <param name="bytes">Byte data containing text.</param>
             <returns>Parse result.</returns>
         </member>
-        <member name="T:Komodo.Parser.TextParseResult">
-            <summary>
-            Parsed text document.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.TextParseResult.Success">
-            <summary>
-            Indicates if the parser was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.TextParseResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.TextParseResult.Tokens">
-            <summary>
-            Tokens found including their count and positions.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.TextParseResult.#ctor">
-            <summary>
-            Instantiate the ParsedText object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.TextParseResult.ToString">
-            <summary>
-            Returns a human-readable string version of the object.
-            </summary>
-            <returns>String.</returns>
-        </member>
         <member name="T:Komodo.Parser.XmlParser">
             <summary>
             Parser for XML data.
@@ -508,15 +301,21 @@
             Text parser to use when evaluating text.
             </summary>
         </member>
-        <member name="P:Komodo.Parser.XmlParser.MinimumTokenLength">
+        <member name="P:Komodo.Parser.XmlParser.ParseOptions">
             <summary>
-            Minimum length of a token to include in the result.
+            Parse options.
             </summary>
         </member>
         <member name="M:Komodo.Parser.XmlParser.#ctor">
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Parser.XmlParser.#ctor(Komodo.Classes.ParseOptions)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="options">Parse options.</param>
         </member>
         <member name="M:Komodo.Parser.XmlParser.ParseFromUrl(System.String)">
             <summary>
@@ -545,62 +344,6 @@
             </summary>
             <param name="bytes">Byte data containing XML.</param>
             <returns>Parse result.</returns>
-        </member>
-        <member name="T:Komodo.Parser.XmlParseResult">
-            <summary>
-            Parsed XML document.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.XmlParseResult.Success">
-            <summary>
-            Indicates if the parser was successful.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.XmlParseResult.Time">
-            <summary>
-            Start and end timestamps.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.XmlParseResult.MaxDepth">
-            <summary>
-            Maximum node depth.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.XmlParseResult.NodeCount">
-            <summary>
-            Number of nodes within the object.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.XmlParseResult.ContainerCount">
-            <summary>
-            Number of containers within the object.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.XmlParseResult.Schema">
-            <summary>
-            Schema of the document.
-            </summary>
-        </member>
-        <member name="P:Komodo.Parser.XmlParseResult.Flattened">
-            <summary>
-            Flattened representation of the object.
-            </summary>
-        </member>
-        <member name="F:Komodo.Parser.XmlParseResult.Tokens">
-            <summary>
-            Tokens found including their count and positions.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.XmlParseResult.#ctor">
-            <summary>
-            Instantiate the object.
-            </summary>
-        </member>
-        <member name="M:Komodo.Parser.XmlParseResult.ToString">
-            <summary>
-            Returns a human-readable string version of the object.
-            </summary>
-            <returns>String.</returns>
         </member>
     </members>
 </doc>

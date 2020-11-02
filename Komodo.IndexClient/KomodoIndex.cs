@@ -270,23 +270,7 @@ namespace Komodo.IndexClient
             ParsedDocument parsed = _ORM.SelectFirst<ParsedDocument>(e);
             if (parsed == null) return null;
 
-            switch (parsed.Type)
-            {
-                case DocType.Html:
-                    return Common.DeserializeJson<HtmlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
-                case DocType.Json:
-                    return Common.DeserializeJson<JsonParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
-                case DocType.Sql:
-                    return Common.DeserializeJson<SqlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
-                case DocType.Text:
-                    return Common.DeserializeJson<TextParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
-                case DocType.Xml:
-                    return Common.DeserializeJson<XmlParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result);
-                case DocType.Unknown:
-                    return null;
-                default:
-                    throw new Exception("Unsupported document type: " + parsed.Type.ToString());
-            }
+            return Common.DeserializeJson<ParseResult>(_ParsedDocsStorage.Get(parsed.GUID).Result); 
         }
 
         /// <summary>
@@ -438,40 +422,30 @@ namespace Komodo.IndexClient
                 #region Parse
 
                 ret.Time.Parse.Start = DateTime.Now.ToUniversalTime();
+                ParseResult parseResult = null;
 
                 if (sourceDoc.Type == DocType.Html)
                 {
                     HtmlParser htmlParser = new HtmlParser();
-                    HtmlParseResult htmlResult = htmlParser.ParseBytes(data);
-                    ret.ParseResult = htmlResult;
+                    parseResult = htmlParser.ParseBytes(data);
                 }
                 else if (sourceDoc.Type == DocType.Json)
                 {
                     JsonParser jsonParser = new JsonParser();
-                    JsonParseResult jsonResult = jsonParser.ParseBytes(data);
-                    ret.ParseResult = jsonResult;
+                    parseResult = jsonParser.ParseBytes(data); 
                 }
                 else if (sourceDoc.Type == DocType.Text)
                 {
                     TextParser textParser = new TextParser();
-                    TextParseResult textResult = textParser.ParseBytes(data);
-                    ret.ParseResult = textResult;
+                    parseResult = textParser.ParseBytes(data); 
                 }
                 else if (sourceDoc.Type == DocType.Xml)
                 {
                     XmlParser xmlParser = new XmlParser();
-                    XmlParseResult xmlResult = xmlParser.ParseBytes(data);
-                    ret.ParseResult = xmlResult;
-                }
-                else if (sourceDoc.Type == DocType.Unknown)
-                {
-                    ret.ParseResult = null;
-                }
-                else
-                {
-                    throw new Exception("Unsupported document type: " + sourceDoc.Type.ToString());
-                }
+                    parseResult = xmlParser.ParseBytes(data); 
+                } 
 
+                ret.ParseResult = parseResult;
                 ret.Time.Parse.End = DateTime.Now.ToUniversalTime();
 
                 #endregion
@@ -482,7 +456,7 @@ namespace Komodo.IndexClient
                 {
                     ret.Time.Postings.Start = DateTime.Now.ToUniversalTime();
                     PostingsGenerator postings = new PostingsGenerator(options);
-                    ret.Postings = postings.ProcessParseResult(ret.ParseResult);
+                    ret.Postings = postings.Process(ret.ParseResult);
                     ret.Time.Postings.End = DateTime.Now.ToUniversalTime();
                 }
                 else
@@ -540,11 +514,8 @@ namespace Komodo.IndexClient
 
                     // term, guid
                     Dictionary<string, string> termGuids = new Dictionary<string, string>();
-
-                    // Term GUIDs
-                    List<Token> tokens = GetParseResultTokens(sourceDoc.Type, ret.ParseResult); 
-
-                    foreach (Token token in tokens)
+                     
+                    foreach (Token token in ret.ParseResult.Tokens)
                     {
                         DbExpression e = new DbExpression(
                             _ORM.GetColumnName<TermGuid>(nameof(TermGuid.Term)),
@@ -1115,7 +1086,7 @@ namespace Komodo.IndexClient
                         #region Read-Parse-Result
 
                         DateTime dtParseResult = DateTime.Now;
-                        object parseResult = GetParseResultFromParsedDocumentGuid(currDoc.Type, currDoc.GUID);
+                        ParseResult parseResult = GetParseResultFromParsedDocumentGuid(currDoc.Type, currDoc.GUID);
                         result.Time.ReadParseResultsMs += Common.TotalMsFrom(dtParseResult);
 
                         #endregion
@@ -1430,7 +1401,7 @@ namespace Komodo.IndexClient
             return ret;
         }
 
-        private void DocumentMatchesOptionalTerms(ParsedDocument doc, object parseResult, List<string> queryTerms, Dictionary<string, string> terms, out decimal? score, out Dictionary<string, string> matched)
+        private void DocumentMatchesOptionalTerms(ParsedDocument doc, ParseResult parseResult, List<string> queryTerms, Dictionary<string, string> terms, out decimal? score, out Dictionary<string, string> matched)
         {
             score = null;
             matched = new Dictionary<string, string>();
@@ -1439,13 +1410,12 @@ namespace Komodo.IndexClient
 
             int termsTotal = queryTerms.Count;
             int matchCount = 0;
-
-            List<Token> docTokens = GetParseResultTokens(doc.Type, parseResult);
-            if (docTokens == null || docTokens.Count < 1) return;
+             
+            if (parseResult == null || parseResult.Tokens == null || parseResult.Tokens.Count < 1) return;
 
             foreach (KeyValuePair<string, string> currTerm in terms)
             {
-                if (docTokens.Any(t => t.Value.Equals(currTerm.Key)))
+                if (parseResult.Tokens.Any(t => t.Value.Equals(currTerm.Key)))
                 {
                     matchCount++;
                     matched.Add(currTerm.Key, currTerm.Value);
@@ -1455,66 +1425,14 @@ namespace Komodo.IndexClient
             score = Convert.ToDecimal(matchCount) / Convert.ToDecimal(termsTotal); 
         }
 
-        private object GetParseResultFromParsedDocumentGuid(DocType type, string guid)
+        private ParseResult GetParseResultFromParsedDocumentGuid(DocType type, string guid)
         {
             byte[] data = _ParsedDocsStorage.Get(guid).Result;
             if (data == null) return null;
-
-            if (type == DocType.Html)
-            {
-                return Common.DeserializeJson<HtmlParseResult>(data);
-            }
-            else if (type == DocType.Json)
-            {
-                return Common.DeserializeJson<JsonParseResult>(data);
-            }
-            else if (type == DocType.Sql)
-            {
-                return Common.DeserializeJson<SqlParseResult>(data);
-            }
-            else if (type == DocType.Text)
-            {
-                return Common.DeserializeJson<TextParseResult>(data);
-            }
-            else if (type == DocType.Xml)
-            {
-                return Common.DeserializeJson<XmlParseResult>(data);
-            }
-            else
-            {
-                throw new ArgumentException("Unknown doucment type: " + type.ToString());
-            }
+            return Common.DeserializeJson<ParseResult>(data); 
         }
-
-        private List<Token> GetParseResultTokens(DocType type, object parseResult)
-        {
-            if (type == DocType.Html)
-            {
-                return ((HtmlParseResult)parseResult).Tokens;
-            }
-            else if (type == DocType.Json)
-            {
-                return ((JsonParseResult)parseResult).Tokens;
-            }
-            else if (type == DocType.Sql)
-            {
-                return ((SqlParseResult)parseResult).Tokens;
-            }
-            else if (type == DocType.Text)
-            {
-                return ((TextParseResult)parseResult).Tokens;
-            }
-            else if (type == DocType.Xml)
-            {
-                return ((XmlParseResult)parseResult).Tokens;
-            }
-            else
-            {
-                throw new ArgumentException("Unknown doucment type: " + type.ToString());
-            }
-        }
-
-        private bool DocumentMatchesFilters(ParsedDocument doc, object parseResult, List<SearchFilter> requiredFilters, List<SearchFilter> excludeFilters)
+         
+        private bool DocumentMatchesFilters(ParsedDocument doc, ParseResult parseResult, List<SearchFilter> requiredFilters, List<SearchFilter> excludeFilters)
         {
             if (requiredFilters == null) requiredFilters = new List<SearchFilter>();
             if (excludeFilters == null) excludeFilters = new List<SearchFilter>();
@@ -1539,7 +1457,7 @@ namespace Komodo.IndexClient
             return true;
         }
 
-        private void DocumentMatchesOptionalFilters(ParsedDocument doc, object parseResult, List<SearchFilter> optionalFilters, out decimal? score, out List<SearchFilter> matched)
+        private void DocumentMatchesOptionalFilters(ParsedDocument doc, ParseResult parseResult, List<SearchFilter> optionalFilters, out decimal? score, out List<SearchFilter> matched)
         {
             score = null;
             matched = new List<SearchFilter>();
@@ -1548,8 +1466,7 @@ namespace Komodo.IndexClient
             int filtersTotal = optionalFilters.Count;
             int matchCount = 0;
 
-            List<Token> tokens = GetParseResultTokens(doc.Type, parseResult);
-            if (tokens == null || tokens.Count < 1) return;
+            if (parseResult == null || parseResult.Tokens == null || parseResult.Tokens.Count < 1) return;
 
             foreach (SearchFilter filter in optionalFilters)
             { 
@@ -1563,28 +1480,22 @@ namespace Komodo.IndexClient
             score = Convert.ToDecimal(matchCount) / Convert.ToDecimal(filtersTotal); 
         }
 
-        private bool DocumentMatchesFilter(ParsedDocument doc, object parseResult, SearchFilter filter)
+        private bool DocumentMatchesFilter(ParsedDocument doc, ParseResult parseResult, SearchFilter filter)
         {
             if (filter == null) return true;
-            List<DataNode> nodes = null;
 
-            if (doc.Type == DocType.Html) return false;
-            else if (doc.Type == DocType.Json) nodes = ((JsonParseResult)parseResult).Flattened;
-            else if (doc.Type == DocType.Sql) nodes = ((SqlParseResult)parseResult).Flattened;
-            else if (doc.Type == DocType.Text) return false;
-            else if (doc.Type == DocType.Xml) nodes = ((XmlParseResult)parseResult).Flattened;
-            else throw new ArgumentException("Unknown doucment type: " + doc.Type.ToString());
-
-            if (nodes.Exists(n => n.Key.Equals(filter.Field)))
+            if (doc.Type == DocType.Html || doc.Type == DocType.Text) return false; 
+             
+            if (parseResult.Flattened.Exists(n => n.Key.Equals(filter.Field)))
             {
-                List<DataNode> filteredNodes = nodes.Where(n => n.Key.Equals(filter.Field)).ToList();
+                List<DataNode> filteredNodes = parseResult.Flattened.Where(n => n.Key.Equals(filter.Field)).ToList();
                 if (filteredNodes == null || filteredNodes.Count < 1)
                 {
                     return false;
                 }
                 else
                 {
-                    foreach (DataNode node in nodes)
+                    foreach (DataNode node in parseResult.Flattened)
                     {
                         if (filter.EvaluateValue(node.Data)) return true;
                     } 

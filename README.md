@@ -21,11 +21,17 @@ Information storage, search, metadata, and retrieval platform.  Komodo was writt
 
 If you have any issues or feedback, please file an issue here in Github.  We'd love to have you help by contributing code for new features, optimization to the existing codebase, ideas for future releases, or fixes!
 
-## New in v1.5.1
+## New in v1.7.0
 
-- Dependency update
-- New crawlers for AWS S3, S3 compatible storage (Minio, Less3, etc), Azure, Kvpbase
-- Non-integrated version of metadata manager
+- Breaking changes
+- Changes to crawl result and parse result classes (consolidation of classes)
+- Changes to HTML parser
+  - Separate tokens for head and body
+  - Consolidated tokens including both head and body
+  - Ability to strip and ignore sections while parsing
+- Performance improvements in both parsing and generating postings
+- Better control over configurable parameters within parsing and generating postings
+- Dependency updates
 
 ## API Documentation
 
@@ -47,4 +53,4 @@ Refer to ```Docker.md``` for details.
 
 ## Version History
 
-Please refer to CHANGELOG.md for details. 
+Please refer to CHANGELOG.md for details.

@@ -75,6 +75,12 @@ namespace Komodo.Server
                         return;
                     }
 
+                    if (md.Http.Request.RawUrlWithoutQuery.Equals("/_postings"))
+                    {
+                        await PostPostings(md);
+                        return;
+                    }
+
                     if (md.Http.Request.RawUrlWithoutQuery.Equals("/indices"))
                     {
                         await PostIndices(md);

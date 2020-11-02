@@ -15,6 +15,7 @@ namespace Komodo.Classes
         /// <summary>
         /// Term.
         /// </summary>
+        [JsonProperty(Order = -1)]
         public string Term { get; set; }
          
         /// <summary>

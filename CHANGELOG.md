@@ -2,13 +2,29 @@
 
 ## Current Version
 
+v1.7.0
+
+- Breaking changes
+- Changes to crawl result and parse result classes (consolidation of classes)
+- Changes to HTML parser
+  - Separate tokens for head and body
+  - Consolidated tokens including both head and body
+  - Ability to strip and ignore sections while parsing
+- Performance improvements in both parsing and generating postings
+- Better control over configurable parameters within parsing and generating postings
+- Dependency updates
+
+## Previous Versions
+
+v1.6.0
+
+- Maintenance release
+
 v1.5.1
 
 - Dependency update
 - New crawlers for AWS S3, S3 compatible storage (Minio, Less3, etc), Azure, Kvpbase
 - Non-integrated version of metadata manager
-
-## Previous Versions
 
 v1.5.0
 

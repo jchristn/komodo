@@ -39,27 +39,27 @@ namespace Komodo.Parser
         }
 
         /// <summary>
-        /// Minimum length of a token to include in the result.
+        /// Parse options.
         /// </summary>
-        public int MinimumTokenLength
+        public ParseOptions ParseOptions
         {
             get
             {
-                return _MinimumTokenLength;
+                return _ParseOptions;
             }
             set
             {
-                if (value < 1) throw new ArgumentException("Minimum token length must be one or greater.");
-                _MinimumTokenLength = value;
+                if (value == null) throw new ArgumentNullException(nameof(ParseOptions));
+                _ParseOptions = value;
             }
         }
 
         #endregion
 
         #region Private-Members
-         
-        private int _MinimumTokenLength = 3;
+
         private TextParser _TextParser = new TextParser();
+        private ParseOptions _ParseOptions = new ParseOptions();
 
         #endregion
 
@@ -72,6 +72,17 @@ namespace Komodo.Parser
         {
         }
 
+        /// <summary>
+        /// Instantiate the object.
+        /// </summary>
+        /// <param name="options">Parse options.</param>
+        public SqlParser(ParseOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            _ParseOptions = options;
+            _TextParser = new TextParser(_ParseOptions);
+        }
+
         #endregion
 
         #region Public-Methods
@@ -81,10 +92,9 @@ namespace Komodo.Parser
         /// </summary>
         /// <param name="dt">DataTable.</param>
         /// <returns>Parse result.</returns>
-        public SqlParseResult Parse(DataTable dt)
+        public ParseResult Parse(DataTable dt)
         {
-            if (dt == null) throw new ArgumentNullException(nameof(dt));
-            SqlParseResult result = new SqlParseResult();
+            if (dt == null) throw new ArgumentNullException(nameof(dt)); 
             return ProcessSourceContent(dt);
         }
 
@@ -94,29 +104,38 @@ namespace Komodo.Parser
         /// <param name="dbSettings">Database settings.</param>
         /// <param name="query">Query to execute.</param>
         /// <returns>Parse result.</returns>
-        public SqlParseResult ParseFromQuery(DbSettings dbSettings, string query)
+        public ParseResult ParseFromQuery(DbSettings dbSettings, string query)
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));
             if (String.IsNullOrEmpty(query)) throw new ArgumentNullException(nameof(query));
-              
+
+            ParseResult ret = new ParseResult();
+            ret.Sql = new ParseResult.SqlParseResult();
+
             SqlCrawler crawler = new SqlCrawler(dbSettings, query);
-            SqlCrawlResult crawlResult = crawler.Get();
-            SqlParseResult result = new SqlParseResult();
-            if (!crawlResult.Success) return result;
-            return ProcessSourceContent(crawlResult.DataTable);
+            CrawlResult cr = crawler.Get();
+
+            if (!cr.Success)
+            {
+                ret.Time.End = DateTime.Now.ToUniversalTime();
+                return ret;
+            }
+
+            return ProcessSourceContent(cr.DataTable);
         }
          
         #endregion
 
         #region Private-Methods
          
-        private SqlParseResult ProcessSourceContent(DataTable dataTable)
+        private ParseResult ProcessSourceContent(DataTable dataTable)
         {
-            SqlParseResult ret = new SqlParseResult(); 
+            ParseResult ret = new ParseResult();
+            ret.Sql = new ParseResult.SqlParseResult();
+
             if (dataTable == null || dataTable.Rows.Count < 1)
-            {
-                ret.Rows = 0;
-                ret.Columns = 0; 
+            { 
+                ret.Time.End = DateTime.Now.ToUniversalTime();
                 return ret;
             }
              
@@ -129,68 +148,16 @@ namespace Komodo.Parser
                 }
             }
 
-            ret.Schema = BuildSchema(ret.Flattened);
-            ret.Tokens = GetTokens(ret.Flattened);
-            ret.Rows = dataTable.Rows.Count;
-            ret.Columns = dataTable.Columns.Count;
+            ret.Schema = ParserCommon.BuildSchema(ret.Flattened);
+            ret.Tokens = ParserCommon.GetTokens(ret.Flattened, _TextParser);
+            ret.Sql.Rows = dataTable.Rows.Count;
+            ret.Sql.Columns = dataTable.Columns.Count;
 
             ret.Success = true;
-            ret.Time.End = DateTime.Now;
+            ret.Time.End = DateTime.Now.ToUniversalTime();
             return ret;
         }
-
-        private Dictionary<string, DataType> BuildSchema(List<DataNode> nodes)
-        {
-            Dictionary<string, DataType> ret = new Dictionary<string, DataType>();
-
-            foreach (DataNode curr in nodes)
-            {
-                if (ret.ContainsKey(curr.Key))
-                {
-                    if (ret[curr.Key].Equals("null") && !curr.Type.Equals(DataType.Null))
-                    {
-                        // replace null with more specific type
-                        ret.Remove(curr.Key);
-                        ret.Add(curr.Key, curr.Type);
-                    }
-                    continue;
-                }
-                else
-                {
-                    ret.Add(curr.Key, curr.Type);
-                }
-            }
-
-            return ret;
-        }
-
-        private List<Token> GetTokens(List<DataNode> nodes)
-        {
-            List<Token> ret = new List<Token>();
-
-            _TextParser.MinimumTokenLength = MinimumTokenLength;
-
-            foreach (DataNode curr in nodes)
-            {
-                if (curr.Data == null) continue;
-                if (String.IsNullOrEmpty(curr.Data.ToString())) continue;
-
-                TextParseResult tpr = _TextParser.ParseString(curr.Data.ToString());
-
-                foreach (Token currToken in tpr.Tokens)
-                {
-                    ret = ParserCommon.AddToken(currToken, ret);
-                }
-            }
-
-            if (ret != null && ret.Count > 0)
-            {
-                ret = ret.OrderByDescending(u => u.Count).ToList();
-            }
-
-            return ret;
-        }
-         
+          
         #endregion
     }
 }

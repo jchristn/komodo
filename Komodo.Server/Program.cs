@@ -48,7 +48,7 @@ namespace Komodo.Server
                     if (String.Compare(args[0], "setup") == 0) initialSetup = true;
                 }
 
-                if (!Common.FileExists("System.json")) initialSetup = true;
+                if (!File.Exists("system.json")) initialSetup = true;
                 if (initialSetup)
                 {
                     Setup setup = new Setup();

@@ -21,7 +21,7 @@ using Komodo.Crawler;
 ### Crawling the Filesystem
 ```
 FileCrawler fc = new FileCrawler("[filename]");
-FileCrawlResult fcr = fc.Get();
+CrawlResult fcr = fc.Get();
 
 if (fcr.Success)
 {
@@ -40,7 +40,7 @@ else
 FtpCrawler fc = new FtpCrawler(url);
 fc.Username = "[username]";
 fc.Password = "[password]";
-FtpCrawlResult fcr = fc.Get();
+CrawlResult fcr = fc.Get();
 
 if (fcr.Success)
 {
@@ -61,7 +61,7 @@ hc.IgnoreCertificateErrors = true;
 hc.Method = HttpMethod.GET;
 hc.Username = "[username]";
 hc.Password = "[password]";
-HttpCrawlResult hcr = hc.Get();
+CrawlResult hcr = hc.Get();
 
 if (hcr.Success)
 {
@@ -87,7 +87,7 @@ DbSettings db = new DbSettings(
     "[databasename]");
 
 SqlCrawler sc = new SqlCrawler(db, "[query]");
-SqlCrawlResult scr = sc.Get();
+CrawlResult scr = sc.Get();
 
 if (scr.Success)
 {
@@ -103,7 +103,7 @@ else
 ### Crawling Sqlite
 ```
 SqliteCrawler sc = new SqliteCrawler("[filename]", "[query]");
-SqliteCrawlResult scr = sc.Get();
+CrawlResult scr = sc.Get();
 
 if (scr.Success)
 {

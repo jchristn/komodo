@@ -42,7 +42,7 @@ namespace Komodo.Sdk.Classes
         /// <summary>
         /// The result of parsing, if enabled.
         /// </summary>
-        public object ParseResult = null;
+        public ParseResult ParseResult = null;
 
         /// <summary>
         /// The result of generating postings, if enabled.

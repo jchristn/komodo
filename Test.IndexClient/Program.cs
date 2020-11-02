@@ -25,9 +25,9 @@ namespace Test.IndexClient
             try
             {
                 _DatabaseSettings = new DbSettings("test.db");
-                _SourceDocs = new StorageSettings(new DiskSettings("./SourceDocs/"));
-                _ParsedDocs = new StorageSettings(new DiskSettings("./ParsedDocs/"));
-                _Postings = new StorageSettings(new DiskSettings("./Postings/"));
+                _SourceDocs = new StorageSettings(new DiskSettings("./source/"));
+                _ParsedDocs = new StorageSettings(new DiskSettings("./parsed/"));
+                _Postings = new StorageSettings(new DiskSettings("./postings/"));
                 _Index = new Index("test", "test", "test");
                 _IndexClient = new KomodoIndex(_DatabaseSettings, _SourceDocs, _ParsedDocs, _Postings, _Index);
 
