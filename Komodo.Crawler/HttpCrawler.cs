@@ -41,6 +41,11 @@ namespace Komodo.Crawler
         public string Password = null;
 
         /// <summary>
+        /// The bearer token to use when accessing the object.
+        /// </summary>
+        public string BearerToken = null;
+
+        /// <summary>
         /// Specify whether or not HTTP credentials should be encoded.
         /// </summary>
         public bool EncodeCredentials = false;
@@ -279,7 +284,7 @@ namespace Komodo.Crawler
         /// <summary>
         /// Download the object asynchronously to the supplied filename.
         /// </summary>
-        /// <param name="filename">The filename where the object should be saved.</param>
+        /// <param name="filename">The filename where the object should be saved.</param> 
         /// <returns>Crawl result.</returns>
         public async Task<CrawlResult> DownloadAsync(string filename)
         {
@@ -350,9 +355,10 @@ namespace Komodo.Crawler
 
         private void SetRestRequestValues()
         {
-            _RestRequest.User = Username;
-            _RestRequest.Password = Password;
-            _RestRequest.EncodeCredentials = EncodeCredentials;
+            _RestRequest.Authorization.User = Username;
+            _RestRequest.Authorization.Password = Password;
+            _RestRequest.Authorization.BearerToken = BearerToken;
+            _RestRequest.Authorization.EncodeCredentials = EncodeCredentials;
             _RestRequest.IgnoreCertificateErrors = IgnoreCertificateErrors;
         }
 

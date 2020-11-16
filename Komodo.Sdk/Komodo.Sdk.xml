@@ -1455,7 +1455,7 @@
         </member>
         <member name="T:Komodo.Sdk.ExceptionType">
             <summary>
-            The type of Kvpbase exception.
+            The type of Komodo exception.
             </summary>
         </member>
         <member name="F:Komodo.Sdk.ExceptionType.Unknown">

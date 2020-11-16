@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netstandard2.0;net461</TargetFrameworks>
-    <Version>1.7.0.0</Version>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp3.0;netcoreapp3.1;netstandard2.0;netstandard2.1;net461;net5.0</TargetFrameworks>
+    <Version>1.7.0.1</Version>
     <Authors>Joel Christner</Authors>
     <Product>Komodo Postings: Information search, metadata, storage, and retrieval</Product>
     <Description>Postings manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
@@ -22,6 +22,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>Komodo.Postings.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="LICENSE.md">
       <Pack>True</Pack>
@@ -30,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.Parser" Version="1.7.0" />
+    <PackageReference Include="Komodo.Parser" Version="1.7.0.1" />
   </ItemGroup>
 
   <ItemGroup>

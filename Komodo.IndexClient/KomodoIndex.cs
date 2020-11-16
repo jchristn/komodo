@@ -94,7 +94,12 @@ namespace Komodo.IndexClient
         /// <param name="parsedDocs">Storage settings for parsed documents.</param>
         /// <param name="postings">Storage settings fpr postings.</param>
         /// <param name="idx">Index configuration.</param>
-        public KomodoIndex(DbSettings dbSettings, StorageSettings sourceDocs, StorageSettings parsedDocs, StorageSettings postings, Index idx)
+        public KomodoIndex(
+            DbSettings dbSettings, 
+            StorageSettings sourceDocs, 
+            StorageSettings parsedDocs, 
+            StorageSettings postings, 
+            Index idx)
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));
             if (idx == null) throw new ArgumentNullException(nameof(idx));

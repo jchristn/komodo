@@ -660,20 +660,8 @@ namespace Komodo.Sdk
 
         private static T DeserializeJson<T>(string json)
         {
-            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json));
-
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(json);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("");
-                Console.WriteLine("Exception while deserializing:");
-                Console.WriteLine(json);
-                Console.WriteLine("");
-                throw e;
-            }
+            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json)); 
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         private static T DeserializeJson<T>(byte[] data)

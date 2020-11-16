@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netstandard2.0;net461</TargetFrameworks>
-    <Version>1.7.0.0</Version>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp3.0;netcoreapp3.1;netstandard2.0;netstandard2.1;net461;net5.0</TargetFrameworks>
+    <Version>1.7.0.1</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo Parser: Information search, metadata, storage, and retrieval</Product>
@@ -21,6 +21,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
     <DocumentationFile>Komodo.Parser.xml</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
@@ -28,9 +29,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.26" />
-    <PackageReference Include="Komodo.Crawler" Version="1.7.0" />
-    <PackageReference Include="XmlToPox" Version="1.0.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.28" />
+    <PackageReference Include="Komodo.Crawler" Version="1.7.0.1" />
+    <PackageReference Include="XmlToPox" Version="1.0.2.1" />
   </ItemGroup>
 
   <ItemGroup>

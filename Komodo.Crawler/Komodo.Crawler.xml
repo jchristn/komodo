@@ -228,6 +228,11 @@
             The password to use when accessing the object.
             </summary>
         </member>
+        <member name="F:Komodo.Crawler.HttpCrawler.BearerToken">
+            <summary>
+            The bearer token to use when accessing the object.
+            </summary>
+        </member>
         <member name="F:Komodo.Crawler.HttpCrawler.EncodeCredentials">
             <summary>
             Specify whether or not HTTP credentials should be encoded.
@@ -287,7 +292,7 @@
             <summary>
             Download the object asynchronously to the supplied filename.
             </summary>
-            <param name="filename">The filename where the object should be saved.</param>
+            <param name="filename">The filename where the object should be saved.</param> 
             <returns>Crawl result.</returns>
         </member>
         <member name="T:Komodo.Crawler.HttpMethod">

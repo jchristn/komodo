@@ -7,7 +7,6 @@ using Watson.ORM;
 using Watson.ORM.Core;
 using Komodo.Classes; 
 using Komodo.IndexClient;
-using Komodo.Postings;
 using Index = Komodo.Classes.Index;
 
 namespace Komodo.IndexManager

@@ -117,7 +117,7 @@ namespace Komodo.Sdk
     }
 
     /// <summary>
-    /// The type of Kvpbase exception.
+    /// The type of Komodo exception.
     /// </summary>
     public enum ExceptionType
     {

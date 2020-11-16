@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp3.0;netcoreapp3.1;netstandard2.0;netstandard2.1;net461;net5.0</TargetFrameworks>
     <Description>Metadata manager for Komodo.  Please either install Komodo.Daemon to integrate search within your application, or Komodo.Server to run a standalone server.  Komodo is an information search, metadata, storage, and retrieval platform.</Description>
-    <Version>1.7.0.0</Version>
+    <Version>1.7.0.1</Version>
     <Authors>Joel Christner</Authors>
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -21,6 +21,10 @@
     <DocumentationFile>Komodo.MetadataManager.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>Komodo.MetadataManager.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="LICENSE.md">
       <Pack>True</Pack>
@@ -29,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Komodo.IndexManager" Version="1.7.0" />
+    <PackageReference Include="Komodo.IndexManager" Version="1.7.0.1" />
   </ItemGroup>
 
 </Project>
