@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic; 
+using System.IO; 
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+using System.Threading;
+using System.Threading.Tasks; 
 using RestWrapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json; 
 using Komodo.Sdk.Classes;  
 using Index = Komodo.Sdk.Classes.Index;
 
@@ -33,7 +30,7 @@ namespace Komodo.Sdk
 
         private string _Endpoint;
         private string _ApiKey;
-        private Dictionary<string, string> _AuthHeaders;
+        private Dictionary<string, string> _AuthHeaders = new Dictionary<string, string>();
 
         #endregion
 
@@ -67,166 +64,238 @@ namespace Komodo.Sdk
         /// <summary>
         /// Test authenticated connectivity to Komodo.
         /// </summary>
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>True if successful.</returns>
-        public async Task<bool> Loopback()
+        public async Task<bool> Loopback(CancellationToken token = default)
         {
-            RestRequest req = new RestRequest(
-                _Endpoint + "loopback",
-                HttpMethod.GET,
-                _AuthHeaders,
-                "application/json");
+            try
+            {
+                RestRequest req = new RestRequest(
+                    _Endpoint + "loopback",
+                    HttpMethod.GET,
+                    _AuthHeaders,
+                    "application/json");
 
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = await req.SendAsync();
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
 
-            if (resp != null && resp.StatusCode == 200) return true;
-            else return false;
+                if (resp != null && resp.StatusCode == 200) return true;
+                else return false;
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Return the list of indices available on the server.
         /// </summary> 
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>List of index names.</returns>
-        public async Task<List<string>> GetIndices()
+        public async Task<List<string>> GetIndices(CancellationToken token = default)
         {
-            RestRequest req = new RestRequest(
-                _Endpoint + "indices",
-                HttpMethod.GET,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync();
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<List<string>>(respData);
-            }
+                RestRequest req = new RestRequest(
+                    _Endpoint + "indices",
+                    HttpMethod.GET,
+                    _AuthHeaders,
+                    "application/json");
 
-            return new List<string>();
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<List<string>>(respData);
+                }
+
+                return new List<string>();
+            }
+            catch (TaskCanceledException)
+            {
+                return new List<string>();
+            }
+            catch (OperationCanceledException)
+            {
+                return new List<string>();
+            }
         }
 
         /// <summary>
         /// Retrieve index details.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>Index.</returns>
-        public async Task<Index> GetIndex(string indexName)
+        public async Task<Index> GetIndex(string indexName, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
-            string url = indexName;
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.GET,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync();
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<Index>(respData);
-            }
+                string url = indexName;
 
-            return null;
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.GET,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<Index>(respData);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// Retrieve statistics related to an index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param> 
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>Index statistics.</returns>
-        public async Task<IndexStats> GetIndexStats(string indexName)
+        public async Task<IndexStats> GetIndexStats(string indexName, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
-            string url = indexName + "/stats";
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.GET,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync();
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<IndexStats>(respData);
-            }
+                string url = indexName + "/stats";
 
-            return null;
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.GET,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<IndexStats>(respData);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// Creates an index.
         /// </summary> 
         /// <param name="index">Index.</param> 
-        public async Task CreateIndex(Index index)
+        /// <param name="token">Cancellation token used to cancel the request.</param>
+        public async Task CreateIndex(Index index, CancellationToken token = default)
         {
             if (index == null) throw new ArgumentNullException(nameof(index));
             if (String.IsNullOrEmpty(index.Name)) throw new ArgumentNullException(nameof(index.Name));
 
-            string url = "indices";
+            try
+            {
+                string url = "indices";
 
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.POST,
-                _AuthHeaders,
-                "application/json");
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.POST,
+                    _AuthHeaders,
+                    "application/json");
 
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = await req.SendAsync(SerializeJson(index, true));
+                RestResponse resp = await req.SendAsync(SerializeJson(index, true), token).ConfigureAwait(false);
 
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
 
         /// <summary>
         /// Deletes an index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="cleanup">True to delete files associated with the index.</param> 
-        public async Task DeleteIndex(string indexName, bool cleanup)
+        /// <param name="cleanup">True to delete files associated with the index.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
+        public async Task DeleteIndex(string indexName, bool cleanup, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
 
-            string url = indexName;
-            if (cleanup) url += "?cleanup";
+            try
+            {
+                string url = indexName;
+                if (cleanup) url += "?cleanup";
 
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.DELETE,
-                _AuthHeaders,
-                "application/json");
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.DELETE,
+                    _AuthHeaders,
+                    "application/json");
 
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = await req.SendAsync();
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
 
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -239,10 +308,11 @@ namespace Komodo.Sdk
         /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param> 
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocument(string indexName, string docName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        public Task<IndexResult> AddDocument(string indexName, string docName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, CancellationToken token = default)
         {
-            return await AddDocument(indexName, docName, null, sourceUrl, title, tags, docType, data);
+            return AddDocument(indexName, docName, null, sourceUrl, title, tags, docType, data, token);
         }
 
         /// <summary>
@@ -255,50 +325,62 @@ namespace Komodo.Sdk
         /// <param name="title">Title for the document.</param>
         /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
-        /// <param name="data">Data from the document.</param> 
+        /// <param name="data">Data from the document.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocument(string indexName, string docName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        public async Task<IndexResult> AddDocument(string indexName, string docName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docName)) throw new ArgumentNullException(nameof(docName));
             if (String.IsNullOrEmpty(sourceUrl)
                 && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
 
-            string docTypeStr = DocTypeString(docType);
-
-            string url = indexName;
-            if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
-            url += "?type=" + docTypeStr;
-
-            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
-            if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
-            if (!String.IsNullOrEmpty(docName)) url += "&name=" + WebUtility.UrlEncode(docName);
-
-            if (tags != null && tags.Count > 0)
+            try
             {
-                url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                string docTypeStr = DocTypeString(docType);
+
+                string url = indexName;
+                if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
+                url += "?type=" + docTypeStr;
+
+                if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+                if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
+                if (!String.IsNullOrEmpty(docName)) url += "&name=" + WebUtility.UrlEncode(docName);
+
+                if (tags != null && tags.Count > 0)
+                {
+                    url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                }
+
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.POST,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(data).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<IndexResult>(respData);
+                }
+
+                return null;
             }
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.POST,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync(data);
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            catch (TaskCanceledException)
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<IndexResult>(respData);
+                return null;
             }
-
-            return null;
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -311,10 +393,11 @@ namespace Komodo.Sdk
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param>
         /// <param name="postbackUrl">URL to which results should be POSTed back.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocumentAsync(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, string postbackUrl)
+        public Task<IndexResult> AddDocumentAsync(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, string postbackUrl, CancellationToken token = default)
         {
-            return await AddDocumentAsync(indexName, null, sourceUrl, title, tags, docType, data, postbackUrl);
+            return AddDocumentAsync(indexName, null, sourceUrl, title, tags, docType, data, postbackUrl, token);
         }
 
         /// <summary>
@@ -328,49 +411,61 @@ namespace Komodo.Sdk
         /// <param name="docType">Type of document.</param>
         /// <param name="data">Data from the document.</param>
         /// <param name="postbackUrl">URL to which results should be POSTed back.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> AddDocumentAsync(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, string postbackUrl)
+        public async Task<IndexResult> AddDocumentAsync(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, string postbackUrl, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(sourceUrl)
                 && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
 
-            string docTypeStr = DocTypeString(docType);
-
-            string url = indexName;
-            if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
-            url += "?type=" + docTypeStr;
-            url += "&async";
-
-            if (!String.IsNullOrEmpty(postbackUrl)) url += "&postback=" + WebUtility.UrlEncode(postbackUrl);
-            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
-            if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
-
-            if (tags != null && tags.Count > 0)
+            try
             {
-                url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                string docTypeStr = DocTypeString(docType);
+
+                string url = indexName;
+                if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
+                url += "?type=" + docTypeStr;
+                url += "&async";
+
+                if (!String.IsNullOrEmpty(postbackUrl)) url += "&postback=" + WebUtility.UrlEncode(postbackUrl);
+                if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+                if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
+
+                if (tags != null && tags.Count > 0)
+                {
+                    url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                }
+
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.POST,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(data, token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<IndexResult>(respData);
+                }
+
+                return null;
             }
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.POST,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync(data);
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            catch (TaskCanceledException)
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<IndexResult>(respData);
+                return null;
             }
-
-            return null;
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -381,11 +476,12 @@ namespace Komodo.Sdk
         /// <param name="title">Title for the document.</param>
         /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
-        /// <param name="data">Data from the document.</param> 
+        /// <param name="data">Data from the document.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> StoreDocument(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        public Task<IndexResult> StoreDocument(string indexName, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, CancellationToken token = default)
         {
-            return await StoreDocument(indexName, null, sourceUrl, title, tags, docType, data);
+            return StoreDocument(indexName, null, sourceUrl, title, tags, docType, data, token);
         }
 
         /// <summary>
@@ -397,46 +493,58 @@ namespace Komodo.Sdk
         /// <param name="title">Title for the document.</param>
         /// <param name="tags">Document tags.</param>
         /// <param name="docType">Type of document.</param>
-        /// <param name="data">Data from the document.</param> 
+        /// <param name="data">Data from the document.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
         /// <returns>Index result.</returns>
-        public async Task<IndexResult> StoreDocument(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data)
+        public async Task<IndexResult> StoreDocument(string indexName, string docGuid, string sourceUrl, string title, List<string> tags, DocType docType, byte[] data, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(sourceUrl)
                 && (data == null || data.Length < 1)) throw new ArgumentException("Either sourceUrl or data must be populated.");
 
-            string docTypeStr = DocTypeString(docType);
-
-            string url = indexName + "?type=" + docTypeStr + "&bypass";
-            if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
-            if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
-            if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
-
-            if (tags != null && tags.Count > 0)
+            try
             {
-                url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                string docTypeStr = DocTypeString(docType);
+
+                string url = indexName + "?type=" + docTypeStr + "&bypass";
+                if (!String.IsNullOrEmpty(docGuid)) url += "/" + docGuid;
+                if (!String.IsNullOrEmpty(sourceUrl)) url += "&url=" + WebUtility.UrlEncode(sourceUrl);
+                if (!String.IsNullOrEmpty(title)) url += "&title=" + WebUtility.UrlEncode(title);
+
+                if (tags != null && tags.Count > 0)
+                {
+                    url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                }
+
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.POST,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(data, token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<IndexResult>(respData);
+                }
+
+                return null;
             }
-             
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.POST,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync(data);
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            catch (TaskCanceledException)
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<IndexResult>(respData);
+                return null;
             }
-
-            return null;
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -444,33 +552,45 @@ namespace Komodo.Sdk
         /// </summary>
         /// <param name="name">Name of the index.</param>
         /// <param name="docId">Document ID.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>Komodo object.</returns>
-        public async Task<DocumentData> GetSourceDocument(string name, string docId)
+        public async Task<DocumentData> GetSourceDocument(string name, string docId, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
 
-            string url = name + "/" + docId;
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.GET,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync();
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                return new DocumentData(resp.ContentType, resp.ContentLength, resp.Data);
-            }
+                string url = name + "/" + docId;
 
-            return null;
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.GET,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    return new DocumentData(resp.ContentType, resp.ContentLength, resp.Data);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -478,130 +598,178 @@ namespace Komodo.Sdk
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
         /// <param name="docId">Document ID.</param> 
+        /// <param name="token">Cancellation token used to cancel the request.</param>
         /// <returns>DocumentMetadata.</returns>
-        public async Task<DocumentMetadata> GetDocumentMetadata(string indexName, string docId)
+        public async Task<DocumentMetadata> GetDocumentMetadata(string indexName, string docId, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
 
-            string url = indexName + "/" + docId + "?parsed&pretty";
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.GET,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync();
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<DocumentMetadata>(respData);
-            }
+                string url = indexName + "/" + docId + "?parsed&pretty";
 
-            return null;
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.GET,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<DocumentMetadata>(respData);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// Deletes a document from the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="docId">Document ID.</param> 
-        public async Task DeleteDocument(string indexName, string docId)
+        /// <param name="docId">Document ID.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
+        public async Task DeleteDocument(string indexName, string docId, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (String.IsNullOrEmpty(docId)) throw new ArgumentNullException(nameof(docId));
 
-            string url = indexName + "/" + docId;
+            try
+            {
+                string url = indexName + "/" + docId;
 
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.DELETE,
-                _AuthHeaders,
-                "application/json");
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.DELETE,
+                    _AuthHeaders,
+                    "application/json");
 
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-            RestResponse resp = await req.SendAsync();
+                RestResponse resp = await req.SendAsync(token).ConfigureAwait(false);
 
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
 
         /// <summary>
         /// Search the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="query">Search query.</param> 
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
         /// <returns>Search result.</returns>
-        public async Task<SearchResult> Search(string indexName, SearchQuery query)
+        public async Task<SearchResult> Search(string indexName, SearchQuery query, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (query == null) throw new ArgumentNullException(nameof(query));
 
-            string url = indexName;
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.PUT,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync(SerializeJson(query, true));
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<SearchResult>(respData);
-            }
+                string url = indexName;
 
-            return null;
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.PUT,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(SerializeJson(query, true), token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<SearchResult>(respData);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// Enumerate source documents in the specified index.
         /// </summary>
         /// <param name="indexName">Name of the index.</param>
-        /// <param name="query">Enumeration query.</param> 
+        /// <param name="query">Enumeration query.</param>
+        /// <param name="token">Cancellation token used to cancel the request.</param> 
         /// <returns>Enumeration result.</returns>
-        public async Task<EnumerationResult> Enumerate(string indexName, EnumerationQuery query)
+        public async Task<EnumerationResult> Enumerate(string indexName, EnumerationQuery query, CancellationToken token = default)
         {
             if (String.IsNullOrEmpty(indexName)) throw new ArgumentNullException(nameof(indexName));
             if (query == null) throw new ArgumentNullException(nameof(query));
 
-            string url = indexName + "?enumerate";
-
-            RestRequest req = new RestRequest(
-                _Endpoint + url,
-                HttpMethod.PUT,
-                _AuthHeaders,
-                "application/json");
-
-            req.IgnoreCertificateErrors = AcceptInvalidCertificates;
-
-            RestResponse resp = await req.SendAsync(SerializeJson(query, true));
-
-            KomodoException e = KomodoException.FromRestResponse(resp);
-            if (e != null) throw e;
-
-            if (resp.Data != null && resp.ContentLength > 0)
+            try
             {
-                byte[] respData = StreamToBytes(resp.Data);
-                return DeserializeJson<EnumerationResult>(respData);
-            }
+                string url = indexName + "?enumerate";
 
-            return null;
+                RestRequest req = new RestRequest(
+                    _Endpoint + url,
+                    HttpMethod.PUT,
+                    _AuthHeaders,
+                    "application/json");
+
+                req.IgnoreCertificateErrors = AcceptInvalidCertificates;
+
+                RestResponse resp = await req.SendAsync(SerializeJson(query, true), token).ConfigureAwait(false);
+
+                KomodoException e = KomodoException.FromRestResponse(resp);
+                if (e != null) throw e;
+
+                if (resp.Data != null && resp.ContentLength > 0)
+                {
+                    byte[] respData = StreamToBytes(resp.Data);
+                    return DeserializeJson<EnumerationResult>(respData);
+                }
+
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         #endregion

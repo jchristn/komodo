@@ -1515,46 +1515,52 @@
             <param name="endpoint">Endpoint URL of the form http://[hostname]:[port]/.</param>
             <param name="apiKey">API key to use when accessing Komodo.</param> 
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.Loopback">
+        <member name="M:Komodo.Sdk.KomodoSdk.Loopback(System.Threading.CancellationToken)">
             <summary>
             Test authenticated connectivity to Komodo.
             </summary>
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>True if successful.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.GetIndices">
+        <member name="M:Komodo.Sdk.KomodoSdk.GetIndices(System.Threading.CancellationToken)">
             <summary>
             Return the list of indices available on the server.
             </summary> 
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>List of index names.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.GetIndex(System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.GetIndex(System.String,System.Threading.CancellationToken)">
             <summary>
             Retrieve index details.
             </summary>
             <param name="indexName">Name of the index.</param>
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>Index.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.GetIndexStats(System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.GetIndexStats(System.String,System.Threading.CancellationToken)">
             <summary>
             Retrieve statistics related to an index.
             </summary>
             <param name="indexName">Name of the index.</param> 
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>Index statistics.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.CreateIndex(Komodo.Sdk.Classes.Index)">
+        <member name="M:Komodo.Sdk.KomodoSdk.CreateIndex(Komodo.Sdk.Classes.Index,System.Threading.CancellationToken)">
             <summary>
             Creates an index.
             </summary> 
             <param name="index">Index.</param> 
+            <param name="token">Cancellation token used to cancel the request.</param>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.DeleteIndex(System.String,System.Boolean)">
+        <member name="M:Komodo.Sdk.KomodoSdk.DeleteIndex(System.String,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Deletes an index.
             </summary>
             <param name="indexName">Name of the index.</param>
-            <param name="cleanup">True to delete files associated with the index.</param> 
+            <param name="cleanup">True to delete files associated with the index.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.Threading.CancellationToken)">
             <summary>
             Add a document to the specified index.
             </summary>
@@ -1565,9 +1571,10 @@
             <param name="tags">Document tags.</param>
             <param name="docType">Type of document.</param>
             <param name="data">Data from the document.</param> 
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>Index result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocument(System.String,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.Threading.CancellationToken)">
             <summary>
             Add a document to the specified index.
             </summary>
@@ -1578,10 +1585,11 @@
             <param name="title">Title for the document.</param>
             <param name="tags">Document tags.</param>
             <param name="docType">Type of document.</param>
-            <param name="data">Data from the document.</param> 
+            <param name="data">Data from the document.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
             <returns>Index result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.AddDocumentAsync(System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocumentAsync(System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.String,System.Threading.CancellationToken)">
             <summary>
             Add a document to the specified index asynchronously and expect a postback with the results.
             </summary>
@@ -1592,9 +1600,10 @@
             <param name="docType">Type of document.</param>
             <param name="data">Data from the document.</param>
             <param name="postbackUrl">URL to which results should be POSTed back.</param>
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>Index result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.AddDocumentAsync(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.AddDocumentAsync(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.String,System.Threading.CancellationToken)">
             <summary>
             Add a document to the specified index asynchronously and expect a postback with the results.
             </summary>
@@ -1606,9 +1615,10 @@
             <param name="docType">Type of document.</param>
             <param name="data">Data from the document.</param>
             <param name="postbackUrl">URL to which results should be POSTed back.</param>
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>Index result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+        <member name="M:Komodo.Sdk.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.Threading.CancellationToken)">
             <summary>
             Store a document in the specified index without parsing and indexing.
             </summary>
@@ -1617,10 +1627,11 @@
             <param name="title">Title for the document.</param>
             <param name="tags">Document tags.</param>
             <param name="docType">Type of document.</param>
-            <param name="data">Data from the document.</param> 
+            <param name="data">Data from the document.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
             <returns>Index result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[])">
+        <member name="M:Komodo.Sdk.KomodoSdk.StoreDocument(System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},Komodo.Sdk.Classes.DocType,System.Byte[],System.Threading.CancellationToken)">
             <summary>
             Store a document in the specified index without parsing and indexing.
             </summary>
@@ -1630,46 +1641,52 @@
             <param name="title">Title for the document.</param>
             <param name="tags">Document tags.</param>
             <param name="docType">Type of document.</param>
-            <param name="data">Data from the document.</param> 
+            <param name="data">Data from the document.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
             <returns>Index result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.GetSourceDocument(System.String,System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.GetSourceDocument(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Retrieve a document source from the specified index.
             </summary>
             <param name="name">Name of the index.</param>
             <param name="docId">Document ID.</param>
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>Komodo object.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.GetDocumentMetadata(System.String,System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.GetDocumentMetadata(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Retrieve metadata for a document from the specified index.
             </summary>
             <param name="indexName">Name of the index.</param>
             <param name="docId">Document ID.</param> 
+            <param name="token">Cancellation token used to cancel the request.</param>
             <returns>DocumentMetadata.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.DeleteDocument(System.String,System.String)">
+        <member name="M:Komodo.Sdk.KomodoSdk.DeleteDocument(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Deletes a document from the specified index.
             </summary>
             <param name="indexName">Name of the index.</param>
-            <param name="docId">Document ID.</param> 
+            <param name="docId">Document ID.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.Search(System.String,Komodo.Sdk.Classes.SearchQuery)">
+        <member name="M:Komodo.Sdk.KomodoSdk.Search(System.String,Komodo.Sdk.Classes.SearchQuery,System.Threading.CancellationToken)">
             <summary>
             Search the specified index.
             </summary>
             <param name="indexName">Name of the index.</param>
-            <param name="query">Search query.</param> 
+            <param name="query">Search query.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
             <returns>Search result.</returns>
         </member>
-        <member name="M:Komodo.Sdk.KomodoSdk.Enumerate(System.String,Komodo.Sdk.Classes.EnumerationQuery)">
+        <member name="M:Komodo.Sdk.KomodoSdk.Enumerate(System.String,Komodo.Sdk.Classes.EnumerationQuery,System.Threading.CancellationToken)">
             <summary>
             Enumerate source documents in the specified index.
             </summary>
             <param name="indexName">Name of the index.</param>
-            <param name="query">Enumeration query.</param> 
+            <param name="query">Enumeration query.</param>
+            <param name="token">Cancellation token used to cancel the request.</param> 
             <returns>Enumeration result.</returns>
         </member>
     </members>
