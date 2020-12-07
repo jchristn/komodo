@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netcoreapp3.0;netcoreapp3.1;netstandard2.0;netstandard2.1;net461;net5.0</TargetFrameworks>
-    <Version>1.7.0.2</Version>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.0;netstandard2.1;net461;net5.0</TargetFrameworks>
+    <Version>2.0.0.0</Version>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Product>Komodo SDK: Information search, metadata, storage, and retrieval</Product>
@@ -10,12 +10,12 @@
     <Copyright>(c)2020 Joel Christner</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jchristn/komodo</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/jchristn/komodo/master/Assets/komodo-icon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/jchristn/komodo</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>komodo information search storage retrieval rest restful api blob object crawl index json html sql text xml data management integrate</PackageTags>
-    <PackageReleaseNotes>Retarget to support .NET Standard 2.0, .NET Core 2.0, and .NET Framework 4.6.1</PackageReleaseNotes>
+    <PackageReleaseNotes>Breaking changes, project consolidation, refer to README in project site</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>komodo-icon.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
@@ -26,11 +26,23 @@
     <DocumentationFile>Komodo.Sdk.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+    <DocumentationFile>Komodo.Sdk.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
+    <DocumentationFile>Komodo.Sdk.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="RestWrapper" Version="2.2.1.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Assets\komodo-icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -38,6 +50,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Assets\komodo-icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\komodo-icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="LICENSE.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,0 +1,439 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Komodo.Server</name>
+    </assembly>
+    <members>
+        <member name="T:Komodo.Server.Classes.ConsoleManager">
+            <summary>
+            Console manager.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.ConsoleManager.#ctor(Komodo.Server.Classes.Settings,System.Func{System.Boolean})">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="settings">Server configuration.</param>
+            <param name="exitApplication">Function to call when terminating the server.</param>
+        </member>
+        <member name="M:Komodo.Server.Classes.ConsoleManager.Stop">
+            <summary>
+            Terminate the console.
+            </summary>
+        </member>
+        <member name="T:Komodo.Server.Classes.DiskInfo">
+            <summary>
+            Information about a visible disk.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.Name">
+            <summary>
+            The name of the disk.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.VolumeLabel">
+            <summary>
+            The volume label.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.DriveFormat">
+            <summary>
+            The format of the drive.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.DriveType">
+            <summary>
+            The type of drive.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.TotalSizeBytes">
+            <summary>
+            Total size of the drive, in bytes.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.TotalSizeGigabytes">
+            <summary>
+            Total size of the drive, in gigabytes.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.AvailableSizeBytes">
+            <summary>
+            Available capacity of the drive, in bytes.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.DiskInfo.AvailableSizeGigabytes">
+            <summary>
+            Available capacity of the drive, in gigabytes.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.DiskInfo.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.DiskInfo.GetAllDisks">
+            <summary>
+            Retrieve information about all visible disks.
+            </summary>
+            <returns>List of disk information objects.</returns>
+        </member>
+        <member name="T:Komodo.Server.Classes.ErrorResponse">
+            <summary>
+            Error response to an API request.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.ErrorResponse.StatusCode">
+            <summary>
+            HTTP status code.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.ErrorResponse.Text">
+            <summary>
+            Human-readable text.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.ErrorResponse.ExceptionData">
+            <summary>
+            Exception.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.ErrorResponse.Data">
+            <summary>
+            Related data.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.ErrorResponse.#ctor(System.Int32,System.String,System.Exception,System.Object)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="statusCode">HTTP status code.</param>
+            <param name="text">Human-readable text.</param>
+            <param name="e">Exception.</param>
+            <param name="data">Related data.</param>
+        </member>
+        <member name="M:Komodo.Server.Classes.ErrorResponse.ToJson(System.Boolean)">
+            <summary>
+            Provide a JSON-serialized representation of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty printing.</param>
+            <returns>String containing JSON.</returns>
+        </member>
+        <member name="T:Komodo.Server.Classes.RequestMetadata">
+            <summary>
+            Request metadata.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.RequestMetadata.Http">
+            <summary>
+            HTTP context.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.RequestMetadata.User">
+            <summary>
+            User.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.RequestMetadata.ApiKey">
+            <summary>
+            API key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.RequestMetadata.Permission">
+            <summary>
+            Permissions associated with the API key.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.RequestMetadata.Params">
+            <summary>
+            Request parameters.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.RequestMetadata.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.RequestMetadata.#ctor(WatsonWebserver.HttpContext,Komodo.User,Komodo.ApiKey,Komodo.Permission)">
+            <summary>
+            Instantiate the object.
+            </summary>
+            <param name="http">HTTP context.</param>
+            <param name="user">User.</param>
+            <param name="apiKey">API key.</param>
+            <param name="perm">Permissions associated with the API key.</param>
+        </member>
+        <member name="T:Komodo.Server.Classes.RequestMetadata.RequestParameters">
+            <summary>
+            Request parameters.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Metadata">
+            <summary>
+            Do not process the request, but rather, return the request metadata.  Useful for examining how the request was interpreted by the server.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Bypass">
+            <summary>
+            Querystring 'bypass', indicating that indexing should be bypassed, i.e. store a document without indexing.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Cleanup">
+            <summary>
+            Querystring 'cleanup' key, indicating that a cleanup should be performed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbType">
+            <summary>
+            Querystring 'dbtype', indicating the type of database.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbServer">
+            <summary>
+            Querystring 'dbserver', indicating the database server IP address or hostname.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbPort">
+            <summary>
+            Querystring 'dbport', indicating the port number on which the database is accessible.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbUser">
+            <summary>
+            Querystring 'dbuser', indicating the database username.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbPass">
+            <summary>
+            Querystring 'dbpass', indicating the password for the database user.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbInstance">
+            <summary>
+            Querystring 'dbinstance', indicating the SQL Server Express instance.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.DbName">
+            <summary>
+            Querystring 'dbname', indicating the database name.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Filename">
+            <summary>
+            Querystring 'filename' key, indicating a source filename.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Name">
+            <summary>
+            Querystring 'name' key, typically used to indicate a document name.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Parsed">
+            <summary>
+            Querystring 'parsed' key, indicating whether or not the parsed document should be used.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Pretty">
+            <summary>
+            Querystring 'pretty' key, indicating whether or not pretty formatting should be used.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Tags">
+            <summary>
+            Querystring 'tags' key, typically used to indicate the tag data to attach to a document being indexed.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Title">
+            <summary>
+            Querystring 'title' key, typically used to indicate the title of a document for indexing.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Type">
+            <summary>
+            Querystring 'type' key, indicating the type of document. 
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Url">
+            <summary>
+            Querystring 'url' key, indicating the source URL for a document.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Postback">
+            <summary>
+            Indicates the URL to which results should be POSTed after an indexing operation.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Enumerate">
+            <summary>
+            Indicates that an enumeration operation is desired, where appropriate.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.RequestMetadata.RequestParameters.Async">
+            <summary>
+            Indicates that an indexing operation should be handled asynchronously.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.RequestMetadata.RequestParameters.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Server.Classes.Settings">
+            <summary>
+            Server configuration.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.EnableConsole">
+            <summary>
+            Enable or disable the console.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.Server">
+            <summary>
+            Server settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.Database">
+            <summary>
+            Database settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.TempStorage">
+            <summary>
+            Temporary storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.SourceDocuments">
+            <summary>
+            Source document storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.ParsedDocuments">
+            <summary>
+            Parsed document storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.Postings">
+            <summary>
+            Postings document storage settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.Logging">
+            <summary>
+            Logging settings.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.Settings.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.Settings.FromFile(System.String)">
+            <summary>
+            Load the configuration from a file.
+            </summary>
+            <param name="filename">Filename.</param>
+            <returns>Configuration object.</returns>
+        </member>
+        <member name="T:Komodo.Server.Classes.Settings.ServerSettings">
+            <summary>
+            Server settings.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.ServerSettings.ListenerHostname">
+            <summary>
+            Hostname on which to listen for incoming web requests.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.ServerSettings.ListenerPort">
+            <summary>
+            TCP port on which to listen.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.ServerSettings.Ssl">
+            <summary>
+            Enable or disable SSL.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.ServerSettings.HeaderApiKey">
+            <summary>
+            Custom header used to specify API key for authentication within the request.
+            </summary>
+        </member>
+        <member name="P:Komodo.Server.Classes.Settings.ServerSettings.AdminApiKey">
+            <summary>
+            API key to use for admin operations (please keep secret).
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.Settings.ServerSettings.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="T:Komodo.Server.Classes.Settings.LoggingSettings">
+            <summary>
+            Logging settings.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.SyslogServerIp">
+            <summary>
+            IP address of the syslog server.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.SyslogServerPort">
+            <summary>
+            Syslog server port.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.Header">
+            <summary>
+            Header to include in each syslog message.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.MinimumLevel">
+            <summary>
+            Minimum level required before sending a syslog message.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.ConsoleLogging">
+            <summary>
+            Enable console logging.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.FileLogging">
+            <summary>
+            Enable file logging.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.FileDirectory">
+            <summary>
+            Directory for log files.
+            </summary>
+        </member>
+        <member name="F:Komodo.Server.Classes.Settings.LoggingSettings.Filename">
+            <summary>
+            Base filename for log files.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.Settings.LoggingSettings.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.Settings.ToDaemonSettings">
+            <summary>
+            Convert Settings to DaemonSettings.
+            </summary>
+            <returns>DaemonSettings.</returns>
+        </member>
+        <member name="T:Komodo.Server.Classes.Setup">
+            <summary>
+            Perform requisite setup tasks to start the Komodo server.
+            </summary>
+        </member>
+        <member name="M:Komodo.Server.Classes.Setup.#ctor">
+            <summary>
+            Instantiate the setup wizard.
+            </summary>
+        </member>
+    </members>
+</doc>

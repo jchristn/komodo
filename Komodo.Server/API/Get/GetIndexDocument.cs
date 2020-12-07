@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes; 
+using Komodo; 
 using Komodo.IndexClient;
 using Komodo.IndexManager;
 using Komodo.Postings;
@@ -19,10 +19,10 @@ namespace Komodo.Server
     {
         private static async Task GetIndexDocument(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndexDocument ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " GetIndexDocument ";
              
-            string indexName = md.Http.Request.RawUrlEntries[0];
-            string sourceGuid = md.Http.Request.RawUrlEntries[1];
+            string indexName = md.Http.Request.Url.Elements[0];
+            string sourceGuid = md.Http.Request.Url.Elements[1];
 
             if (!_Daemon.IndexExists(indexName))
             {
@@ -56,7 +56,7 @@ namespace Komodo.Server
             {
                 SourceDocument source = _Daemon.GetSourceDocumentMetadata(indexName, sourceGuid);
                 ParsedDocument parsed = _Daemon.GetParsedDocumentMetadata(indexName, sourceGuid); 
-                object parseResult = _Daemon.GetDocumentParseResult(indexName, sourceGuid);
+                ParseResult parseResult = _Daemon.GetDocumentParseResult(indexName, sourceGuid);
                 PostingsResult postingsResult = _Daemon.GetDocumentPostings(indexName, sourceGuid);
 
                 DocumentMetadata ret = new DocumentMetadata(source, parsed, parseResult, postingsResult);

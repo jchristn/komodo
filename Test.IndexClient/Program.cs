@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BlobHelper;
-using Komodo.Classes; 
+using Komodo; 
 using Komodo.IndexClient;
 using Komodo.Postings;
-using EnumerationResult = Komodo.Classes.EnumerationResult;
-using Index = Komodo.Classes.Index;
+using EnumerationResult = Komodo.EnumerationResult;
+using Index = Komodo.Index;
 
 namespace Test.IndexClient
 {

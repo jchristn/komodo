@@ -14,6 +14,8 @@ namespace Komodo.Sdk.Classes
     /// </summary>
     public class DocumentData
     {
+        #region Public-Members
+
         /// <summary>
         /// The content type of the document.
         /// </summary>
@@ -40,10 +42,20 @@ namespace Komodo.Sdk.Classes
                 if (_Data != null) return _Data;
                 if (ContentLength <= 0) return null;
                 if (DataStream == null) return null;
-                _Data = StreamToBytes(DataStream);
+                _Data = KomodoCommon.StreamToBytes(DataStream);
                 return _Data;
             }
         }
+
+        #endregion
+
+        #region Private-Members
+
+        private byte[] _Data = null;
+
+        #endregion
+
+        #region Constructors-and-Factories
 
         /// <summary>
         /// Instantiate the object.
@@ -58,25 +70,20 @@ namespace Komodo.Sdk.Classes
             DataStream = stream;
         }
 
-        private byte[] _Data = null;
+        #endregion
 
-        private static byte[] StreamToBytes(Stream input)
+        #region Public-Methods
+
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
+            return KomodoCommon.SerializeJson(this, pretty);
+        }
 
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-
-                return ms.ToArray();
-            }
-        } 
+        #endregion
     }
 }

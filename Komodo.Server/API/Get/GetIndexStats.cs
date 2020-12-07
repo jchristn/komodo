@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.IndexClient;
 using Komodo.IndexManager;
 using Komodo.Server.Classes;
@@ -18,9 +18,9 @@ namespace Komodo.Server
     {
         private static async Task GetIndexStats(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndexStats ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " GetIndexStats ";
              
-            string indexName = md.Http.Request.RawUrlEntries[0];
+            string indexName = md.Http.Request.Url.Elements[0];
             IndicesStats stats = _Daemon.GetIndexStats(indexName);
             if (stats == null)
             {

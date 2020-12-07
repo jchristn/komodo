@@ -10,13 +10,13 @@ using DatabaseWrapper;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler; 
 using Komodo.IndexClient;
 using Komodo.Parser;
 using Komodo.Postings;
 using Komodo.Server.Classes;
-using Index = Komodo.Classes.Index;
+using Index = Komodo.Index;
 
 namespace Komodo.Server
 {
@@ -26,11 +26,11 @@ namespace Komodo.Server
         {
             #region Variables
 
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PostIndexDocument ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " PostIndexDocument ";
             string tempFile = _Settings.TempStorage.Disk.Directory + Guid.NewGuid().ToString();
-            string indexName = md.Http.Request.RawUrlEntries[0];
+            string indexName = md.Http.Request.Url.Elements[0];
             string sourceGuid = null;
-            if (md.Http.Request.RawUrlEntries.Count == 2) sourceGuid = md.Http.Request.RawUrlEntries[1];
+            if (md.Http.Request.Url.Elements.Length == 2) sourceGuid = md.Http.Request.Url.Elements[1];
 
             #endregion
 
@@ -226,7 +226,7 @@ namespace Komodo.Server
                     result.GUID = src.GUID;
                     result.Type = docType;
                     result.ParseResult = null;
-                    result.Postings = null;
+                    result.PostingsResult = null;
                     result.Time = null;
 
                     Task unawaited = _Daemon.AddDocument(

@@ -8,13 +8,13 @@ using DatabaseWrapper;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler; 
 using Komodo.IndexClient;
 using Komodo.Parser;
 using Komodo.Postings;
 using Komodo.Server.Classes;
-using Index = Komodo.Classes.Index;
+using Index = Komodo.Index;
 
 namespace Komodo.Server
 {
@@ -22,9 +22,9 @@ namespace Komodo.Server
     {
         private static async Task DeleteIndex(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PostParse ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " PostParse ";
 
-            string indexName = md.Http.Request.RawUrlEntries[0];
+            string indexName = md.Http.Request.Url.Elements[0];
             if (!_Daemon.IndexExists(indexName))
             {
                 _Logging.Warn(header + "index " + indexName + " does not exist");

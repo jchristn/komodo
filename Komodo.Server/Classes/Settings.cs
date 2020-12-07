@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SyslogLogging;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Daemon;
 
 namespace Komodo.Server.Classes

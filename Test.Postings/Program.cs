@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using BlobHelper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler;
 using Komodo.Parser;
 using Komodo.Postings;
-using DbType = Komodo.Classes.DbType;
+using DbType = Komodo.DbType;
 
 namespace Test.Postings
 {

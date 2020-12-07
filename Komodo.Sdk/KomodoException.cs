@@ -11,6 +11,8 @@ namespace Komodo.Sdk
     /// </summary>
     public class KomodoException : Exception
     {
+        #region Public-Members
+
         /// <summary>
         /// HTTP status code.
         /// </summary>
@@ -25,6 +27,10 @@ namespace Komodo.Sdk
         /// The type of exception.
         /// </summary>
         public ExceptionType Type = ExceptionType.Unknown;
+
+        #endregion
+
+        #region Constructors-and-Factories
 
         internal static KomodoException FromRestResponse(RestResponse resp)
         {
@@ -41,7 +47,7 @@ namespace Komodo.Sdk
             if (resp.StatusCode >= 500)
             {
                 e.StatusCode = resp.StatusCode;
-                if (resp.ContentLength > 0) e.ResponseData = StreamToBytes(resp.Data);
+                if (resp.ContentLength > 0) e.ResponseData = KomodoCommon.StreamToBytes(resp.Data);
                 else e.ResponseData = null;
                 e.Type = ExceptionType.InternalServerError;
                 return e;
@@ -50,7 +56,7 @@ namespace Komodo.Sdk
             if (resp.StatusCode == 413)
             {
                 e.StatusCode = resp.StatusCode;
-                if (resp.ContentLength > 0) e.ResponseData = StreamToBytes(resp.Data);
+                if (resp.ContentLength > 0) e.ResponseData = KomodoCommon.StreamToBytes(resp.Data);
                 else e.ResponseData = null;
                 e.Type = ExceptionType.PayloadTooLarge;
                 return e;
@@ -59,7 +65,7 @@ namespace Komodo.Sdk
             if (resp.StatusCode == 409)
             {
                 e.StatusCode = resp.StatusCode;
-                if (resp.ContentLength > 0) e.ResponseData = StreamToBytes(resp.Data);
+                if (resp.ContentLength > 0) e.ResponseData = KomodoCommon.StreamToBytes(resp.Data);
                 else e.ResponseData = null;
                 e.Type = ExceptionType.Conflict;
                 return e;
@@ -68,7 +74,7 @@ namespace Komodo.Sdk
             if (resp.StatusCode == 404)
             {
                 e.StatusCode = resp.StatusCode;
-                if (resp.ContentLength > 0) e.ResponseData = StreamToBytes(resp.Data);
+                if (resp.ContentLength > 0) e.ResponseData = KomodoCommon.StreamToBytes(resp.Data);
                 else e.ResponseData = null;
                 e.Type = ExceptionType.NotFound;
                 return e;
@@ -77,7 +83,7 @@ namespace Komodo.Sdk
             if (resp.StatusCode == 401)
             {
                 e.StatusCode = resp.StatusCode;
-                if (resp.ContentLength > 0) e.ResponseData = StreamToBytes(resp.Data);
+                if (resp.ContentLength > 0) e.ResponseData = KomodoCommon.StreamToBytes(resp.Data);
                 else e.ResponseData = null;
                 e.Type = ExceptionType.Unauthorized;
                 return e;
@@ -86,7 +92,7 @@ namespace Komodo.Sdk
             if (resp.StatusCode == 400)
             {
                 e.StatusCode = resp.StatusCode;
-                if (resp.ContentLength > 0) e.ResponseData = StreamToBytes(resp.Data);
+                if (resp.ContentLength > 0) e.ResponseData = KomodoCommon.StreamToBytes(resp.Data);
                 else e.ResponseData = null;
                 e.Type = ExceptionType.BadRequest;
                 return e;
@@ -95,25 +101,21 @@ namespace Komodo.Sdk
             return null;
         }
 
-        private static byte[] StreamToBytes(Stream input)
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
-
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-
-                return ms.ToArray();
-            }
+            return KomodoCommon.SerializeJson(this, pretty);
         }
 
+        #endregion 
     }
 
     /// <summary>

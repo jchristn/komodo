@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.IndexClient;
 using Komodo.Server.Classes;
 
@@ -17,7 +17,7 @@ namespace Komodo.Server
     {
         private static async Task GetIndices(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndices ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " GetIndices ";
             List<string> indexNames = _Daemon.GetIndices();
             md.Http.Response.StatusCode = 200;
             md.Http.Response.ContentType = "application/json";

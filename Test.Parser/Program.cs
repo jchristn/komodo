@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using BlobHelper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler;
 using Komodo.Parser;
-using DbType = Komodo.Classes.DbType;
+using DbType = Komodo.DbType;
 
 namespace Test.Crawler
 {
@@ -59,7 +59,7 @@ namespace Test.Crawler
         static DocType GetDocType()
         {
             return (DocType)(Enum.Parse(typeof(DocType),
-                Common.InputString("Document type [Html|Json|Sql|Sqlite|Text|Xml]:", "Html", false)));
+                Common.InputString("Document type [Html|Json|Sql|Sqlite|Text|Xml|Csv]:", "Html", false)));
         }
 
         static void S3Crawler()
@@ -101,6 +101,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -153,6 +156,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -206,6 +212,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -258,6 +267,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -306,6 +318,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -356,6 +371,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -418,6 +436,9 @@ namespace Test.Crawler
 
             switch (docType)
             {
+                case DocType.Csv:
+                    ParseCsv(cr.Data);
+                    break;
                 case DocType.Html:
                     ParseHtml(cr.Data);
                     break;
@@ -510,6 +531,17 @@ namespace Test.Crawler
             }
 
             ParseSqlite(cr.DataTable);
+        }
+
+        private static void ParseCsv(byte[] data)
+        {
+            CsvParser cp = new CsvParser();
+            ParseResult pr = cp.ParseBytes(data);
+
+            Console.WriteLine("");
+            Console.WriteLine("--- Parse Result ---");
+            Console.WriteLine(Common.SerializeJson(pr, true));
+            Console.WriteLine("");
         }
 
         private static void ParseHtml(byte[] data)

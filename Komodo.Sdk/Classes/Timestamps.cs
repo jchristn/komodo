@@ -9,6 +9,8 @@ namespace Komodo.Sdk.Classes
     /// </summary>
     public class Timestamps
     {
+        #region Public-Members
+
         /// <summary>
         /// The time at which the operation started.
         /// </summary>
@@ -38,7 +40,7 @@ namespace Komodo.Sdk.Classes
                             throw new ArgumentException("Start time must be before end time.");
                         }
 
-                        _TotalMs = Math.Round(TotalMsBetween(_Start.Value, _End.Value), 2);
+                        _TotalMs = Math.Round(KomodoCommon.TotalMsBetween(_Start.Value, _End.Value), 2);
                     }
                 }
             }
@@ -72,7 +74,7 @@ namespace Komodo.Sdk.Classes
                             throw new ArgumentException("End time must be after start time.");
                         }
 
-                        _TotalMs = Math.Round(TotalMsBetween(_Start.Value, _End.Value), 2);
+                        _TotalMs = Math.Round(KomodoCommon.TotalMsBetween(_Start.Value, _End.Value), 2);
                     }
                 }
             }
@@ -89,6 +91,18 @@ namespace Komodo.Sdk.Classes
             }
         }
 
+        #endregion
+
+        #region Private-Members
+
+        private DateTime? _Start = null;
+        private DateTime? _End = null;
+        private double? _TotalMs = null;
+
+        #endregion
+
+        #region Constructors-and-Factories
+
         /// <summary>
         /// Instantiate the object.
         /// </summary>
@@ -99,23 +113,20 @@ namespace Komodo.Sdk.Classes
             _TotalMs = null;
         }
 
-        private DateTime? _Start = null;
-        private DateTime? _End = null;
-        private double? _TotalMs = null;
+        #endregion
 
-        private static double TotalMsBetween(DateTime start, DateTime end)
+        #region Public-Methods
+
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
         {
-            try
-            {
-                start = start.ToUniversalTime();
-                end = end.ToUniversalTime();
-                TimeSpan total = end - start;
-                return total.TotalMilliseconds;
-            }
-            catch (Exception)
-            {
-                return -1;
-            }
-        } 
+            return KomodoCommon.SerializeJson(this, pretty);
+        }
+
+        #endregion 
     }
 }

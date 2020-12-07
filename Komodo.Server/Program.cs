@@ -11,12 +11,12 @@ using Watson.ORM.Core;
 using WatsonWebserver;
 using Webserver = WatsonWebserver.Server;
 
-using Komodo.Classes;
+using Komodo;
 using Komodo.Daemon;
 using Komodo.IndexManager;
 using Komodo.Server.Classes;
-using Common = Komodo.Classes.Common;
-using Index = Komodo.Classes.Index;
+using Common = Komodo.Common;
+using Index = Komodo.Index;
 
 namespace Komodo.Server
 {
@@ -32,7 +32,7 @@ namespace Komodo.Server
         private static ConsoleManager _Console;
         private static Webserver _Webserver;
 
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
             string header = "[Komodo.Server] ";
 
@@ -107,7 +107,7 @@ namespace Komodo.Server
             if (_Settings.Logging.FileLogging && !String.IsNullOrEmpty(_Settings.Logging.Filename))
             {
                 if (String.IsNullOrEmpty(_Settings.Logging.FileDirectory)) _Settings.Logging.FileDirectory = "./";
-                while (_Settings.Logging.FileDirectory.Contains("\\")) _Settings.Logging.FileDirectory.Replace("\\", "/");
+                if (_Settings.Logging.FileDirectory.Contains("\\")) _Settings.Logging.FileDirectory = _Settings.Logging.FileDirectory.Replace("\\", "/");
                 if (!Directory.Exists(_Settings.Logging.FileDirectory)) Directory.CreateDirectory(_Settings.Logging.FileDirectory);
 
                 _Logging.FileLogging = FileLoggingMode.FileWithDate;
@@ -130,6 +130,7 @@ namespace Komodo.Server
             _ORM.InitializeTable(typeof(Node));
             _ORM.InitializeTable(typeof(ParsedDocument));
             _ORM.InitializeTable(typeof(Permission));
+            _ORM.InitializeTable(typeof(PostingsDocument));
             _ORM.InitializeTable(typeof(SourceDocument));
             _ORM.InitializeTable(typeof(TermDoc));
             _ORM.InitializeTable(typeof(TermGuid));
@@ -147,8 +148,8 @@ namespace Komodo.Server
                 _Settings.Server.Ssl,
                 RequestReceived);
 
-            _Webserver.ContentRoutes.Add("/Assets/", true);
-            _Webserver.AccessControl.Mode = AccessControlMode.DefaultPermit;
+            _Webserver.Routes.Content.Add("/Assets/", true);
+            _Webserver.Settings.AccessControl.Mode = AccessControlMode.DefaultPermit;
             _Webserver.Start();
 
             Console.WriteLine(
@@ -214,7 +215,7 @@ namespace Komodo.Server
 
         private static async Task RequestReceived(HttpContext ctx)
         {
-            string header = "[Komodo.Server] " + ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " RequestReceived ";
+            string header = "[Komodo.Server] " + ctx.Request.Source.IpAddress + ":" + ctx.Request.Source.Port + " RequestReceived ";
             DateTime startTime = DateTime.Now;
 
             try
@@ -227,7 +228,7 @@ namespace Komodo.Server
                     return;
                 }
 
-                if (ctx.Request.RawUrlEntries == null || ctx.Request.RawUrlEntries.Count == 0)
+                if (ctx.Request.Url.Elements == null || ctx.Request.Url.Elements.Length == 0)
                 {
                     ctx.Response.StatusCode = 200;
                     ctx.Response.ContentType = "text/html; charset=utf-8";
@@ -235,18 +236,18 @@ namespace Komodo.Server
                     return;
                 }
 
-                if (ctx.Request.RawUrlEntries != null && ctx.Request.RawUrlEntries.Count > 0)
+                if (ctx.Request.Url.Elements != null && ctx.Request.Url.Elements.Length > 0)
                 {
-                    if (ctx.Request.RawUrlEntries.Count == 1)
+                    if (ctx.Request.Url.Elements.Length == 1)
                     {
-                        if (String.Compare(ctx.Request.RawUrlEntries[0].ToLower(), "favicon.ico") == 0)
+                        if (String.Compare(ctx.Request.Url.Elements[0].ToLower(), "favicon.ico") == 0)
                         {
                             ctx.Response.StatusCode = 200;
                             await ctx.Response.Send(Common.ReadBinaryFile("Assets/favicon.ico"));
                             return;
                         }
 
-                        if (String.Compare(ctx.Request.RawUrlEntries[0].ToLower(), "robots.txt") == 0)
+                        if (String.Compare(ctx.Request.Url.Elements[0].ToLower(), "robots.txt") == 0)
                         {
                             ctx.Response.StatusCode = 200;
                             ctx.Response.ContentType = "text/plain";
@@ -254,14 +255,14 @@ namespace Komodo.Server
                             return;
                         }
 
-                        if (String.Compare(ctx.Request.RawUrlEntries[0].ToLower(), "loopback") == 0)
+                        if (String.Compare(ctx.Request.Url.Elements[0].ToLower(), "loopback") == 0)
                         {
                             ctx.Response.StatusCode = 200;
                             await ctx.Response.Send();
                             return;
                         }
 
-                        if (String.Compare(ctx.Request.RawUrlEntries[0].ToLower(), "version") == 0)
+                        if (String.Compare(ctx.Request.Url.Elements[0].ToLower(), "version") == 0)
                         {
                             ctx.Response.StatusCode = 200;
                             ctx.Response.ContentType = "text/plain";
@@ -277,9 +278,9 @@ namespace Komodo.Server
 
                 string apiKey = ctx.Request.RetrieveHeaderValue(_Settings.Server.HeaderApiKey);
 
-                if (ctx.Request.RawUrlEntries != null 
-                    && ctx.Request.RawUrlEntries.Count > 0
-                    && ctx.Request.RawUrlEntries[0].Equals("admin"))
+                if (ctx.Request.Url.Elements != null 
+                    && ctx.Request.Url.Elements.Length > 0
+                    && ctx.Request.Url.Elements[0].Equals("admin"))
                 {
                     if (String.IsNullOrEmpty(apiKey))
                     {
@@ -309,9 +310,9 @@ namespace Komodo.Server
 
                 PermissionType permType = PermissionType.Unknown;
 
-                if (ctx.Request.RawUrlEntries.Count == 1)
+                if (ctx.Request.Url.Elements.Length == 1)
                 {
-                    if (ctx.Request.Method == HttpMethod.GET && ctx.Request.RawUrlEntries[0].Equals("indices"))
+                    if (ctx.Request.Method == HttpMethod.GET && ctx.Request.Url.Elements[0].Equals("indices"))
                     {
                         // GET /indices, i.e. search
                         permType = PermissionType.Search;
@@ -329,17 +330,17 @@ namespace Komodo.Server
                     }
                     else if (ctx.Request.Method == HttpMethod.POST)
                     {
-                        if (ctx.Request.RawUrlEntries[0].Equals("_parse"))
+                        if (ctx.Request.Url.Elements[0].Equals("_parse"))
                         {
                             // POST /_parse, i.e. parse document (without storing)
                             permType = PermissionType.CreateDocument;
                         }
-                        else if (ctx.Request.RawUrlEntries[0].Equals("_postings"))
+                        else if (ctx.Request.Url.Elements[0].Equals("_postings"))
                         {
                             // POST /_postings, i.e. create postings (without storing)
                             permType = PermissionType.CreateDocument;
                         }
-                        else if (ctx.Request.RawUrlEntries[0].Equals("indices"))
+                        else if (ctx.Request.Url.Elements[0].Equals("indices"))
                         {
                             // POST /indices, i.e. create index
                             permType = PermissionType.CreateIndex;
@@ -356,11 +357,11 @@ namespace Komodo.Server
                         permType = PermissionType.DeleteIndex;
                     }
                 }
-                else if (ctx.Request.RawUrlEntries.Count == 2)
+                else if (ctx.Request.Url.Elements.Length == 2)
                 {
                     if (ctx.Request.Method == HttpMethod.GET)
                     {
-                        if (ctx.Request.RawUrlEntries[1].Equals("stats"))
+                        if (ctx.Request.Url.Elements[1].Equals("stats"))
                         {
                             // GET /[index]/stats, i.e. search
                             permType = PermissionType.Search;
@@ -454,7 +455,7 @@ namespace Komodo.Server
             }
             finally
             { 
-                _Logging.Debug(header + ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery + " " + ctx.Response.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]");
+                _Logging.Debug(header + ctx.Request.Method + " " + ctx.Request.Url.RawWithoutQuery + " " + ctx.Response.StatusCode + " [" + Common.TotalMsFrom(startTime) + "ms]");
             }
         }
 

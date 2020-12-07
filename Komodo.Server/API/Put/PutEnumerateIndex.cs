@@ -8,10 +8,10 @@ using DatabaseWrapper;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes; 
+using Komodo; 
 using Komodo.IndexClient;
 using Komodo.Server.Classes;
-using Index = Komodo.Classes.Index;
+using Index = Komodo.Index;
 
 namespace Komodo.Server
 {
@@ -19,7 +19,7 @@ namespace Komodo.Server
     {
         private static async Task PutEnumerateIndex(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PutEnumerateIndex ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " PutEnumerateIndex ";
 
             if (md.Http.Request.Data == null || md.Http.Request.ContentLength < 1)
             {
@@ -29,7 +29,7 @@ namespace Komodo.Server
                 return;
             }
 
-            string indexName = md.Http.Request.RawUrlEntries[0];
+            string indexName = md.Http.Request.Url.Elements[0];
             if (!_Daemon.IndexExists(indexName))
             {
                 _Logging.Warn(header + "index " + indexName + " does not exist");

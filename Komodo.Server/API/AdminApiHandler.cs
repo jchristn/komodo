@@ -5,23 +5,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using SyslogLogging;
 using WatsonWebserver;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Server.Classes;
 
 namespace Komodo.Server
 {
-    public partial class Program
+    partial class Program
     {
         static async Task AdminApiHandler(HttpContext ctx)
         {
-            string header = "[Komodo.Server.AdminApiHandler] " + ctx.Request.SourceIp + ":" + ctx.Request.SourcePort + " ";
+            string header = "[Komodo.Server.AdminApiHandler] " + ctx.Request.Source.IpAddress + ":" + ctx.Request.Source.Port + " ";
 
-            _Logging.Info(header + "admin API requested: " + ctx.Request.Method + " " + ctx.Request.RawUrlWithoutQuery);
+            _Logging.Info(header + "admin API requested: " + ctx.Request.Method + " " + ctx.Request.Url.RawWithoutQuery);
 
             switch (ctx.Request.Method)
             {
-                case HttpMethod.GET: 
-                    if (ctx.Request.RawUrlWithoutQuery.Equals("/admin/disks"))
+                case HttpMethod.GET:  
+                    if (ctx.Request.Url.RawWithoutQuery.Equals("/admin/disks"))
                     {
                         ctx.Response.StatusCode = 200;
                         ctx.Response.ContentType = "application/json";
@@ -31,7 +31,7 @@ namespace Komodo.Server
                     break;
             }
 
-            _Logging.Warn(header + "unknown endpoint " + ctx.Request.Method.ToString() + " " + ctx.Request.RawUrlWithoutQuery);
+            _Logging.Warn(header + "unknown endpoint " + ctx.Request.Method.ToString() + " " + ctx.Request.Url.RawWithoutQuery);
             ctx.Response.StatusCode = 400;
             ctx.Response.ContentType = "application/json";
             await ctx.Response.Send(new ErrorResponse(400, "Unknown endpoint.", null, null).ToJson(true));

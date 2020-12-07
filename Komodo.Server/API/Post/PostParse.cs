@@ -8,13 +8,13 @@ using DatabaseWrapper;
 using SyslogLogging;
 using WatsonWebserver;
 using RestWrapper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler;  
 using Komodo.IndexClient;
 using Komodo.Parser;
 using Komodo.Postings;
 using Komodo.Server.Classes;
-using Index = Komodo.Classes.Index;
+using Index = Komodo.Index;
 
 namespace Komodo.Server
 {
@@ -22,7 +22,7 @@ namespace Komodo.Server
     {
         private static async Task PostParse(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " PostParse ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " PostParse ";
              
             if (String.IsNullOrEmpty(md.Params.Type))
             {

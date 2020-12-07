@@ -9,6 +9,8 @@ namespace Komodo.Sdk.Classes
     /// </summary>
     public class IndexResult
     {
+        #region Public-Members
+
         /// <summary>
         /// Indicates if the indexing operation was successful.
         /// </summary>
@@ -49,6 +51,10 @@ namespace Komodo.Sdk.Classes
         /// </summary>
         public PostingsResult Postings = null;
 
+        #endregion
+
+        #region Constructors-and-Factories
+
         /// <summary>
         /// Instantiate the object.
         /// </summary>
@@ -56,6 +62,24 @@ namespace Komodo.Sdk.Classes
         {
 
         }
+
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
+        {
+            return KomodoCommon.SerializeJson(this, pretty);
+        }
+
+        #endregion
+
+        #region Public-Embedded-Classes
 
         /// <summary>
         /// Timestamps for the index operation.
@@ -97,5 +121,7 @@ namespace Komodo.Sdk.Classes
             /// </summary>
             public Timestamps Terms = new Timestamps();
         }
+
+        #endregion
     }
 }

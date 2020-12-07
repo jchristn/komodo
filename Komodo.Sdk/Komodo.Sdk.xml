@@ -44,6 +44,13 @@
             <param name="val">The object to evaluate.</param>
             <returns>DataType.</returns>
         </member>
+        <member name="M:Komodo.Sdk.Classes.DataNode.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.DataType">
             <summary>
             Types of data supported.
@@ -162,6 +169,13 @@
             <param name="contentLength">Content length.</param>
             <param name="stream">Stream containing the data.</param>
         </member>
+        <member name="M:Komodo.Sdk.Classes.DocumentData.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.DocumentMetadata">
             <summary>
             Metadata about a document stored in Komodo.
@@ -175,6 +189,11 @@
         <member name="F:Komodo.Sdk.Classes.DocumentMetadata.ParsedRecord">
             <summary>
             ParsedDocument record.
+            </summary>
+        </member>
+        <member name="F:Komodo.Sdk.Classes.DocumentMetadata.PostingsRecord">
+            <summary>
+            PostingsDocument record.
             </summary>
         </member>
         <member name="F:Komodo.Sdk.Classes.DocumentMetadata.Parsed">
@@ -191,6 +210,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.DocumentMetadata.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.EnumerationQuery">
             <summary>
@@ -221,6 +247,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.EnumerationQuery.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.EnumerationResult">
             <summary>
@@ -263,6 +296,13 @@
             </summary>
             <param name="query">Enumeration query.</param>
         </member>
+        <member name="M:Komodo.Sdk.Classes.EnumerationResult.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.Index">
             <summary>
             Repository where source and parsed documents are stored.
@@ -287,6 +327,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.Index.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.IndexResult">
             <summary>
@@ -337,6 +384,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.IndexResult.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.IndexResult.IndexResultTimestamps">
             <summary>
@@ -423,6 +477,18 @@
             The number of postings in the index.
             </summary>
         </member>
+        <member name="M:Komodo.Sdk.Classes.IndexStats.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.IndexStats.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.IndexStats.DocumentsStats">
             <summary>
             Document statistics.
@@ -477,6 +543,13 @@
             <summary>
             Instantiates the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.MatchedDocument.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.ParsedDocument">
             <summary>
@@ -538,6 +611,13 @@
             Instantiate the object.
             </summary>
         </member>
+        <member name="M:Komodo.Sdk.Classes.ParsedDocument.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.ParseOptions">
             <summary>
             Options to indicate how the parser should behave.
@@ -572,6 +652,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.ParseOptions.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.ParseOptions.TextParseOptions">
             <summary>
@@ -697,6 +784,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.ParseResult.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.ParseResult.HtmlParseResult">
             <summary>
@@ -898,11 +992,84 @@
             Instantiate the Posting object.
             </summary>
         </member>
-        <member name="M:Komodo.Sdk.Classes.Posting.ToString">
+        <member name="M:Komodo.Sdk.Classes.Posting.ToJson(System.Boolean)">
             <summary>
-            Returns a human-readable string version of the object.
+            Return a JSON string of this object.
             </summary>
-            <returns>String.</returns>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
+        <member name="T:Komodo.Sdk.Classes.PostingsDocument">
+            <summary>
+            Postings document created by Komodo.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.Id">
+            <summary>
+            Database row ID.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.GUID">
+            <summary>
+            Globally-unique identifier.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.SourceDocumentGUID">
+            <summary>
+            Globally-unique identifier of the source document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.OwnerGUID">
+            <summary>
+            Globally-unique identifier of the user that owns the document record.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.IndexGUID">
+            <summary>
+            Globally-unique identifier of the index.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.Type">
+            <summary>
+            The type of document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.ContentLength">
+            <summary>
+            The content length of the postings document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.Terms">
+            <summary>
+            The number of terms in the postings document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.Postings">
+            <summary>
+            The number of postings in the postings document.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.Indexed">
+            <summary>
+            The timestamp from when the document was indexed.
+            </summary> 
+        </member>
+        <member name="P:Komodo.Sdk.Classes.PostingsDocument.Created">
+            <summary>
+            The timestamp from when the entry was created.
+            </summary> 
+        </member>
+        <member name="M:Komodo.Sdk.Classes.PostingsDocument.#ctor">
+            <summary>
+            Instantiate the object.
+            </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.PostingsDocument.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.PostingsOptions">
             <summary>
@@ -938,6 +1105,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.PostingsOptions.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.PostingsOptions.TokenLengthOptions">
             <summary>
@@ -1034,6 +1208,13 @@
             Instantiate the object.
             </summary>
         </member>
+        <member name="M:Komodo.Sdk.Classes.PostingsResult.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.QueryFilter">
             <summary>
             A filter for the query.
@@ -1053,6 +1234,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.QueryFilter.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.SearchCondition">
             <summary>
@@ -1160,6 +1348,13 @@
             <param name="value">Value.</param>
             <returns>True if matched.</returns>
         </member>
+        <member name="M:Komodo.Sdk.Classes.SearchFilter.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.SearchQuery">
             <summary>
             Object used to search an index.
@@ -1204,6 +1399,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchQuery.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.SearchResult">
             <summary>
@@ -1255,6 +1457,13 @@
             <summary>
             Sort matches by score.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.SearchResult.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.SearchResult.SearchResultTimeComponents">
             <summary>
@@ -1377,6 +1586,13 @@
             Instantiate the object.
             </summary>
         </member>
+        <member name="M:Komodo.Sdk.Classes.SourceDocument.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
+        </member>
         <member name="T:Komodo.Sdk.Classes.Timestamps">
             <summary>
             Object used to measure start, end, and total time associated with an operation.
@@ -1401,6 +1617,13 @@
             <summary>
             Instantiate the object.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.Classes.Timestamps.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.Classes.Token">
             <summary>
@@ -1433,6 +1656,11 @@
             </summary>
             <param name="value">The token.</param>
         </member>
+        <member name="T:Komodo.Sdk.KomodoCommon">
+            <summary>
+            Commonly used static methods.
+            </summary>
+        </member>
         <member name="T:Komodo.Sdk.KomodoException">
             <summary>
             Komodo exception.
@@ -1452,6 +1680,13 @@
             <summary>
             The type of exception.
             </summary>
+        </member>
+        <member name="M:Komodo.Sdk.KomodoException.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="T:Komodo.Sdk.ExceptionType">
             <summary>
@@ -1514,6 +1749,13 @@
             </summary>
             <param name="endpoint">Endpoint URL of the form http://[hostname]:[port]/.</param>
             <param name="apiKey">API key to use when accessing Komodo.</param> 
+        </member>
+        <member name="M:Komodo.Sdk.KomodoSdk.ToJson(System.Boolean)">
+            <summary>
+            Return a JSON string of this object.
+            </summary>
+            <param name="pretty">Enable or disable pretty print.</param>
+            <returns>JSON string.</returns>
         </member>
         <member name="M:Komodo.Sdk.KomodoSdk.Loopback(System.Threading.CancellationToken)">
             <summary>

@@ -427,13 +427,23 @@ namespace Komodo.Sdk.Classes
 
         #region Public-Methods
 
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
+        {
+            return KomodoCommon.SerializeJson(this, pretty);
+        }
+
         #endregion
 
         #region Private-Methods
 
         #endregion
 
-        #region Public-Classes
+        #region Public-Embedded-Classes
 
         /// <summary>
         /// Token length requirements.

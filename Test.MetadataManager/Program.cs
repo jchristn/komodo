@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using BlobHelper;
-using Komodo.Classes;
+using Komodo;
 using Komodo.IndexClient;
 using Komodo.IndexManager;
 using Komodo.MetadataManager;
-using Index = Komodo.Classes.Index;
+using Index = Komodo.Index;
 
 namespace Test.MetadataManager
 {
@@ -126,22 +126,22 @@ namespace Test.MetadataManager
             Console.WriteLine("Processing metadata");
 
             _Result1 = _Metadata.ProcessDocument(
-                r1.Source,
-                r1.Parsed,
+                r1.SourceDocument,
+                r1.ParsedDocument,
                 r1.ParseResult).Result;
 
             // Console.WriteLine("Document 1: " + Environment.NewLine + Common.SerializeJson(_Result1, true));
 
             _Result2 = _Metadata.ProcessDocument(
-                r2.Source,
-                r2.Parsed,
+                r2.SourceDocument,
+                r2.ParsedDocument,
                 r2.ParseResult).Result;
 
             // Console.WriteLine("Document 2: " + Environment.NewLine + Common.SerializeJson(_Result2, true));
 
             _Result3 = _Metadata.ProcessDocument(
-                r3.Source,
-                r3.Parsed,
+                r3.SourceDocument,
+                r3.ParsedDocument,
                 r3.ParseResult).Result;
 
             Console.WriteLine("Document 3: " + Environment.NewLine + Common.SerializeJson(_Result3, true));

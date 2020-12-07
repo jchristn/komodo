@@ -8,7 +8,9 @@ namespace Komodo.Sdk.Classes
     /// Object that has been uploaded to Komodo.
     /// </summary>
     public class SourceDocument
-    { 
+    {
+        #region Public-Members
+
         /// <summary>
         /// Globally-unique identifier.
         /// </summary>
@@ -74,12 +76,32 @@ namespace Komodo.Sdk.Classes
         /// </summary> 
         public DateTime? Indexed { get; set; }
 
+        #endregion
+
+        #region Constructors-and-Factories
+
         /// <summary>
         /// Instantiate the object.
         /// </summary>
         public SourceDocument()
         {
 
-        } 
+        }
+
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
+        {
+            return KomodoCommon.SerializeJson(this, pretty);
+        }
+
+        #endregion
     }
 }

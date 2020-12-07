@@ -5,7 +5,7 @@ using DatabaseWrapper;
 using SyslogLogging;
 using Watson.ORM;
 using Watson.ORM.Core;
-using Komodo.Classes; 
+using Komodo;
 
 namespace Komodo.Server.Classes
 {
@@ -92,7 +92,7 @@ namespace Komodo.Server.Classes
                 DbOperators.Equals, 
                 apiKey);
 
-            e.PrependAnd("active", DbOperators.Equals, 1);
+            e.PrependAnd(_ORM.GetColumnName<ApiKey>(nameof(ApiKey.Active)), DbOperators.Equals, true);
             ApiKey key = _ORM.SelectFirst<ApiKey>(e);
             if (key == null || key == default(ApiKey)) return null;
 
@@ -116,8 +116,8 @@ namespace Komodo.Server.Classes
                 DbOperators.GreaterThan, 
                 0);
 
-            e.PrependAnd("email", DbOperators.Equals, email);
-            e.PrependAnd("passwordmd5", DbOperators.Equals, passwordMd5); 
+            e.PrependAnd(_ORM.GetColumnName<User>(nameof(User.Email)), DbOperators.Equals, email);
+            e.PrependAnd(_ORM.GetColumnName<User>(nameof(User.PasswordMd5)), DbOperators.Equals, passwordMd5);
             User user = _ORM.SelectFirst<User>(e);
             if (user != null && user != default(User)) return user;
             return null;

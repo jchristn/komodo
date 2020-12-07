@@ -10,10 +10,10 @@ using WatsonWebserver;
 using RestWrapper;
 using Watson.ORM;
 using Watson.ORM.Core;
-using Komodo.Classes;  
+using Komodo;  
 using Komodo.Server.Classes;
-using Common = Komodo.Classes.Common;
-using Index = Komodo.Classes.Index;
+using Common = Komodo.Common;
+using Index = Komodo.Index;
 
 namespace Komodo.Server
 {
@@ -21,9 +21,9 @@ namespace Komodo.Server
     {
         private static async Task GetIndex(RequestMetadata md)
         {
-            string header = "[Komodo.Server] " + md.Http.Request.SourceIp + ":" + md.Http.Request.SourcePort + " GetIndex ";
+            string header = "[Komodo.Server] " + md.Http.Request.Source.IpAddress + ":" + md.Http.Request.Source.Port + " GetIndex ";
 
-            string indexName = md.Http.Request.RawUrlEntries[0];
+            string indexName = md.Http.Request.Url.Elements[0];
             Index index = _Daemon.GetIndex(indexName);
             if (index == null)
             {

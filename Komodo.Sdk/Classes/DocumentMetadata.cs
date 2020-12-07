@@ -22,6 +22,11 @@ namespace Komodo.Sdk.Classes
         public ParsedDocument ParsedRecord = null;
 
         /// <summary>
+        /// PostingsDocument record.
+        /// </summary>
+        public PostingsDocument PostingsRecord = null;
+
+        /// <summary>
         /// Parse result.
         /// </summary>
         public object Parsed = null;
@@ -45,6 +50,20 @@ namespace Komodo.Sdk.Classes
         public DocumentMetadata()
         {
 
+        }
+
+        #endregion
+
+        #region Public-Methods
+
+        /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
+        {
+            return KomodoCommon.SerializeJson(this, pretty);
         }
 
         #endregion

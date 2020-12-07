@@ -6,10 +6,10 @@ using BlobHelper;
 using SyslogLogging;
 using Watson.ORM;
 using Watson.ORM.Core;
-using Komodo.Classes;
-using Common = Komodo.Classes.Common;
-using DbSettings = Komodo.Classes.DbSettings;
-using Index = Komodo.Classes.Index;
+using Komodo;
+using Common = Komodo.Common;
+using DbSettings = Komodo.DbSettings;
+using Index = Komodo.Index;
 
 namespace Komodo.Server.Classes
 {
@@ -133,6 +133,7 @@ namespace Komodo.Server.Classes
             orm.InitializeTable(typeof(Node));
             orm.InitializeTable(typeof(ParsedDocument));
             orm.InitializeTable(typeof(Permission));
+            orm.InitializeTable(typeof(PostingsDocument));
             orm.InitializeTable(typeof(SourceDocument));
             orm.InitializeTable(typeof(TermDoc));
             orm.InitializeTable(typeof(TermGuid));

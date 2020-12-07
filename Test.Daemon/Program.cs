@@ -4,10 +4,10 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler;
 using Komodo.Daemon;
-using Index = Komodo.Classes.Index;
+using Index = Komodo.Index;
 
 namespace Test.Daemon
 {
@@ -122,6 +122,10 @@ namespace Test.Daemon
                         AddDoc();
                         break;
 
+                    case "add file":
+                        AddFile();
+                        break;
+
                     case "remove doc":
                         RemoveDoc();
                         break;
@@ -212,6 +216,7 @@ namespace Test.Daemon
             Console.WriteLine("|  get parse result         retrieve parse result for a source doc by GUID");
             Console.WriteLine("|  get postings             retrieve postings for a source doc by GUID");
             Console.WriteLine("|  add doc                  add a document to the index");
+            Console.WriteLine("|  add file                 add a document to the index using a file");
             Console.WriteLine("|  remove doc               remove a document from the index by GUID");
             Console.WriteLine("|  search                   search an index");
             Console.WriteLine("|  enumerate                enumerate the contents of an index");
@@ -460,6 +465,27 @@ namespace Test.Daemon
             }
         }
 
+        static async void AddFile()
+        {
+            string indexName = Common.InputString("Index name  :", null, false);
+            string sourceGuid = Common.InputString("Source GUID :", null, false);
+            string sourceFile = Common.InputString("Source file :", null, false);
+            byte[] data = File.ReadAllBytes(sourceFile);
+            SourceDocument sourceDoc = BuildSourceDocument();
+            bool parse = Common.InputBoolean("Parse:", true);
+            PostingsOptions options = new PostingsOptions();
+
+            IndexResult result = await _Komodo.AddDocument(indexName, sourceDoc, data, parse, options);
+            if (result == null)
+            {
+                Console.WriteLine("(none)");
+            }
+            else
+            {
+                Console.WriteLine(Common.SerializeJson(result, true));
+            }
+        }
+
         static SourceDocument BuildSourceDocument()
         {
             Console.WriteLine("Building source document");
@@ -471,7 +497,7 @@ namespace Test.Daemon
                 Common.InputString("Title          :", null, true),
                 Common.InputStringList("Tags           :", true), 
                 (DocType)(Enum.Parse(typeof(DocType), 
-                Common.InputString("DocType [Sql|Html|Json|Xml|Text]:", "Json", false))),
+                Common.InputString("DocType [Csv|Html|Json|Sql|Text|Xml]:", "Json", false))),
                 Common.InputString("Source URL     :", null, true),
                 Common.InputString("Content Type   :", "application/json", true),
                 Common.InputInteger("Content Length :", (int)_LastContentLength, true, true),

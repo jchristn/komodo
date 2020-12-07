@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using WatsonWebserver;
-using Komodo.Classes;
+using Komodo;
 
 namespace Komodo.Server.Classes
 {
@@ -43,8 +43,8 @@ namespace Komodo.Server.Classes
         public RequestMetadata()
         {
             Params = new RequestParameters();
-            if (Http != null && Http.Request.Querystring != null && Http.Request.QuerystringEntries.Count > 0)
-                Params = RequestParameters.FromDictionary(Http.Request.QuerystringEntries);
+            if (Http != null && Http.Request.Query != null && Http.Request.Query.Elements.Count > 0)
+                Params = RequestParameters.FromDictionary(Http.Request.Query.Elements);
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace Komodo.Server.Classes
             ApiKey = apiKey;
             Permission = perm;
             Params = new RequestParameters();
-            if (Http != null && Http.Request.Querystring != null && Http.Request.QuerystringEntries.Count > 0)
-                Params = RequestParameters.FromDictionary(Http.Request.QuerystringEntries);
+            if (Http != null && Http.Request.Query != null && Http.Request.Query.Elements.Count > 0)
+                Params = RequestParameters.FromDictionary(Http.Request.Query.Elements);
         }
 
         /// <summary>

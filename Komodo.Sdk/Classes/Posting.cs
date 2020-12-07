@@ -47,23 +47,13 @@ namespace Komodo.Sdk.Classes
         #region Public-Methods
 
         /// <summary>
-        /// Returns a human-readable string version of the object.
+        /// Return a JSON string of this object.
         /// </summary>
-        /// <returns>String.</returns>
-        public override string ToString()
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
         {
-            string ret = "[" + Term + " frequency " + Frequency + "]: ";
-            if (Positions != null)
-            {
-                int added = 0;
-                foreach (long curr in Positions)
-                {
-                    if (added == 0) ret += curr;
-                    else ret += "," + curr;
-                    added++;
-                }
-            }
-            return ret;
+            return KomodoCommon.SerializeJson(this, pretty);
         }
 
         #endregion

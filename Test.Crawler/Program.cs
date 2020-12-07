@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Komodo.Classes;
+using Komodo;
 using Komodo.Crawler;
 using BlobHelper;
 

@@ -62,6 +62,16 @@ namespace Komodo.Sdk
         #region Public-Methods
 
         /// <summary>
+        /// Return a JSON string of this object.
+        /// </summary>
+        /// <param name="pretty">Enable or disable pretty print.</param>
+        /// <returns>JSON string.</returns>
+        public string ToJson(bool pretty)
+        {
+            return KomodoCommon.SerializeJson(this, pretty);
+        }
+
+        /// <summary>
         /// Test authenticated connectivity to Komodo.
         /// </summary>
         /// <param name="token">Cancellation token used to cancel the request.</param>
@@ -117,8 +127,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<List<string>>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<List<string>>(respData);
                 }
 
                 return new List<string>();
@@ -162,8 +172,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<Index>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<Index>(respData);
                 }
 
                 return null;
@@ -207,8 +217,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<IndexStats>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<IndexStats>(respData);
                 }
 
                 return null;
@@ -245,7 +255,7 @@ namespace Komodo.Sdk
 
                 req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-                RestResponse resp = await req.SendAsync(SerializeJson(index, true), token).ConfigureAwait(false);
+                RestResponse resp = await req.SendAsync(KomodoCommon.SerializeJson(index, true), token).ConfigureAwait(false);
 
                 KomodoException e = KomodoException.FromRestResponse(resp);
                 if (e != null) throw e;
@@ -349,7 +359,7 @@ namespace Komodo.Sdk
 
                 if (tags != null && tags.Count > 0)
                 {
-                    url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                    url += "&tags=" + WebUtility.UrlEncode(KomodoCommon.StringListToCsv(tags));
                 }
 
                 RestRequest req = new RestRequest(
@@ -367,8 +377,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<IndexResult>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<IndexResult>(respData);
                 }
 
                 return null;
@@ -434,7 +444,7 @@ namespace Komodo.Sdk
 
                 if (tags != null && tags.Count > 0)
                 {
-                    url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                    url += "&tags=" + WebUtility.UrlEncode(KomodoCommon.StringListToCsv(tags));
                 }
 
                 RestRequest req = new RestRequest(
@@ -452,8 +462,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<IndexResult>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<IndexResult>(respData);
                 }
 
                 return null;
@@ -513,7 +523,7 @@ namespace Komodo.Sdk
 
                 if (tags != null && tags.Count > 0)
                 {
-                    url += "&tags=" + WebUtility.UrlEncode(StringListToCsv(tags));
+                    url += "&tags=" + WebUtility.UrlEncode(KomodoCommon.StringListToCsv(tags));
                 }
 
                 RestRequest req = new RestRequest(
@@ -531,8 +541,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<IndexResult>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<IndexResult>(respData);
                 }
 
                 return null;
@@ -624,8 +634,8 @@ namespace Komodo.Sdk
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<DocumentMetadata>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<DocumentMetadata>(respData);
                 }
 
                 return null;
@@ -702,15 +712,15 @@ namespace Komodo.Sdk
 
                 req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-                RestResponse resp = await req.SendAsync(SerializeJson(query, true), token).ConfigureAwait(false);
+                RestResponse resp = await req.SendAsync(KomodoCommon.SerializeJson(query, true), token).ConfigureAwait(false);
 
                 KomodoException e = KomodoException.FromRestResponse(resp);
                 if (e != null) throw e;
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<SearchResult>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<SearchResult>(respData);
                 }
 
                 return null;
@@ -749,15 +759,15 @@ namespace Komodo.Sdk
 
                 req.IgnoreCertificateErrors = AcceptInvalidCertificates;
 
-                RestResponse resp = await req.SendAsync(SerializeJson(query, true), token).ConfigureAwait(false);
+                RestResponse resp = await req.SendAsync(KomodoCommon.SerializeJson(query, true), token).ConfigureAwait(false);
 
                 KomodoException e = KomodoException.FromRestResponse(resp);
                 if (e != null) throw e;
 
                 if (resp.Data != null && resp.ContentLength > 0)
                 {
-                    byte[] respData = StreamToBytes(resp.Data);
-                    return DeserializeJson<EnumerationResult>(respData);
+                    byte[] respData = KomodoCommon.StreamToBytes(resp.Data);
+                    return KomodoCommon.DeserializeJson<EnumerationResult>(respData);
                 }
 
                 return null;
@@ -796,114 +806,7 @@ namespace Komodo.Sdk
 
             throw new ArgumentException("Unknown DocType: " + docType.ToString());
         }
-
-        private static string SerializeJson(object obj, bool pretty)
-        {
-            if (obj == null) return null;
-            string json;
-
-            if (pretty)
-            {
-                json = JsonConvert.SerializeObject(
-                  obj,
-                  Newtonsoft.Json.Formatting.Indented,
-                  new JsonSerializerSettings
-                  {
-                      NullValueHandling = NullValueHandling.Ignore,
-                      DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                  });
-            }
-            else
-            {
-                json = JsonConvert.SerializeObject(obj,
-                  new JsonSerializerSettings
-                  {
-                      NullValueHandling = NullValueHandling.Ignore,
-                      DateTimeZoneHandling = DateTimeZoneHandling.Utc
-                  });
-            }
-
-            return json;
-        }
-
-        private static T DeserializeJson<T>(string json)
-        {
-            if (String.IsNullOrEmpty(json)) throw new ArgumentNullException(nameof(json)); 
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
-        private static T DeserializeJson<T>(byte[] data)
-        {
-            if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
-            return DeserializeJson<T>(Encoding.UTF8.GetString(data));
-        }
-
-        private static byte[] StreamToBytes(Stream input)
-        {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            if (!input.CanRead) throw new InvalidOperationException("Input stream is not readable");
-
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-
-                return ms.ToArray();
-            }
-        }
          
-        private static List<string> CsvToStringList(string csv)
-        {
-            if (String.IsNullOrEmpty(csv))
-            {
-                return null;
-            }
-
-            List<string> ret = new List<string>();
-
-            string[] array = csv.Split(',');
-
-            if (array != null && array.Length > 0)
-            {
-                foreach (string curr in array)
-                {
-                    if (String.IsNullOrEmpty(curr)) continue;
-                    ret.Add(curr.Trim());
-                }
-            }
-
-            return ret;
-        }
-
-        private static string StringListToCsv(List<string> strings)
-        {
-            if (strings == null || strings.Count < 1) return null;
-
-            int added = 0;
-            string ret = "";
-
-            foreach (string curr in strings)
-            {
-                if (added == 0)
-                {
-                    ret += curr;
-                }
-                else
-                {
-                    ret += "," + curr;
-                }
-
-                added++;
-            }
-
-            return ret;
-        }
-
         #endregion
     }
 }
